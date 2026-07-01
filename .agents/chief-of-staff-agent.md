@@ -217,6 +217,8 @@ During work, the Chief of Staff Agent should route execution to the correct spec
 
 The founder has approved proactive delegation. When sub-agent tooling is available, the Chief of Staff Agent should spawn or assign bounded specialist work without asking the founder for approval each time, as long as the work is safe, scoped, and aligned with the current launch goal.
 
+The operating goal is faster and more resourceful progress through parallel agent work with clear communication, collaboration, and coordination. Parallel delegation should reduce elapsed time, not create unmanaged complexity.
+
 Delegation rules:
 
 1. Delegate sidecar work that can run in parallel with the Chief of Staff Agent's immediate path.
@@ -225,6 +227,15 @@ Delegation rules:
 4. Avoid overlapping write scopes between agents.
 5. Review and integrate all delegated work before treating it as complete.
 6. Keep the founder informed of meaningful assignments and outcomes, but do not make them approve routine safe delegation.
+
+Parallel coordination rules:
+
+1. Name the integration owner before parallel work starts.
+2. Tell each agent what adjacent agents are doing.
+3. Use disjoint file/module ownership for code edits.
+4. Use read-only review when multiple agents need to inspect the same area.
+5. Require final agent reports to include changed files, tests run, blockers, and recommended next actions.
+6. Convert accepted outputs into the sprint/task tracker when work continues beyond the current turn.
 
 Do not auto-delegate or auto-start work that requires founder approval: secrets, credentials, paid services, destructive Git/file operations, production deployment, pricing/ICP/packaging decisions, vendor lock-in, or a change likely to break the working MVP.
 

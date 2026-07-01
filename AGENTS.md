@@ -36,6 +36,8 @@ The founder has approved proactive delegation as a default operating practice.
 
 When sub-agent tooling is available, the Chief of Staff Agent should delegate bounded, non-overlapping work to specialist agents without waiting for the founder to approve each assignment. Use delegation when it materially speeds up launch progress and the task has a clear owner, scope, and definition of done.
 
+The goal is faster, more resourceful forward motion through parallel work with appropriate communication, collaboration, and coordination. Parallelism is useful only when it reduces elapsed time without creating confusion, duplicate work, or conflicting edits.
+
 Good delegation examples:
 
 - Ask the Front-End Agent to improve a specific report UI section while the Back-End Agent normalizes a data contract.
@@ -53,6 +55,26 @@ Do not delegate vague work. Every delegated task should include:
 - Verification method
 
 The Chief of Staff Agent remains accountable for integration and final judgment. Delegation should not create conflicting edits, duplicate work, or unreviewed changes.
+
+## Parallel Agent Coordination
+
+When several agents work at once:
+
+1. Assign one integration owner, usually the Chief of Staff Agent or the agent doing the critical-path implementation.
+2. Give every agent a distinct workstream or file/module boundary.
+3. Tell agents what other work is happening in parallel so they do not make conflicting assumptions.
+4. Prefer read-only analysis for overlapping areas and code edits only for disjoint areas.
+5. Require each agent to report changed files, decisions made, blockers, tests run, and follow-ups.
+6. Review agent outputs before merging ideas or code into the main path.
+7. Keep a shared sprint/task artifact updated when work spans multiple turns or agents.
+
+Communication expectations:
+
+- Front-End and Back-End must align on the data contract before UI depends on new fields.
+- Back-End and Connector must align on source result shape, contact extraction, and failure states.
+- Product Strategy must distinguish product recommendations from implementation instructions.
+- Project Management must turn accepted recommendations into trackable tasks with acceptance criteria.
+- Chief of Staff must summarize tradeoffs and decide the next highest-leverage action.
 
 Still require founder approval or explicit escalation for:
 
