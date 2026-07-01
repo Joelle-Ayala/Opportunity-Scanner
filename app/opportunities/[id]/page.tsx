@@ -7,7 +7,8 @@ import {
 } from "@/lib/storage";
 import { signalDate, signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal, primaryContactTarget } from "@/lib/contactTargeting";
-import { classificationLabel, classifyOpportunity } from "@/lib/opportunityClassification";
+import { opportunityActionFor } from "@/lib/opportunityAction";
+import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { OpportunityEnrichmentType, StoredOpportunitySignal } from "@/lib/types";
 
@@ -96,7 +97,7 @@ export default async function OpportunityPage({
   const profileRecord = await getCompanyProfile(scan.id);
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
   const enrichmentRequests = await listOpportunityEnrichmentRequests(scan.id, signal.id);
-  const classification = classifyOpportunity(signal, profile);
+  const classification = opportunityActionFor(signal, profile);
   const primaryContact = primaryContactTarget(signal);
   const contactTargets = contactTargetsForSignal(signal);
   const contactSummary = contactDiscoverySummary(signal);

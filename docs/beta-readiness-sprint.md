@@ -15,14 +15,15 @@ Move Opportunity Scanner closer to a usable MVP/beta by stabilizing the opportun
 - Jammcard latest scan: pass, 0 issues.
 - Reparel golden scan: pass, 0 issues.
 - SchoolGig latest scan: 3 medium issues remain.
+- Initial Git checkpoint exists: `3c07848`.
+- Normalized opportunity action contract has been added in code and is pending fresh-scan verification.
 
 ## Primary Blockers
 
-1. Opportunity action fields are still partly inferred at render/export time instead of persisted as normalized fields.
-2. SchoolGig still surfaces a few weak-fit education/arts-adjacent signals.
-3. Free/full report access is still placeholder-level and not production-safe.
-4. Workflow webhook works, but needs beta guardrails before real users.
-5. No Git checkpoint exists yet.
+1. SchoolGig still surfaces a few weak-fit education/arts-adjacent signals.
+2. Free/full report access is still placeholder-level and not production-safe.
+3. Workflow webhook works, but needs beta guardrails before real users.
+4. Normalized opportunity action fields need fresh-scan verification.
 
 ## Included Tasks
 
@@ -33,6 +34,8 @@ Owner: Back-End Agent
 Priority: P0
 
 Status: Not Started
+
+Updated Status: In Review
 
 Problem: The report, CSV export, and workflow payload rely on classification logic at render time. This risks mismatched action fields across surfaces.
 
@@ -51,6 +54,7 @@ Testing / Verification:
 
 - TypeScript check passes.
 - `scripts/evaluate-local-reports.mjs` returns 0 high-priority issues.
+- Run one fresh scan and confirm stored opportunity `raw_json` includes `normalized_action`.
 
 ### Task 2: Tighten SchoolGig Weak-Fit Filtering
 
@@ -137,7 +141,7 @@ Owner: Project Management Agent / Chief of Staff Agent
 
 Priority: P0
 
-Status: Blocked pending founder approval or explicit commit request
+Status: Done
 
 Problem: The repo has no commits yet, so meaningful progress is not checkpointed.
 
@@ -151,6 +155,7 @@ Acceptance Criteria:
 
 - Initial project state and agent operating system are committed.
 - `.env.local`, `.data`, `output`, `.next`, and generated artifacts remain uncommitted.
+- Commit exists: `3c07848`.
 
 Testing / Verification:
 

@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
     await updateScan(scan.id, { status: "discovering" });
     const signals = await discoverExternalSignals(profile);
-    await saveOpportunitySignals(scan.id, signals);
+    await saveOpportunitySignals(scan.id, signals, profile);
 
     await updateScan(scan.id, {
       status: "completed",

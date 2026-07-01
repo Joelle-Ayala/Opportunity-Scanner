@@ -26,6 +26,7 @@ import {
   supabaseSelectOne,
   supabaseUpdate
 } from "./supabaseRest";
+import { withNormalizedOpportunityAction } from "./opportunityAction";
 
 type LocalDb = {
   scans: ScanRecord[];
@@ -244,48 +245,51 @@ export async function listCompletedScansWithProfiles(limit = 50): Promise<
 
 export async function saveOpportunitySignals(
   scanId: string,
-  signals: OpportunitySignal[]
+  signals: OpportunitySignal[],
+  profile?: CompanyProfile | null
 ): Promise<StoredOpportunitySignal[]> {
   const saved: StoredOpportunitySignal[] = [];
 
   for (const signal of signals) {
+    const normalizedSignal = withNormalizedOpportunityAction(signal, profile);
+
     if (usesSupabase()) {
       await supabaseInsert<SourceResultRecord>("source_results", {
         scan_id: scanId,
-        source_name: signal.source_name,
-        source_type: signal.source_type,
-        query_used: signal.query_used,
-        title: signal.opportunity_title,
-        url: signal.source_url,
-        raw_json: signal.raw_json
+        source_name: normalizedSignal.source_name,
+        source_type: normalizedSignal.source_type,
+        query_used: normalizedSignal.query_used,
+        title: normalizedSignal.opportunity_title,
+        url: normalizedSignal.source_url,
+        raw_json: normalizedSignal.raw_json
       });
 
       const opportunity = await supabaseInsert<OpportunityRecord>("opportunities", {
-        source: signal.source_name,
-        source_id: signal.source_url,
-        title: signal.opportunity_title,
-        url: signal.source_url,
-        agency: signal.agency_or_funder,
-        category: signal.source_type,
-        deadline: signal.deadline || null,
-        geography: signal.geography || null,
-        raw_json: signal
+        source: normalizedSignal.source_name,
+        source_id: normalizedSignal.source_url,
+        title: normalizedSignal.opportunity_title,
+        url: normalizedSignal.source_url,
+        agency: normalizedSignal.agency_or_funder,
+        category: normalizedSignal.source_type,
+        deadline: normalizedSignal.deadline || null,
+        geography: normalizedSignal.geography || null,
+        raw_json: normalizedSignal
       });
 
       await supabaseInsert<ScanOpportunityRecord>("scan_opportunities", {
         scan_id: scanId,
         opportunity_id: opportunity.id,
-        relevance_score: signal.relevance_score,
-        novelty_score: signal.novelty_score,
-        confidence_score: signal.confidence_score,
-        reasoning_json: signal.reasoning,
-        recommended_action: signal.recommended_action,
-        human_review_required: signal.human_review_required,
+        relevance_score: normalizedSignal.relevance_score,
+        novelty_score: normalizedSignal.novelty_score,
+        confidence_score: normalizedSignal.confidence_score,
+        reasoning_json: normalizedSignal.reasoning,
+        recommended_action: normalizedSignal.recommended_action,
+        human_review_required: normalizedSignal.human_review_required,
         hidden: false
       });
 
       saved.push({
-        ...signal,
+        ...normalizedSignal,
         id: opportunity.id,
         created_at: opportunity.created_at
       });
@@ -297,37 +301,37 @@ export async function saveOpportunitySignals(
     const sourceResult: SourceResultRecord = {
       id: randomUUID(),
       scan_id: scanId,
-      source_name: signal.source_name,
-      source_type: signal.source_type,
-      query_used: signal.query_used,
-      title: signal.opportunity_title,
-      url: signal.source_url,
-      raw_json: signal.raw_json,
+      source_name: normalizedSignal.source_name,
+      source_type: normalizedSignal.source_type,
+      query_used: normalizedSignal.query_used,
+      title: normalizedSignal.opportunity_title,
+      url: normalizedSignal.source_url,
+      raw_json: normalizedSignal.raw_json,
       created_at: now
     };
     const opportunity: OpportunityRecord = {
       id: randomUUID(),
-      source: signal.source_name,
-      source_id: signal.source_url,
-      title: signal.opportunity_title,
-      url: signal.source_url,
-      agency: signal.agency_or_funder,
-      category: signal.source_type,
-      deadline: signal.deadline,
-      geography: signal.geography,
-      raw_json: signal,
+      source: normalizedSignal.source_name,
+      source_id: normalizedSignal.source_url,
+      title: normalizedSignal.opportunity_title,
+      url: normalizedSignal.source_url,
+      agency: normalizedSignal.agency_or_funder,
+      category: normalizedSignal.source_type,
+      deadline: normalizedSignal.deadline,
+      geography: normalizedSignal.geography,
+      raw_json: normalizedSignal,
       created_at: now
     };
     const scanOpportunity: ScanOpportunityRecord = {
       id: randomUUID(),
       scan_id: scanId,
       opportunity_id: opportunity.id,
-      relevance_score: signal.relevance_score,
-      novelty_score: signal.novelty_score,
-      confidence_score: signal.confidence_score,
-      reasoning_json: signal.reasoning,
-      recommended_action: signal.recommended_action,
-      human_review_required: signal.human_review_required,
+      relevance_score: normalizedSignal.relevance_score,
+      novelty_score: normalizedSignal.novelty_score,
+      confidence_score: normalizedSignal.confidence_score,
+      reasoning_json: normalizedSignal.reasoning,
+      recommended_action: normalizedSignal.recommended_action,
+      human_review_required: normalizedSignal.human_review_required,
       hidden: false,
       created_at: now
     };
@@ -338,7 +342,7 @@ export async function saveOpportunitySignals(
     await writeLocalDb(db);
 
     saved.push({
-      ...signal,
+      ...normalizedSignal,
       id: opportunity.id,
       created_at: now
     });

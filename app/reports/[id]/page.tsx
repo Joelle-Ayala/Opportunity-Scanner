@@ -6,7 +6,8 @@ import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types
 import { signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal } from "@/lib/contactTargeting";
 import { isSamGovConfigured } from "@/lib/connectors/samGov";
-import { classificationLabel, classifyOpportunity } from "@/lib/opportunityClassification";
+import { opportunityActionFor } from "@/lib/opportunityAction";
+import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { sourceCatalog } from "@/lib/sourceRegistry";
 
@@ -65,7 +66,7 @@ function sourceTypeLabel(signal: StoredOpportunitySignal): string {
 }
 
 function primaryActionLabel(signal: StoredOpportunitySignal, profile?: CompanyProfile): string {
-  const classification = classifyOpportunity(signal, profile);
+  const classification = opportunityActionFor(signal, profile);
   if (signal.source_type === "active_contract" || classification.contact_strategy === "inspect_procurement_record") {
     return "Review solicitation";
   }
@@ -93,7 +94,7 @@ function workflowPayload(
   profile: CompanyProfile | undefined,
   isPaid: boolean
 ): WorkflowPayload {
-  const classification = classifyOpportunity(signal, profile);
+  const classification = opportunityActionFor(signal, profile);
   return {
     scanId,
     opportunityId: signal.id,
@@ -163,7 +164,7 @@ function buildExecutiveSummary(signals: StoredOpportunitySignal[], profile?: Com
     topSignalPattern: best ? best.external_evidence_summary : "No sourced pattern yet.",
     topLane,
     confidence,
-    bestNextAction: best ? classifyOpportunity(best, profile).next_best_action : "Run a broader scan or review source coverage."
+    bestNextAction: best ? opportunityActionFor(best, profile).next_best_action : "Run a broader scan or review source coverage."
   };
 }
 
@@ -338,7 +339,7 @@ function PrimaryActionButton({
   profile?: CompanyProfile;
   isPaid: boolean;
 }) {
-  const classification = classifyOpportunity(signal, profile);
+  const classification = opportunityActionFor(signal, profile);
   const label = primaryActionLabel(signal, profile);
   const opensSource =
     isPaid &&
@@ -458,7 +459,7 @@ function OpportunityDetail({
   isPaid: boolean;
   profile?: CompanyProfile;
 }) {
-  const classification = classifyOpportunity(signal, profile);
+  const classification = opportunityActionFor(signal, profile);
   const buyer = signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review";
 
   return (
@@ -560,7 +561,7 @@ function OpportunityActionTable({
           </thead>
           <tbody>
             {signals.map((signal) => {
-              const classification = classifyOpportunity(signal, profile);
+              const classification = opportunityActionFor(signal, profile);
               return (
                 <tr key={signal.id} className="border-b border-line align-top last:border-0">
                   <td className="max-w-[300px] px-4 py-4">
@@ -650,7 +651,7 @@ function OpportunitySignalCard({
   isPaid: boolean;
   profile?: CompanyProfile;
 }) {
-  const classification = classifyOpportunity(signal, profile);
+  const classification = opportunityActionFor(signal, profile);
   return (
     <article className="rounded-lg border border-line bg-white p-5">
       <div className="flex flex-wrap gap-2">
@@ -694,7 +695,7 @@ function OpportunitySignalCard({
 }
 
 function LockedOpportunityCard({ signal, profile }: { signal: StoredOpportunitySignal; profile?: CompanyProfile }) {
-  const classification = classifyOpportunity(signal, profile);
+  const classification = opportunityActionFor(signal, profile);
   return (
     <article className="rounded-lg border border-dashed border-line bg-white p-5">
       <div className="flex flex-wrap gap-2">
@@ -818,7 +819,7 @@ function ActionPlan({ signals }: { signals: StoredOpportunitySignal[] }) {
 }
 
 function pursuitGroup(signal: StoredOpportunitySignal, profile?: CompanyProfile): string {
-  const classification = classifyOpportunity(signal, profile);
+  const classification = opportunityActionFor(signal, profile);
   if (
     ["use_source_native_contact", "contact_procurement_office", "contact_program_office", "contact_grants_manager"].includes(
       classification.contact_strategy
@@ -887,7 +888,7 @@ function PursuitPlan({
             {group.signals.length > 0 ? (
               <div className="mt-3 grid gap-3">
                 {group.signals.map((signal) => {
-                  const classification = classifyOpportunity(signal, profile);
+                  const classification = opportunityActionFor(signal, profile);
                   return (
                     <div key={signal.id} className="rounded-md border border-line bg-white p-3">
                       <p className="line-clamp-2 text-sm font-semibold leading-5 text-ink">
@@ -921,7 +922,7 @@ function ScreeningSummary({
   const screenedOut = allSignals.filter((signal) => !reportIds.has(signal.id));
   const buckets = screenedOut.reduce<Record<string, { count: number; reason: string; examples: string[] }>>(
     (counts, signal) => {
-      const classification = classifyOpportunity(signal, profile);
+      const classification = opportunityActionFor(signal, profile);
       const key = classification.screening_path;
       const bucket = counts[key] ?? { count: 0, reason: classification.screening_reason, examples: [] };
       bucket.count += 1;
@@ -1041,11 +1042,11 @@ export default async function ReportPage({
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
   const signals = await listScanOpportunitySignals(scan.id);
   const moveForwardSignals = signals
-    .filter((signal) => classifyOpportunity(signal, profile).show_in_report)
+    .filter((signal) => opportunityActionFor(signal, profile).show_in_report)
     .sort(
       (a, b) =>
-        classifyOpportunity(b, profile).actionability_score -
-        classifyOpportunity(a, profile).actionability_score
+        opportunityActionFor(b, profile).actionability_score -
+        opportunityActionFor(a, profile).actionability_score
     );
   const fallbackSignals = signals.slice(0, 6);
   const reportSignals = moveForwardSignals.length > 0 ? moveForwardSignals : fallbackSignals;

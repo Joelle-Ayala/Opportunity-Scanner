@@ -121,6 +121,60 @@ export type CompanyProfileRecord = {
   created_at: string;
 };
 
+export type NormalizedOpportunityAction = {
+  estimated_opportunity_type:
+    | "active_opportunity"
+    | "historical_market_evidence"
+    | "policy_signal"
+    | "source_route"
+    | "research_only";
+  buyer_partner_type:
+    | "agency"
+    | "procurement_office"
+    | "program_office"
+    | "funded_buyer"
+    | "award_recipient"
+    | "prime_vendor"
+    | "distributor"
+    | "grantee"
+    | "channel_partner"
+    | "policy_owner"
+    | "research_target";
+  revenue_motion: string;
+  target_organization: string;
+  source_status: string;
+  source_deadline: string;
+  source_published_date: string;
+  time_sensitivity: "urgent" | "active" | "recent" | "evergreen" | "expired" | "monitor";
+  pursuit_difficulty: "low" | "medium" | "high";
+  actionability_score: number;
+  actionability_label: "Strong" | "Medium" | "Research" | "Screened out";
+  show_in_report: boolean;
+  screening_path: string;
+  screening_reason: string;
+  next_best_action: string;
+  contact_strategy:
+    | "use_source_native_contact"
+    | "inspect_procurement_record"
+    | "contact_procurement_office"
+    | "contact_program_office"
+    | "contact_grants_manager"
+    | "contact_award_recipient"
+    | "research_prime_or_vendor"
+    | "identify_distributor"
+    | "enrich_company_domain"
+    | "monitor_source"
+    | "create_manual_research_task";
+  recommended_contact_roles: string[];
+  source_native_contact_available: boolean;
+  manual_research_instruction: string;
+  workflow_payload_ready: boolean;
+  workflow_payload_reason: string;
+  crm_note: string;
+  outreach_angle: string;
+  follow_up_task: string;
+};
+
 export type OpportunitySignal = {
   opportunity_title: string;
   source_type:
@@ -162,6 +216,31 @@ export type OpportunitySignal = {
   human_review_required: boolean;
   query_used: string;
   raw_json: Record<string, unknown>;
+  normalized_action?: NormalizedOpportunityAction;
+  estimated_opportunity_type?: NormalizedOpportunityAction["estimated_opportunity_type"];
+  buyer_partner_type?: NormalizedOpportunityAction["buyer_partner_type"];
+  revenue_motion?: string;
+  target_organization?: string;
+  source_status?: string;
+  source_deadline?: string;
+  source_published_date?: string;
+  time_sensitivity?: NormalizedOpportunityAction["time_sensitivity"];
+  pursuit_difficulty?: NormalizedOpportunityAction["pursuit_difficulty"];
+  actionability_score?: number;
+  actionability_label?: NormalizedOpportunityAction["actionability_label"];
+  show_in_report?: boolean;
+  screening_path?: string;
+  screening_reason?: string;
+  next_best_action?: string;
+  contact_strategy?: NormalizedOpportunityAction["contact_strategy"];
+  recommended_contact_roles?: string[];
+  source_native_contact_available?: boolean;
+  manual_research_instruction?: string;
+  workflow_payload_ready?: boolean;
+  workflow_payload_reason?: string;
+  crm_note?: string;
+  outreach_angle?: string;
+  follow_up_task?: string;
 };
 
 export type SourceResultRecord = {

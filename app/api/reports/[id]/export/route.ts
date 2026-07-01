@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/storage";
 import { signalLane } from "@/lib/actionability";
 import { primaryContactTarget } from "@/lib/contactTargeting";
-import { classificationLabel, classifyOpportunity } from "@/lib/opportunityClassification";
+import { opportunityActionFor } from "@/lib/opportunityAction";
+import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 
 export const runtime = "nodejs";
@@ -43,11 +44,11 @@ export async function GET(_request: Request, { params }: { params: { id: string 
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
   const signals = await listScanOpportunitySignals(params.id);
   const sortedSignals = signals
-    .filter((signal) => classifyOpportunity(signal, profile).show_in_report)
+    .filter((signal) => opportunityActionFor(signal, profile).show_in_report)
     .sort(
       (a, b) =>
-        classifyOpportunity(b, profile).actionability_score -
-        classifyOpportunity(a, profile).actionability_score
+        opportunityActionFor(b, profile).actionability_score -
+        opportunityActionFor(a, profile).actionability_score
     );
   const rows = [
     [
@@ -85,7 +86,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
       "URL"
     ],
     ...sortedSignals.map((signal) => {
-      const classification = classifyOpportunity(signal, profile);
+      const classification = opportunityActionFor(signal, profile);
       const contactTarget = primaryContactTarget(signal);
       return [
         opportunityHeadline(signal),
