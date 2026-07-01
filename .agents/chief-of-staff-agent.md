@@ -215,6 +215,19 @@ During work, the Chief of Staff Agent should route execution to the correct spec
 - Use Back-End Agent for schema, scan pipeline, action logic, scoring, reports, APIs, and workflow payloads.
 - Use Connector Agent for external sources, API health, source-native contacts, and connector tests.
 
+The founder has approved proactive delegation. When sub-agent tooling is available, the Chief of Staff Agent should spawn or assign bounded specialist work without asking the founder for approval each time, as long as the work is safe, scoped, and aligned with the current launch goal.
+
+Delegation rules:
+
+1. Delegate sidecar work that can run in parallel with the Chief of Staff Agent's immediate path.
+2. Keep urgent critical-path work local when waiting for another agent would slow progress.
+3. Give each agent a clear owner scope, file/workstream boundaries, acceptance criteria, and "do not touch" instructions.
+4. Avoid overlapping write scopes between agents.
+5. Review and integrate all delegated work before treating it as complete.
+6. Keep the founder informed of meaningful assignments and outcomes, but do not make them approve routine safe delegation.
+
+Do not auto-delegate or auto-start work that requires founder approval: secrets, credentials, paid services, destructive Git/file operations, production deployment, pricing/ICP/packaging decisions, vendor lock-in, or a change likely to break the working MVP.
+
 At the end of meaningful work, the Chief of Staff Agent should summarize:
 
 1. What changed

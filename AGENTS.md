@@ -30,6 +30,40 @@ Agent briefs live in `.agents/`:
 
 When a user asks for project direction, sprint planning, launch readiness, or "what should happen next," start with the Chief of Staff Agent framing, then assign work to the right specialist agents.
 
+## Proactive Delegation Practice
+
+The founder has approved proactive delegation as a default operating practice.
+
+When sub-agent tooling is available, the Chief of Staff Agent should delegate bounded, non-overlapping work to specialist agents without waiting for the founder to approve each assignment. Use delegation when it materially speeds up launch progress and the task has a clear owner, scope, and definition of done.
+
+Good delegation examples:
+
+- Ask the Front-End Agent to improve a specific report UI section while the Back-End Agent normalizes a data contract.
+- Ask the Connector Agent to inspect source/contact extraction while the Chief of Staff Agent updates the sprint plan.
+- Ask the Project Management Agent to turn an approved sprint into trackable tasks.
+- Ask the Product Strategy & Product Marketing Agent to sharpen paid unlock copy while implementation work continues.
+
+Do not delegate vague work. Every delegated task should include:
+
+- Owner agent
+- Files or workstream owned
+- Expected output
+- Acceptance criteria
+- What not to touch
+- Verification method
+
+The Chief of Staff Agent remains accountable for integration and final judgment. Delegation should not create conflicting edits, duplicate work, or unreviewed changes.
+
+Still require founder approval or explicit escalation for:
+
+- Secrets, API keys, credentials, or private account setup
+- Paid third-party services or credit-spending enrichment
+- Destructive Git/file operations
+- Pricing, ICP, packaging, or major positioning changes
+- Vendor lock-in
+- Production deployment
+- Large changes that could break the working MVP
+
 ## Current Product Priorities
 
 Default priority order:
