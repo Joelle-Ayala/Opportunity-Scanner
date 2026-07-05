@@ -110,6 +110,43 @@ function isEducationWorkforceFit(text) {
   );
 }
 
+function isClearEducationMoveForwardFit(text) {
+  const staffingOrHrPath =
+    /teacher|teachers|educator|educators|principal|principals|substitute teacher|teacher shortage|teacher recruitment|teacher residency|school staffing|educator workforce|school workforce|district workforce|school district recruiting|district recruiting|school hr|district hr|human resources|applicant tracking|job board|talent acquisition|recruiting platform|hiring platform|workforce hiring/.test(
+      text
+    );
+  const schoolArtsStaffingPath =
+    /prop 28|proposition 28|teaching artist|teaching artists|artist educator|artist educators|school arts|arts education staffing|arts enrichment|expanded learning|vapa|visual and performing arts/.test(
+      text
+    );
+  const districtVendorPath =
+    /school district|local educational agency|\blea\b|district procurement|district vendor|district contract|department of education procurement|education procurement/.test(
+      text
+    ) &&
+    /staffing|recruiting|hiring|teacher|educator|human resources|hr|applicant tracking|job board|vendor|procurement|arts enrichment|teaching artist|school arts/.test(
+      text
+    );
+
+  return staffingOrHrPath || schoolArtsStaffingPath || districtVendorPath;
+}
+
+function isEducationScreenedOut(profile, signal) {
+  if (!isEducationWorkforceProfile(profile)) return false;
+  const lane = signalLane(signal).toLowerCase();
+  const evidence = textOf(
+    signal.opportunity_title,
+    signal.external_evidence_summary,
+    signal.why_it_matters,
+    signal.recommended_action,
+    signal.agency_or_funder,
+    signal.likely_buyer_or_partner,
+    signal.query_used,
+    lane
+  );
+
+  return !isClearEducationMoveForwardFit(evidence);
+}
+
 function isEducationDomainMismatch(text) {
   return /behavioral health|mental health|suicide|988|crisis|clinical|clinician|therapist|medicaid|healthcare|department of health|substance use|telehealth|prison|jail|incarcerated|reentry|correctional|justice center|law enforcement custody/.test(
     text
@@ -408,7 +445,7 @@ async function main() {
       .filter((profile) => profile.scan_id === scan.id)
       .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
     const profile = profileRecord?.profile_json || {};
-    const signals = buildSignals(db, scan.id);
+    const signals = buildSignals(db, scan.id).filter((signal) => !isEducationScreenedOut(profile, signal));
     const issues = [
       ...evaluateScanLevel({ profile, signals }),
       ...signals.flatMap((signal) => evaluateSignal({ scan, profile, signal }))

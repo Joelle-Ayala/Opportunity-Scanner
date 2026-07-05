@@ -161,6 +161,27 @@ function isCreativeOnlyProfile(profile?: CompanyProfile | null): boolean {
   return ids.includes("music_arts_creative_economy") && !ids.includes("education_workforce_training");
 }
 
+function isEducationWorkforceProfile(profile?: CompanyProfile | null): boolean {
+  if (!profile) return false;
+  const ids = playbookIds(profile);
+  if (ids.includes("education_workforce_training")) return true;
+
+  const text = [
+    profile.company_name,
+    profile.summary,
+    ...(profile.industries ?? []),
+    ...(profile.keywords ?? []),
+    ...(profile.public_sector_search_terms ?? []),
+    ...(profile.opportunity_lanes ?? [])
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return /schoolgig|teacher|teachers|educator|educators|substitute|teacher shortage|teacher recruitment|school staffing|school district hiring|hiring platform|recruiting|recruitment|job board|talent acquisition|applicant tracking/.test(
+    text
+  );
+}
+
 function estimateOpportunityType(signal: StoredOpportunitySignal, deadline: string): EstimatedOpportunityType {
   const text = evidenceText(signal);
   if (signal.source_name === "State/local portal routing" || /source route to check|portal route/.test(text)) {
@@ -438,6 +459,77 @@ function creativeOnlyScreen(signal: StoredOpportunitySignal, profile?: CompanyPr
   };
 }
 
+function educationWorkforceScreen(signal: StoredOpportunitySignal, profile?: CompanyProfile | null): {
+  show: boolean;
+  path: string;
+  reason: string;
+} | null {
+  if (!isEducationWorkforceProfile(profile)) return null;
+  const text = evidenceText(signal);
+  const deadline = sourceDeadline(signal);
+  const staffingOrHrPath =
+    /teacher|teachers|educator|educators|principal|principals|substitute teacher|teacher shortage|teacher recruitment|teacher residency|school staffing|educator workforce|school workforce|district workforce|school district recruiting|district recruiting|school hr|district hr|human resources|applicant tracking|job board|talent acquisition|recruiting platform|hiring platform|workforce hiring/.test(
+      text
+    );
+  const schoolArtsStaffingPath =
+    /prop 28|proposition 28|teaching artist|teaching artists|artist educator|artist educators|school arts|arts education staffing|arts enrichment|expanded learning|vapa|visual and performing arts/.test(
+      text
+    );
+  const districtVendorPath =
+    /school district|local educational agency|\blea\b|district procurement|district vendor|district contract|department of education procurement|education procurement/.test(
+      text
+    ) &&
+    /staffing|recruiting|hiring|teacher|educator|human resources|hr|applicant tracking|job board|vendor|procurement|arts enrichment|teaching artist|school arts/.test(
+      text
+    );
+  const broadArtsOrCulture =
+    /cultural programming|live events|public arts|music education|gospel music|carnegie hall|concert|festival|tourism|placemaking|creative workforce|arts workforce/.test(
+      text
+    );
+  const broadLiteracyOrInstruction =
+    /literacy|reading|writing|dyslexia|students with disabilities|developmental delay|quality of instruction|achievement gaps|comprehensive center/.test(
+      text
+    );
+
+  if (deadline && deadline < CURRENT_SCAN_DATE) {
+    return { show: false, path: "Expired or ended", reason: `This record ended on ${deadline}.` };
+  }
+
+  if (staffingOrHrPath || schoolArtsStaffingPath || districtVendorPath) {
+    return {
+      show: true,
+      path: "Clear education workforce path",
+      reason:
+        "The source points to school staffing, educator workforce, district HR/recruiting, school arts staffing, or a district/vendor path."
+    };
+  }
+
+  if (broadArtsOrCulture) {
+    return {
+      show: false,
+      path: "Broad arts/culture fit only",
+      reason:
+        "This is arts, culture, music, or public-event evidence, but it does not show a SchoolGig staffing, recruiting, school HR, district, or school arts staffing path."
+    };
+  }
+
+  if (broadLiteracyOrInstruction) {
+    return {
+      show: false,
+      path: "Education program fit only",
+      reason:
+        "This education signal is about literacy, instruction, or student services without a clear staffing, recruiting, school HR, or district vendor action."
+    };
+  }
+
+  return {
+    show: false,
+    path: "No clear education workforce path",
+    reason:
+      "The source does not clearly connect to education staffing, school arts staffing, district HR, recruiting, teacher/educator workforce, or a district vendor path."
+  };
+}
+
 export function classifyOpportunity(
   signal: StoredOpportunitySignal,
   profile?: CompanyProfile | null
@@ -455,10 +547,20 @@ export function classifyOpportunity(
   const target = signal.likely_buyer_or_partner || signal.agency_or_funder || "the target organization";
   const workflow = workflowReady(type, strategy, actionability);
   const score = Math.min(100, actionabilityScore(signal, type, time) + (profileConfirmsSignal(signal, profile) ? 8 : 0));
+  const educationScreen = educationWorkforceScreen(signal, profile);
   const creativeScreen = creativeOnlyScreen(signal, profile);
   const genericShow = actionability.actionability !== "unlikely" && time !== "expired" && type !== "source_route";
   const rejectedByProfile = profileRejectsSignal(signal, profile);
-  const show = rejectedByProfile ? false : creativeScreen ? creativeScreen.show : genericShow;
+  const show = rejectedByProfile
+    ? false
+    : educationScreen
+    ? educationScreen.show
+    : creativeScreen
+    ? creativeScreen.show
+    : genericShow;
+  const workflowStatus = show
+    ? workflow
+    : { ready: false, reason: "Screened out before workflow because the opportunity path is not clear enough." };
   const nextAction = nextBestAction({ signal, type, buyerType, strategy, roles, target });
   const manualInstruction = manualResearchInstruction(signal, strategy, target);
   const outreach = contactTargets[0]?.outreachAngle || "Lead with the source record and the relevant business fit.";
@@ -476,17 +578,19 @@ export function classifyOpportunity(
     actionability_score: score,
     actionability_label: actionabilityLabel(score, show),
     show_in_report: show,
-    screening_path: rejectedByProfile ? "Rejected by profile feedback" : creativeScreen?.path || (show ? "Move forward" : "Screened out"),
+    screening_path: rejectedByProfile
+      ? "Rejected by profile feedback"
+      : educationScreen?.path || creativeScreen?.path || (show ? "Move forward" : "Screened out"),
     screening_reason: rejectedByProfile
       ? "This signal matches profile feedback that the user asked to exclude."
-      : creativeScreen?.reason || (show ? actionability.reason : actionability.reason),
+      : educationScreen?.reason || creativeScreen?.reason || (show ? actionability.reason : actionability.reason),
     next_best_action: nextAction,
     contact_strategy: strategy,
     recommended_contact_roles: roles,
     source_native_contact_available: hasSourceContact,
     manual_research_instruction: manualInstruction,
-    workflow_payload_ready: workflow.ready,
-    workflow_payload_reason: workflow.reason,
+    workflow_payload_ready: workflowStatus.ready,
+    workflow_payload_reason: workflowStatus.reason,
     crm_note: crmNote,
     outreach_angle: outreach,
     follow_up_task: `${contactStrategyLabel(strategy)}: ${nextAction}`

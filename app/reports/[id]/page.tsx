@@ -202,7 +202,7 @@ function ReportHeader({
             </a>
           ) : (
             <span className="rounded-md border border-line bg-field px-3 py-2 text-sm font-semibold text-muted">
-              Download locked
+              Full report download
             </span>
           )}
         </div>
@@ -222,15 +222,15 @@ function ReportHeader({
           </p>
         </div>
         <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">External signals found</p>
+          <p className="text-xs font-semibold uppercase text-muted">Pipeline rows found</p>
           <p className="mt-1 text-sm font-semibold text-ink">{totalSignals}</p>
         </div>
         <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">Visible signals</p>
+          <p className="text-xs font-semibold uppercase text-muted">Rows shown</p>
           <p className="mt-1 text-sm font-semibold text-ink">{visibleSignals}</p>
         </div>
         <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">Locked signals</p>
+          <p className="text-xs font-semibold uppercase text-muted">Full-report rows</p>
           <p className="mt-1 text-sm font-semibold text-ink">{isPaid ? 0 : lockedSignals}</p>
         </div>
         <div className="rounded-md border border-line bg-field p-3">
@@ -258,7 +258,7 @@ function ExecutiveSummaryCard({
       </div>
       <div className="mt-4 grid gap-4 lg:grid-cols-4">
         <div className="rounded-md border border-line bg-field p-4 lg:col-span-2">
-          <p className="text-xs font-semibold uppercase text-muted">Top signal pattern</p>
+          <p className="text-xs font-semibold uppercase text-muted">Top opportunity pattern</p>
           <p className="mt-2 text-sm leading-6 text-slate-700">{summary.topSignalPattern}</p>
         </div>
         <div className="rounded-md border border-line bg-field p-4">
@@ -405,10 +405,10 @@ function OpportunityProfileModule({
     <section className="rounded-lg border border-line bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-ink">Opportunity Profile Used For This Scan</h2>
+          <h2 className="text-lg font-semibold text-ink">How we mapped your business</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-            We translated your website into public-sector buying language. These assumptions shaped
-            the opportunity scan.
+            We translated your website into public-sector buying language. These inputs shape the
+            targets, contact paths, revenue motions, and recommended actions in this report.
           </p>
         </div>
         <a
@@ -420,8 +420,8 @@ function OpportunityProfileModule({
       </div>
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
         <div className="rounded-md border border-line bg-field p-4">
-          <h3 className="text-sm font-semibold text-ink">Products / services inferred</h3>
-          <ChipList items={products} empty="No product assumptions saved yet." />
+          <h3 className="text-sm font-semibold text-ink">Products / services mapped</h3>
+          <ChipList items={products} empty="No product cues available yet." />
         </div>
         <div className="rounded-md border border-line bg-field p-4">
           <h3 className="text-sm font-semibold text-ink">Public-sector search terms</h3>
@@ -433,11 +433,11 @@ function OpportunityProfileModule({
         </div>
         <div className="rounded-md border border-line bg-field p-4">
           <h3 className="text-sm font-semibold text-ink">Likely buyer / partner types</h3>
-          <ChipList items={buyerTypes} empty="No buyer or partner assumptions saved yet." />
+          <ChipList items={buyerTypes} empty="No buyer or partner cues available yet." />
         </div>
         <div className="rounded-md border border-line bg-field p-4">
-          <h3 className="text-sm font-semibold text-ink">Priority signals</h3>
-          <ChipList items={priorities} empty="No explicit priority signals selected." />
+          <h3 className="text-sm font-semibold text-ink">Priority lanes</h3>
+          <ChipList items={priorities} empty="No priority lanes selected." />
         </div>
         <div className="rounded-md border border-line bg-field p-4">
           <h3 className="text-sm font-semibold text-ink">Excluded or low-priority lanes</h3>
@@ -470,7 +470,7 @@ function OpportunityDetail({
           <p className="mt-2 text-sm leading-6 text-slate-700">{signal.why_it_matters}</p>
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-ink">Evidence / source summary</h3>
+          <h3 className="text-sm font-semibold text-ink">Source-backed evidence</h3>
           <p className="mt-2 text-sm leading-6 text-slate-700">{signal.external_evidence_summary}</p>
           {isPaid ? (
             <a href={signal.source_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-semibold text-accent">
@@ -497,7 +497,7 @@ function OpportunityDetail({
           </p>
         </div>
         <div className="rounded-md border border-line bg-white p-4">
-          <h3 className="text-sm font-semibold text-ink">CRM note</h3>
+          <h3 className="text-sm font-semibold text-ink">CRM-ready note</h3>
           <p className="mt-2 text-sm leading-6 text-slate-700">{isPaid ? classification.crm_note : "Unlock to copy CRM-ready notes."}</p>
         </div>
         <div className="rounded-md border border-line bg-white p-4">
@@ -540,10 +540,11 @@ function OpportunityActionTable({
         <div>
           <h2 className="text-lg font-semibold text-ink">Opportunity Action Table</h2>
           <p className="mt-2 text-sm leading-6 text-muted">
-            Here are the opportunity signals, target paths, and actions to move each one forward.
+            Use these rows to move from public evidence to a target account, contact path, next
+            action, CRM note, outreach angle, and workflow-ready handoff.
           </p>
         </div>
-        <Badge tone="blue">{signals.length} visible</Badge>
+        <Badge tone="blue">{signals.length} rows shown</Badge>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-[1280px] border-collapse text-left text-sm">
@@ -633,7 +634,8 @@ function OpportunityActionTable({
       </div>
       {!isPaid ? (
         <p className="border-t border-line bg-field px-5 py-4 text-sm text-muted">
-          Unlock Full Scan to send opportunities to Zapier, Make, n8n, HubSpot workflows, Airtable, or your CRM.
+          Unlock the full report to send buyer and partner opportunities to Zapier, Make, n8n,
+          HubSpot workflows, Airtable, or your CRM.
         </p>
       ) : null}
     </section>
@@ -687,7 +689,7 @@ function OpportunitySignalCard({
           <LockedBadge />
         )}
         <a href={`/opportunities/${signal.id}?scanId=${scanId}`} className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink">
-          Open detail
+          View action path
         </a>
       </div>
     </article>
@@ -707,12 +709,13 @@ function LockedOpportunityCard({ signal, profile }: { signal: StoredOpportunityS
       </div>
       <h3 className="mt-4 text-lg font-semibold text-ink">Additional workflow-ready opportunity</h3>
       <p className="mt-3 text-sm leading-6 text-slate-600">
-        Unlock the full report to see the target, source link, contact strategy, CRM note, outreach angle, and workflow payload.
+        Unlock the full report to see the buyer or partner target, source link, contact path,
+        CRM-ready note, outreach angle, and workflow-ready payload.
       </p>
       <div className="mt-4 grid gap-2 text-sm text-muted sm:grid-cols-3">
-        <p>{classificationLabel(classification.buyer_partner_type)} locked</p>
+        <p>{classificationLabel(classification.buyer_partner_type)} in full report</p>
         <p>{classification.source_status}</p>
-        <p>{classificationLabel(classification.contact_strategy)} locked</p>
+        <p>{classificationLabel(classification.contact_strategy)} in full report</p>
       </div>
       <a href="?unlock=placeholder" className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
         Unlock Full Pipeline
@@ -723,7 +726,7 @@ function LockedOpportunityCard({ signal, profile }: { signal: StoredOpportunityS
 
 function UnlockCTA() {
   const items = [
-    "all prioritized public-sector signals",
+    "all prioritized opportunities",
     "buyer/partner targets",
     "source-backed evidence",
     "contact paths",
@@ -738,8 +741,9 @@ function UnlockCTA() {
         <div>
           <h2 className="text-2xl font-semibold text-ink">Unlock the full opportunity pipeline</h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-900">
-            Get all prioritized public-sector signals, buyer/partner targets, source-backed
-            evidence, contact paths, CRM-ready notes, outreach angles, and workflow-ready payloads.
+            Get the full workflow-ready pipeline: prioritized opportunities, buyer and partner
+            targets, source-backed evidence, contact paths, CRM-ready notes, outreach angles, and
+            workflow-ready payloads.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {items.map((item) => (
@@ -796,13 +800,13 @@ function ActionPlan({ signals }: { signals: StoredOpportunitySignal[] }) {
       <h2 className="text-lg font-semibold text-ink">Recommended Action Plan</h2>
       <ol className="mt-4 grid gap-3 text-sm leading-6 text-slate-700">
         <li className="rounded-md border border-line bg-field p-4">
-          <span className="font-semibold text-ink">1. Prioritize the highest actionability rows.</span> Start with signals that have a clear buyer, source evidence, and near-term timing.
+          <span className="font-semibold text-ink">1. Prioritize the highest actionability rows.</span> Start with opportunities that have a clear buyer, source evidence, and near-term timing.
         </li>
         <li className="rounded-md border border-line bg-field p-4">
           <span className="font-semibold text-ink">2. Validate contact paths.</span> Use source-native contacts first, then enrich program, procurement, vendor relations, or partnership roles.
         </li>
         <li className="rounded-md border border-line bg-field p-4">
-          <span className="font-semibold text-ink">3. Push selected opportunities to workflow.</span> Create CRM deals, account research tasks, or outreach queues from the structured row payload.
+          <span className="font-semibold text-ink">3. Push selected opportunities to workflow.</span> Create CRM deals, account research tasks, or outreach queues from the workflow-ready row.
         </li>
       </ol>
       {topSignals.length > 0 ? (
@@ -872,7 +876,7 @@ function PursuitPlan({
         <div>
           <h2 className="text-lg font-semibold text-ink">Pursuit Plan</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-            The full report groups opportunity signals by the likely next move, so the pipeline is
+            The full report groups opportunities by the likely next move, so the pipeline is
             easier to assign, research, and push into workflow.
           </p>
         </div>
@@ -900,7 +904,7 @@ function PursuitPlan({
                 })}
               </div>
             ) : (
-              <p className="mt-3 text-sm leading-6 text-muted">No visible opportunities in this action path.</p>
+              <p className="mt-3 text-sm leading-6 text-muted">No shown opportunities in this action path.</p>
             )}
           </div>
         ))}
@@ -941,18 +945,19 @@ function ScreeningSummary({
         <div>
           <h2 className="text-lg font-semibold text-ink">Opportunity Screening</h2>
           <p className="mt-2 text-sm leading-6 text-muted">
-            The scan found source matches first, then screened them for current timing, buyer clarity, and revenue fit before adding them to the table.
+            The scan starts with public-source matches, then promotes the rows with the clearest
+            timing, buyer clarity, and revenue fit into the action table.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Badge tone="blue">{allSignals.length} source matches</Badge>
+          <Badge tone="blue">{allSignals.length} source-backed matches</Badge>
           <Badge tone="green">{reportSignals.length} table rows</Badge>
-          <Badge tone="amber">{screenedOut.length} screened out</Badge>
+          <Badge tone="amber">{screenedOut.length} lower-priority matches</Badge>
         </div>
       </div>
       {screenedOut.length > 0 ? (
         <details className="mt-4 rounded-md border border-line bg-field p-4">
-          <summary className="cursor-pointer text-sm font-semibold text-ink">Why the other matches were not shown</summary>
+          <summary className="cursor-pointer text-sm font-semibold text-ink">Why some matches were lower priority</summary>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {Object.entries(buckets).map(([path, bucket]) => (
               <div key={path} className="rounded-md border border-line bg-white p-4">
@@ -998,11 +1003,11 @@ function SourcesScanned({ profile, signals }: { profile?: CompanyProfile; signal
         ))}
       </div>
       <details className="mt-4 rounded-md border border-line bg-field p-4">
-        <summary className="cursor-pointer text-sm font-semibold text-ink">Research details</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-ink">Source coverage</summary>
         <div className="mt-4 grid gap-3 text-sm leading-6 text-slate-700 md:grid-cols-3">
-          <p><span className="font-semibold text-ink">Sources activated:</span> {(profile?.activated_source_categories ?? []).join(", ") || "General source routing"}</p>
-          <p><span className="font-semibold text-ink">Connected sources used:</span> {Object.keys(sourceCounts).join(", ") || "No source results saved"}</p>
-          <p><span className="font-semibold text-ink">Result count:</span> {signals.length} external signal(s)</p>
+          <p><span className="font-semibold text-ink">Public-source focus:</span> {(profile?.activated_source_categories ?? []).join(", ") || "General public-sector coverage"}</p>
+          <p><span className="font-semibold text-ink">Sources with evidence:</span> {Object.keys(sourceCounts).join(", ") || "No source-backed rows available yet"}</p>
+          <p><span className="font-semibold text-ink">Opportunity rows reviewed:</span> {signals.length}</p>
         </div>
       </details>
     </section>
@@ -1075,7 +1080,8 @@ export default async function ReportPage({
 
         {searchParams?.unlock === "placeholder" ? (
           <section className="rounded-lg border border-blue-200 bg-blue-50 p-5 text-sm leading-6 text-blue-900">
-            Payment is not connected yet. This placeholder represents the $99 unlock flow and full-report state.
+            Full-report checkout is not live yet. This preview shows the $99 unlock path for testing
+            the paid report experience.
           </section>
         ) : null}
 
@@ -1104,8 +1110,8 @@ export default async function ReportPage({
 
             <section className="grid gap-4">
               <div>
-                <h2 className="text-lg font-semibold text-ink">Visible Opportunity Signals</h2>
-                <p className="mt-2 text-sm text-muted">Concise signal cards for fast review before opening row details.</p>
+                <h2 className="text-lg font-semibold text-ink">Pipeline Preview Rows</h2>
+                <p className="mt-2 text-sm text-muted">Concise opportunity cards for fast review before opening the full action path.</p>
               </div>
               <div className="grid gap-4">
                 {displayedSignals.map((signal) => (
@@ -1117,11 +1123,12 @@ export default async function ReportPage({
         ) : (
           <section className="rounded-lg border border-amber-200 bg-amber-50 p-5">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-amber-800">
-              No strong external signals yet
+              No workflow-ready opportunities yet
             </h2>
             <p className="mt-3 text-sm leading-6 text-amber-900">
-              No strong external opportunity signals were found in the scanned sources. Recommended next step:
-              broaden company context, add active connector credentials, or run human analyst review.
+              No strong source-backed opportunities were found in the scanned public sources.
+              Recommended next step: broaden the company context, add more source coverage, or
+              request analyst review.
             </p>
           </section>
         )}
@@ -1129,8 +1136,8 @@ export default async function ReportPage({
         {!isPaid && lockedSignals.length > 0 ? (
           <section className="grid gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-ink">Locked Opportunity Teasers</h2>
-              <p className="mt-2 text-sm text-muted">{lockedSignals.length} additional signal(s) are available in the full scan.</p>
+              <h2 className="text-lg font-semibold text-ink">Full Pipeline Preview</h2>
+              <p className="mt-2 text-sm text-muted">{lockedSignals.length} additional opportunity row(s) are available in the full report.</p>
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               {lockedSignals.slice(0, 4).map((signal) => (
@@ -1150,7 +1157,7 @@ export default async function ReportPage({
             <section className="rounded-lg border border-line bg-white p-5">
               <h2 className="text-lg font-semibold text-ink">Workflow Actions</h2>
               <p className="mt-2 text-sm leading-6 text-muted">
-                Use each table row to send a workflow-ready opportunity payload to your webhook.
+                Use each table row to send a workflow-ready opportunity to your webhook.
                 PDF/export is available from the report header.
               </p>
             </section>

@@ -11,18 +11,19 @@ Move Opportunity Scanner closer to a usable MVP/beta by stabilizing the opportun
 - Agent operating system is defined in `AGENTS.md` and `.agents/`.
 - TypeScript check passes when using the Codex runtime Node binary.
 - Report quality evaluator runs successfully.
-- Latest regression QA result: 3 medium issues, 0 high-priority issues.
+- Latest regression QA result: 0 issues, 0 high-priority issues.
 - Jammcard latest scan: pass, 0 issues.
 - Reparel golden scan: pass, 0 issues.
-- SchoolGig latest scan: 3 medium issues remain.
+- SchoolGig latest scan: pass, 0 issues after screening broad cultural/public-arts and literacy weak fits.
 - Initial Git checkpoint exists: `3c07848`.
 - Normalized opportunity action contract has been added in code and is pending fresh-scan verification.
+- Workflow webhook beta guardrails now require HTTPS destinations, workflow-ready payloads, allowlisted payload fields, and clear validation/delivery failure responses.
 
 ## Primary Blockers
 
-1. SchoolGig still surfaces a few weak-fit education/arts-adjacent signals.
+1. Fresh domain scan verification still needs to confirm SchoolGig weak-fit screening on newly generated data.
 2. Free/full report access is still placeholder-level and not production-safe.
-3. Workflow webhook works, but needs beta guardrails before real users.
+3. Workflow webhook guardrails are implemented, but still need a live safe-webhook smoke test before real beta users.
 4. Normalized opportunity action fields need fresh-scan verification.
 
 ## Included Tasks
@@ -62,7 +63,7 @@ Owner: Back-End Agent with Product Strategy & Product Marketing Agent
 
 Priority: P0
 
-Status: Not Started
+Status: In Review
 
 Problem: SchoolGig still shows three medium weak-fit signals, including broad cultural/public-arts and a literacy grant that may not clearly map to staffing/recruiting action.
 
@@ -77,6 +78,11 @@ Acceptance Criteria:
 - SchoolGig report keeps education workforce, teacher staffing, school arts staffing, and relevant district/vendor lanes.
 - Broad cultural/live-event records do not surface as move-forward SchoolGig opportunities unless the staffing/recruiting path is clear.
 - Evaluator shows no high-priority issues and ideally no avoidable SchoolGig medium issues.
+
+Current Result:
+
+- Latest local evaluator run shows SchoolGig at 18 visible signals, 0 medium issues, and 0 high-priority issues.
+- Jammcard and Reparel remain at 0 issues.
 
 Testing / Verification:
 
@@ -115,7 +121,7 @@ Owner: Back-End Agent
 
 Priority: P1
 
-Status: Not Started
+Status: In Review
 
 Problem: Webhook send exists, but before beta it should avoid unsafe or confusing behavior.
 
@@ -134,6 +140,12 @@ Acceptance Criteria:
 Testing / Verification:
 
 - Send a test opportunity to a safe test webhook or mock endpoint.
+
+Current Result:
+
+- API now rejects non-HTTPS webhook URLs, embedded URL credentials, missing workflow fields, non-workflow-ready rows, and oversized payloads.
+- API sends only the allowed workflow payload fields and excludes raw/debug source JSON.
+- Live webhook smoke test remains pending.
 
 ### Task 5: Create Git Checkpoint
 
