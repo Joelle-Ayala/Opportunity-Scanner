@@ -1000,6 +1000,584 @@ Best,
       "Clay contacts were used for vendor, nonprofit, city arts, and parks/procurement role discovery. Grants.gov contacts are source-native program contacts. Snov.io contacts are domain-email candidates and should be verified before outreach. USAspending.gov records show public money flow and buyer/partner evidence; they are not automatically open solicitations."
   },
   {
+    slug: "schoolgig",
+    company: "SchoolGig",
+    date: "July 6, 2026",
+    primaryMotion: "Education Workforce",
+    sources: ["USAspending.gov", "Clay", "Grants.gov", "Source-native contacts"],
+    summary:
+      "SchoolGig's strongest public-sector path is educator workforce, teacher recruitment and retention, grow-your-own pipelines, teaching-artist staffing, and education HR/recruiting infrastructure. The best opportunities are not generic education grants. They are funded programs and incumbent vendors that already touch school staffing, educator pipelines, apprenticeships, arts education delivery, or hiring infrastructure.",
+    digest: [
+      {
+        label: "Best first move",
+        title: "Educator workforce sprint",
+        body: "Start with Alaska Council of School Administrators and NYSUT because both awards explicitly fund teacher recruitment, retention, apprenticeship, and district/BOCES participation."
+      },
+      {
+        label: "Secondary lane",
+        title: "Arts education staffing",
+        body: "Use Kennedy Center and MOAD as teaching-artist and arts education partner lanes where SchoolGig can support instructor, teaching artist, and enrichment staffing."
+      },
+      {
+        label: "Contact status",
+        title: "Named roles plus source contacts",
+        body: "Clay found named contacts for NYSUT, Kennedy Center, Westat, YRCI, and LADGOV. Some direct emails were not returned, so use LinkedIn/manual routing or official org contact paths where needed."
+      }
+    ],
+    firstMoves: [
+      "Today: build outreach queues for educator workforce, grow-your-own/apprenticeship, arts education staffing, and HR/recruiting tech vendors.",
+      "Start with Alaska Council of School Administrators and NYSUT because they have the cleanest SchoolGig fit and clear public funding tied to educator workforce.",
+      "Use Kennedy Center and MOAD as arts education/teaching-artist staffing lanes, not generic arts outreach.",
+      "Use LADGOV as the first sendable vendor/channel test because named contacts and email candidates are already available.",
+      "Use YRCI, Westat, Trewon, and similar vendors as channel intelligence or partner targets; do not treat every federal HR vendor as a direct SchoolGig buyer."
+    ],
+    coverage: [
+      "Local scan coverage: latest SchoolGig scan from June 30, 2026 includes 21 opportunity records; the evaluator reports 18 visible clean signals after weak-fit screening.",
+      "Curated coverage: 8 priority opportunity rows are included here because they map most directly to SchoolGig's education workforce, district staffing, teaching-artist, and HR/recruiting workflows.",
+      "Kennedy Center was moved into this SchoolGig package because it is an arts education and teaching-artist staffing signal, not a Jammcard event/vendor signal.",
+      "Broad cultural, healthcare, transit, or generic workforce records were downgraded unless the source explicitly connected to educator hiring, school staffing, arts education, teacher shortage, or HR/recruiting infrastructure.",
+      "Live enrichment on July 6, 2026 used Clay for named contacts on NYSUT, Kennedy Center, Westat, YRCI, and LADGOV. Direct emails were not returned for several public-sector or nonprofit contacts, so the package preserves named role paths instead of inventing emails."
+    ],
+    contacts: [
+      {
+        organization: "Alaska Council of School Administrators / rural educator recruitment",
+        contact: "Executive Director; educator workforce program lead; district HR/recruitment directors across the seven partner districts",
+        entries: [
+          "Executive Director / superintendent association leadership | Email: research needed",
+          "Educator workforce program lead | Email: research needed",
+          "District HR or recruitment directors for the seven partner districts | Email: research needed"
+        ],
+        type: "Source-backed role path",
+        recommendedUse: "Resolve ACSA project owner and partner district HR leads before sending. Use recruitment/retention and rural educator pipeline language.",
+        source: "USAspending.gov + Opportunity Scanner contact logic"
+      },
+      {
+        organization: "NYSUT Education and Learning Trust",
+        contact: "Clay named contacts: Tyrone Hendrix, Executive Director; Peter Applebee, Director of Policy and Program Development; Amy Rudat, Deputy Director, Research and Educational Services; Carrie Andrews, Director of Constituency Programs and Services; Dana Osta, Program Services",
+        entries: [
+          "Tyrone Hendrix, Executive Director | LinkedIn: https://www.linkedin.com/in/tyronehendrix/ | Email: not found by Clay",
+          "Peter Applebee, Director of Policy and Program Development | LinkedIn: https://www.linkedin.com/in/peter-applebee-8056873/ | Email: not found by Clay",
+          "Amy Rudat, Deputy Director, Research and Educational Services | LinkedIn: https://www.linkedin.com/in/amyrudat/ | Email: not found by Clay",
+          "Carrie Andrews, Director of Constituency Programs and Services | LinkedIn: https://www.linkedin.com/in/carrie-andrews-2bbab360/ | Email: not found by Clay",
+          "Dana Osta, Program Services | LinkedIn: https://www.linkedin.com/in/dana-osta-572255a0/ | Email: not found by Clay"
+        ],
+        type: "Clay named role contacts",
+        recommendedUse: "Use named roles for manual routing and LinkedIn/email research. Lead with educator apprenticeship, employer incentives, BOCES/district participation, and candidate pipeline support.",
+        source: "Clay + USAspending.gov"
+      },
+      {
+        organization: "John F. Kennedy Center for the Performing Arts",
+        contact: "Clay named contacts: Jordan LaSalle, Vice President of Education; Darrell Ayers, Vice President, Education and Jazz; Ashi Day, Manager, Music & Washington National Opera Education; Debi Segal, Assistant Manager, Special Education. Backup Snov candidates from prior pull: info@kennedy-center.org; sarah@kennedy-center.org; msholt@kennedy-center.org",
+        entries: [
+          "Jordan LaSalle, Vice President of Education | LinkedIn: https://www.linkedin.com/in/jordan-lasalle-b987665/ | Email: pending/not returned by Clay",
+          "Darrell Ayers, Vice President, Education and Jazz | LinkedIn: https://www.linkedin.com/in/darrell-ayers-b493952/ | Email: pending/not returned by Clay",
+          "Ashi Day, Manager, Music & Washington National Opera Education | LinkedIn: https://www.linkedin.com/in/ashiday/ | Email: pending/not returned by Clay",
+          "Debi Segal, Assistant Manager, Special Education | LinkedIn: https://www.linkedin.com/in/debi-segal-50bab441/ | Email: pending/not returned by Clay",
+          "info@kennedy-center.org | Snov-generated domain candidate",
+          "sarah@kennedy-center.org | Snov-generated domain candidate",
+          "msholt@kennedy-center.org | Snov-generated domain candidate"
+        ],
+        type: "Clay named contacts + Snov backup candidates",
+        recommendedUse: "Use for arts education and teaching-artist staffing routing. Do not frame as live-event booking.",
+        source: "Clay + Snov.io + USAspending.gov"
+      },
+      {
+        organization: "Museum of the African Diaspora / Bay Area Title I arts education",
+        contact: "Education Director; school partnerships lead; teaching artist coordinator; teacher professional development manager",
+        entries: [
+          "Education Director / school partnerships lead | Email: research needed",
+          "Teaching artist coordinator | Email: research needed",
+          "Teacher professional development manager | Email: research needed"
+        ],
+        type: "Source-backed role path",
+        recommendedUse: "Use as a teaching-artist and standards-aligned arts education staffing lane. Resolve the education program owner before sending.",
+        source: "USAspending.gov + Opportunity Scanner contact logic"
+      },
+      {
+        organization: "Westat / education research and staffing data vendor lane",
+        contact: "Clay named contacts: Justin Baer, Vice President and Practice Director for Education and Social Policy; Amy Lally, Senior Business Development Specialist; Aliya Pilchen, Principal Research Associate, Education Studies; Shaliza Buckredan, Senior Talent Acquisition Specialist; Peter Morrison, Business Development Manager",
+        entries: [
+          "Justin Baer, Vice President and Practice Director for Education and Social Policy | LinkedIn: https://www.linkedin.com/in/justin-baer-193270109/ | Email: pending/not returned by Clay",
+          "Amy Lally, Senior Business Development Specialist | LinkedIn: https://www.linkedin.com/in/amyklally/ | Email: pending/not returned by Clay",
+          "Aliya Pilchen, Principal Research Associate, Education Studies | LinkedIn: https://www.linkedin.com/in/aliya-pilchen-736ab152/ | Email: pending/not returned by Clay",
+          "Shaliza Buckredan, Senior Talent Acquisition Specialist | LinkedIn: https://www.linkedin.com/in/shaliza-buckredan-4437aa6/ | Email: pending/not returned by Clay",
+          "Peter Morrison, Business Development Manager | LinkedIn: https://www.linkedin.com/in/peter-morrison-a0a37354/ | Email: pending/not returned by Clay"
+        ],
+        type: "Clay named role contacts",
+        recommendedUse: "Use for partner/channel research around education data, teacher workforce research, and government education services.",
+        source: "Clay + USAspending.gov"
+      },
+      {
+        organization: "YRCI / government talent acquisition vendor lane",
+        contact: "Clay named contacts: Colin Waitt, Director of Business Development; Max Wyche, Director, Human Capital Business Development & Client Engagement; George Carelock, Program Manager; Sonia K., Senior HR Staffing Specialist; Eric Hoyt, Senior Staffing Specialist",
+        entries: [
+          "Colin Waitt, Director of Business Development | LinkedIn: https://www.linkedin.com/in/colin-waitt-87aa3817b/ | Email: pending/not returned by Clay",
+          "Max Wyche, Director, Human Capital Business Development & Client Engagement | LinkedIn: https://www.linkedin.com/in/max-wyche-1aaa6b69/ | Email: pending/not returned by Clay",
+          "George Carelock, Program Manager | LinkedIn: https://www.linkedin.com/in/george-carelock-50692a148/ | Email: pending/not returned by Clay",
+          "Sonia K., Senior Human Resources Specialist (Staffing) | LinkedIn: https://www.linkedin.com/in/sonia-mk/ | Email: pending/not returned by Clay",
+          "Eric Hoyt, Senior Staffing Specialist | LinkedIn: https://www.linkedin.com/in/ephoyt95/ | Email: pending/not returned by Clay"
+        ],
+        type: "Clay named role contacts",
+        recommendedUse: "Use as a channel/vendor research target for talent acquisition services. Do not lead with K-12 unless education-specific fit is confirmed.",
+        source: "Clay + USAspending.gov"
+      },
+      {
+        organization: "LADGOV Corp / teaching artist vendor signal",
+        contact: "Chris Bradley, Business Development Specialist, cbradley@ladgov.com; Ouidad Mandour, ouidad.mandour@ladgov.com",
+        entries: [
+          "Chris Bradley, Business Development Specialist | cbradley@ladgov.com | LinkedIn: https://www.linkedin.com/in/chris-bradley-5a71aa237/",
+          "Ouidad Mandour | ouidad.mandour@ladgov.com | Snov backup candidate"
+        ],
+        type: "Clay-identified contact + Snov email candidates",
+        recommendedUse: "Useful adjacent vendor/channel target for teaching-artist style staffing. Verify whether LADGOV handles education, tutor, or arts-instruction contracts.",
+        source: "Clay + Snov.io + USAspending.gov"
+      },
+      {
+        organization: "Grants.gov source-native education contacts",
+        contact: "Holly Clark / OESE.ComprehensiveCenters@ed.gov / 202-245-6408; reshone.moore@ed.gov; ben.witthoefft@ed.gov / 202-795-7407",
+        entries: [
+          "Holly Clark, Management and Program Analyst | OESE.ComprehensiveCenters@ed.gov | 202-245-6408",
+          "Reshone Moore | reshone.moore@ed.gov | Talent Search source-native contact",
+          "Ben Witthoefft | ben.witthoefft@ed.gov | Talent Search source-native contact | 202-795-7407"
+        ],
+        type: "Source-native program contacts",
+        recommendedUse: "Use only for eligibility, program, or routing questions. Do not send sales pitches to Grants.gov program contacts.",
+        source: "Grants.gov connector"
+      }
+    ],
+    contactProof: [
+      "Clay found named contacts for NYSUT, Kennedy Center, Westat, YRCI, and LADGOV, but several direct emails were not returned. Use those as named routing targets, LinkedIn/manual research tasks, official contact-path inputs, or verified email sends where available.",
+      "Existing LADGOV contacts from the Jammcard enrichment pass are available for the teaching-artist vendor lane: Chris Bradley at cbradley@ladgov.com and Ouidad Mandour at ouidad.mandour@ladgov.com.",
+      "Source-native Grants.gov contacts are available for OESE Comprehensive Centers and Talent Search, but those should be used for eligibility or program questions only.",
+      "Alaska Council of School Administrators and MOAD are strong source-backed opportunities, but they need official contact resolution before automated outreach.",
+      "Recommended automation rule: classify every contact as confirmed email, candidate email, named person without email, or role path before sending."
+    ],
+    liveRefresh: [
+      "Latest local SchoolGig scan reviewed July 6, 2026: 21 source-backed records, with 8 priority rows selected for the paid-style package.",
+      "Clay enrichment run July 6, 2026 found named contacts for NYSUT, Kennedy Center, Westat, YRCI, and LADGOV. Alaska Council of School Administrators did not resolve through the tested domain, so it remains a source-backed role path.",
+      "The Kennedy Center National Arts Education signal was moved into SchoolGig because it is an arts education and teaching-artist staffing lane.",
+      "Weak-fit records were intentionally excluded or downgraded if they were generic cultural programming, healthcare, transit, or broad workforce records without a school staffing or educator pipeline angle."
+    ],
+    emailDrafts: [
+      {
+        useCase: "Educator workforce recipient / rural teacher recruitment",
+        subject: "Support for hard-to-fill educator roles",
+        body: `Hi [Name],
+
+I saw the public funding tied to educator recruitment and retention, and thought SchoolGig may be relevant as your team works with districts on hard-to-fill teacher and school staffing needs.
+
+SchoolGig is built around education hiring workflows, so the fit may be candidate sourcing, role visibility, district recruitment support, or helping funded partners reach educators for shortage-area roles.
+
+Would you be the right person to discuss educator workforce partnerships, or should I connect with someone on the program or district HR side?
+
+Best,
+[Sender]`
+      },
+      {
+        useCase: "Educator apprenticeship / grow-your-own pipeline",
+        subject: "Candidate pipeline support for educator apprenticeship programs",
+        body: `Hi [Name],
+
+I saw the educator workforce and apprenticeship funding connected to your work and wanted to ask whether SchoolGig could support district or BOCES partners with candidate pipeline visibility, recruitment workflows, or hard-to-fill education roles.
+
+SchoolGig may be useful where funded educator pathways need to connect aspiring educators, career changers, paraprofessionals, and school employers.
+
+Would it make sense to compare notes on where your program needs recruitment or employer-engagement support?
+
+Best,
+[Sender]`
+      },
+      {
+        useCase: "Arts education / teaching artist staffing",
+        subject: "Teaching artist and education staffing support",
+        body: `Hi [Name],
+
+I saw public funding tied to arts education, teaching artists, teacher professional development, and school-facing programming.
+
+SchoolGig may be useful where programs need to find, organize, or route qualified educators, teaching artists, and enrichment staff into school or district-facing opportunities.
+
+Who owns educator, teaching artist, or school partnership staffing for this program?
+
+Best,
+[Sender]`
+      },
+      {
+        useCase: "HR/recruiting technology vendor or channel partner",
+        subject: "Education hiring workflow partnership",
+        body: `Hi [Name],
+
+I saw public-sector talent acquisition or education workforce work tied to your organization and wanted to ask whether there may be a partner fit with SchoolGig.
+
+SchoolGig focuses on education hiring workflows and could be useful where a program or client needs school-specific candidate sourcing, role distribution, or educator pipeline support.
+
+Would you be the right person for partnership or business development conversations around education workforce needs?
+
+Best,
+[Sender]`
+      }
+    ],
+    outreachRules: [
+      "Use the CSV or JSON as the upload source for a SchoolGig outreach AI instance.",
+      "Prioritize educator workforce and school staffing lanes before broad HR/recruiting technology or generic education grants.",
+      "Do not send sales emails to Grants.gov program contacts. Use source-native program contacts only for eligibility, program, or routing questions.",
+      "For Clay contacts without emails, create a manual research or LinkedIn-routing task instead of inventing an email.",
+      "Treat YRCI, Westat, Trewon, and similar vendors as channel or market-map targets unless a direct SchoolGig education hiring fit is confirmed.",
+      "Log source URL, award amount, revenue motion, contact type, sendability, email sent, reply, follow-up date, and next action in CRM."
+    ],
+    outreachTargets: [
+      {
+        priority: 1,
+        organization: "Alaska Council of School Administrators / rural educator recruitment",
+        context: "$6,840,910 Department of Education award for Raising the Bar for Rural Alaskan Educators, a seven-district partnership to improve teacher recruitment and retention.",
+        contactInfo: "Resolve ACSA executive director, educator workforce program lead, and district HR/recruitment directors across the seven partner districts.",
+        contactType: "Source-backed role path",
+        sendability: "Research named owner first, then send.",
+        owner: "Executive Director, educator workforce lead, district HR/recruitment director",
+        sourceUrl: "https://www.usaspending.gov/award/S374A230034",
+        email: {
+          subject: "Support for rural educator recruitment",
+          body: `Hi [Name],
+
+I saw the Raising the Bar for Rural Alaskan Educators award and the focus on teacher recruitment and retention across partner districts.
+
+SchoolGig may be useful where districts need more visibility for hard-to-fill educator roles, candidate sourcing support, or a school-specific hiring workflow.
+
+Would you be the right person to discuss educator recruitment support, or should I connect with the program or district HR lead?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on whether SchoolGig could support rural teacher recruitment or district hiring visibility tied to this program.",
+          "Hi [Name] - if someone else owns educator workforce or district recruitment partnerships, I would appreciate the right contact."
+        ],
+        crmNote: "Highest-fit SchoolGig target. Award amount: $6,840,910. Needs named program owner and partner district HR routing."
+      },
+      {
+        priority: 2,
+        organization: "NYSUT Education and Learning Trust / educator apprenticeship",
+        context: "$5,657,497 Department of Labor award to re-engineer the educator workforce model, develop 75 registered apprenticeship programs, support pre-apprenticeships, and engage school districts/BOCES.",
+        contactInfo: "Clay named contacts: Tyrone Hendrix, Peter Applebee, Amy Rudat, Carrie Andrews, Dana Osta. Direct emails not found by Clay.",
+        contactType: "Clay named role contacts",
+        sendability: "Use LinkedIn/manual email research or official NYSUT routing before send.",
+        owner: "Program development, apprenticeship, educator workforce, employer engagement",
+        sourceUrl: "https://www.usaspending.gov/award/AP386392260A36",
+        email: {
+          subject: "Candidate pipeline support for educator apprenticeships",
+          body: `Hi [Name],
+
+I saw the educator workforce apprenticeship award and the focus on district/BOCES participation, registered apprenticeship pathways, and bringing more people into the profession.
+
+SchoolGig may be useful as a school-specific hiring and candidate pipeline layer for participating districts, apprentices, paraprofessionals, and career changers.
+
+Would it make sense to compare notes on where your program needs recruitment, candidate visibility, or employer-engagement support?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - checking back on whether SchoolGig could support candidate pipeline or district hiring workflows for educator apprenticeship partners.",
+          "Hi [Name] - if apprenticeship partnerships or employer engagement is owned by someone else, I would appreciate the referral."
+        ],
+        crmNote: "Very strong educator workforce/training lane. Award amount: $5,657,497. Direct email research needed."
+      },
+      {
+        priority: 3,
+        organization: "Kennedy Center National Arts Education Program",
+        context: "$32,000,000 Department of Education award for Kennedy Center National Arts Education Program through September 30, 2026.",
+        contactInfo: "Clay named contacts: Jordan LaSalle, Darrell Ayers, Ashi Day, Debi Segal. Backup Snov candidates: info@kennedy-center.org; sarah@kennedy-center.org; msholt@kennedy-center.org.",
+        contactType: "Clay named contacts + Snov backup candidates",
+        sendability: "Verify email before send; use arts education and teaching-artist staffing language.",
+        owner: "Vice President of Education, education program lead, teaching artist program lead",
+        sourceUrl: "https://www.usaspending.gov/award/S351A220007",
+        email: {
+          subject: "Teaching artist and education staffing support",
+          body: `Hi [Name],
+
+I saw the Kennedy Center National Arts Education Program award and wanted to ask whether SchoolGig could be useful around teaching artist, educator, or school partnership staffing.
+
+SchoolGig is focused on education hiring workflows and may help programs find or route qualified educators, teaching artists, and enrichment staff into school-facing opportunities.
+
+Would you be the right person to discuss education staffing or teaching artist partnership needs?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on whether SchoolGig could support teaching artist or school-facing education staffing needs.",
+          "Hi [Name] - if another team handles arts education partnerships or teaching artist routing, I would appreciate the right contact."
+        ],
+        crmNote: "Strong arts education/teaching artist lane. Award amount: $32,000,000. Keep out of generic event/live performance framing."
+      },
+      {
+        priority: 4,
+        organization: "Museum of the African Diaspora / Title I arts education",
+        context: "$500,000 IMLS award for Title I student visual literacy and arts programming, teaching artists, teacher advisory committee work, and teacher professional development.",
+        contactInfo: "Resolve Education Director, school partnerships lead, teaching artist coordinator, and teacher professional development manager.",
+        contactType: "Source-backed role path",
+        sendability: "Research named education/program owner first, then send.",
+        owner: "Education Director, school partnerships lead, teaching artist coordinator",
+        sourceUrl: "https://www.usaspending.gov/award/MH-253053-OMS-23",
+        email: {
+          subject: "Teaching artist staffing support for school programs",
+          body: `Hi [Name],
+
+I saw the public award supporting Title I student arts programming, teaching artists, teacher advisory work, and teacher professional development.
+
+SchoolGig may be useful where school-facing arts education programs need to find, organize, or route qualified educators and teaching artists.
+
+Would you be the right person to discuss educator or teaching artist staffing support?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on whether SchoolGig could support teaching artist or educator staffing for school-facing arts programs.",
+          "Hi [Name] - if education partnerships are owned by someone else, I would appreciate a pointer."
+        ],
+        crmNote: "Good California arts education proof and possible partner target. Award amount: $500,000."
+      },
+      {
+        priority: 5,
+        organization: "Trewon Technologies / Teacher Shortage Areas data signal",
+        context: "$989,054 Department of Education award for Teacher Shortage Areas reference tooling showing where states and schools are hiring administrators and licensed teachers.",
+        contactInfo: "Resolve product/program owner, education data lead, or Department of Education program/procurement contact.",
+        contactType: "Source-backed vendor/contact path",
+        sendability: "Research named owner first. Use as market-map and possible channel target.",
+        owner: "Education data lead, product/program owner, contracting officer",
+        sourceUrl: "https://www.usaspending.gov/award/91990022F0380",
+        email: {
+          subject: "Teacher shortage data and school hiring workflows",
+          body: `Hi [Name],
+
+I saw the Teacher Shortage Areas work and thought there may be overlap with SchoolGig's education hiring workflow.
+
+SchoolGig could potentially complement teacher shortage data by helping districts distribute hard-to-fill roles, reach candidates, or manage school-specific hiring signals.
+
+Would you be the right person to discuss education workforce data and hiring workflow partnerships?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - checking back on whether SchoolGig could be relevant to teacher shortage and district hiring workflows.",
+          "Hi [Name] - if another person owns education data partnerships or product strategy, I would appreciate the referral."
+        ],
+        crmNote: "Market-map/vendor signal. Award amount: $989,054. Useful for product positioning and possible channel research."
+      },
+      {
+        priority: 6,
+        organization: "YRCI / government talent acquisition services",
+        context: "$15,919,221 GSA/OPM talent acquisition services award. This validates government demand for outsourced recruiting and talent acquisition infrastructure.",
+        contactInfo: "Clay named contacts: Colin Waitt, Max Wyche, George Carelock, Sonia K., Eric Hoyt. Emails pending/not returned by Clay.",
+        contactType: "Clay named role contacts",
+        sendability: "Research direct emails or use LinkedIn/manual routing before send. Treat as channel, not direct K-12 buyer.",
+        owner: "Business development, human capital business development, staffing program manager",
+        sourceUrl: "https://www.usaspending.gov/award/47QFMA20F0013",
+        email: {
+          subject: "Education hiring workflow partnership",
+          body: `Hi [Name],
+
+I saw YRCI's public-sector talent acquisition work and wanted to ask whether there may be a partner fit with SchoolGig around education hiring workflows.
+
+SchoolGig focuses specifically on education roles and school hiring needs, which could be useful where public-sector or education-adjacent clients need role distribution, candidate sourcing, or educator pipeline support.
+
+Would you be the right person for partnership or business development conversations around education workforce needs?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on whether there may be a fit between YRCI's talent acquisition work and SchoolGig's education hiring workflow.",
+          "Hi [Name] - if another BD or human capital lead owns partner discussions, I would appreciate the right contact."
+        ],
+        crmNote: "Channel/vendor target. Award amount: $15,919,221. Confirm education-specific fit before spending too much time."
+      },
+      {
+        priority: 7,
+        organization: "Westat / education workforce research and services",
+        context: "$9,954,119 Department of Education award involving Schools and Staffing Survey, Teacher Follow-up Survey, principal follow-up, beginning teacher longitudinal work, teacher quality, school staffing, and teacher/principal attrition.",
+        contactInfo: "Clay named contacts: Justin Baer, Amy Lally, Aliya Pilchen, Shaliza Buckredan, Peter Morrison. Emails pending/not returned by Clay.",
+        contactType: "Clay named role contacts",
+        sendability: "Research direct emails or use LinkedIn/manual routing before send. Treat as research/channel, not first sales target.",
+        owner: "Education and social policy lead, business development, talent acquisition",
+        sourceUrl: "https://www.usaspending.gov/award/0001",
+        email: {
+          subject: "Education staffing data and hiring workflow fit",
+          body: `Hi [Name],
+
+I saw Westat's education workforce and school staffing data work and wanted to ask whether SchoolGig could be relevant as an education hiring workflow partner.
+
+SchoolGig focuses on school-specific hiring and candidate routing, which may complement projects involving teacher shortage, school staffing, or educator pipeline research.
+
+Would it make sense to compare notes on education workforce data and implementation needs?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on whether SchoolGig could be relevant to education workforce or school staffing projects.",
+          "Hi [Name] - if another education practice or business development lead owns this, I would appreciate the referral."
+        ],
+        crmNote: "Research/channel target. Award amount: $9,954,119. Useful proof for school staffing data market demand."
+      },
+      {
+        priority: 8,
+        organization: "LADGOV Corp / teaching artist and tutor vendor channel",
+        context: "$29,346 public award for musician/tutor-style services at the U.S. Merchant Marine Academy band. This is smaller than the workforce awards, but it is more sendable because contact paths are available.",
+        contactInfo: "Chris Bradley, Business Development Specialist, cbradley@ladgov.com; Ouidad Mandour, ouidad.mandour@ladgov.com.",
+        contactType: "Clay-identified contact + Snov email candidates",
+        sendability: "Verify emails before send. Use as a vendor/channel test, not as the top direct revenue opportunity.",
+        owner: "Business development, government contracts, education/tutor services owner",
+        sourceUrl: "https://www.usaspending.gov/award/6923G224P000179",
+        email: {
+          subject: "Education staffing support for public-sector service contracts",
+          body: `Hi [Name],
+
+I saw LADGOV's public-sector musician and tutor-style service work and wanted to ask whether SchoolGig could be a useful partner for education, arts instruction, or school-facing staffing needs.
+
+SchoolGig focuses on education hiring workflows and may be relevant when public-sector contracts need qualified instructors, teaching artists, tutors, or education support talent.
+
+Would it make sense to compare notes on whether SchoolGig could support any education or arts-instruction staffing lanes?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on whether SchoolGig could support education, tutor, or teaching-artist staffing for LADGOV contracts.",
+          "Hi [Name] - if another person owns education services or government-contract partnerships, I would appreciate the right contact."
+        ],
+        crmNote: "Most sendable vendor/channel test. Award amount: $29,346. Confirm LADGOV has education/tutor/teaching-artist contract needs before broader pursuit."
+      }
+    ],
+    signals: [
+      {
+        title: "Rural Alaska educator recruitment and retention",
+        why: "A $6.84M Department of Education award funds a seven-district partnership to improve teacher recruitment and retention in rural Alaska. This is the cleanest SchoolGig fit because the source explicitly names teacher recruitment and retention.",
+        whyShort: "$6.84M award explicitly tied to teacher recruitment and retention across seven districts.",
+        target: "Alaska Council of School Administrators and partner school districts",
+        source: "USAspending.gov",
+        sourceUrl: "https://www.usaspending.gov/award/S374A230034",
+        revenueMotion: "Partner with Recipient",
+        actionability: "High Actionability",
+        contactPath: "Executive Director, educator workforce lead, district HR/recruitment directors",
+        nextAction: "Resolve ACSA program owner and the seven partner district HR/recruitment leads, then pitch SchoolGig as a hard-to-fill educator role and candidate visibility partner.",
+        socialProof: "The award description says the partnership is designed to improve teacher recruitment and retention.",
+        outreach: "SchoolGig can support rural educator pipeline visibility, role distribution, and school-specific candidate sourcing."
+      },
+      {
+        title: "NYSUT educator apprenticeship and grow-your-own pipeline",
+        why: "A $5.66M Department of Labor award funds educator workforce re-engineering, registered apprenticeships, pre-apprenticeships, district/BOCES employer participation, and candidate pathways into teaching.",
+        whyShort: "$5.66M educator apprenticeship award involving districts, BOCES, apprenticeships, and candidate pipelines.",
+        target: "NYSUT Education and Learning Trust, districts, BOCES, apprenticeship sponsors",
+        source: "USAspending.gov + Clay",
+        sourceUrl: "https://www.usaspending.gov/award/AP386392260A36",
+        revenueMotion: "Partner with Recipient",
+        actionability: "High Actionability",
+        contactPath: "Workforce program director, apprenticeship lead, employer engagement lead, district/BOCES HR",
+        nextAction: "Use Clay named contacts to route toward the apprenticeship or employer engagement owner and position SchoolGig as candidate pipeline and district hiring workflow support.",
+        socialProof: "The award lists 75 registered apprenticeship programs, 35 expanded programs, 250+ stakeholders, and 1,725 RAP participants.",
+        outreach: "SchoolGig can help funded educator apprenticeship programs connect career changers, paraprofessionals, apprentices, and districts."
+      },
+      {
+        title: "Kennedy Center National Arts Education Program",
+        why: "A $32M Department of Education award supports national arts education programming through September 2026. For SchoolGig, this is a teaching-artist and arts education staffing lane.",
+        whyShort: "$32M national arts education award with teaching artist and school-program routing potential.",
+        target: "John F. Kennedy Center for the Performing Arts",
+        source: "USAspending.gov + Clay + Snov.io",
+        sourceUrl: "https://www.usaspending.gov/award/S351A220007",
+        revenueMotion: "Partner with Recipient",
+        actionability: "High Actionability",
+        contactPath: "Vice President of Education, education program lead, teaching artist program lead, regional implementation partners",
+        nextAction: "Start with Kennedy education leadership and ask who owns teaching artist staffing, regional implementation, or school partnership support.",
+        socialProof: "The award is active through September 30, 2026 and directly funds national arts education work.",
+        outreach: "SchoolGig can support programs that need qualified educators, teaching artists, enrichment staff, or school-facing talent routing."
+      },
+      {
+        title: "MOAD Title I arts education and teacher professional development",
+        why: "A $500K IMLS award funds Title I school arts programming, teaching artists, teacher advisory committee work, standards-aligned resources, and teacher professional development.",
+        whyShort: "$500K arts education award with teaching artists, teacher PD, and Title I school partnerships.",
+        target: "Museum of the African Diaspora, San Francisco Public Library partner route, Bay Area school partners",
+        source: "USAspending.gov",
+        sourceUrl: "https://www.usaspending.gov/award/MH-253053-OMS-23",
+        revenueMotion: "Partner with Recipient",
+        actionability: "Medium Actionability",
+        contactPath: "Education Director, school partnerships lead, teaching artist coordinator, teacher PD manager",
+        nextAction: "Resolve the MOAD education program owner and pitch SchoolGig around teaching artist and educator staffing support.",
+        socialProof: "The award explicitly mentions teaching artists, teacher advisory work, Title I students, teacher PD, and standards-aligned curricular resources.",
+        outreach: "SchoolGig can help arts education programs find and organize teaching artists and school-facing educators."
+      },
+      {
+        title: "Teacher Shortage Areas data and state hiring signals",
+        why: "A $989K Department of Education award funds Teacher Shortage Areas reference tooling showing where states and schools are hiring academic administrators and licensed teachers.",
+        whyShort: "$989K teacher shortage data award shows demand for state and district educator hiring intelligence.",
+        target: "Trewon Technologies, Department of Education program/procurement path, state education agencies",
+        source: "USAspending.gov",
+        sourceUrl: "https://www.usaspending.gov/award/91990022F0380",
+        revenueMotion: "Channel / Distributor Motion",
+        actionability: "Medium Actionability",
+        contactPath: "Education data lead, product/program owner, contracting officer, state education agency workforce lead",
+        nextAction: "Use this as market-map proof and research whether SchoolGig can connect shortage-area data to role distribution and candidate sourcing.",
+        socialProof: "The source description says the tool shows where states and schools are looking to hire administrators and licensed teachers.",
+        outreach: "SchoolGig can turn shortage-area intelligence into live hiring workflows and candidate-routing actions."
+      },
+      {
+        title: "YRCI public-sector talent acquisition services",
+        why: "A $15.9M GSA/OPM talent acquisition services award validates government demand for recruiting infrastructure and human capital support. This is not education-specific, but it is useful as a channel/vendor proof point.",
+        whyShort: "$15.9M talent acquisition services award validates outsourced recruiting infrastructure demand.",
+        target: "YRCI / federal HR and talent acquisition channel",
+        source: "USAspending.gov + Clay",
+        sourceUrl: "https://www.usaspending.gov/award/47QFMA20F0013",
+        revenueMotion: "Channel / Distributor Motion",
+        actionability: "Medium Actionability",
+        contactPath: "Business development, human capital BD, staffing program manager",
+        nextAction: "Use Clay named contacts for partner discovery, but qualify education-specific fit before deep pursuit.",
+        socialProof: "The award description references OPM HRS talent acquisition services.",
+        outreach: "SchoolGig can be positioned as an education-specific hiring workflow layer for broader talent acquisition vendors."
+      },
+      {
+        title: "Westat school staffing and teacher workforce research",
+        why: "A $9.95M Department of Education award covers schools and staffing surveys, teacher follow-up, principal follow-up, teacher quality, school staffing, teacher working conditions, and teacher/principal attrition.",
+        whyShort: "$9.95M Department of Education award validates demand for school staffing and teacher workforce intelligence.",
+        target: "Westat education/social policy practice",
+        source: "USAspending.gov + Clay",
+        sourceUrl: "https://www.usaspending.gov/award/0001",
+        revenueMotion: "Research Only",
+        actionability: "Medium Actionability",
+        contactPath: "Education/social policy lead, business development, research project lead, talent acquisition",
+        nextAction: "Use as market proof and possible research/channel partner; do not treat as the first direct sales target.",
+        socialProof: "The award description explicitly references Schools and Staffing Survey, Teacher Follow-up Survey, school staffing, and teacher/principal attrition.",
+        outreach: "SchoolGig can complement education workforce research with real hiring workflow and candidate movement."
+      },
+      {
+        title: "LADGOV teaching artist and tutor vendor channel",
+        why: "A $29K public award for musician/tutor-style services is smaller than the workforce awards, but it gives SchoolGig a practical vendor/channel test with named contacts already available.",
+        whyShort: "$29K award with sendable vendor/channel contacts for education, tutor, and teaching-artist fit testing.",
+        target: "LADGOV Corp / education, tutor, musician-services, and public-sector staffing lanes",
+        source: "USAspending.gov + Clay + Snov.io",
+        sourceUrl: "https://www.usaspending.gov/award/6923G224P000179",
+        revenueMotion: "Sell to Award Recipient",
+        actionability: "Medium Actionability",
+        contactPath: "Chris Bradley, business development; Ouidad Mandour email candidate; government contracts or education services owner",
+        nextAction: "Verify emails, then ask whether LADGOV pursues education, tutor, teaching-artist, or school-facing staffing contracts where SchoolGig could support talent supply.",
+        socialProof: "The award shows LADGOV already performs public-sector musician/tutor-style service work, and enrichment found named contact paths.",
+        outreach: "SchoolGig can be positioned as a partner for education, tutor, teaching artist, and school-facing staffing support."
+      }
+    ],
+    actionPlan: [
+      "Step 1: Upload the SchoolGig AI outreach package CSV or JSON to the outreach AI instance.",
+      "Step 2: Create separate queues for educator workforce, grow-your-own/apprenticeship, arts education/teaching artists, HR/recruiting tech vendors, and grant watchlist.",
+      "Step 3: Start with Alaska Council of School Administrators and NYSUT because they are the cleanest educator workforce opportunities.",
+      "Step 4: Use Kennedy Center and MOAD for arts education and teaching artist staffing outreach.",
+      "Step 5: Use LADGOV as a sendable vendor/channel test while deeper owner research continues for ACSA and MOAD.",
+      "Step 6: Use YRCI, Westat, and Trewon as channel/market-map targets and qualify before sending broad outreach.",
+      "Step 7: Treat Grants.gov contacts as program contacts only; build recipient/applicant target lists before sales outreach.",
+      "Step 8: Track source URL, award amount, contact status, email sent, reply, next action, and follow-up date in CRM."
+    ],
+    notes:
+      "SchoolGig report logic prioritizes educator workforce, school staffing, grow-your-own pipelines, district/BOCES participation, teaching artists, arts education staffing, and education HR/recruiting infrastructure. USAspending.gov records show public money flow and buyer/channel evidence; they are not automatically open solicitations. Clay contacts without direct emails should be handled as named routing targets, not send-ready contacts."
+  },
+  {
     slug: "reparel",
     company: "Reparel",
     date: "July 5, 2026",
