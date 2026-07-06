@@ -8,6 +8,9 @@ This folder contains two paid-style Opportunity Scanner reports prepared for cli
 
 - [Jammcard Opportunity Signal Report HTML](./jammcard-opportunity-signal-report.html)
 - [Jammcard Connector Contacts CSV](./jammcard-contacts.csv)
+- [Jammcard AI Outreach Package CSV](./jammcard-ai-outreach-package.csv)
+- [Jammcard AI Outreach Package JSON](./jammcard-ai-outreach-package.json)
+- [Jammcard AI Outreach Package Markdown](./jammcard-ai-outreach-package.md)
 - [Reparel Opportunity Signal Report HTML](./reparel-opportunity-signal-report.html)
 - [Reparel Connector Contacts CSV](./reparel-contacts.csv)
 
