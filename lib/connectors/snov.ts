@@ -11,8 +11,11 @@ type SnovDomainEmail = {
   email?: string;
   firstName?: string;
   lastName?: string;
+  first_name?: string;
+  last_name?: string;
   position?: string;
   sourcePage?: string;
+  source_page?: string;
   type?: string;
   status?: string;
 };
@@ -24,6 +27,17 @@ type SnovDomainResponse = {
   result?: number;
   lastId?: number;
   emails?: SnovDomainEmail[];
+  data?: SnovDomainEmail[];
+  status?: "completed" | "in progress" | string;
+};
+
+type SnovTaskStartResponse = {
+  links?: {
+    result?: string;
+  };
+  meta?: {
+    task_hash?: string;
+  };
 };
 
 export type ContactEnrichmentResult = {
@@ -69,6 +83,15 @@ async function getAccessToken(): Promise<string> {
   }
 
   return data.access_token;
+}
+
+async function readSnovJson<T>(url: string, init: RequestInit): Promise<T> {
+  const response = await fetch(url, init);
+  const text = await response.text();
+  if (!response.ok) {
+    throw new Error(`Snov request failed: HTTP ${response.status}: ${text.slice(0, 160)}`);
+  }
+  return JSON.parse(text) as T;
 }
 
 function cleanDomain(value: string): string {
@@ -137,12 +160,18 @@ function contactFitScore(contact: SnovDomainEmail, roles: string[]): number {
 
 function normalizeContact(contact: SnovDomainEmail, roles: string[]) {
   const score = contactFitScore(contact, roles);
-  const name = [contact.firstName, contact.lastName].filter(Boolean).join(" ").trim();
+  const name = [
+    contact.firstName ?? contact.first_name,
+    contact.lastName ?? contact.last_name
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
   return {
     name,
     title: contact.position ?? "",
     email: contact.email ?? "",
-    source_url: contact.sourcePage,
+    source_url: contact.sourcePage ?? contact.source_page,
     confidence: score >= 72 ? "high" as const : score >= 52 ? "medium" as const : "low" as const,
     rationale:
       score >= 52
@@ -152,18 +181,25 @@ function normalizeContact(contact: SnovDomainEmail, roles: string[]) {
 }
 
 async function findDomainEmails(domain: string, accessToken: string): Promise<SnovDomainResponse> {
-  const params = new URLSearchParams({
-    access_token: accessToken,
-    domain,
-    type: "all",
-    limit: "10"
-  });
-  const response = await fetch(`https://api.snov.io/v1/get-domain-emails-with-info?${params}`);
-  const text = await response.text();
-  if (!response.ok) {
-    throw new Error(`Snov domain lookup failed: HTTP ${response.status}: ${text.slice(0, 160)}`);
+  const headers = { Authorization: `Bearer ${accessToken}` };
+  const start = await readSnovJson<SnovTaskStartResponse>(
+    `https://api.snov.io/v2/domain-search/domain-emails/start?${new URLSearchParams({ domain })}`,
+    { method: "POST", headers }
+  );
+  const resultUrl = start.links?.result;
+  if (!resultUrl) {
+    return { emails: [] };
   }
-  return JSON.parse(text) as SnovDomainResponse;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const result = await readSnovJson<SnovDomainResponse>(resultUrl, { method: "GET", headers });
+    if (result.status !== "in progress") {
+      return result;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 700));
+  }
+
+  return { emails: [] };
 }
 
 export async function enrichContactsWithSnov(signal: StoredOpportunitySignal): Promise<ContactEnrichmentResult> {
@@ -196,10 +232,9 @@ export async function enrichContactsWithSnov(signal: StoredOpportunitySignal): P
   try {
     const accessToken = await getAccessToken();
     const data = await findDomainEmails(domain, accessToken);
-    const contacts = (data.emails ?? [])
+    const contacts = (data.emails ?? data.data ?? [])
       .filter((item) => item.email)
       .map((item) => normalizeContact(item, target.roles))
-      .filter((item) => item.confidence !== "low")
       .slice(0, 5);
 
     return {
@@ -210,8 +245,8 @@ export async function enrichContactsWithSnov(signal: StoredOpportunitySignal): P
       target_roles: target.roles,
       contacts,
       message: contacts.length
-        ? `Found ${contacts.length} role-aligned contact candidate(s) on ${domain}.`
-        : `Snov returned domain emails for ${domain}, but none were role-aligned enough to recommend without review.`
+        ? `Found ${contacts.length} domain email candidate(s) on ${domain}. Verify role fit before outreach.`
+        : `Snov returned no usable domain email candidates for ${domain}.`
     };
   } catch (error) {
     return {

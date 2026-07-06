@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reparel Opportunity Signal Report</title>
+  <style>
+    :root {
+      --ink: #152033;
+      --muted: #5c6678;
+      --line: #d9e1ec;
+      --field: #f6f8fb;
+      --accent: #2563eb;
+      --green: #0f7a4f;
+      --green-bg: #eaf7f0;
+      --blue-bg: #edf4ff;
+      --amber: #9a5b00;
+      --amber-bg: #fff7df;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f7f9fc;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 24px 56px; }
+    .hero {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px;
+    }
+    .brand { font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+    h1 { margin: 12px 0 10px; font-size: 38px; line-height: 1.08; }
+    h2 { margin: 0 0 14px; font-size: 22px; }
+    h3 { margin: 12px 0 8px; font-size: 18px; }
+    p { margin: 0; }
+    .muted { color: var(--muted); }
+    .summary { max-width: 820px; color: var(--muted); font-size: 16px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--field);
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .badge.green { background: var(--green-bg); border-color: #bce8d0; color: var(--green); }
+    .badge.blue { background: var(--blue-bg); border-color: #c7dcff; color: #1d4ed8; }
+    .badge.amber { background: var(--amber-bg); border-color: #f4dda0; color: var(--amber); }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+    .metric { border: 1px solid var(--line); background: var(--field); border-radius: 8px; padding: 14px; }
+    .metric .label { margin-bottom: 4px; }
+    .metric strong { font-size: 22px; }
+    .section { margin-top: 22px; }
+    .card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .grid { display: grid; gap: 14px; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 16px; }
+    .label { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    table { width: 100%; min-width: 980px; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { background: var(--field); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    td span { color: var(--muted); }
+    .signal-card + .signal-card { margin-top: 14px; }
+    .signal-top { display: flex; gap: 8px; flex-wrap: wrap; }
+    .note { margin-top: 14px; background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 12px; color: #334155; }
+    .callout { border-left: 4px solid var(--accent); }
+    .footer-note { color: var(--muted); font-size: 13px; }
+    @media (max-width: 760px) {
+      .wrap { padding: 18px 14px 40px; }
+      h1 { font-size: 30px; }
+      .metrics, .two { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; }
+      .wrap { max-width: none; padding: 0; }
+      .card, .hero, .table-wrap { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="brand">Opportunity Scanner | Paid Opportunity Signal Report</div>
+      <h1>Reparel Opportunity Signal Report</h1>
+      <p class="summary">Reparel has a clear public-sector money-flow pattern around rehabilitation supplies, physical therapy supplies, orthotic supplies, VA/healthcare purchasing, and DME-adjacent routes. The immediate opportunity is channel and procurement mapping, not a generic grant strategy.</p>
+      <div class="badges"><span class="badge">USAspending.gov</span><span class="badge">Snov.io</span><span class="badge">Opportunity Scanner contact logic</span></div>
+      <div class="metrics">
+        <div class="metric"><p class="label">Report date</p><strong>July 5, 2026</strong></div>
+        <div class="metric"><p class="label">Opportunity rows</p><strong>5</strong></div>
+        <div class="metric"><p class="label">Contact entries</p><strong>5</strong></div>
+        <div class="metric"><p class="label">Primary motion</p><strong>Channel / Buyer</strong></div>
+      </div>
+    </section>
+
+    <section class="section card callout">
+      <h2>What To Do First</h2>
+      <ol>
+        <li>Start with First Nations Distribution, Performance Health Supply, and National Environmental because they are tied to current or recent HHS rehab/medical supply buying.</li><li>Use Snov-generated contacts only where the domain is clear; verify role fit before outreach.</li><li>Lead with product-category fit: recovery sleeve, post-op support, brace/boot undersleeve, pain/swelling support, PT/rehab supply, and reimbursable DME-adjacent positioning.</li><li>Use VA and DOD records as market evidence, then identify the current buying office or distributor channel.</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2>Opportunity Action Table</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Signal</th><th>Target</th><th>Source</th><th>Revenue Motion</th><th>Contact Path</th><th>Next Best Action</th>
+            </tr>
+          </thead>
+          <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>HHS BPA for medical and rehabilitation supplies: First Nations Distribution</strong><br><span>HHS awarded First Nations Distribution $46,400 for a BPA covering miscellaneous medical and rehabilitation supplies through March 2027.</span></td>
+          <td>First Nations Distribution LLC / HHS buying office</td>
+          <td>USAspending.gov</td>
+          <td>Sell to Award Recipient / Channel Motion</td>
+          <td>Government contracts, medical supply category, clinical supply, procurement</td>
+          <td>Resolve the company domain/SAM entity and ask how products are added to public-sector BPA ordering catalogs.</td>
+        </tr>
+      
+        <tr>
+          <td>2</td>
+          <td><strong>HHS BPA for rehab supplies: Performance Health Supply</strong><br><span>HHS awarded Performance Health Supply $21,600 for miscellaneous medical and rehabilitation supplies through April 2027.</span></td>
+          <td>Performance Health Supply / Performance Health</td>
+          <td>USAspending.gov + Snov.io</td>
+          <td>Sell to Award Recipient / Channel Motion</td>
+          <td>Rehab supply category, DME/orthotics product, government sales, clinical supply buyer</td>
+          <td>Use Snov candidates to route toward supplier onboarding and rehab product-category fit.</td>
+        </tr>
+      
+        <tr>
+          <td>3</td>
+          <td><strong>HHS physical rehabilitation BPA: National Environmental</strong><br><span>HHS awarded National Environmental $20,000 for physical therapy supplies for direct patient care on an as-needed basis through September 2026.</span></td>
+          <td>National Environmental Inc. / HHS buying office</td>
+          <td>USAspending.gov</td>
+          <td>Sell to Award Recipient / Sell to Agency</td>
+          <td>Government contracts, PT supply buyer, rehab services, clinical supply</td>
+          <td>Verify whether the recipient is a relevant distributor; if not, use the record to identify the buying office.</td>
+        </tr>
+      
+        <tr>
+          <td>4</td>
+          <td><strong>VA physical therapy supplies: Apex Integrated Distribution</strong><br><span>VA purchase activity for physical therapy supplies validates a VA market lane for PT, prosthetics, orthotics, and recovery support supplies.</span></td>
+          <td>Department of Veterans Affairs / Apex Integrated Distribution</td>
+          <td>USAspending.gov</td>
+          <td>Sell to Agency / Channel Motion</td>
+          <td>VA prosthetics, PT supply buyer, procurement specialist</td>
+          <td>Map similar active VA supply routes and determine whether Reparel should pursue VA procurement or distributor onboarding.</td>
+        </tr>
+      
+        <tr>
+          <td>5</td>
+          <td><strong>DOD orthotic supplies: Footmaxx</strong><br><span>DOD awarded Footmaxx for orthotic supplies, showing military medical purchasing includes orthotic supply lanes adjacent to Reparel.</span></td>
+          <td>Footmaxx / DOD medical supply channel</td>
+          <td>USAspending.gov + Snov.io</td>
+          <td>Channel / Distributor Motion</td>
+          <td>Orthotics product manager, government contracts, DOD medical supply buyer</td>
+          <td>Use Footmaxx as channel intelligence while researching active DOD or military treatment facility supply vehicles.</td>
+        </tr>
+      </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Connector Contact Layer</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Organization</th><th>Contact</th><th>Contact Type</th><th>Recommended Use</th><th>Connector / Source</th></tr>
+          </thead>
+          <tbody>
+        <tr>
+          <td>Performance Health Supply / Performance Health</td>
+          <td>info@performancehealth.com; customersupport@performancehealth.com; blands@performancehealth.com</td>
+          <td>Snov-generated domain email candidates</td>
+          <td>Verify role and route to rehab supply category, government sales, DME/orthotics product, or supplier onboarding.</td>
+          <td>Snov.io v2 domain search</td>
+        </tr>
+      
+        <tr>
+          <td>Footmaxx</td>
+          <td>michael.kinney@footmaxx.com; charlie.doll@footmaxx.com; rob.martin@footmaxx.com</td>
+          <td>Snov-generated domain email candidates</td>
+          <td>Verify role before outreach; use as orthotics-channel intelligence, not the first Reparel sales target.</td>
+          <td>Snov.io v2 domain search</td>
+        </tr>
+      
+        <tr>
+          <td>First Nations Distribution LLC</td>
+          <td>Government Contracts Manager; Medical Supply Category Manager; Clinical Supply Manager</td>
+          <td>Generated role contact path</td>
+          <td>Resolve company domain or SAM/UEI profile, then ask how rehab supply products are added to public-sector BPA ordering paths.</td>
+          <td>USAspending.gov + Opportunity Scanner contact logic</td>
+        </tr>
+      
+        <tr>
+          <td>National Environmental Inc.</td>
+          <td>Government Contracts Manager; Physical Therapy Supply Buyer; Clinical Supply Manager</td>
+          <td>Generated role contact path</td>
+          <td>Validate whether the recipient is a relevant distributor; if not, pivot to the HHS/IHS buying office.</td>
+          <td>USAspending.gov + Opportunity Scanner contact logic</td>
+        </tr>
+      
+        <tr>
+          <td>Department of Veterans Affairs physical therapy/prosthetics route</td>
+          <td>VA Prosthetics Representative; VA Physical Therapy Supply Buyer; Procurement Specialist</td>
+          <td>Generated office contact path</td>
+          <td>Use VA award evidence to identify current prosthetics, orthotics, and PT supply buying offices.</td>
+          <td>USAspending.gov + Opportunity Scanner contact logic</td>
+        </tr>
+      </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Signal Detail</h2>
+      
+    <article class="card signal-card">
+      <div class="signal-top">
+        <span class="badge green">High Actionability</span>
+        <span class="badge">Sell to Award Recipient / Channel Motion</span>
+      </div>
+      <h3>1. HHS BPA for medical and rehabilitation supplies: First Nations Distribution</h3>
+      <p class="muted">HHS awarded First Nations Distribution $46,400 for a BPA covering miscellaneous medical and rehabilitation supplies through March 2027.</p>
+      <div class="grid two">
+        <div>
+          <p class="label">Target</p>
+          <p>First Nations Distribution LLC / HHS buying office</p>
+        </div>
+        <div>
+          <p class="label">Source</p>
+          <p><a href="https://www.usaspending.gov/award/75H71025P00458">USAspending.gov</a></p>
+        </div>
+        <div>
+          <p class="label">Contact path</p>
+          <p>Government contracts, medical supply category, clinical supply, procurement</p>
+        </div>
+        <div>
+          <p class="label">Next best action</p>
+          <p>Resolve the company domain/SAM entity and ask how products are added to public-sector BPA ordering catalogs.</p>
+        </div>
+      </div>
+      <div class="note"><strong>Outreach angle:</strong> Reparel may fit rehab supply ordering paths as a recovery sleeve and orthotic-adjacent SKU.</div>
+    </article>
+  
+    <article class="card signal-card">
+      <div class="signal-top">
+        <span class="badge green">High Actionability</span>
+        <span class="badge">Sell to Award Recipient / Channel Motion</span>
+      </div>
+      <h3>2. HHS BPA for rehab supplies: Performance Health Supply</h3>
+      <p class="muted">HHS awarded Performance Health Supply $21,600 for miscellaneous medical and rehabilitation supplies through April 2027.</p>
+      <div class="grid two">
+        <div>
+          <p class="label">Target</p>
+          <p>Performance Health Supply / Performance Health</p>
+        </div>
+        <div>
+          <p class="label">Source</p>
+          <p><a href="https://www.usaspending.gov/award/75H71025P00547">USAspending.gov + Snov.io</a></p>
+        </div>
+        <div>
+          <p class="label">Contact path</p>
+          <p>Rehab supply category, DME/orthotics product, government sales, clinical supply buyer</p>
+        </div>
+        <div>
+          <p class="label">Next best action</p>
+          <p>Use Snov candidates to route toward supplier onboarding and rehab product-category fit.</p>
+        </div>
+      </div>
+      <div class="note"><strong>Outreach angle:</strong> Reparel supports post-op, arthritis, brace undersleeve, and PT recovery use cases that may fit public-sector supply channels.</div>
+    </article>
+  
+    <article class="card signal-card">
+      <div class="signal-top">
+        <span class="badge green">High Actionability</span>
+        <span class="badge">Sell to Award Recipient / Sell to Agency</span>
+      </div>
+      <h3>3. HHS physical rehabilitation BPA: National Environmental</h3>
+      <p class="muted">HHS awarded National Environmental $20,000 for physical therapy supplies for direct patient care on an as-needed basis through September 2026.</p>
+      <div class="grid two">
+        <div>
+          <p class="label">Target</p>
+          <p>National Environmental Inc. / HHS buying office</p>
+        </div>
+        <div>
+          <p class="label">Source</p>
+          <p><a href="https://www.usaspending.gov/award/75H71025P01050">USAspending.gov</a></p>
+        </div>
+        <div>
+          <p class="label">Contact path</p>
+          <p>Government contracts, PT supply buyer, rehab services, clinical supply</p>
+        </div>
+        <div>
+          <p class="label">Next best action</p>
+          <p>Verify whether the recipient is a relevant distributor; if not, use the record to identify the buying office.</p>
+        </div>
+      </div>
+      <div class="note"><strong>Outreach angle:</strong> Reparel may fit an as-needed physical rehabilitation supply category for patient recovery support.</div>
+    </article>
+  
+    <article class="card signal-card">
+      <div class="signal-top">
+        <span class="badge blue">Medium Actionability</span>
+        <span class="badge">Sell to Agency / Channel Motion</span>
+      </div>
+      <h3>4. VA physical therapy supplies: Apex Integrated Distribution</h3>
+      <p class="muted">VA purchase activity for physical therapy supplies validates a VA market lane for PT, prosthetics, orthotics, and recovery support supplies.</p>
+      <div class="grid two">
+        <div>
+          <p class="label">Target</p>
+          <p>Department of Veterans Affairs / Apex Integrated Distribution</p>
+        </div>
+        <div>
+          <p class="label">Source</p>
+          <p><a href="https://www.usaspending.gov/award/36C24W25P0146">USAspending.gov</a></p>
+        </div>
+        <div>
+          <p class="label">Contact path</p>
+          <p>VA prosthetics, PT supply buyer, procurement specialist</p>
+        </div>
+        <div>
+          <p class="label">Next best action</p>
+          <p>Map similar active VA supply routes and determine whether Reparel should pursue VA procurement or distributor onboarding.</p>
+        </div>
+      </div>
+      <div class="note"><strong>Outreach angle:</strong> Reparel is positioned around recovery, inflammation, post-op use, and clinical support in PT supply routes.</div>
+    </article>
+  
+    <article class="card signal-card">
+      <div class="signal-top">
+        <span class="badge blue">Medium Actionability</span>
+        <span class="badge">Channel / Distributor Motion</span>
+      </div>
+      <h3>5. DOD orthotic supplies: Footmaxx</h3>
+      <p class="muted">DOD awarded Footmaxx for orthotic supplies, showing military medical purchasing includes orthotic supply lanes adjacent to Reparel.</p>
+      <div class="grid two">
+        <div>
+          <p class="label">Target</p>
+          <p>Footmaxx / DOD medical supply channel</p>
+        </div>
+        <div>
+          <p class="label">Source</p>
+          <p><a href="https://www.usaspending.gov/award/HT009024FG0310039">USAspending.gov + Snov.io</a></p>
+        </div>
+        <div>
+          <p class="label">Contact path</p>
+          <p>Orthotics product manager, government contracts, DOD medical supply buyer</p>
+        </div>
+        <div>
+          <p class="label">Next best action</p>
+          <p>Use Footmaxx as channel intelligence while researching active DOD or military treatment facility supply vehicles.</p>
+        </div>
+      </div>
+      <div class="note"><strong>Outreach angle:</strong> Reparel can complement orthotic and bracing categories as a recovery sleeve and brace/boot undersleeve.</div>
+    </article>
+  
+    </section>
+
+    <section class="section card">
+      <h2>7-Day Action Plan</h2>
+      <ol>
+        <li>Day 1: Finalize a one-page public-sector product positioning note for Reparel.</li><li>Day 2: Build a target sheet for First Nations Distribution, Performance Health, National Environmental, Apex, and Footmaxx.</li><li>Day 3: Validate which targets are distributors, resellers, catalog suppliers, or direct service providers.</li><li>Day 4: Identify the HHS, VA, and DOD buying offices attached to the top records.</li><li>Day 5: Send supplier-onboarding/product-fit outreach to the highest-confidence channel targets.</li><li>Day 6: Log responses and requests for product sheets, reimbursement notes, or clinical evidence.</li><li>Day 7: Choose the next pursuit path: channel onboarding, agency procurement mapping, or evidence packet.</li>
+      </ol>
+    </section>
+
+    <section class="section card">
+      <h2>Source And Contact Notes</h2>
+      <p class="footer-note">USAspending.gov records show money flow and buyer/channel evidence. They are not open solicitations unless separately verified. Snov.io contacts are domain-email candidates and should be verified before outreach. Where a domain could not be safely resolved, this report preserves a role or office contact path rather than inventing a personal contact.</p>
+    </section>
+  </main>
+</body>
+</html>
