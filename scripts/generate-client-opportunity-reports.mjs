@@ -15,6 +15,10 @@ function csvCell(value) {
   return `"${String(value ?? "").replaceAll('"', '""')}"`;
 }
 
+function contactEntryCount(contacts = []) {
+  return contacts.reduce((total, contact) => total + (contact.entries?.length ?? 1), 0);
+}
+
 function signalCard(signal, index) {
   return `
     <article class="card signal-card">
@@ -260,7 +264,7 @@ function reportHtml(report) {
       <div class="metrics">
         <div class="metric"><p class="label">Report date</p><strong>${esc(report.date)}</strong></div>
         <div class="metric"><p class="label">Opportunity rows</p><strong>${report.signals.length}</strong></div>
-        <div class="metric"><p class="label">Contact entries</p><strong>${report.contacts.length}</strong></div>
+        <div class="metric"><p class="label">Contact entries</p><strong>${contactEntryCount(report.contacts)}</strong></div>
         <div class="metric"><p class="label">Primary motion</p><strong>${esc(report.primaryMotion)}</strong></div>
       </div>
     </section>
@@ -330,9 +334,19 @@ function reportHtml(report) {
 }
 
 function writeContactCsv(filename, contacts) {
+  const contactRows = contacts.flatMap((contact) => {
+    if (!contact.entries?.length) return [contact];
+    return contact.entries.map((entry) => ({
+      organization: contact.organization,
+      contact: entry,
+      type: contact.type,
+      recommendedUse: contact.recommendedUse,
+      source: contact.source
+    }));
+  });
   const rows = [
     ["Organization", "Contact", "Contact Type", "Recommended Use", "Connector / Source"],
-    ...contacts.map((contact) => [
+    ...contactRows.map((contact) => [
       contact.organization,
       contact.contact,
       contact.type,
@@ -461,8 +475,8 @@ const reports = [
       },
       {
         label: "Contact status",
-        title: "Contacts are available",
-        body: "Clay and Snov found named event/vendor contacts for the channel lane; source-native grant contacts are included only for program questions."
+        title: "30+ contact entries",
+        body: "Clay and Snov now provide a broader bench: sendable emails, backup candidates, named people, and role-routing targets. Source-native grant contacts are included only for program questions."
       }
     ],
     firstMoves: [
@@ -502,57 +516,102 @@ const reports = [
       },
       {
         organization: "ReImagine ATL",
-        contact: "info@reimagineatl.com; julie@reimagineatl.com; terp@reimagineatl.com",
-        type: "Snov-generated domain email candidates",
-        recommendedUse: "Verify role before outreach; start with partnership/workforce-program angle.",
-        source: "Snov.io v2 domain search"
+        contact: "Clay names: Emily Kuester, Director of Workforce Development; Jessie Sparrow, Executive Director; Alio Issoufou, Job Placement Coordinator. Snov email candidates: info@reimagineatl.com; julie@reimagineatl.com; terp@reimagineatl.com",
+        entries: [
+          "Emily Kuester, Director of Workforce Development | LinkedIn: https://www.linkedin.com/in/emily-kuester-21ba27138/ | Email: not found by Clay",
+          "Jessie Sparrow, Executive Director | LinkedIn: https://www.linkedin.com/in/jessie-sparrow-ba28b3147/ | Email: not found by Clay",
+          "Alio Issoufou, Job Placement Coordinator | LinkedIn: https://www.linkedin.com/in/alio-issoufou-6883372b1/ | Email: not found by Clay",
+          "info@reimagineatl.com | Snov-generated domain candidate",
+          "julie@reimagineatl.com | Snov-generated domain candidate",
+          "terp@reimagineatl.com | Snov-generated domain candidate"
+        ],
+        type: "Clay named contacts + Snov email candidates",
+        recommendedUse: "Use named roles for personalization; verify best email before automated outreach. Start with partnership/workforce-program angle.",
+        source: "Clay + Snov.io v2 domain search"
       },
       {
         organization: "Jackson Symphony Association",
         contact: "info@jacksonsymphony.org; school.jso@jacksonsymphony.org; joan.cummings@jacksonsymphony.org",
+        entries: [
+          "info@jacksonsymphony.org | Snov-generated domain candidate",
+          "school.jso@jacksonsymphony.org | Snov-generated domain candidate",
+          "joan.cummings@jacksonsymphony.org | Snov-generated domain candidate"
+        ],
         type: "Snov-generated domain email candidates",
         recommendedUse: "Verify role before outreach; start with guest artist, local musician, or public-concert programming angle.",
         source: "Snov.io v2 domain search"
       },
       {
         organization: "DEGY Booking International",
-        contact: "Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com",
-        type: "Clay-enriched named contacts",
-        recommendedUse: "Primary event/vendor channel target tied to public event-entertainment spending. Use partner/channel language.",
-        source: "Clay + USAspending.gov"
+        contact: "Clay contacts: Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com. Backup candidates: Paige Moyer, Aislinn Jones, Isabella Silva, info@degy.com, ari@degy.com, jeff@degy.com",
+        entries: [
+          "Caite Kendrick, Director of Business Development | caite@degy.com | LinkedIn: https://www.linkedin.com/in/caite-kendrick-575696365/",
+          "Nick DiRoma, Vice President | nick@degy.com | LinkedIn: https://www.linkedin.com/in/nick-diroma-150694b/",
+          "Sean Sullivan, Booking Agent | sean@degy.com | LinkedIn: https://www.linkedin.com/in/sean-sulli/",
+          "Paige Moyer, Booking Agent Assistant | paige@degy.com",
+          "Aislinn Jones, Booking Agent Assistant | aislinn@degy.com",
+          "Isabella Silva, Corporate, Private, & Special Events Intern | isabella.silva@degy.com",
+          "info@degy.com | Snov backup candidate",
+          "ari@degy.com | Snov backup candidate",
+          "jeff@degy.com | Snov backup candidate"
+        ],
+        type: "Clay-enriched named contacts + Snov backup candidates",
+        recommendedUse: "Primary event/vendor channel target tied to public event-entertainment spending. Start with Caite, Nick, or Sean; keep assistants/backups for routing.",
+        source: "Clay + Snov.io + USAspending.gov"
       },
       {
         organization: "LADGOV Corp",
-        contact: "Chris Bradley, Business Development Specialist, cbradley@ladgov.com",
-        type: "Clay-identified contact + Snov email candidate",
-        recommendedUse: "Musician-services contractor target. Use channel/partner language and verify email before send.",
+        contact: "Chris Bradley, Business Development Specialist, cbradley@ladgov.com; Ouidad Mandour, ouidad.mandour@ladgov.com",
+        entries: [
+          "Chris Bradley, Business Development Specialist | cbradley@ladgov.com | LinkedIn: https://www.linkedin.com/in/chris-bradley-5a71aa237/",
+          "Ouidad Mandour | ouidad.mandour@ladgov.com | Snov backup candidate"
+        ],
+        type: "Clay-identified contact + Snov email candidates",
+        recommendedUse: "Musician-services contractor target. Use channel/partner language and verify emails before send.",
         source: "Clay + Snov.io + USAspending.gov"
       },
       {
         organization: "City of Seattle arts/culture program",
-        contact: "Cultural Affairs Manager; Public Art Program Manager; Events Coordinator; Arts Program Director",
-        type: "Generated role contact path",
-        recommendedUse: "Resolve funded department owner before outreach; source record shows live music performance funding, not a general vendor inbox.",
-        source: "USAspending.gov + Opportunity Scanner contact logic"
+        contact: "Clay named role candidates: Ashraf Hasham, Partnerships, Education, and Grants Manager; Robert Rutherford, Public Art Program Manager; Hernan Paganini, Seattle Office of Arts & Culture Public Art; Chris Swenson, Film Program Manager; Ed King, Seattle Arts Commission",
+        entries: [
+          "Ashraf Hasham, Partnerships, Education, and Grants Manager @ Seattle Office of Arts & Culture | LinkedIn: https://www.linkedin.com/in/ashraf-hasham-9043a735/ | Email: pending/not returned by Clay",
+          "Robert Rutherford, Public Art Program Manager | LinkedIn: https://www.linkedin.com/in/robert-rutherford-833b89118/ | Email: pending/not returned by Clay",
+          "Hernan Paganini, Seattle Office of Arts & Culture Public Art | LinkedIn: https://www.linkedin.com/in/hernan-paganini-44383323/ | Email: pending/not returned by Clay",
+          "Chris Swenson, Film Program Manager, Seattle Office of Economic Development | LinkedIn: https://www.linkedin.com/in/chris-swenson-5943338/ | Email: pending/not returned by Clay",
+          "Ed King, Seattle Arts Commission | LinkedIn: https://www.linkedin.com/in/ed-king-372b846/ | Email: pending/not returned by Clay"
+        ],
+        type: "Clay named role candidates",
+        recommendedUse: "Use as named routing targets for Seattle arts/culture owner research; source record shows live music performance funding, not a general vendor inbox.",
+        source: "Clay + USAspending.gov + Opportunity Scanner contact logic"
       },
       {
         organization: "South Carolina parks/tourism amphitheater project",
-        contact: "Parks and Recreation Director; Tourism Program Manager; Special Events Manager; Procurement Specialist",
-        type: "Generated role contact path",
-        recommendedUse: "Resolve Boyd Pond Park/Aiken County program owner, then ask who owns launch-season live programming.",
-        source: "Opportunity Scanner contact logic"
+        contact: "Clay named role candidates: Colby Parnell, Parks and Recreation Director; Tandra Cooks, Recreation Manager; Carolyn Rushton, Recreation Supervisor; Becky D., Procurement Director; Linda Hallman, Purchasing Spec; Debbie Pearson, Purchasing Manager",
+        entries: [
+          "Colby Parnell, Parks and Recreation Director | LinkedIn: https://www.linkedin.com/in/colby-parnell-cprp-cysa-a2704267/ | Email: pending/not returned by Clay",
+          "Tandra Cooks, Recreation Manager | LinkedIn: https://www.linkedin.com/in/tandra-cooks-5aa81740/ | Email: pending/not returned by Clay",
+          "Carolyn Rushton, Recreation Supervisor | LinkedIn: https://www.linkedin.com/in/carolyn-rushton-a6911731/ | Email: pending/not returned by Clay",
+          "Becky D., Procurement Director | LinkedIn: https://www.linkedin.com/in/becky-d-507535a9/ | Email: pending/not returned by Clay",
+          "Linda Hallman, Purchasing Spec | LinkedIn: https://www.linkedin.com/in/linda-hallman-942a204b/ | Email: pending/not returned by Clay",
+          "Debbie Pearson, Purchasing Manager | LinkedIn: https://www.linkedin.com/in/debbie-pearson-02988535/ | Email: pending/not returned by Clay",
+          "Diane Winbigler, Recreation Supervisor | LinkedIn: https://www.linkedin.com/in/diane-winbigler-b16b6a17/ | Email: pending/not returned by Clay"
+        ],
+        type: "Clay named role candidates",
+        recommendedUse: "Use as named routing targets for Boyd Pond Park/Aiken County program owner research, then ask who owns launch-season live programming.",
+        source: "Clay + Opportunity Scanner contact logic"
       }
     ],
     contactProof: [
       "Source-native contacts found: NEA apply@arts.gov / 202-682-5504; U.S. Embassy Ottawa Public Diplomacy ottawa-pa@state.gov / 703-314-6820; Bureau of Educational and Cultural Affairs nelsonjg2@state.gov / 202-890-9795.",
-      "Clay-enriched named contacts found for the priority vendor/channel lane: Caite Kendrick, Nick DiRoma, and Sean Sullivan at DEGY; Chris Bradley at LADGOV.",
-      "Snov-generated domain candidates remain available for ReImagine ATL and Jackson Symphony. Verify before automated sending.",
-      "Role/office paths generated where personal contacts were not reliable: South Carolina parks/tourism amphitheater project and City of Seattle arts/culture program.",
+      "Clay-enriched named contacts found for the priority vendor/channel lane: Caite Kendrick, Nick DiRoma, Sean Sullivan, Paige Moyer, Aislinn Jones, and Isabella Silva at DEGY; Chris Bradley at LADGOV.",
+      "Snov backup candidates remain available for DEGY, LADGOV, ReImagine ATL, and Jackson Symphony. Verify before automated sending.",
+      "Clay found named public-sector role candidates for City of Seattle arts/culture and Aiken County parks/procurement; most public-sector emails were not returned, so use LinkedIn/source routing or official department contact paths.",
+      "Clay found ReImagine ATL role candidates, while Snov provided domain email candidates for actual send routing.",
       "Recommended automation rule: do not send sales emails to Grants.gov program contacts. Use them for eligibility/program questions only; use partner/program/event contacts for business development."
     ],
     liveRefresh: [
       "Live USAspending refresh run July 6, 2026 found additional musician-services and event-entertainment spending records. These are now the primary watchlist/channel lane.",
-      "Clay enrichment run July 6, 2026 found named DEGY and LADGOV contacts relevant to business development, booking, and channel partnership outreach.",
+      "Clay enrichment run July 6, 2026 found named contacts for DEGY, LADGOV, ReImagine ATL, City of Seattle, and Aiken County role paths relevant to business development, booking, workforce programming, parks, procurement, and arts/culture routing.",
       "Live Grants.gov refresh confirmed the original grant signals remain useful context, but they are not the main Jammcard outreach motion."
     ],
     emailDrafts: [
@@ -627,8 +686,8 @@ Best,
         priority: 1,
         organization: "DEGY Booking International / public-event vendor channel",
         context: "USAspending shows public event-entertainment spending with DEGY. Clay also describes DEGY as active in college and military booking, which overlaps with public-sector event buyer patterns.",
-        contactInfo: "Clay contacts: Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com.",
-        contactType: "Clay-enriched named contacts",
+        contactInfo: "Clay priority contacts: Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com. Backup/routing contacts: Paige Moyer, paige@degy.com; Aislinn Jones, aislinn@degy.com; Isabella Silva, isabella.silva@degy.com; Snov candidates info@degy.com, ari@degy.com, jeff@degy.com.",
+        contactType: "Clay-enriched named contacts + Snov backup candidates",
         sendability: "Sendable after final human review; use partner/channel language.",
         owner: "Director of Business Development, VP, Booking Agent",
         sourceUrl: "https://www.usaspending.gov/award/19JA8026P1045",
@@ -655,8 +714,8 @@ Best,
         priority: 2,
         organization: "LADGOV Corp / musician-services contractor channel",
         context: "Live USAspending refresh found LADGOV musician-services spending tied to USCG Cape May Chapel musician services through 2028.",
-        contactInfo: "Clay identified Chris Bradley, Business Development Specialist. Snov candidate: cbradley@ladgov.com.",
-        contactType: "Clay-identified contact + Snov email candidate",
+        contactInfo: "Clay identified Chris Bradley, Business Development Specialist; Snov candidate cbradley@ladgov.com. Backup Snov candidate: Ouidad Mandour, ouidad.mandour@ladgov.com.",
+        contactType: "Clay-identified contact + Snov email candidates",
         sendability: "Verify email before send; strong fit for partner/channel outreach.",
         owner: "Business Development Specialist",
         sourceUrl: "https://www.usaspending.gov/award/70Z04323PTRCM0001",
@@ -711,10 +770,10 @@ Best,
         priority: 4,
         organization: "South Carolina parks/tourism amphitheater project",
         context: "A $300,000 public award supports an outdoor amphitheater at Boyd Pond Park with intended musical performances and cultural celebrations.",
-        contactInfo: "Generated role path: Parks and Recreation Director; Tourism Program Manager; Special Events Manager; Procurement Specialist.",
-        contactType: "Generated role/office path",
-        sendability: "Research named owner first, then send.",
-        owner: "Parks/Recreation Director or Special Events Manager",
+        contactInfo: "Clay named role candidates: Colby Parnell, Parks and Recreation Director; Tandra Cooks, Recreation Manager; Carolyn Rushton, Recreation Supervisor; Becky D., Procurement Director; Linda Hallman, Purchasing Spec; Debbie Pearson, Purchasing Manager; Diane Winbigler, Recreation Supervisor. Emails pending/not returned by Clay.",
+        contactType: "Clay named role candidates",
+        sendability: "Research official email or use LinkedIn/department routing first, then send.",
+        owner: "Parks/Recreation Director, Recreation Manager, or Procurement Director",
         sourceUrl: "https://www.usaspending.gov/award/P24AF01844",
         email: {
           subject: "Live music programming support for Boyd Pond Park",
@@ -739,10 +798,10 @@ Best,
         priority: 5,
         organization: "City of Seattle arts/culture program",
         context: "NEA-backed city arts funding included live music performances, validating a city arts-office programming lane.",
-        contactInfo: "Generated role path: Cultural Affairs Manager; Public Art Program Manager; Events Coordinator; Arts Program Director.",
-        contactType: "Generated role/office path",
-        sendability: "Research named owner first, then send.",
-        owner: "Cultural affairs or public art/events owner",
+        contactInfo: "Clay named role candidates: Ashraf Hasham, Partnerships/Education/Grants Manager; Robert Rutherford, Public Art Program Manager; Hernan Paganini, Seattle Office of Arts & Culture Public Art; Chris Swenson, Film Program Manager; Ed King, Seattle Arts Commission. Emails pending/not returned by Clay.",
+        contactType: "Clay named role candidates",
+        sendability: "Research official email or use LinkedIn/department routing first, then send.",
+        owner: "Arts/culture partnerships, public art, film/events, or grants manager",
         sourceUrl: "https://www.usaspending.gov/award/1953663-62-26",
         email: {
           subject: "Musician sourcing for city arts programming",
@@ -767,10 +826,10 @@ Best,
         priority: 6,
         organization: "ReImagine ATL",
         context: "Public funding for creative workforce development and apprenticeship programs. Jammcard can support music-industry mentor/talent-network access.",
-        contactInfo: "Snov candidates: info@reimagineatl.com; julie@reimagineatl.com; terp@reimagineatl.com.",
-        contactType: "Snov-generated domain email candidates",
-        sendability: "Verify role before send; info@ is safest first route.",
-        owner: "Workforce Program Manager, Youth Programs Director, Creative Program Director",
+        contactInfo: "Clay named role candidates: Emily Kuester, Director of Workforce Development; Jessie Sparrow, Executive Director; Alio Issoufou, Job Placement Coordinator. Clay did not return direct emails. Snov candidates: info@reimagineatl.com; julie@reimagineatl.com; terp@reimagineatl.com.",
+        contactType: "Clay named contacts + Snov-generated email candidates",
+        sendability: "Use named-role personalization; verify best email before send. Info@ is safest first route if no direct email is confirmed.",
+        owner: "Director of Workforce Development, Executive Director, Job Placement Coordinator",
         sourceUrl: "https://www.usaspending.gov/award/1945309-34-26",
         email: {
           subject: "Music industry mentors for creative workforce programming",
@@ -938,7 +997,7 @@ Best,
       "Step 7: Track replies, referrals, requested materials, and next actions in CRM."
     ],
     notes:
-      "Clay contacts were used for the event/vendor channel lane. Grants.gov contacts are source-native program contacts. Snov.io contacts are domain-email candidates and should be verified before outreach. USAspending.gov records show public money flow and buyer/partner evidence; they are not automatically open solicitations."
+      "Clay contacts were used for vendor, nonprofit, city arts, and parks/procurement role discovery. Grants.gov contacts are source-native program contacts. Snov.io contacts are domain-email candidates and should be verified before outreach. USAspending.gov records show public money flow and buyer/partner evidence; they are not automatically open solicitations."
   },
   {
     slug: "reparel",

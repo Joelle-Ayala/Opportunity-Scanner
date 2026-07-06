@@ -17,8 +17,8 @@ Prepared: July 6, 2026
 ### 1. DEGY Booking International / public-event vendor channel
 
 - Opportunity context: USAspending shows public event-entertainment spending with DEGY. Clay also describes DEGY as active in college and military booking, which overlaps with public-sector event buyer patterns.
-- Contact info: Clay contacts: Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com.
-- Contact type: Clay-enriched named contacts
+- Contact info: Clay priority contacts: Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com. Backup/routing contacts: Paige Moyer, paige@degy.com; Aislinn Jones, aislinn@degy.com; Isabella Silva, isabella.silva@degy.com; Snov candidates info@degy.com, ari@degy.com, jeff@degy.com.
+- Contact type: Clay-enriched named contacts + Snov backup candidates
 - Sendability: Sendable after final human review; use partner/channel language.
 - Recommended owner: Director of Business Development, VP, Booking Agent
 - Source: https://www.usaspending.gov/award/19JA8026P1045
@@ -54,8 +54,8 @@ Hi [Name] - if talent partnerships are handled by someone else, I would apprecia
 ### 2. LADGOV Corp / musician-services contractor channel
 
 - Opportunity context: Live USAspending refresh found LADGOV musician-services spending tied to USCG Cape May Chapel musician services through 2028.
-- Contact info: Clay identified Chris Bradley, Business Development Specialist. Snov candidate: cbradley@ladgov.com.
-- Contact type: Clay-identified contact + Snov email candidate
+- Contact info: Clay identified Chris Bradley, Business Development Specialist; Snov candidate cbradley@ladgov.com. Backup Snov candidate: Ouidad Mandour, ouidad.mandour@ladgov.com.
+- Contact type: Clay-identified contact + Snov email candidates
 - Sendability: Verify email before send; strong fit for partner/channel outreach.
 - Recommended owner: Business Development Specialist
 - Source: https://www.usaspending.gov/award/70Z04323PTRCM0001
@@ -128,10 +128,10 @@ Hi [Name] - closing the loop. If artist/talent partnerships are handled by someo
 ### 4. South Carolina parks/tourism amphitheater project
 
 - Opportunity context: A $300,000 public award supports an outdoor amphitheater at Boyd Pond Park with intended musical performances and cultural celebrations.
-- Contact info: Generated role path: Parks and Recreation Director; Tourism Program Manager; Special Events Manager; Procurement Specialist.
-- Contact type: Generated role/office path
-- Sendability: Research named owner first, then send.
-- Recommended owner: Parks/Recreation Director or Special Events Manager
+- Contact info: Clay named role candidates: Colby Parnell, Parks and Recreation Director; Tandra Cooks, Recreation Manager; Carolyn Rushton, Recreation Supervisor; Becky D., Procurement Director; Linda Hallman, Purchasing Spec; Debbie Pearson, Purchasing Manager; Diane Winbigler, Recreation Supervisor. Emails pending/not returned by Clay.
+- Contact type: Clay named role candidates
+- Sendability: Research official email or use LinkedIn/department routing first, then send.
+- Recommended owner: Parks/Recreation Director, Recreation Manager, or Procurement Director
 - Source: https://www.usaspending.gov/award/P24AF01844
 - CRM note: Funded public programming buyer. Needs named project owner before send.
 
@@ -165,10 +165,10 @@ Hi [Name] - I will close the loop here. If there is a parks, tourism, or events 
 ### 5. City of Seattle arts/culture program
 
 - Opportunity context: NEA-backed city arts funding included live music performances, validating a city arts-office programming lane.
-- Contact info: Generated role path: Cultural Affairs Manager; Public Art Program Manager; Events Coordinator; Arts Program Director.
-- Contact type: Generated role/office path
-- Sendability: Research named owner first, then send.
-- Recommended owner: Cultural affairs or public art/events owner
+- Contact info: Clay named role candidates: Ashraf Hasham, Partnerships/Education/Grants Manager; Robert Rutherford, Public Art Program Manager; Hernan Paganini, Seattle Office of Arts & Culture Public Art; Chris Swenson, Film Program Manager; Ed King, Seattle Arts Commission. Emails pending/not returned by Clay.
+- Contact type: Clay named role candidates
+- Sendability: Research official email or use LinkedIn/department routing first, then send.
+- Recommended owner: Arts/culture partnerships, public art, film/events, or grants manager
 - Source: https://www.usaspending.gov/award/1953663-62-26
 - CRM note: City arts/public event buyer lane. Needs named Seattle program owner.
 
@@ -202,10 +202,10 @@ Hi [Name] - last follow-up. Happy to send a short overview if public programming
 ### 6. ReImagine ATL
 
 - Opportunity context: Public funding for creative workforce development and apprenticeship programs. Jammcard can support music-industry mentor/talent-network access.
-- Contact info: Snov candidates: info@reimagineatl.com; julie@reimagineatl.com; terp@reimagineatl.com.
-- Contact type: Snov-generated domain email candidates
-- Sendability: Verify role before send; info@ is safest first route.
-- Recommended owner: Workforce Program Manager, Youth Programs Director, Creative Program Director
+- Contact info: Clay named role candidates: Emily Kuester, Director of Workforce Development; Jessie Sparrow, Executive Director; Alio Issoufou, Job Placement Coordinator. Clay did not return direct emails. Snov candidates: info@reimagineatl.com; julie@reimagineatl.com; terp@reimagineatl.com.
+- Contact type: Clay named contacts + Snov-generated email candidates
+- Sendability: Use named-role personalization; verify best email before send. Info@ is safest first route if no direct email is confirmed.
+- Recommended owner: Director of Workforce Development, Executive Director, Job Placement Coordinator
 - Source: https://www.usaspending.gov/award/1945309-34-26
 - CRM note: Creative workforce partner target. Verify best contact before automated send.
 
