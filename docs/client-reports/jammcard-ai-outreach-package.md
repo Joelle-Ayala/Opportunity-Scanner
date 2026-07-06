@@ -6,14 +6,89 @@ Prepared: July 6, 2026
 
 - Use the CSV or JSON as the upload source for an outreach AI instance.
 - Treat source-native Grants.gov contacts as program/eligibility contacts only, not as sales buyers.
+- Prioritize Clay-enriched named contacts for DEGY and LADGOV before broader grant or arts-program outreach.
 - Verify Snov-generated domain email candidates before sending personalized outreach.
 - For generated role paths, first create a research task to identify the named person who owns that role.
-- Prioritize sends in this order: NEA applicant/grantee partners, funded public programming owners, funded arts organizations, event-production vendors.
+- Prioritize sends in this order: event/vendor channel contacts, funded public programming owners, funded arts organizations, then grant/program contacts.
 - Log source URL, revenue motion, contact type, email sent, reply, follow-up date, and next action in CRM.
 
 ## Targets
 
-### 1. Likely NEA applicants and recent arts grantees
+### 1. DEGY Booking International / public-event vendor channel
+
+- Opportunity context: USAspending shows public event-entertainment spending with DEGY. Clay also describes DEGY as active in college and military booking, which overlaps with public-sector event buyer patterns.
+- Contact info: Clay contacts: Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com.
+- Contact type: Clay-enriched named contacts
+- Sendability: Sendable after final human review; use partner/channel language.
+- Recommended owner: Director of Business Development, VP, Booking Agent
+- Source: https://www.usaspending.gov/award/19JA8026P1045
+- CRM note: Primary channel target. Clay-enriched contact. Public award evidence: DEGY event-entertainment award.
+
+Subject: Talent sourcing support for public-sector event work
+
+```text
+Hi [Name],
+
+I saw DEGY's public-sector event entertainment work and thought Jammcard could be a useful talent-sourcing partner for projects that need reliable professional musicians or specialized music programming.
+
+Jammcard works with vetted music professionals, and DEGY's college/military booking focus looks like a strong overlap with public-sector event needs.
+
+Would it make sense to explore where Jammcard could support overflow talent sourcing, specialized musician needs, or public-event programming?
+
+Best,
+[Sender]
+```
+
+Follow-up 1:
+
+```text
+Hi [Name] - quick follow-up on whether Jammcard could support DEGY as a talent-sourcing layer for public-sector or military/community event work.
+```
+
+Follow-up 2:
+
+```text
+Hi [Name] - if talent partnerships are handled by someone else, I would appreciate the right contact.
+```
+
+### 2. LADGOV Corp / musician-services contractor channel
+
+- Opportunity context: Live USAspending refresh found LADGOV musician-services spending tied to USCG Cape May Chapel musician services through 2028.
+- Contact info: Clay identified Chris Bradley, Business Development Specialist. Snov candidate: cbradley@ladgov.com.
+- Contact type: Clay-identified contact + Snov email candidate
+- Sendability: Verify email before send; strong fit for partner/channel outreach.
+- Recommended owner: Business Development Specialist
+- Source: https://www.usaspending.gov/award/70Z04323PTRCM0001
+- CRM note: Primary channel target. Clay identified BD owner; Snov supplied email candidate.
+
+Subject: Musician talent support for government service contracts
+
+```text
+Hi Chris,
+
+I saw LADGOV's musician-services work with government buyers and wanted to ask whether Jammcard could be a useful talent partner for similar contracts.
+
+Jammcard works with vetted professional musicians and could potentially support sourcing, backup coverage, or specialized music talent for government, military, chapel, or community-event needs.
+
+Would it make sense to compare notes on where LADGOV needs musician talent support?
+
+Best,
+[Sender]
+```
+
+Follow-up 1:
+
+```text
+Hi Chris - quick follow-up on whether Jammcard could support musician sourcing for government service contracts or similar public-sector work.
+```
+
+Follow-up 2:
+
+```text
+Hi Chris - if someone else manages partner/vendor relationships for musician services, I would appreciate the right contact.
+```
+
+### 3. Likely NEA applicants and recent arts grantees
 
 - Opportunity context: Active NEA Grants for Arts Projects deadline on July 9, 2026. Jammcard can be positioned as a named music talent/programming partner.
 - Contact info: Use internal target list; source-native NEA program contact for eligibility only: apply@arts.gov / 202-682-5504.
@@ -50,7 +125,7 @@ Follow-up 2:
 Hi [Name] - closing the loop. If artist/talent partnerships are handled by someone else on your team, I would appreciate a pointer to the right person.
 ```
 
-### 2. South Carolina parks/tourism amphitheater project
+### 4. South Carolina parks/tourism amphitheater project
 
 - Opportunity context: A $300,000 public award supports an outdoor amphitheater at Boyd Pond Park with intended musical performances and cultural celebrations.
 - Contact info: Generated role path: Parks and Recreation Director; Tourism Program Manager; Special Events Manager; Procurement Specialist.
@@ -87,7 +162,7 @@ Follow-up 2:
 Hi [Name] - I will close the loop here. If there is a parks, tourism, or events contact planning live programming, I would appreciate the referral.
 ```
 
-### 3. City of Seattle arts/culture program
+### 5. City of Seattle arts/culture program
 
 - Opportunity context: NEA-backed city arts funding included live music performances, validating a city arts-office programming lane.
 - Contact info: Generated role path: Cultural Affairs Manager; Public Art Program Manager; Events Coordinator; Arts Program Director.
@@ -124,7 +199,7 @@ Follow-up 2:
 Hi [Name] - last follow-up. Happy to send a short overview if public programming or live music talent sourcing is on your roadmap.
 ```
 
-### 4. ReImagine ATL
+### 6. ReImagine ATL
 
 - Opportunity context: Public funding for creative workforce development and apprenticeship programs. Jammcard can support music-industry mentor/talent-network access.
 - Contact info: Snov candidates: info@reimagineatl.com; julie@reimagineatl.com; terp@reimagineatl.com.
@@ -161,7 +236,7 @@ Follow-up 2:
 Hi [Name] - if someone else owns workforce or youth program partnerships, I would appreciate a pointer.
 ```
 
-### 5. Jackson Symphony Association
+### 7. Jackson Symphony Association
 
 - Opportunity context: NEA-supported public concert funding. Jammcard can support guest artist sourcing, local musician discovery, or community concert amplification.
 - Contact info: Snov candidates: info@jacksonsymphony.org; school.jso@jacksonsymphony.org; joan.cummings@jacksonsymphony.org.
@@ -196,42 +271,5 @@ Follow-up 2:
 
 ```text
 Hi [Name] - if programming or production partnerships are handled by someone else, I would appreciate the right contact.
-```
-
-### 6. DEGY Booking International / public-event vendor watchlist
-
-- Opportunity context: USAspending shows public event-entertainment spending with DEGY. This is a channel/watchlist target, not a primary buyer.
-- Contact info: Snov candidates: info@degy.com; ari@degy.com; jeff@degy.com; nick@degy.com.
-- Contact type: Snov-generated domain email candidates
-- Sendability: Verify role before send; use partner/channel language.
-- Recommended owner: Business Development Director, Event Production Lead, Talent Partnerships
-- Source: https://www.usaspending.gov/award/19JA8026P1045
-- CRM note: Channel/watchlist target. Do not treat as direct buyer.
-
-Subject: Talent sourcing support for public-sector events
-
-```text
-Hi [Name],
-
-I noticed DEGY has touched public-sector event entertainment work and wanted to ask whether Jammcard could be useful as a talent-sourcing partner.
-
-Jammcard works with vetted professional musicians and music industry talent, which may be helpful when public events need reliable performers or specialized music programming support.
-
-Who on your team handles talent partnerships or public-event programming support?
-
-Best,
-[Sender]
-```
-
-Follow-up 1:
-
-```text
-Hi [Name] - checking back on whether Jammcard could be useful as a talent-sourcing layer for public-sector event work.
-```
-
-Follow-up 2:
-
-```text
-Hi [Name] - if someone else manages talent partnerships or event programming, I would appreciate a referral.
 ```
 

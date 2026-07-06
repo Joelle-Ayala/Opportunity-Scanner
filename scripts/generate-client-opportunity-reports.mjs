@@ -42,6 +42,7 @@ function signalCard(signal, index) {
           <p>${esc(signal.nextAction)}</p>
         </div>
       </div>
+      ${signal.socialProof ? `<div class="note"><strong>Proof:</strong> ${esc(signal.socialProof)}</div>` : ""}
       <div class="note"><strong>Outreach angle:</strong> ${esc(signal.outreach)}</div>
     </article>
   `;
@@ -55,7 +56,7 @@ function actionRows(signals) {
           <td>${index + 1}</td>
           <td><strong>${esc(signal.title)}</strong><br><span>${esc(signal.whyShort ?? signal.why)}</span></td>
           <td>${esc(signal.target)}</td>
-          <td>${esc(signal.source)}</td>
+          <td>${esc(signal.source)}${signal.socialProof ? `<br><span>${esc(signal.socialProof)}</span>` : ""}</td>
           <td>${esc(signal.revenueMotion)}</td>
           <td>${esc(signal.contactPath)}</td>
           <td>${esc(signal.nextAction)}</td>
@@ -443,39 +444,39 @@ const reports = [
     slug: "jammcard",
     company: "Jammcard",
     date: "July 6, 2026",
-    primaryMotion: "Partner / Sell",
-    sources: ["Grants.gov", "USAspending.gov", "Snov.io", "Source-native contacts", "Live refresh"],
+    primaryMotion: "Channel / Vendor",
+    sources: ["USAspending.gov", "Clay", "Snov.io", "Grants.gov", "Source-native contacts"],
     summary:
-      "Jammcard's strongest public-sector path is not a generic grant search. It is a focused business development motion around funded arts organizations, city and parks event programming, cultural-exchange programs, creative workforce partners, and event-entertainment vendors that already touch public money.",
+      "Jammcard's strongest public-sector path is through event-entertainment vendors, musician-services contractors, public event producers, and funded public-programming teams that already buy or manage live music. Grants remain useful context, but the most actionable lane is partner/channel outreach to organizations already touching public event and musician-services money.",
     digest: [
       {
         label: "Best first move",
-        title: "NEA partner sprint",
-        body: "Use the July 9 NEA window to contact likely applicants and recent arts grantees as a named talent/programming partner."
+        title: "Event vendor channel sprint",
+        body: "Start with DEGY and LADGOV-style public-event vendors. Clay found named contacts and public award records show active musician/event spend."
       },
       {
-        label: "Most practical buyer lane",
+        label: "Secondary lane",
         title: "Funded public programming",
-        body: "Start with parks, tourism, city arts, public concerts, and cultural organizations that already have money tied to music or public events."
+        body: "Use parks, tourism, city arts, public concerts, and cultural organizations as direct buyer/partner targets where the source record mentions live music."
       },
       {
         label: "Contact status",
         title: "Contacts are available",
-        body: "The report includes source-native grant contacts, Snov-generated email candidates, and role/office contact paths where personal contacts need validation."
+        body: "Clay and Snov found named event/vendor contacts for the channel lane; source-native grant contacts are included only for program questions."
       }
     ],
     firstMoves: [
-      "Today: email likely NEA applicants, recent grantees, and arts organizations with a partner offer tied to the July 9 NEA deadline.",
-      "This week: contact South Carolina/Boyd Pond Park, City of Seattle arts programming, Jackson Symphony, ReImagine ATL, and Kennedy Center-related program teams.",
-      "Use source-native grant contacts for eligibility/program questions only; business development should go to program, partnership, event, production, or executive owners.",
-      "Treat DEGY, LADGOV, and similar public-event vendors as channel/watchlist targets, not as the main buyer lane."
+      "Today: upload the AI outreach package and start the event/vendor channel queue first: DEGY, LADGOV, and similar musician-services/event-entertainment contractors.",
+      "Next: create research tasks for current contracting offices and rebid cycles tied to event entertainment, musician services, public concerts, and military/community events.",
+      "Then: send funded-program outreach to Boyd Pond Park, City of Seattle, Jackson Symphony, and ReImagine ATL.",
+      "Use Grants.gov contacts only for eligibility/program questions. Do not make grant contacts the main outreach path."
     ],
     coverage: [
       "Local scan coverage: 28 Jammcard source records from the June 30 Opportunity Scanner scan: 24 USAspending.gov records, 3 Grants.gov opportunities, and 1 Federal Register policy/procurement signal.",
-      "Client-facing coverage: 9 opportunity rows are included here: 3 active Grants.gov opportunities, 5 funded-buyer/partner signals, and 1 procurement/vendor watchlist pattern.",
-      "Not every source record is shown as a top row. Several records were older, duplicative, foreign-only, too broad, or better treated as market-map evidence rather than immediate outreach.",
-      "Live refresh on July 6, 2026: the original Grants.gov opportunities remain the strongest Jammcard-fit grant signals. Additional public diplomacy/creative grants appeared, but none were stronger than the included priority set.",
-      "Live USAspending refresh also surfaced current musician-services spending records. These were added to the watchlist lane because they show recurring procurement behavior, not necessarily open bids."
+      "Curated client-facing coverage: 8 priority opportunity rows focused on Jammcard's strongest public-sector motion.",
+      "This report prioritizes event-entertainment and musician-services records because those are the opportunity types most aligned to Jammcard's outreach motion.",
+      "Not every source record is shown as a top row. Older, duplicative, foreign-only, broad policy, or weak-fit records were downgraded to market-map context.",
+      "Live refresh on July 6, 2026: USAspending surfaced additional musician-services records, and Clay enriched DEGY/LADGOV contacts for the vendor/channel lane."
     ],
     contacts: [
       {
@@ -514,25 +515,18 @@ const reports = [
         source: "Snov.io v2 domain search"
       },
       {
-        organization: "John F. Kennedy Center for the Performing Arts",
-        contact: "info@kennedy-center.org; sarah@kennedy-center.org; msholt@kennedy-center.org",
-        type: "Snov-generated domain email candidates",
-        recommendedUse: "Verify role before outreach; use for partnership/program routing only after identifying the right arts education subprogram.",
-        source: "Snov.io v2 domain search"
-      },
-      {
         organization: "DEGY Booking International",
-        contact: "info@degy.com; ari@degy.com; jeff@degy.com; nick@degy.com",
-        type: "Snov-generated domain email candidates",
-        recommendedUse: "Watchlist/channel target tied to event-entertainment public spending. Verify role before outreach.",
-        source: "Snov.io v2 domain search"
+        contact: "Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com",
+        type: "Clay-enriched named contacts",
+        recommendedUse: "Primary event/vendor channel target tied to public event-entertainment spending. Use partner/channel language.",
+        source: "Clay + USAspending.gov"
       },
       {
         organization: "LADGOV Corp",
-        contact: "ouidad.mandour@ladgov.com; cbradley@ladgov.com",
-        type: "Snov-generated domain email candidates",
-        recommendedUse: "Watchlist/channel target tied to musician-services public spending. Verify role before outreach.",
-        source: "Snov.io v2 domain search"
+        contact: "Chris Bradley, Business Development Specialist, cbradley@ladgov.com",
+        type: "Clay-identified contact + Snov email candidate",
+        recommendedUse: "Musician-services contractor target. Use channel/partner language and verify email before send.",
+        source: "Clay + Snov.io + USAspending.gov"
       },
       {
         organization: "City of Seattle arts/culture program",
@@ -551,15 +545,15 @@ const reports = [
     ],
     contactProof: [
       "Source-native contacts found: NEA apply@arts.gov / 202-682-5504; U.S. Embassy Ottawa Public Diplomacy ottawa-pa@state.gov / 703-314-6820; Bureau of Educational and Cultural Affairs nelsonjg2@state.gov / 202-890-9795.",
-      "Snov-generated domain candidates found: ReImagine ATL, Jackson Symphony, Kennedy Center, DEGY Booking, and LADGOV. These should be verified before automated sending.",
+      "Clay-enriched named contacts found for the priority vendor/channel lane: Caite Kendrick, Nick DiRoma, and Sean Sullivan at DEGY; Chris Bradley at LADGOV.",
+      "Snov-generated domain candidates remain available for ReImagine ATL and Jackson Symphony. Verify before automated sending.",
       "Role/office paths generated where personal contacts were not reliable: South Carolina parks/tourism amphitheater project and City of Seattle arts/culture program.",
       "Recommended automation rule: do not send sales emails to Grants.gov program contacts. Use them for eligibility/program questions only; use partner/program/event contacts for business development."
     ],
     liveRefresh: [
-      "Live Grants.gov refresh run July 6, 2026: the original three included grant signals remain the strongest Jammcard-fit opportunities from the queried terms: NEA Grants for Arts Projects, U.S. Talent Program Canada, and U.S. Creative Tech Exchange.",
-      "Live Grants.gov also surfaced broader public diplomacy, creative economy, film, education, and international programs. They are not included as priority rows because they are weaker Jammcard fits, too broad, non-music-specific, or require a specialized eligible partner.",
-      "Live USAspending refresh found additional musician-services records not in the original client-ready HTML, including LADGOV and other military/chapel musician-services contracts. These are included as a procurement/channel watchlist, not top immediate buyer opportunities.",
-      "The June 30 local scan contained 28 source records. This updated report promotes 9 rows: 6 priority action rows and 3 watchlist/research rows."
+      "Live USAspending refresh run July 6, 2026 found additional musician-services and event-entertainment spending records. These are now the primary watchlist/channel lane.",
+      "Clay enrichment run July 6, 2026 found named DEGY and LADGOV contacts relevant to business development, booking, and channel partnership outreach.",
+      "Live Grants.gov refresh confirmed the original grant signals remain useful context, but they are not the main Jammcard outreach motion."
     ],
     emailDrafts: [
       {
@@ -611,7 +605,7 @@ Best,
 
 I noticed your organization has touched public-sector event entertainment or musician-services work. Jammcard may be a useful partner when projects need reliable professional musicians, performers, or music-programming support.
 
-We are exploring channel partnerships with event producers and public-event vendors that need a dependable talent-sourcing layer.
+The fit is pretty direct: public award records show repeat spend around event entertainment and musician services, and Jammcard's network is built around vetted music professionals.
 
 Is there someone on your team who handles talent partnerships or event programming support?
 
@@ -622,14 +616,71 @@ Best,
     outreachRules: [
       "Use the CSV or JSON as the upload source for an outreach AI instance.",
       "Treat source-native Grants.gov contacts as program/eligibility contacts only, not as sales buyers.",
+      "Prioritize Clay-enriched named contacts for DEGY and LADGOV before broader grant or arts-program outreach.",
       "Verify Snov-generated domain email candidates before sending personalized outreach.",
       "For generated role paths, first create a research task to identify the named person who owns that role.",
-      "Prioritize sends in this order: NEA applicant/grantee partners, funded public programming owners, funded arts organizations, event-production vendors.",
+      "Prioritize sends in this order: event/vendor channel contacts, funded public programming owners, funded arts organizations, then grant/program contacts.",
       "Log source URL, revenue motion, contact type, email sent, reply, follow-up date, and next action in CRM."
     ],
     outreachTargets: [
       {
         priority: 1,
+        organization: "DEGY Booking International / public-event vendor channel",
+        context: "USAspending shows public event-entertainment spending with DEGY. Clay also describes DEGY as active in college and military booking, which overlaps with public-sector event buyer patterns.",
+        contactInfo: "Clay contacts: Caite Kendrick, Director of Business Development, caite@degy.com; Nick DiRoma, Vice President, nick@degy.com; Sean Sullivan, Booking Agent, sean@degy.com.",
+        contactType: "Clay-enriched named contacts",
+        sendability: "Sendable after final human review; use partner/channel language.",
+        owner: "Director of Business Development, VP, Booking Agent",
+        sourceUrl: "https://www.usaspending.gov/award/19JA8026P1045",
+        email: {
+          subject: "Talent sourcing support for public-sector event work",
+          body: `Hi [Name],
+
+I saw DEGY's public-sector event entertainment work and thought Jammcard could be a useful talent-sourcing partner for projects that need reliable professional musicians or specialized music programming.
+
+Jammcard works with vetted music professionals, and DEGY's college/military booking focus looks like a strong overlap with public-sector event needs.
+
+Would it make sense to explore where Jammcard could support overflow talent sourcing, specialized musician needs, or public-event programming?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on whether Jammcard could support DEGY as a talent-sourcing layer for public-sector or military/community event work.",
+          "Hi [Name] - if talent partnerships are handled by someone else, I would appreciate the right contact."
+        ],
+        crmNote: "Primary channel target. Clay-enriched contact. Public award evidence: DEGY event-entertainment award."
+      },
+      {
+        priority: 2,
+        organization: "LADGOV Corp / musician-services contractor channel",
+        context: "Live USAspending refresh found LADGOV musician-services spending tied to USCG Cape May Chapel musician services through 2028.",
+        contactInfo: "Clay identified Chris Bradley, Business Development Specialist. Snov candidate: cbradley@ladgov.com.",
+        contactType: "Clay-identified contact + Snov email candidate",
+        sendability: "Verify email before send; strong fit for partner/channel outreach.",
+        owner: "Business Development Specialist",
+        sourceUrl: "https://www.usaspending.gov/award/70Z04323PTRCM0001",
+        email: {
+          subject: "Musician talent support for government service contracts",
+          body: `Hi Chris,
+
+I saw LADGOV's musician-services work with government buyers and wanted to ask whether Jammcard could be a useful talent partner for similar contracts.
+
+Jammcard works with vetted professional musicians and could potentially support sourcing, backup coverage, or specialized music talent for government, military, chapel, or community-event needs.
+
+Would it make sense to compare notes on where LADGOV needs musician talent support?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi Chris - quick follow-up on whether Jammcard could support musician sourcing for government service contracts or similar public-sector work.",
+          "Hi Chris - if someone else manages partner/vendor relationships for musician services, I would appreciate the right contact."
+        ],
+        crmNote: "Primary channel target. Clay identified BD owner; Snov supplied email candidate."
+      },
+      {
+        priority: 3,
         organization: "Likely NEA applicants and recent arts grantees",
         context: "Active NEA Grants for Arts Projects deadline on July 9, 2026. Jammcard can be positioned as a named music talent/programming partner.",
         contactInfo: "Use internal target list; source-native NEA program contact for eligibility only: apply@arts.gov / 202-682-5504.",
@@ -657,7 +708,7 @@ Best,
         crmNote: "NEA partner lane. Goal is partner routing, not direct grant contact sales."
       },
       {
-        priority: 2,
+        priority: 4,
         organization: "South Carolina parks/tourism amphitheater project",
         context: "A $300,000 public award supports an outdoor amphitheater at Boyd Pond Park with intended musical performances and cultural celebrations.",
         contactInfo: "Generated role path: Parks and Recreation Director; Tourism Program Manager; Special Events Manager; Procurement Specialist.",
@@ -685,7 +736,7 @@ Best,
         crmNote: "Funded public programming buyer. Needs named project owner before send."
       },
       {
-        priority: 3,
+        priority: 5,
         organization: "City of Seattle arts/culture program",
         context: "NEA-backed city arts funding included live music performances, validating a city arts-office programming lane.",
         contactInfo: "Generated role path: Cultural Affairs Manager; Public Art Program Manager; Events Coordinator; Arts Program Director.",
@@ -713,7 +764,7 @@ Best,
         crmNote: "City arts/public event buyer lane. Needs named Seattle program owner."
       },
       {
-        priority: 4,
+        priority: 6,
         organization: "ReImagine ATL",
         context: "Public funding for creative workforce development and apprenticeship programs. Jammcard can support music-industry mentor/talent-network access.",
         contactInfo: "Snov candidates: info@reimagineatl.com; julie@reimagineatl.com; terp@reimagineatl.com.",
@@ -741,7 +792,7 @@ Best,
         crmNote: "Creative workforce partner target. Verify best contact before automated send."
       },
       {
-        priority: 5,
+        priority: 7,
         organization: "Jackson Symphony Association",
         context: "NEA-supported public concert funding. Jammcard can support guest artist sourcing, local musician discovery, or community concert amplification.",
         contactInfo: "Snov candidates: info@jacksonsymphony.org; school.jso@jacksonsymphony.org; joan.cummings@jacksonsymphony.org.",
@@ -767,37 +818,23 @@ Best,
           "Hi [Name] - if programming or production partnerships are handled by someone else, I would appreciate the right contact."
         ],
         crmNote: "Funded arts organization partner target. Verify best role."
-      },
-      {
-        priority: 6,
-        organization: "DEGY Booking International / public-event vendor watchlist",
-        context: "USAspending shows public event-entertainment spending with DEGY. This is a channel/watchlist target, not a primary buyer.",
-        contactInfo: "Snov candidates: info@degy.com; ari@degy.com; jeff@degy.com; nick@degy.com.",
-        contactType: "Snov-generated domain email candidates",
-        sendability: "Verify role before send; use partner/channel language.",
-        owner: "Business Development Director, Event Production Lead, Talent Partnerships",
-        sourceUrl: "https://www.usaspending.gov/award/19JA8026P1045",
-        email: {
-          subject: "Talent sourcing support for public-sector events",
-          body: `Hi [Name],
-
-I noticed DEGY has touched public-sector event entertainment work and wanted to ask whether Jammcard could be useful as a talent-sourcing partner.
-
-Jammcard works with vetted professional musicians and music industry talent, which may be helpful when public events need reliable performers or specialized music programming support.
-
-Who on your team handles talent partnerships or public-event programming support?
-
-Best,
-[Sender]`
-        },
-        followUps: [
-          "Hi [Name] - checking back on whether Jammcard could be useful as a talent-sourcing layer for public-sector event work.",
-          "Hi [Name] - if someone else manages talent partnerships or event programming, I would appreciate a referral."
-        ],
-        crmNote: "Channel/watchlist target. Do not treat as direct buyer."
       }
     ],
     signals: [
+      {
+        title: "Public event entertainment and musician-services contractor lane",
+        why: "This is the clearest Jammcard-fit lane: public agencies and incumbent vendors are already buying event entertainment, musician services, and recurring music support. Jammcard can pursue vendors and program owners as a talent-sourcing partner rather than waiting for a grant cycle.",
+        whyShort: "Best-fit lane: public money is already moving to event entertainment and musician-services vendors.",
+        target: "DEGY, LADGOV, musician-services vendors, public-event producers, and agency contracting offices",
+        source: "USAspending.gov + Clay",
+        sourceUrl: "https://www.usaspending.gov/search",
+        revenueMotion: "Channel / Vendor Motion",
+        actionability: "High Actionability",
+        contactPath: "Director of Business Development, VP, Booking Agent, Business Development Specialist, Contracting Officer",
+        nextAction: "Start with Clay-enriched DEGY and LADGOV contacts, then build a watchlist of similar event-entertainment and musician-services awards for rebids and partner outreach.",
+        socialProof: "DEGY has a public event-entertainment award and Clay describes its business around college/military booking. LADGOV appears in musician-services public spending, and Clay identified a business development contact.",
+        outreach: "Jammcard can be a vetted talent-sourcing layer for vendors and agencies that repeatedly need reliable professional musicians."
+      },
       {
         title: "NEA Grants for Arts Projects 2, FY 2027",
         why: "Active national arts funding can create funded buyers for Jammcard: arts agencies, venues, nonprofits, festivals, cultural organizations, and community programs that need credible music talent or programming partners.",
@@ -809,6 +846,7 @@ Best,
         actionability: "High Actionability",
         contactPath: "Arts Program Director, Executive Director, Grants Manager, Festival Director",
         nextAction: "Identify 10-15 likely applicants or recurring grantees and offer Jammcard as a named talent/programming partner.",
+        socialProof: "Grants.gov lists an active NEA arts funding cycle with music and presenting/multidisciplinary works in scope.",
         outreach: "Jammcard can strengthen your arts project with vetted professional musicians, booking support, and a ready talent network."
       },
       {
@@ -821,6 +859,7 @@ Best,
         actionability: "High Actionability",
         contactPath: "Parks/Recreation, tourism, special events, cultural programming, procurement",
         nextAction: "Map the Boyd Pond Park project owner and pitch Jammcard as a launch-season live music programming partner.",
+        socialProof: "The USAspending award description explicitly references future musical performances and cultural celebrations at the amphitheater.",
         outreach: "The amphitheater needs repeatable public programming; Jammcard can supply reliable professional live music talent."
       },
       {
@@ -833,6 +872,7 @@ Best,
         actionability: "High Actionability",
         contactPath: "Cultural affairs, public art, events, arts program, procurement",
         nextAction: "Find the funded department or arts program owner and pitch a curated musician roster for public events.",
+        socialProof: "The public award is tied to live music performances, validating city arts offices as a buyer lane.",
         outreach: "Jammcard can help city arts teams execute source-backed live music programming with less talent-sourcing burden."
       },
       {
@@ -845,6 +885,7 @@ Best,
         actionability: "Medium Actionability",
         contactPath: "Public diplomacy program manager, cultural affairs officer, international programs director",
         nextAction: "Review eligibility and decide whether Jammcard should apply directly, partner with an eligible nonprofit, or supply named talent.",
+        socialProof: "Grants.gov lists a source-native U.S. Embassy Ottawa contact and frames the program around U.S. citizen talent, artists, and cultural professionals.",
         outreach: "Jammcard can provide a vetted U.S. artist network and booking infrastructure for cultural exchange programming."
       },
       {
@@ -857,6 +898,7 @@ Best,
         actionability: "Medium Actionability",
         contactPath: "Executive Director, Workforce Program Manager, Youth Programs Director, Creative Program Director",
         nextAction: "Pitch Jammcard as a professional mentor, talent-network, or music-industry career partner.",
+        socialProof: "USAspending shows public funding for creative workforce development; Snov returned domain email candidates for outreach routing.",
         outreach: "Jammcard can connect creative workforce programs to working music professionals, mentorship, and career exposure."
       },
       {
@@ -869,19 +911,8 @@ Best,
         actionability: "Medium Actionability",
         contactPath: "Executive Director, Artistic Director, Community Engagement Director, Production Manager",
         nextAction: "Approach the symphony with a guest-artist or local-musician sourcing offer.",
+        socialProof: "USAspending shows NEA-supported public concert funding, and Snov returned Jackson Symphony domain contact candidates.",
         outreach: "Jammcard can expand the concert series with guest artists and professional talent infrastructure."
-      },
-      {
-        title: "Kennedy Center National Arts Education Program",
-        why: "A major Department of Education award supports national arts education programming. This is not a simple vendor lead, but it is a large funded ecosystem where teaching artists, arts education partners, and music-career exposure can matter.",
-        target: "John F. Kennedy Center for the Performing Arts",
-        source: "USAspending.gov + Snov.io",
-        sourceUrl: "https://www.usaspending.gov/award/S351A220007",
-        revenueMotion: "Partner with Recipient",
-        actionability: "Medium Actionability",
-        contactPath: "Arts Education Director, National Program Director, Partnership Manager, Teaching Artist Program Lead",
-        nextAction: "Research subprograms and regional partners first, then route outreach to the team owning teaching artist, student, or career-connected programming.",
-        outreach: "Jammcard can help arts education programs connect students with working music professionals, mentorship, and career-connected learning."
       },
       {
         title: "FY 2026 U.S. Creative Tech Exchange",
@@ -893,32 +924,21 @@ Best,
         actionability: "Low Actionability",
         contactPath: "Cultural Exchange Program Manager, Creative Economy Lead, International Programs Director",
         nextAction: "Use the source-native contact only if an application or eligible partner is ready today; otherwise add to next-cycle watchlist.",
+        socialProof: "Grants.gov lists a source-native Bureau of Educational and Cultural Affairs contact, but the July 6 deadline makes this a same-day/next-cycle item.",
         outreach: "Jammcard sits at the intersection of professional creative talent and technology-enabled access, which can support creative-sector exchange programs."
-      },
-      {
-        title: "Federal event entertainment and musician-services buying pattern",
-        why: "Live refresh found additional government spending records for event entertainment and musician services, including event-entertainment vendors and military/chapel musician-services suppliers. These are best treated as future-cycle procurement/channel intelligence.",
-        target: "Public event vendors and agency contracting offices",
-        source: "USAspending.gov + Snov.io",
-        sourceUrl: "https://www.usaspending.gov/search",
-        revenueMotion: "Channel / Distributor Motion",
-        actionability: "Medium Actionability",
-        contactPath: "Business Development Director, Event Production Lead, Contracting Officer, Vendor Partnerships",
-        nextAction: "Build a watchlist around DEGY, LADGOV, and similar incumbents; monitor rebids and explore whether Jammcard can be a talent-sourcing partner.",
-        outreach: "Jammcard can become a talent-sourcing layer for public-event producers and agencies that repeatedly need reliable professional musicians."
       }
     ],
     actionPlan: [
       "Step 1: Upload the AI outreach package CSV or JSON to Jammcard's outreach AI instance.",
-      "Step 2: Have the AI create separate queues for NEA partner targets, funded public-programming owners, funded arts organizations, and event/vendor watchlist targets.",
-      "Step 3: Run contact validation before sending to Snov-generated candidates; use role paths to create research tasks where named contacts are missing.",
-      "Step 4: Send NEA applicant/grantee partner outreach first because the NEA deadline is July 9, 2026.",
-      "Step 5: Send funded-buyer outreach to South Carolina/Boyd Pond Park, City of Seattle, Jackson Symphony, ReImagine ATL, and Kennedy Center-related program teams.",
-      "Step 6: Put DEGY, LADGOV, and musician-services records into a watchlist sequence for channel partnerships and future bid cycles.",
+      "Step 2: Have the AI create separate queues for event/vendor channel contacts, funded public-programming owners, funded arts organizations, and grant/program contacts.",
+      "Step 3: Start with Clay-enriched DEGY and LADGOV contacts, then use Snov contacts for funded arts organizations after role verification.",
+      "Step 4: Create research tasks for South Carolina/Boyd Pond Park and City of Seattle because those are role paths, not verified personal contacts yet.",
+      "Step 5: Send funded-buyer outreach to Jackson Symphony and ReImagine ATL after contact validation.",
+      "Step 6: Keep NEA and Creative Tech Exchange as grant/program lanes; use source-native contacts only for eligibility or routing questions.",
       "Step 7: Track replies, referrals, requested materials, and next actions in CRM."
     ],
     notes:
-      "Grants.gov contacts are source-native program contacts. Snov.io contacts are domain-email candidates and should be verified before outreach. USAspending.gov records show public money flow and buyer/partner evidence; they are not automatically open solicitations."
+      "Clay contacts were used for the event/vendor channel lane. Grants.gov contacts are source-native program contacts. Snov.io contacts are domain-email candidates and should be verified before outreach. USAspending.gov records show public money flow and buyer/partner evidence; they are not automatically open solicitations."
   },
   {
     slug: "reparel",
