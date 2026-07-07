@@ -3,6 +3,7 @@ import { Badge, CompanyLogo, LockedBadge, OpportunityScannerLogo } from "@/compo
 import { SendToWorkflowModal, WorkflowPayload } from "@/components/workflow";
 import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/storage";
 import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types";
+import { accessSuffix, hasAdminAccess, hasFullReportAccess } from "@/lib/access";
 import { signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal } from "@/lib/contactTargeting";
 import { isSamGovConfigured } from "@/lib/connectors/samGov";
@@ -145,6 +146,18 @@ function unique(items: string[]): string[] {
   return [...new Set(items.filter(Boolean))];
 }
 
+function reportStatusLabel(status: ScanRecord["status"]): string {
+  const labels: Record<ScanRecord["status"], string> = {
+    queued: "Queued",
+    scraping: "Scanning website",
+    profiling: "Building profile",
+    discovering: "Finding opportunities",
+    completed: "Report ready",
+    failed: "Needs retry"
+  };
+  return labels[status] ?? "In progress";
+}
+
 function buildExecutiveSummary(signals: StoredOpportunitySignal[], profile?: CompanyProfile) {
   const summarySignals = signals.length > 0 ? signals : [];
   const sorted = [...summarySignals].sort(
@@ -174,7 +187,8 @@ function ReportHeader({
   totalSignals,
   visibleSignals,
   lockedSignals,
-  isPaid
+  isPaid,
+  access
 }: {
   scan: ScanRecord;
   profile?: CompanyProfile;
@@ -182,6 +196,7 @@ function ReportHeader({
   visibleSignals: number;
   lockedSignals: number;
   isPaid: boolean;
+  access?: string;
 }) {
   const companyName = profile?.company_name || scan.company_name || hostname(scan.company_url);
 
@@ -195,7 +210,7 @@ function ReportHeader({
           </a>
           {isPaid ? (
             <a
-              href={`/api/reports/${scan.id}/export`}
+              href={`/api/reports/${scan.id}/export${access ? `?access=${encodeURIComponent(access)}` : ""}`}
               className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700"
             >
               Download Report
@@ -235,7 +250,7 @@ function ReportHeader({
         </div>
         <div className="rounded-md border border-line bg-field p-3">
           <p className="text-xs font-semibold uppercase text-muted">Status</p>
-          <p className="mt-1 text-sm font-semibold text-ink">{scan.status}</p>
+          <p className="mt-1 text-sm font-semibold text-ink">{reportStatusLabel(scan.status)}</p>
         </div>
       </div>
     </header>
@@ -299,11 +314,13 @@ function ContactEnrichmentStatus({ signal }: { signal: StoredOpportunitySignal }
 function FindContactsButton({
   scanId,
   opportunityId,
-  locked = false
+  locked = false,
+  access
 }: {
   scanId: string;
   opportunityId: string;
   locked?: boolean;
+  access?: string;
 }) {
   if (locked) {
     return (
@@ -321,6 +338,7 @@ function FindContactsButton({
       <input type="hidden" name="scanId" value={scanId} />
       <input type="hidden" name="opportunityId" value={opportunityId} />
       <input type="hidden" name="enrichmentType" value="find_contacts" />
+      {access ? <input type="hidden" name="access" value={access} /> : null}
       <button className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent">
         Find Contacts
       </button>
@@ -332,12 +350,14 @@ function PrimaryActionButton({
   scanId,
   signal,
   profile,
-  isPaid
+  isPaid,
+  access
 }: {
   scanId: string;
   signal: StoredOpportunitySignal;
   profile?: CompanyProfile;
   isPaid: boolean;
+  access?: string;
 }) {
   const classification = opportunityActionFor(signal, profile);
   const label = primaryActionLabel(signal, profile);
@@ -345,7 +365,7 @@ function PrimaryActionButton({
     isPaid &&
     signal.source_url &&
     ["Review solicitation", "Check eligibility", "Monitor signal"].includes(label);
-  const href = opensSource ? signal.source_url : `/opportunities/${signal.id}?scanId=${scanId}`;
+  const href = opensSource ? signal.source_url : `/opportunities/${signal.id}?scanId=${scanId}${accessSuffix(access)}`;
 
   return (
     <a
@@ -362,10 +382,14 @@ function PrimaryActionButton({
 
 function OpportunityProfileModule({
   scan,
-  profile
+  profile,
+  isAdminView,
+  access
 }: {
   scan: ScanRecord;
   profile?: CompanyProfile;
+  isAdminView: boolean;
+  access?: string;
 }) {
   const products = (profile?.inferred_products_services ?? profile?.products_services ?? []).slice(0, 8);
   const terms = unique([
@@ -411,12 +435,14 @@ function OpportunityProfileModule({
             targets, contact paths, revenue motions, and recommended actions in this report.
           </p>
         </div>
-        <a
-          href={`/profiles/${scan.id}`}
-          className="rounded-md bg-ink px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
-        >
-          Refine Profile
-        </a>
+        {isAdminView ? (
+          <a
+            href={`/profiles/${scan.id}?access=${encodeURIComponent(access ?? "")}`}
+            className="rounded-md bg-ink px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
+          >
+            Refine Profile
+          </a>
+        ) : null}
       </div>
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
         <div className="rounded-md border border-line bg-field p-4">
@@ -452,12 +478,14 @@ function OpportunityDetail({
   scanId,
   signal,
   isPaid,
-  profile
+  profile,
+  access
 }: {
   scanId: string;
   signal: StoredOpportunitySignal;
   isPaid: boolean;
   profile?: CompanyProfile;
+  access?: string;
 }) {
   const classification = opportunityActionFor(signal, profile);
   const buyer = signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review";
@@ -509,12 +537,13 @@ function OpportunityDetail({
           <p className="mt-2 text-sm leading-6 text-slate-700">{classification.next_best_action}</p>
           <p className="mt-2 text-xs leading-5 text-muted">{classification.manual_research_instruction}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} />
-            <SendToWorkflowModal payload={workflowPayload(scanId, signal, profile, isPaid)} locked={!isPaid} />
+            <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} access={access} />
+            <SendToWorkflowModal payload={workflowPayload(scanId, signal, profile, isPaid)} locked={!isPaid} access={access} />
             <FindContactsButton
               scanId={scanId}
               opportunityId={signal.id}
               locked={!isPaid || !["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+              access={access}
             />
           </div>
         </div>
@@ -527,12 +556,14 @@ function OpportunityActionTable({
   scanId,
   signals,
   isPaid,
-  profile
+  profile,
+  access
 }: {
   scanId: string;
   signals: StoredOpportunitySignal[];
   isPaid: boolean;
   profile?: CompanyProfile;
+  access?: string;
 }) {
   return (
     <section className="overflow-hidden rounded-lg border border-line bg-white">
@@ -576,6 +607,7 @@ function OpportunityActionTable({
                           signal={signal}
                           isPaid={isPaid}
                           profile={profile}
+                          access={access}
                         />
                       </div>
                     </details>
@@ -616,12 +648,13 @@ function OpportunityActionTable({
                   </td>
                   <td className="min-w-[190px] px-4 py-4">
                     <div className="flex flex-col gap-2">
-                      <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} />
-                      <SendToWorkflowModal payload={workflowPayload(scanId, signal, profile, isPaid)} locked={!isPaid} />
+                      <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} access={access} />
+                      <SendToWorkflowModal payload={workflowPayload(scanId, signal, profile, isPaid)} locked={!isPaid} access={access} />
                       <FindContactsButton
                         scanId={scanId}
                         opportunityId={signal.id}
                         locked={!isPaid || !["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+                        access={access}
                       />
                       <p className="text-xs leading-5 text-muted">{classification.workflow_payload_reason}</p>
                     </div>
@@ -646,12 +679,14 @@ function OpportunitySignalCard({
   scanId,
   signal,
   isPaid,
-  profile
+  profile,
+  access
 }: {
   scanId: string;
   signal: StoredOpportunitySignal;
   isPaid: boolean;
   profile?: CompanyProfile;
+  access?: string;
 }) {
   const classification = opportunityActionFor(signal, profile);
   return (
@@ -688,7 +723,7 @@ function OpportunitySignalCard({
         ) : (
           <LockedBadge />
         )}
-        <a href={`/opportunities/${signal.id}?scanId=${scanId}`} className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink">
+        <a href={`/opportunities/${signal.id}?scanId=${scanId}${accessSuffix(access)}`} className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink">
           View action path
         </a>
       </div>
@@ -718,7 +753,7 @@ function LockedOpportunityCard({ signal, profile }: { signal: StoredOpportunityS
         <p>{classificationLabel(classification.contact_strategy)} in full report</p>
       </div>
       <a href="?unlock=placeholder" className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
-        Unlock Full Pipeline
+        Request Full Pipeline
       </a>
     </article>
   );
@@ -752,9 +787,10 @@ function UnlockCTA() {
           </div>
         </div>
         <div className="rounded-lg border border-blue-200 bg-white p-4 text-center">
-          <p className="text-3xl font-semibold text-ink"><span>$</span>99</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-muted">Beta access</p>
+          <p className="mt-1 text-2xl font-semibold text-ink">Full pipeline</p>
           <a href="?unlock=placeholder" className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
-            Unlock for $99
+            Request Full Report
           </a>
         </div>
       </div>
@@ -1055,13 +1091,8 @@ export default async function ReportPage({
     );
   const fallbackSignals = signals.slice(0, 6);
   const reportSignals = moveForwardSignals.length > 0 ? moveForwardSignals : fallbackSignals;
-  const isAdminView = searchParams?.access === "admin";
-  const isPaid =
-    isAdminView ||
-    searchParams?.access === "paid" ||
-    searchParams?.access === "full" ||
-    scan.report_access === "unlocked" ||
-    scan.report_access === "admin";
+  const isAdminView = hasAdminAccess(searchParams?.access, scan);
+  const isPaid = hasFullReportAccess(searchParams?.access, scan);
   const visibleCount = isPaid ? reportSignals.length : visibleSignalCount(reportSignals.length);
   const displayedSignals = reportSignals.slice(0, visibleCount);
   const lockedSignals = reportSignals.slice(visibleCount);
@@ -1076,23 +1107,37 @@ export default async function ReportPage({
           visibleSignals={displayedSignals.length}
           lockedSignals={lockedSignals.length}
           isPaid={isPaid}
+          access={searchParams?.access}
         />
 
         {searchParams?.unlock === "placeholder" ? (
           <section className="rounded-lg border border-blue-200 bg-blue-50 p-5 text-sm leading-6 text-blue-900">
-            Full-report checkout is not live yet. This preview shows the $99 unlock path for testing
-            the paid report experience.
+            Full-report access is in beta. We will review the scan and follow up with the full
+            opportunity pipeline, source links, contact paths, CRM notes, outreach angles, and
+            workflow-ready export.
           </section>
         ) : null}
 
         {scan.status === "failed" ? (
           <section className="rounded-lg border border-red-200 bg-red-50 p-5 text-sm text-red-700">
-            {scan.error_message || "The scan failed."}
+            We could not complete this scan. Please check the company URL and try again, or contact
+            us for help reviewing the website.
+            {isAdminView && scan.error_message ? (
+              <details className="mt-3 rounded-md border border-red-200 bg-white p-3">
+                <summary className="cursor-pointer font-semibold">Admin failure detail</summary>
+                <p className="mt-2 text-xs leading-5">{scan.error_message}</p>
+              </details>
+            ) : null}
           </section>
         ) : null}
 
         <ExecutiveSummaryCard signals={reportSignals} profile={profile} />
-        <OpportunityProfileModule scan={scan} profile={profile} />
+        <OpportunityProfileModule
+          scan={scan}
+          profile={profile}
+          isAdminView={isAdminView}
+          access={searchParams?.access}
+        />
         <ScreeningSummary
           allSignals={signals}
           reportSignals={reportSignals}
@@ -1103,10 +1148,11 @@ export default async function ReportPage({
           <>
             <OpportunityActionTable
               scanId={scan.id}
-              signals={displayedSignals}
-              isPaid={isPaid}
-              profile={profile}
-            />
+                signals={displayedSignals}
+                isPaid={isPaid}
+                profile={profile}
+                access={searchParams?.access}
+              />
 
             <section className="grid gap-4">
               <div>
@@ -1115,7 +1161,14 @@ export default async function ReportPage({
               </div>
               <div className="grid gap-4">
                 {displayedSignals.map((signal) => (
-                  <OpportunitySignalCard key={signal.id} scanId={scan.id} signal={signal} isPaid={isPaid} profile={profile} />
+                  <OpportunitySignalCard
+                    key={signal.id}
+                    scanId={scan.id}
+                    signal={signal}
+                    isPaid={isPaid}
+                    profile={profile}
+                    access={searchParams?.access}
+                  />
                 ))}
               </div>
             </section>

@@ -5,6 +5,7 @@ import { primaryContactTarget } from "@/lib/contactTargeting";
 import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
+import { hasFullReportAccess } from "@/lib/access";
 
 export const runtime = "nodejs";
 
@@ -17,7 +18,7 @@ function sourceLabel(signal: Awaited<ReturnType<typeof listScanOpportunitySignal
   const endDate =
     signal.deadline || (typeof signal.raw_json?.["End Date"] === "string" ? signal.raw_json["End Date"] : "");
 
-  if (signal.source_type === "historical_award" && endDate >= "2026-06-29") {
+  if (signal.source_type === "historical_award" && endDate >= new Date().toISOString().slice(0, 10)) {
     return `${signal.source_name} - current funded program`;
   }
 
@@ -34,10 +35,15 @@ function opportunityHeadline(signal: Awaited<ReturnType<typeof listScanOpportuni
   return signal.opportunity_title;
 }
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const scan = await getScan(params.id);
   if (!scan) {
     return NextResponse.json({ error: "Scan not found." }, { status: 404 });
+  }
+
+  const access = new URL(request.url).searchParams.get("access") ?? undefined;
+  if (!hasFullReportAccess(access, scan)) {
+    return NextResponse.json({ error: "Full report access is required to export this scan." }, { status: 403 });
   }
 
   const profileRecord = await getCompanyProfile(params.id);

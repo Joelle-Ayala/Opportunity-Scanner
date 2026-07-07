@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { hasFullReportAccess } from "@/lib/access";
+import { getScan } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -155,6 +157,16 @@ export async function POST(request: Request) {
 
   if (!validation.ok) {
     return jsonError(validation.status, validation.code, validation.message);
+  }
+
+  const access = isObject(body) && typeof body.access === "string" ? body.access.trim() : undefined;
+  const scanId = stringValue(validation.payload, "scanId");
+  const scan = await getScan(scanId);
+  if (!scan) {
+    return jsonError(404, "SCAN_NOT_FOUND", "Scan not found.");
+  }
+  if (!hasFullReportAccess(access, scan)) {
+    return jsonError(403, "FULL_REPORT_ACCESS_REQUIRED", "Full report access is required to send workflow payloads.");
   }
 
   const controller = new AbortController();

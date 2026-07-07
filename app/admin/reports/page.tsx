@@ -1,4 +1,5 @@
 import { listCompletedScansWithProfiles } from "@/lib/storage";
+import { hasAdminAccess } from "@/lib/access";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,8 +17,28 @@ function formatDate(value?: string | null) {
   }).format(new Date(value));
 }
 
-export default async function AdminReportsPage() {
+function AdminRequired() {
+  return (
+    <main className="min-h-screen bg-field px-6 py-8">
+      <section className="mx-auto max-w-xl rounded-lg border border-line bg-white p-6">
+        <h1 className="text-2xl font-semibold text-ink">Admin access required</h1>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          This workspace is only available to approved Opportunity Scanner operators.
+        </p>
+      </section>
+    </main>
+  );
+}
+
+export default async function AdminReportsPage({
+  searchParams
+}: {
+  searchParams?: { access?: string };
+}) {
+  if (!hasAdminAccess(searchParams?.access)) return <AdminRequired />;
+
   const rows = await listCompletedScansWithProfiles();
+  const accessParam = `access=${encodeURIComponent(searchParams?.access ?? "")}`;
 
   return (
     <main className="min-h-screen px-6 py-8">
@@ -27,10 +48,10 @@ export default async function AdminReportsPage() {
             <a href="/" className="text-sm font-medium text-accent">
               Back to scan form
             </a>
-            <a href="/admin/sources" className="ml-4 text-sm font-medium text-accent">
+            <a href={`/admin/sources?${accessParam}`} className="ml-4 text-sm font-medium text-accent">
               Source coverage
             </a>
-            <a href="/admin/feedback" className="ml-4 text-sm font-medium text-accent">
+            <a href={`/admin/feedback?${accessParam}`} className="ml-4 text-sm font-medium text-accent">
               Feedback
             </a>
             <h1 className="mt-4 text-3xl font-semibold text-ink">Completed Scans</h1>
@@ -94,7 +115,7 @@ export default async function AdminReportsPage() {
                   <div className="flex flex-col items-start gap-3 md:items-end">
                     <p className="text-sm text-slate-500">{formatDate(scan.completed_at)}</p>
                     <a
-                      href={`/reports/${scan.id}?access=admin`}
+                      href={`/reports/${scan.id}?${accessParam}`}
                       className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-[#176576]"
                     >
                       View full report

@@ -1,18 +1,39 @@
 import { isSamGovConfigured } from "@/lib/connectors/samGov";
 import { sourceCatalog } from "@/lib/sourceRegistry";
+import { hasAdminAccess } from "@/lib/access";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export default function AdminSourcesPage() {
+function AdminRequired() {
+  return (
+    <main className="min-h-screen bg-field px-6 py-8">
+      <section className="mx-auto max-w-xl rounded-lg border border-line bg-white p-6">
+        <h1 className="text-2xl font-semibold text-ink">Admin access required</h1>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          This workspace is only available to approved Opportunity Scanner operators.
+        </p>
+      </section>
+    </main>
+  );
+}
+
+export default function AdminSourcesPage({
+  searchParams
+}: {
+  searchParams?: { access?: string };
+}) {
+  if (!hasAdminAccess(searchParams?.access)) return <AdminRequired />;
+
   const sources = sourceCatalog({ samGovConfigured: isSamGovConfigured() });
+  const accessParam = `access=${encodeURIComponent(searchParams?.access ?? "")}`;
 
   return (
     <main className="min-h-screen px-6 py-8">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <a href="/admin/reports" className="text-sm font-medium text-accent">
+            <a href={`/admin/reports?${accessParam}`} className="text-sm font-medium text-accent">
               Back to completed scans
             </a>
             <h1 className="mt-4 text-3xl font-semibold text-ink">Source Coverage</h1>

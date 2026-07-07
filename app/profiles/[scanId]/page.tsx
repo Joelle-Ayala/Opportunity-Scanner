@@ -5,6 +5,7 @@ import { getCompanyProfile, getScan, listProfileFeedbackForScan } from "@/lib/st
 import { buildProfileSearchStrategy, ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { isSamGovConfigured } from "@/lib/connectors/samGov";
 import { sourceCatalog } from "@/lib/sourceRegistry";
+import { hasAdminAccess } from "@/lib/access";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -43,6 +44,19 @@ function enrichmentUseCase(sourceId: string): string {
   return useCases[sourceId] ?? "Adds additional evidence for profile quality, search routing, or outreach planning.";
 }
 
+function AdminRequired() {
+  return (
+    <main className="min-h-screen bg-field px-6 py-8">
+      <section className="mx-auto max-w-xl rounded-lg border border-line bg-white p-6">
+        <h1 className="text-2xl font-semibold text-ink">Admin access required</h1>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          Profile refinement is an internal workspace for approved Opportunity Scanner operators.
+        </p>
+      </section>
+    </main>
+  );
+}
+
 function ChipList({
   items,
   empty,
@@ -65,9 +79,16 @@ function ChipList({
   );
 }
 
-export default async function ProfilePage({ params }: { params: { scanId: string } }) {
+export default async function ProfilePage({
+  params,
+  searchParams
+}: {
+  params: { scanId: string };
+  searchParams?: { access?: string };
+}) {
   const scan = await getScan(params.scanId);
   if (!scan) notFound();
+  if (!hasAdminAccess(searchParams?.access, scan)) return <AdminRequired />;
 
   const profileRecord = await getCompanyProfile(scan.id);
   if (!profileRecord) notFound();
@@ -78,6 +99,7 @@ export default async function ProfilePage({ params }: { params: { scanId: string
   const companyName = profile.company_name || scan.company_name || hostname(scan.company_url);
   const activatedSources = profile.activated_source_categories ?? [];
   const sources = sourceCatalog({ samGovConfigured: isSamGovConfigured() });
+  const accessParam = `access=${encodeURIComponent(searchParams?.access ?? "")}`;
 
   return (
     <main className="min-h-screen bg-field px-6 py-8">
@@ -86,7 +108,7 @@ export default async function ProfilePage({ params }: { params: { scanId: string
           <div className="flex flex-wrap items-start justify-between gap-5">
             <OpportunityScannerLogo />
             <div className="flex flex-wrap gap-2">
-              <a href={`/reports/${scan.id}?access=admin`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink">
+              <a href={`/reports/${scan.id}?${accessParam}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink">
                 Back to Report
               </a>
               <a href="/" className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink">

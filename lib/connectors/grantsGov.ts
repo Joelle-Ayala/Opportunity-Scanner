@@ -103,14 +103,16 @@ function isCreativeGrantMismatch(text: string): boolean {
 }
 
 function isPastDeadline(deadline: string): boolean {
+  const currentDate = new Date().toISOString().slice(0, 10);
   const match = deadline.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/);
   if (!match) {
-    return /\b202[0-5]\b/.test(deadline);
+    const year = deadline.match(/\b(20\d{2})\b/)?.[1];
+    return Boolean(year && `${year}-12-31` < currentDate);
   }
 
   const [, month, day, year] = match;
   const iso = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  return iso < "2026-06-30";
+  return iso < currentDate;
 }
 
 function formatAwardRange(detail: GrantsOpportunityDetail): string {

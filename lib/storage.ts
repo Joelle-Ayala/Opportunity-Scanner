@@ -41,7 +41,20 @@ type LocalDb = {
 
 const localDbPath = path.join(process.cwd(), ".data", "local-db.json");
 
+function assertLocalStorageAllowed(): void {
+  const production = process.env.NODE_ENV === "production";
+  const explicitlyAllowed = process.env.ALLOW_LOCAL_STORAGE_IN_PRODUCTION === "true";
+
+  if (production && !explicitlyAllowed) {
+    throw new Error(
+      "Supabase storage must be configured in production. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, or set ALLOW_LOCAL_STORAGE_IN_PRODUCTION=true for temporary internal testing only."
+    );
+  }
+}
+
 async function readLocalDb(): Promise<LocalDb> {
+  assertLocalStorageAllowed();
+
   try {
     const raw = await fs.readFile(localDbPath, "utf8");
     return JSON.parse(raw) as LocalDb;
@@ -73,6 +86,8 @@ function normalizeLocalDb(db: Partial<LocalDb>): LocalDb {
 }
 
 async function writeLocalDb(db: LocalDb): Promise<void> {
+  assertLocalStorageAllowed();
+
   await fs.mkdir(path.dirname(localDbPath), { recursive: true });
   await fs.writeFile(localDbPath, JSON.stringify(db, null, 2));
 }

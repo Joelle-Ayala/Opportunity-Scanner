@@ -84,14 +84,17 @@ Copy `.env.example` to `.env.local`.
 - `OPENAI_API_KEY` enables AI-generated company profiles.
 - `SAM_API_KEY` enables SAM.gov active opportunity search.
 - `SUPABASE_URL` plus `SUPABASE_SERVICE_ROLE_KEY` enables Supabase storage.
-- Without Supabase variables, scans are stored locally in `.data/local-db.json` for development.
+- `OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE` unlocks full-report beta access.
+- `OPPORTUNITY_SCANNER_ADMIN_CODE` unlocks admin/operator workspaces.
+- Without Supabase variables, scans are stored locally in `.data/local-db.json` for development. Production requires Supabase unless `ALLOW_LOCAL_STORAGE_IN_PRODUCTION=true` is set for temporary internal testing.
 
 ## Routes
 
 - `/` scan form
 - `/reports/[id]` free report preview
-- `/reports/[id]?access=admin` full internal report with research details
-- `/opportunities/[id]?scanId=[scan_id]` opportunity profile and enrichment queue
-- `/admin/reports` completed scan list
-- `/admin/feedback` feedback review for good-fit and bad-fit opportunity labels
-- `/admin/sources` connector/source coverage
+- `/reports/[id]?access=[REPORT_ACCESS_CODE]` full beta report
+- `/reports/[id]?access=[ADMIN_CODE]` full internal report with research details
+- `/opportunities/[id]?scanId=[scan_id]&access=[REPORT_ACCESS_CODE]` opportunity profile and enrichment queue
+- `/admin/reports?access=[ADMIN_CODE]` completed scan list
+- `/admin/feedback?access=[ADMIN_CODE]` feedback review for good-fit and bad-fit opportunity labels
+- `/admin/sources?access=[ADMIN_CODE]` connector/source coverage

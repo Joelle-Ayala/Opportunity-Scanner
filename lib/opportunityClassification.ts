@@ -64,7 +64,7 @@ export type OpportunityClassification = {
   follow_up_task: string;
 };
 
-const CURRENT_SCAN_DATE = "2026-06-30";
+const CURRENT_SCAN_DATE = new Date().toISOString().slice(0, 10);
 
 function unique(items: string[]): string[] {
   return [...new Set(items.filter(Boolean))];

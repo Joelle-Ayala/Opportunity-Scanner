@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { enrichContactsWithSnov } from "@/lib/connectors/snov";
-import { getStoredOpportunitySignal, saveOpportunityEnrichmentRequest } from "@/lib/storage";
+import { getScan, getStoredOpportunitySignal, saveOpportunityEnrichmentRequest } from "@/lib/storage";
 import { OpportunityEnrichmentType } from "@/lib/types";
+import { hasFullReportAccess } from "@/lib/access";
 
 export const runtime = "nodejs";
 
@@ -22,6 +23,16 @@ export async function POST(request: Request) {
 
   if (!scanId || !opportunityId || !enrichmentTypes.includes(enrichmentType)) {
     return NextResponse.json({ error: "Invalid enrichment request." }, { status: 400 });
+  }
+
+  const scan = await getScan(scanId);
+  if (!scan) {
+    return NextResponse.json({ error: "Scan not found." }, { status: 404 });
+  }
+
+  const access = String(form.get("access") || "") || undefined;
+  if (!hasFullReportAccess(access, scan)) {
+    return NextResponse.json({ error: "Full report access is required to enrich opportunities." }, { status: 403 });
   }
 
   if (enrichmentType === "find_contacts") {

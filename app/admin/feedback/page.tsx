@@ -1,4 +1,5 @@
 import { listReportFeedbackWithContext } from "@/lib/storage";
+import { hasAdminAccess } from "@/lib/access";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -23,20 +24,40 @@ function opportunityHeadline(title?: string | null): string {
   return title;
 }
 
-export default async function AdminFeedbackPage() {
+function AdminRequired() {
+  return (
+    <main className="min-h-screen bg-field px-6 py-8">
+      <section className="mx-auto max-w-xl rounded-lg border border-line bg-white p-6">
+        <h1 className="text-2xl font-semibold text-ink">Admin access required</h1>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          This workspace is only available to approved Opportunity Scanner operators.
+        </p>
+      </section>
+    </main>
+  );
+}
+
+export default async function AdminFeedbackPage({
+  searchParams
+}: {
+  searchParams?: { access?: string };
+}) {
+  if (!hasAdminAccess(searchParams?.access)) return <AdminRequired />;
+
   const rows = await listReportFeedbackWithContext(150);
   const moreLikeThis = rows.filter((row) => row.feedback.feedback_kind === "more_like_this").length;
   const lessLikeThis = rows.filter((row) => row.feedback.feedback_kind === "less_like_this").length;
+  const accessParam = `access=${encodeURIComponent(searchParams?.access ?? "")}`;
 
   return (
     <main className="min-h-screen px-6 py-8">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <a href="/admin/reports" className="text-sm font-medium text-accent">
+            <a href={`/admin/reports?${accessParam}`} className="text-sm font-medium text-accent">
               Back to completed scans
             </a>
-            <a href="/admin/sources" className="ml-4 text-sm font-medium text-accent">
+            <a href={`/admin/sources?${accessParam}`} className="ml-4 text-sm font-medium text-accent">
               Source coverage
             </a>
             <h1 className="mt-4 text-3xl font-semibold text-ink">Feedback Review</h1>
@@ -106,14 +127,14 @@ export default async function AdminFeedbackPage() {
                     <td className="px-4 py-4">
                       <div className="flex flex-wrap gap-2">
                         <a
-                          href={`/reports/${feedback.scan_id}?access=admin`}
+                          href={`/reports/${feedback.scan_id}?${accessParam}`}
                           className="rounded-md border border-line bg-white px-2 py-1 text-xs font-semibold text-slate-700"
                         >
                           Report
                         </a>
                         {feedback.opportunity_id ? (
                           <a
-                            href={`/opportunities/${feedback.opportunity_id}?scanId=${feedback.scan_id}`}
+                            href={`/opportunities/${feedback.opportunity_id}?scanId=${feedback.scan_id}&${accessParam}`}
                             className="rounded-md border border-line bg-white px-2 py-1 text-xs font-semibold text-slate-700"
                           >
                             Opportunity

@@ -11,6 +11,7 @@ import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { OpportunityEnrichmentType, StoredOpportunitySignal } from "@/lib/types";
+import { accessSuffix, hasFullReportAccess } from "@/lib/access";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -72,12 +73,80 @@ function enrichmentContacts(result: Record<string, unknown>): Array<Record<strin
   return Array.isArray(contacts) ? contacts.filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null) : [];
 }
 
+function actionabilityLabel(value: string): string {
+  if (value === "Strong") return "High Actionability";
+  if (value === "Medium") return "Medium Actionability";
+  if (value === "Research" || value === "Screened out" || value === "Low") return "Low Actionability";
+  return value;
+}
+
+function LockedOpportunityPreview({
+  scanId,
+  signal,
+  profile,
+  access
+}: {
+  scanId: string;
+  signal: StoredOpportunitySignal;
+  profile?: ReturnType<typeof ensureProfileRefinementFields>;
+  access?: string;
+}) {
+  const classification = opportunityActionFor(signal, profile);
+  return (
+    <main className="min-h-screen bg-field px-6 py-8">
+      <div className="mx-auto max-w-4xl">
+        <a href={`/reports/${scanId}${access ? `?access=${encodeURIComponent(access)}` : ""}`} className="text-sm font-medium text-accent">
+          Back to report
+        </a>
+        <section className="mt-5 rounded-lg border border-line bg-white p-6">
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent">
+            Opportunity Preview
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold leading-tight text-ink">
+            {opportunityHeadline(signal)}
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            The full opportunity workspace is part of the full report. It includes source links,
+            contact search paths, enrichment actions, CRM-ready notes, outreach angles, and workflow handoff.
+          </p>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            <div className="rounded-md border border-line bg-field p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">Actionability</p>
+              <p className="mt-2 text-sm font-semibold text-ink">{actionabilityLabel(classification.actionability_label)}</p>
+            </div>
+            <div className="rounded-md border border-line bg-field p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">Target</p>
+              <p className="mt-2 text-sm font-semibold text-ink">
+                {signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review"}
+              </p>
+            </div>
+            <div className="rounded-md border border-line bg-field p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">Contact path</p>
+              <p className="mt-2 text-sm font-semibold text-ink">{classificationLabel(classification.contact_strategy)}</p>
+            </div>
+          </div>
+          <p className="mt-5 rounded-md border border-line bg-field p-4 text-sm leading-6 text-slate-700">
+            <span className="font-semibold text-ink">Next best action:</span>{" "}
+            {classification.next_best_action}
+          </p>
+          <a
+            href={`/reports/${scanId}?unlock=placeholder${accessSuffix(access)}`}
+            className="mt-5 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+          >
+            Request Full Report
+          </a>
+        </section>
+      </div>
+    </main>
+  );
+}
+
 export default async function OpportunityPage({
   params,
   searchParams
 }: {
   params: { id: string };
-  searchParams: { scanId?: string; enrichment?: string };
+  searchParams: { scanId?: string; enrichment?: string; access?: string };
 }) {
   const scanId = searchParams.scanId || "";
   if (!scanId) {
@@ -96,8 +165,12 @@ export default async function OpportunityPage({
 
   const profileRecord = await getCompanyProfile(scan.id);
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
-  const enrichmentRequests = await listOpportunityEnrichmentRequests(scan.id, signal.id);
   const classification = opportunityActionFor(signal, profile);
+  if (!hasFullReportAccess(searchParams.access, scan)) {
+    return <LockedOpportunityPreview scanId={scan.id} signal={signal} profile={profile} access={searchParams.access} />;
+  }
+
+  const enrichmentRequests = await listOpportunityEnrichmentRequests(scan.id, signal.id);
   const primaryContact = primaryContactTarget(signal);
   const contactTargets = contactTargetsForSignal(signal);
   const contactSummary = contactDiscoverySummary(signal);
@@ -108,7 +181,7 @@ export default async function OpportunityPage({
     <main className="min-h-screen px-6 py-8">
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-wrap gap-3 text-sm font-medium">
-          <a href={`/reports/${scan.id}`} className="text-accent">
+          <a href={`/reports/${scan.id}${searchParams.access ? `?access=${encodeURIComponent(searchParams.access)}` : ""}`} className="text-accent">
             Back to report
           </a>
           <a href="/" className="text-slate-600 hover:text-accent">
@@ -145,7 +218,7 @@ export default async function OpportunityPage({
                     : "bg-amber-50 text-amber-800"
               }`}
             >
-              {classification.actionability_label} opportunity
+              {actionabilityLabel(classification.actionability_label)}
             </span>
           </div>
         </header>
@@ -214,6 +287,7 @@ export default async function OpportunityPage({
               <input type="hidden" name="scanId" value={scan.id} />
               <input type="hidden" name="opportunityId" value={signal.id} />
               <input type="hidden" name="enrichmentType" value="find_contacts" />
+              {searchParams.access ? <input type="hidden" name="access" value={searchParams.access} /> : null}
               <button className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-[#176576]">
                 Find Contacts
               </button>
@@ -361,6 +435,7 @@ export default async function OpportunityPage({
                 <input type="hidden" name="scanId" value={scan.id} />
                 <input type="hidden" name="opportunityId" value={signal.id} />
                 <input type="hidden" name="enrichmentType" value={action.type} />
+                {searchParams.access ? <input type="hidden" name="access" value={searchParams.access} /> : null}
                 <h3 className="text-sm font-semibold text-ink">{action.label}</h3>
                 <p className="mt-2 min-h-[40px] text-sm leading-5 text-slate-600">{action.description}</p>
                 <button className="mt-3 rounded-md bg-ink px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700">

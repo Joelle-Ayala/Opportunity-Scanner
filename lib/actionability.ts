@@ -1,5 +1,7 @@
 import { StoredOpportunitySignal } from "./types";
 
+const CURRENT_ACTION_DATE = new Date().toISOString().slice(0, 10);
+
 export type ActionabilityAssessment = {
   actionability: "yes" | "maybe" | "unlikely";
   reason: string;
@@ -76,7 +78,7 @@ export function directRevenueFitScore(signal: StoredOpportunitySignal): number {
   const endDate = signal.deadline || signalDate(signal, "End Date");
   let score = signal.relevance_score + signal.confidence_score + signal.novelty_score;
 
-  if (endDate >= "2026-06-29") score += 45;
+  if (endDate >= CURRENT_ACTION_DATE) score += 45;
   else if (endDate >= "2025-01-01") score += 18;
   else if (endDate) score -= 35;
 
@@ -170,7 +172,7 @@ function isRelevantPriorExampleDisabled(signal: StoredOpportunitySignal): boolea
     !indirectOrInfrastructure &&
     Boolean(endDate) &&
     endDate >= "2022-01-01" &&
-    endDate < "2026-06-29"
+    endDate < CURRENT_ACTION_DATE
   );
 }
 
@@ -251,7 +253,7 @@ export function assessActionability(signal: StoredOpportunitySignal): Actionabil
     .toLowerCase();
   const endDate = comparableDate(signal.deadline || signalDate(signal, "End Date"));
   const startDate = comparableDate(signalDate(signal, "Start Date"));
-  const currentDate = "2026-06-29";
+  const currentDate = CURRENT_ACTION_DATE;
   const recentStart = startDate >= "2024-01-01";
   const stillActive = Boolean(endDate && endDate >= currentDate);
   const expired = Boolean(endDate && endDate < currentDate);

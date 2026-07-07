@@ -40,10 +40,12 @@ function prettyLabel(value?: string): string {
 
 export function SendToWorkflowModal({
   payload,
-  locked = false
+  locked = false,
+  access
 }: {
   payload: WorkflowPayload;
   locked?: boolean;
+  access?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState("");
@@ -55,7 +57,7 @@ export function SendToWorkflowModal({
     const response = await fetch("/api/workflow/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ webhookUrl, payload })
+      body: JSON.stringify({ webhookUrl, payload, access })
     });
     setStatus(response.ok ? "sent" : "error");
   }
