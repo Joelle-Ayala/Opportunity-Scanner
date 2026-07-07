@@ -125,7 +125,7 @@ function emailDraftsSection(drafts) {
   return `
     <section class="section">
       <h2>First-Touch Email Drafts</h2>
-      <p class="section-intro">These are short first touches Jammcard can adapt today. They are intentionally specific to the signal and ask for the right owner instead of assuming a personal contact is always available.</p>
+      <p class="section-intro">These are short first touches the team can adapt today. They are intentionally specific to the signal and ask for the right owner instead of assuming a personal contact is always available.</p>
       <div class="grid">
         ${drafts
           .map(
@@ -400,7 +400,7 @@ async function writeOutreachPackage(report) {
     company: report.company,
     prepared_at: report.date,
     purpose:
-      "AI-ready outreach package for Jammcard business development follow-up. Use source context, contacts, drafts, and follow-up logic to create tasks, draft sends, and manage replies.",
+      `AI-ready outreach package for ${report.company} business development follow-up. Use source context, contacts, drafts, and follow-up logic to create tasks, draft sends, and manage replies.`,
     operating_rules: report.outreachRules,
     targets: report.outreachTargets
   };
@@ -1580,21 +1580,51 @@ Best,
   {
     slug: "reparel",
     company: "Reparel",
-    date: "July 5, 2026",
+    date: "July 7, 2026",
     primaryMotion: "Channel / Buyer",
-    sources: ["USAspending.gov", "Snov.io", "Opportunity Scanner contact logic"],
+    sources: ["USAspending.gov", "Snov.io", "Opportunity Scanner contact logic", "Reparel website scan"],
     summary:
-      "Reparel has a clear public-sector money-flow pattern around rehabilitation supplies, physical therapy supplies, orthotic supplies, VA/healthcare purchasing, and DME-adjacent routes. The immediate opportunity is channel and procurement mapping, not a generic grant strategy.",
+      "Reparel's strongest public-sector path is not a generic grant strategy. It is a buyer and channel strategy around rehabilitation supplies, physical therapy supplies, orthotic supplies, VA/HHS purchasing, and DME-adjacent ordering routes. The outbound goal is to validate which distributors, buying offices, and orthotics suppliers can evaluate Reparel as a recovery sleeve, brace/boot undersleeve, post-op support, and reimbursable clinical support product.",
+    digest: [
+      {
+        label: "Best first move",
+        title: "Supplier onboarding sprint",
+        body: "Start with Performance Health and the HHS rehab-supply BPA recipients because they have the clearest fit with rehab, PT, orthotic, and clinical supply channels."
+      },
+      {
+        label: "Active signal",
+        title: "KLM Labs orthotics lane",
+        body: "KLM Laboratories has an active HHS orthotics-related award ending July 25, 2026, making it a time-sensitive channel and market-map target."
+      },
+      {
+        label: "Contact status",
+        title: "Mixed sendability",
+        body: "Snov produced email candidates for Performance Health and Footmaxx. First Nations, National Environmental, KLM, Apex, and agency routes still need owner/contact research before outreach."
+      }
+    ],
     firstMoves: [
-      "Start with First Nations Distribution, Performance Health Supply, and National Environmental because they are tied to current or recent HHS rehab/medical supply buying.",
-      "Use Snov-generated contacts only where the domain is clear; verify role fit before outreach.",
+      "Start with Performance Health, First Nations Distribution, National Environmental, and KLM because they are tied to current or near-current HHS rehab, orthotic, or clinical supply buying.",
+      "Use Snov-generated contacts only where the domain is clear; verify role fit before outreach and do not assume a general inbox is the decision-maker.",
       "Lead with product-category fit: recovery sleeve, post-op support, brace/boot undersleeve, pain/swelling support, PT/rehab supply, and reimbursable DME-adjacent positioning.",
-      "Use VA and DOD records as market evidence, then identify the current buying office or distributor channel."
+      "Use VA and DOD records as market evidence, then identify the current buying office, distributor channel, prosthetics route, or supplier onboarding path.",
+      "Build a simple evidence packet before outbound: product sheet, reimbursable/PDAC positioning, clinical use cases, brace/boot undersleeve positioning, and ordering/contact path."
+    ],
+    coverage: [
+      "Latest local Reparel scan reviewed July 7, 2026: evaluator reports 9 source-backed signals, 6 yes/maybe, and 0 issues.",
+      "The package prioritizes HHS rehabilitation supply BPAs, active/current orthotics purchasing, VA physical therapy/prosthetics routes, and DOD orthotics evidence.",
+      "KLM Laboratories was added from prior Reparel source data because it is an active/current orthotics signal ending July 25, 2026.",
+      "Large DMEPOS infrastructure records such as CGS Administrators, Empower AI, and Softrams are intentionally kept out of the outreach queue because they are reimbursement/admin infrastructure signals, not near-term buyer/channel targets.",
+      "Sampson's Prosthetic Laboratory appears in prior data as orthotics market evidence, but it is not included as a primary outreach target in this package."
     ],
     contacts: [
       {
         organization: "Performance Health Supply / Performance Health",
         contact: "info@performancehealth.com; customersupport@performancehealth.com; blands@performancehealth.com",
+        entries: [
+          "info@performancehealth.com | Snov-generated domain email candidate",
+          "customersupport@performancehealth.com | Snov-generated domain email candidate",
+          "blands@performancehealth.com | Snov-generated domain email candidate"
+        ],
         type: "Snov-generated domain email candidates",
         recommendedUse: "Verify role and route to rehab supply category, government sales, DME/orthotics product, or supplier onboarding.",
         source: "Snov.io v2 domain search"
@@ -1602,6 +1632,11 @@ Best,
       {
         organization: "Footmaxx",
         contact: "michael.kinney@footmaxx.com; charlie.doll@footmaxx.com; rob.martin@footmaxx.com",
+        entries: [
+          "michael.kinney@footmaxx.com | Snov-generated domain email candidate",
+          "charlie.doll@footmaxx.com | Snov-generated domain email candidate",
+          "rob.martin@footmaxx.com | Snov-generated domain email candidate"
+        ],
         type: "Snov-generated domain email candidates",
         recommendedUse: "Verify role before outreach; use as orthotics-channel intelligence, not the first Reparel sales target.",
         source: "Snov.io v2 domain search"
@@ -1609,6 +1644,12 @@ Best,
       {
         organization: "First Nations Distribution LLC",
         contact: "Government Contracts Manager; Medical Supply Category Manager; Clinical Supply Manager",
+        entries: [
+          "Government Contracts Manager | Email/domain research needed",
+          "Medical Supply Category Manager | Email/domain research needed",
+          "Clinical Supply Manager | Email/domain research needed",
+          "SAM.gov entity or BPA ordering contact | Source-native research needed"
+        ],
         type: "Generated role contact path",
         recommendedUse: "Resolve company domain or SAM/UEI profile, then ask how rehab supply products are added to public-sector BPA ordering paths.",
         source: "USAspending.gov + Opportunity Scanner contact logic"
@@ -1616,70 +1657,188 @@ Best,
       {
         organization: "National Environmental Inc.",
         contact: "Government Contracts Manager; Physical Therapy Supply Buyer; Clinical Supply Manager",
+        entries: [
+          "Government Contracts Manager | Email/domain research needed",
+          "Physical Therapy Supply Buyer | Email/domain research needed",
+          "Clinical Supply Manager | Email/domain research needed",
+          "HHS/IHS buying office contact attached to award | Source-native research needed"
+        ],
         type: "Generated role contact path",
         recommendedUse: "Validate whether the recipient is a relevant distributor; if not, pivot to the HHS/IHS buying office.",
         source: "USAspending.gov + Opportunity Scanner contact logic"
       },
       {
+        organization: "KLM Laboratories / HHS orthotics supply lane",
+        contact: "Orthotics product owner; government contracts manager; HHS/IHS ordering office",
+        entries: [
+          "Orthotics product owner | Email/domain research needed",
+          "Government contracts manager | Email/domain research needed",
+          "HHS/IHS ordering office for WRSU orthotics supplies | Source-native research needed"
+        ],
+        type: "Generated role contact path",
+        recommendedUse: "Treat as an active/current orthotics market-map target. Resolve contact path before outreach because no verified connector email is available yet.",
+        source: "USAspending.gov + Opportunity Scanner contact logic"
+      },
+      {
         organization: "Department of Veterans Affairs physical therapy/prosthetics route",
         contact: "VA Prosthetics Representative; VA Physical Therapy Supply Buyer; Procurement Specialist",
+        entries: [
+          "VA Prosthetics Representative | Facility/office research needed",
+          "VA Physical Therapy Supply Buyer | Facility/office research needed",
+          "VA Procurement Specialist | Contracting office research needed",
+          "Apex Integrated Distribution channel/account contact | Email/domain research needed"
+        ],
         type: "Generated office contact path",
         recommendedUse: "Use VA award evidence to identify current prosthetics, orthotics, and PT supply buying offices.",
         source: "USAspending.gov + Opportunity Scanner contact logic"
+      }
+    ],
+    contactProof: [
+      "Snov-generated domain candidates are available for Performance Health and Footmaxx, but they should be verified before automated sending.",
+      "First Nations Distribution, National Environmental, KLM Laboratories, and Apex/VA routes need contact research before outreach.",
+      "KLM is included because the source data shows an active HHS orthotics supplies award ending July 25, 2026.",
+      "VA/DOD records should be treated as market-map and procurement-path evidence until a current buying office or active vehicle is identified.",
+      "Recommended automation rule: classify every contact as confirmed email, candidate email, named person without email, role path, agency office path, or market evidence before sending."
+    ],
+    liveRefresh: [
+      "Updated package created July 7, 2026 for outbound operations review.",
+      "Local report evaluator shows Reparel at 0 issues, with 9 source-backed signals and 6 yes/maybe signals.",
+      "KLM Laboratories added as active/current orthotics evidence; Sampson's Prosthetic Laboratory remains prior evidence only.",
+      "No new live email enrichment was completed in this pass beyond existing Snov candidates; unresolved targets are intentionally marked as research tasks rather than invented contacts."
+    ],
+    emailDrafts: [
+      {
+        useCase: "Distributor or supplier onboarding",
+        subject: "Supplier fit for rehab and recovery sleeve products",
+        body: `Hi [Name],
+
+I saw public-sector rehab and medical supply activity connected to your organization and wanted to ask who handles supplier onboarding or category review for rehab, PT, orthotics, or DME-adjacent products.
+
+Reparel makes clinically positioned recovery sleeves used for pain, swelling, post-op recovery, and brace or boot undersleeve support. We are evaluating whether the product fits existing public-sector rehab supply ordering paths.
+
+Would you be the right person to discuss supplier onboarding, or should I connect with someone on the rehab supply/category team?
+
+Best,
+[Sender]`
+      },
+      {
+        useCase: "Agency or buying office routing",
+        subject: "Finding the right rehab supply ordering path",
+        body: `Hi [Name],
+
+I am trying to identify the right procurement or clinical supply route for rehab, physical therapy, orthotic, and recovery support products.
+
+Reparel's product line includes recovery sleeves and brace/boot undersleeves that may fit patient support, post-op, arthritis, and PT recovery use cases.
+
+Could you point me toward the right ordering office, procurement contact, or vendor-registration path for this category?
+
+Best,
+[Sender]`
+      },
+      {
+        useCase: "Orthotics supplier or channel partner",
+        subject: "Orthotics-adjacent recovery sleeve fit",
+        body: `Hi [Name],
+
+I saw public-sector orthotics supply work connected to your organization and wanted to ask whether Reparel could be evaluated as an adjacent product for recovery, swelling, pain support, or brace and boot undersleeve use.
+
+The goal is not to replace orthotics. The question is whether Reparel can complement orthotic and bracing pathways where patients need a comfortable recovery sleeve or undersleeve option.
+
+Who would be the right person to discuss product fit or supplier onboarding?
+
+Best,
+[Sender]`
+      },
+      {
+        useCase: "Evidence packet follow-up",
+        subject: "Reparel product information for review",
+        body: `Hi [Name],
+
+Following up with a concise Reparel review packet would be helpful if your team evaluates rehab, PT, orthotic, or DME-adjacent products.
+
+The packet can include product line summary, clinical positioning, reimbursement/PDAC notes where applicable, use cases, and recommended ordering/category language.
+
+Would that be useful for your supplier review process?
+
+Best,
+[Sender]`
       }
     ],
     signals: [
       {
         title: "HHS BPA for medical and rehabilitation supplies: First Nations Distribution",
         why: "HHS awarded First Nations Distribution $46,400 for a BPA covering miscellaneous medical and rehabilitation supplies through March 2027.",
+        whyShort: "$46.4K HHS BPA for miscellaneous medical and rehabilitation supplies through March 2027.",
         target: "First Nations Distribution LLC / HHS buying office",
         source: "USAspending.gov",
         sourceUrl: "https://www.usaspending.gov/award/75H71025P00458",
-        revenueMotion: "Sell to Award Recipient / Channel Motion",
+        revenueMotion: "Channel / Distributor Motion",
         actionability: "High Actionability",
         contactPath: "Government contracts, medical supply category, clinical supply, procurement",
         nextAction: "Resolve the company domain/SAM entity and ask how products are added to public-sector BPA ordering catalogs.",
+        socialProof: "The source description references miscellaneous medical and rehabilitation supplies and materials.",
         outreach: "Reparel may fit rehab supply ordering paths as a recovery sleeve and orthotic-adjacent SKU."
       },
       {
         title: "HHS BPA for rehab supplies: Performance Health Supply",
         why: "HHS awarded Performance Health Supply $21,600 for miscellaneous medical and rehabilitation supplies through April 2027.",
+        whyShort: "$21.6K HHS rehab-supply BPA with a clear distributor/category fit.",
         target: "Performance Health Supply / Performance Health",
         source: "USAspending.gov + Snov.io",
         sourceUrl: "https://www.usaspending.gov/award/75H71025P00547",
-        revenueMotion: "Sell to Award Recipient / Channel Motion",
+        revenueMotion: "Channel / Distributor Motion",
         actionability: "High Actionability",
         contactPath: "Rehab supply category, DME/orthotics product, government sales, clinical supply buyer",
         nextAction: "Use Snov candidates to route toward supplier onboarding and rehab product-category fit.",
+        socialProof: "Performance Health is the cleanest known distributor-style lane in the package, and Snov candidates exist for initial routing.",
         outreach: "Reparel supports post-op, arthritis, brace undersleeve, and PT recovery use cases that may fit public-sector supply channels."
       },
       {
         title: "HHS physical rehabilitation BPA: National Environmental",
         why: "HHS awarded National Environmental $20,000 for physical therapy supplies for direct patient care on an as-needed basis through September 2026.",
+        whyShort: "$20K HHS physical rehabilitation BPA for as-needed direct patient care supplies through September 2026.",
         target: "National Environmental Inc. / HHS buying office",
         source: "USAspending.gov",
         sourceUrl: "https://www.usaspending.gov/award/75H71025P01050",
-        revenueMotion: "Sell to Award Recipient / Sell to Agency",
+        revenueMotion: "Sell to Award Recipient",
         actionability: "High Actionability",
         contactPath: "Government contracts, PT supply buyer, rehab services, clinical supply",
         nextAction: "Verify whether the recipient is a relevant distributor; if not, use the record to identify the buying office.",
+        socialProof: "The award description references required physical therapy supplies for direct patient care on an as-needed basis.",
         outreach: "Reparel may fit an as-needed physical rehabilitation supply category for patient recovery support."
+      },
+      {
+        title: "Active HHS orthotics supply lane: KLM Laboratories",
+        why: "HHS awarded KLM Laboratories $55,104 for custom over-the-counter foot and ankle orthotics supplies, with the award running through July 25, 2026.",
+        whyShort: "$55.1K active/current HHS award for foot and ankle orthotics supplies through July 25, 2026.",
+        target: "KLM Laboratories / HHS-IHS orthotics buying route",
+        source: "USAspending.gov",
+        sourceUrl: "https://www.usaspending.gov/award/75H71225F28005",
+        revenueMotion: "Sell to Award Recipient",
+        actionability: "High Actionability",
+        contactPath: "Orthotics product owner, government contracts manager, HHS/IHS ordering office",
+        nextAction: "Resolve KLM's supplier/contact path and test whether Reparel can complement foot and ankle orthotics as a recovery sleeve or brace/boot undersleeve.",
+        socialProof: "The record explicitly references custom over-the-counter foot and ankle orthotics supplies.",
+        outreach: "Reparel can complement orthotic supply lanes as a comfortable recovery sleeve and brace/boot undersleeve product."
       },
       {
         title: "VA physical therapy supplies: Apex Integrated Distribution",
         why: "VA purchase activity for physical therapy supplies validates a VA market lane for PT, prosthetics, orthotics, and recovery support supplies.",
+        whyShort: "$14.1K VA physical therapy supply purchase, useful as VA market-map evidence.",
         target: "Department of Veterans Affairs / Apex Integrated Distribution",
         source: "USAspending.gov",
         sourceUrl: "https://www.usaspending.gov/award/36C24W25P0146",
-        revenueMotion: "Sell to Agency / Channel Motion",
+        revenueMotion: "Sell to Agency",
         actionability: "Medium Actionability",
         contactPath: "VA prosthetics, PT supply buyer, procurement specialist",
         nextAction: "Map similar active VA supply routes and determine whether Reparel should pursue VA procurement or distributor onboarding.",
+        socialProof: "The source points to VA physical therapy supply purchasing, which is adjacent to Reparel's post-op and rehab positioning.",
         outreach: "Reparel is positioned around recovery, inflammation, post-op use, and clinical support in PT supply routes."
       },
       {
         title: "DOD orthotic supplies: Footmaxx",
         why: "DOD awarded Footmaxx for orthotic supplies, showing military medical purchasing includes orthotic supply lanes adjacent to Reparel.",
+        whyShort: "$72.2K DOD orthotics supply award, useful as military medical channel evidence.",
         target: "Footmaxx / DOD medical supply channel",
         source: "USAspending.gov + Snov.io",
         sourceUrl: "https://www.usaspending.gov/award/HT009024FG0310039",
@@ -1687,20 +1846,200 @@ Best,
         actionability: "Medium Actionability",
         contactPath: "Orthotics product manager, government contracts, DOD medical supply buyer",
         nextAction: "Use Footmaxx as channel intelligence while researching active DOD or military treatment facility supply vehicles.",
+        socialProof: "Snov-generated Footmaxx contact candidates are available, but the award should be treated as market evidence before sending.",
         outreach: "Reparel can complement orthotic and bracing categories as a recovery sleeve and brace/boot undersleeve."
       }
     ],
+    outreachRules: [
+      "Use this package as a review and outbound-operations input, not an automatic send list.",
+      "Prioritize supplier onboarding and category-fit conversations before agency procurement outreach.",
+      "Verify Snov-generated email candidates before sending; do not invent contacts for role-path targets.",
+      "Separate active/current signals from market-map evidence. KLM, First Nations, Performance Health, and National Environmental are more time-sensitive than Footmaxx or Apex.",
+      "Do not pitch large DMEPOS infrastructure vendors such as CGS, Empower AI, or Softrams as near-term buyers.",
+      "Lead with product-category fit: recovery sleeve, post-op support, brace/boot undersleeve, pain/swelling support, PT/rehab supply, and reimbursable DME-adjacent positioning.",
+      "Log source URL, award amount, contact status, email sent, reply, requested materials, and next action in CRM."
+    ],
+    outreachTargets: [
+      {
+        priority: 1,
+        organization: "Performance Health Supply / Performance Health",
+        context: "$21,600 HHS award for miscellaneous medical and rehabilitation supplies through April 2027.",
+        contactInfo: "Snov candidates: info@performancehealth.com; customersupport@performancehealth.com; blands@performancehealth.com.",
+        contactType: "Snov-generated domain email candidates",
+        sendability: "Verify role fit first; use as supplier onboarding/category routing.",
+        owner: "Rehab supply category manager, DME/orthotics product manager, government sales lead",
+        sourceUrl: "https://www.usaspending.gov/award/75H71025P00547",
+        email: {
+          subject: "Supplier fit for rehab and recovery sleeve products",
+          body: `Hi [Name],
+
+I saw Performance Health's public-sector rehab supply activity and wanted to ask who handles supplier onboarding or category review for rehab, PT, orthotics, or DME-adjacent products.
+
+Reparel makes clinically positioned recovery sleeves used for pain, swelling, post-op recovery, and brace or boot undersleeve support. We are evaluating whether the product fits existing public-sector rehab supply ordering paths.
+
+Would you be the right person to discuss supplier onboarding, or should I connect with someone on the rehab supply/category team?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on whether Reparel would fit a rehab, PT, orthotics, or DME-adjacent supplier review path.",
+          "Hi [Name] - if supplier onboarding sits with another category or government sales contact, I would appreciate the right route."
+        ],
+        crmNote: "Highest-sendability Reparel target. Award amount: $21,600. Verify contact role before send; ask for supplier onboarding/category path."
+      },
+      {
+        priority: 2,
+        organization: "First Nations Distribution LLC / HHS rehab supply BPA",
+        context: "$46,400 HHS BPA for miscellaneous medical and rehabilitation supplies through March 2027.",
+        contactInfo: "Government contracts manager, medical supply category manager, clinical supply manager, or SAM.gov entity contact. Email/domain research needed.",
+        contactType: "Role path / source-backed contact research",
+        sendability: "Research named owner first, then send.",
+        owner: "Government contracts, medical supply category, clinical supply, procurement",
+        sourceUrl: "https://www.usaspending.gov/award/75H71025P00458",
+        email: {
+          subject: "Rehab supply product fit for BPA ordering paths",
+          body: `Hi [Name],
+
+I saw the HHS medical and rehabilitation supplies BPA connected to First Nations Distribution and wanted to ask who handles product/category review for rehab, PT, orthotic, or DME-adjacent products.
+
+Reparel may fit as a recovery sleeve, post-op support product, or brace/boot undersleeve in rehab supply ordering paths.
+
+Would you be the right person to discuss supplier onboarding or product fit?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - checking back on the best route for rehab supply product review or supplier onboarding.",
+          "Hi [Name] - if this sits with a different government contracts or clinical supply contact, I would appreciate the referral."
+        ],
+        crmNote: "High-value HHS rehab supply route. Award amount: $46,400. Needs domain/SAM/contact research before send."
+      },
+      {
+        priority: 3,
+        organization: "National Environmental Inc. / HHS physical rehabilitation BPA",
+        context: "$20,000 HHS award for physical therapy supplies for direct patient care on an as-needed basis through September 2026.",
+        contactInfo: "Government contracts manager, physical therapy supply buyer, clinical supply manager, or HHS/IHS buying office. Email/domain research needed.",
+        contactType: "Role path / source-backed contact research",
+        sendability: "Research recipient fit and buying office first.",
+        owner: "Government contracts, PT supply buyer, rehab services, clinical supply",
+        sourceUrl: "https://www.usaspending.gov/award/75H71025P01050",
+        email: {
+          subject: "Physical rehabilitation supply fit",
+          body: `Hi [Name],
+
+I saw the HHS physical rehabilitation supply award tied to direct patient care and wanted to understand the right route for evaluating related rehab support products.
+
+Reparel's recovery sleeves may be relevant where patients need support for pain, swelling, post-op recovery, or use under braces and boots.
+
+Who would be the right person to discuss whether this product category fits the rehab supply path?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on the right route for physical rehabilitation supply/product review.",
+          "Hi [Name] - if the buying office rather than National Environmental owns this category, I would appreciate the right contact path."
+        ],
+        crmNote: "Time-sensitive HHS rehab supply route. Award amount: $20,000. Validate recipient/channel fit before pitch."
+      },
+      {
+        priority: 4,
+        organization: "KLM Laboratories / active HHS orthotics supply lane",
+        context: "$55,104 HHS award for custom over-the-counter foot and ankle orthotics supplies, active through July 25, 2026.",
+        contactInfo: "Orthotics product owner, government contracts manager, or HHS/IHS ordering office. Email/domain research needed.",
+        contactType: "Role path / source-backed contact research",
+        sendability: "Research named owner first; do not send until contact is resolved.",
+        owner: "Orthotics product owner, government contracts, HHS/IHS ordering office",
+        sourceUrl: "https://www.usaspending.gov/award/75H71225F28005",
+        email: {
+          subject: "Orthotics-adjacent recovery sleeve fit",
+          body: `Hi [Name],
+
+I saw the HHS foot and ankle orthotics supply work connected to KLM Laboratories and wanted to ask whether Reparel could be evaluated as an adjacent product for recovery, swelling, pain support, or brace and boot undersleeve use.
+
+The goal is not to replace orthotics. The question is whether Reparel can complement orthotic and bracing pathways where patients need a comfortable recovery sleeve or undersleeve option.
+
+Who would be the right person to discuss product fit or supplier onboarding?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - checking back on whether Reparel could be reviewed as an orthotics-adjacent recovery sleeve or undersleeve product.",
+          "Hi [Name] - if another product/category or government contracts owner handles this, I would appreciate the right route."
+        ],
+        crmNote: "Active/current orthotics lane. Award amount: $55,104. Time-sensitive because award end date is July 25, 2026."
+      },
+      {
+        priority: 5,
+        organization: "Department of Veterans Affairs / Apex Integrated Distribution PT supply route",
+        context: "$14,078 VA purchase activity for physical therapy supplies. Use as VA prosthetics/PT supply market-map evidence.",
+        contactInfo: "VA prosthetics representative, VA PT supply buyer, procurement specialist, or Apex channel contact. Research needed.",
+        contactType: "Agency office path / channel research",
+        sendability: "Research current buying office or active vehicle first.",
+        owner: "VA prosthetics, PT supply buyer, procurement, distributor channel",
+        sourceUrl: "https://www.usaspending.gov/award/36C24W25P0146",
+        email: {
+          subject: "Finding the right VA rehab supply route",
+          body: `Hi [Name],
+
+I am trying to identify the right VA procurement or clinical supply route for rehab, physical therapy, orthotic, and recovery support products.
+
+Reparel's product line includes recovery sleeves and brace/boot undersleeves that may fit patient support, post-op, arthritis, and PT recovery use cases.
+
+Could you point me toward the right ordering office, procurement contact, or vendor-registration path for this category?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - quick follow-up on the right VA route for rehab, PT, orthotic, or recovery support supply review.",
+          "Hi [Name] - if this should go through a prosthetics, PT supply, or procurement office, I would appreciate the right direction."
+        ],
+        crmNote: "VA market-map target. Award amount: $14,078. Do not send until buying office/current route is identified."
+      },
+      {
+        priority: 6,
+        organization: "Footmaxx / DOD orthotic supplies channel evidence",
+        context: "$72,180 DOD orthotic supplies award. Use as orthotics-channel evidence and possible channel intelligence.",
+        contactInfo: "Snov candidates: michael.kinney@footmaxx.com; charlie.doll@footmaxx.com; rob.martin@footmaxx.com.",
+        contactType: "Snov-generated domain email candidates",
+        sendability: "Verify role before send; lower priority than active HHS/rehab supply lanes.",
+        owner: "Orthotics product manager, government contracts, DOD medical supply channel",
+        sourceUrl: "https://www.usaspending.gov/award/HT009024FG0310039",
+        email: {
+          subject: "Orthotics-adjacent recovery sleeve fit",
+          body: `Hi [Name],
+
+I saw Footmaxx's public-sector orthotics supply work and wanted to ask whether Reparel could be relevant as an adjacent product for recovery, swelling, pain support, or brace and boot undersleeve use.
+
+Reparel may complement orthotic and bracing pathways where patients need a comfortable recovery sleeve or undersleeve option.
+
+Would you be the right person to discuss product fit or channel partnership?
+
+Best,
+[Sender]`
+        },
+        followUps: [
+          "Hi [Name] - checking back on whether Reparel could fit as an orthotics-adjacent recovery sleeve or undersleeve product.",
+          "Hi [Name] - if another product or government contracts contact owns this, I would appreciate the referral."
+        ],
+        crmNote: "Orthotics-channel evidence. Award amount: $72,180. Verify role/contact before send; not first priority."
+      }
+    ],
     actionPlan: [
-      "Day 1: Finalize a one-page public-sector product positioning note for Reparel.",
-      "Day 2: Build a target sheet for First Nations Distribution, Performance Health, National Environmental, Apex, and Footmaxx.",
-      "Day 3: Validate which targets are distributors, resellers, catalog suppliers, or direct service providers.",
-      "Day 4: Identify the HHS, VA, and DOD buying offices attached to the top records.",
-      "Day 5: Send supplier-onboarding/product-fit outreach to the highest-confidence channel targets.",
+      "Day 1: Finalize a one-page public-sector product positioning note for Reparel with product/category language that can be reused in outreach.",
+      "Day 2: Build a target sheet for Performance Health, First Nations Distribution, National Environmental, KLM Laboratories, Apex/VA, and Footmaxx.",
+      "Day 3: Validate which targets are distributors, resellers, catalog suppliers, direct service providers, or agency buying-office routes.",
+      "Day 4: Identify the HHS/IHS, VA, and DOD buying offices attached to the top records.",
+      "Day 5: Send supplier-onboarding/product-fit outreach only to contacts that pass role verification; otherwise create manual research tasks.",
       "Day 6: Log responses and requests for product sheets, reimbursement notes, or clinical evidence.",
       "Day 7: Choose the next pursuit path: channel onboarding, agency procurement mapping, or evidence packet."
     ],
     notes:
-      "USAspending.gov records show money flow and buyer/channel evidence. They are not open solicitations unless separately verified. Snov.io contacts are domain-email candidates and should be verified before outreach. Where a domain could not be safely resolved, this report preserves a role or office contact path rather than inventing a personal contact."
+      "USAspending.gov records show money flow and buyer/channel evidence. They are not open solicitations unless separately verified. Snov.io contacts are domain-email candidates and should be verified before outreach. Where a domain could not be safely resolved, this report preserves a role or office contact path rather than inventing a personal contact. KLM Laboratories is included from prior Reparel source data because its award remains active/current as of July 7, 2026."
   }
 ];
 
