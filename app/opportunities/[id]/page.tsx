@@ -149,7 +149,7 @@ function LockedOpportunityPreview({
           </p>
           <a
             href={fullReportRequestHref(scanId, signal)}
-            className="mt-5 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+            className="mt-5 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
           >
             Request Full Report
           </a>
@@ -232,7 +232,7 @@ export default async function OpportunityPage({
                 classification.actionability_label === "Strong"
                   ? "bg-green-50 text-green-700"
                   : classification.actionability_label === "Medium"
-                    ? "bg-blue-50 text-blue-700"
+                    ? "bg-mist text-accent"
                     : "bg-amber-50 text-amber-800"
               }`}
             >
@@ -306,7 +306,7 @@ export default async function OpportunityPage({
               <input type="hidden" name="opportunityId" value={signal.id} />
               <input type="hidden" name="enrichmentType" value="find_contacts" />
               {searchParams.access ? <input type="hidden" name="access" value={searchParams.access} /> : null}
-              <button className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-[#176576]">
+              <button className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
                 Find Contacts
               </button>
             </form>
@@ -328,7 +328,7 @@ export default async function OpportunityPage({
               href={primaryContact.searchUrl}
               target="_blank"
               rel="noreferrer"
-              className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-[#176576]"
+              className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
             >
               Search primary contacts
             </a>
@@ -423,7 +423,7 @@ export default async function OpportunityPage({
               href={primaryContact.searchUrl}
               target="_blank"
               rel="noreferrer"
-              className="mt-4 inline-flex rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-[#176576]"
+              className="mt-4 inline-flex rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
             >
               Find contacts
             </a>

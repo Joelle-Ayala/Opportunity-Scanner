@@ -24,18 +24,21 @@ export default function HomePage({
     <main className="min-h-screen bg-field">
       <SiteHeader
         rightSlot={
-          <a href="#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          <a href="#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
             Run Free Scan
           </a>
         }
       />
 
-      <section className="border-b border-line bg-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[1fr_480px] lg:py-16">
+      <section className="border-b border-line bg-cream">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_500px] lg:py-14">
           <div className="self-center">
-            <Badge tone="blue">Public-sector opportunity intelligence</Badge>
-            <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-tight text-ink">
-              Build a workflow-ready pipeline from public-sector money flows.
+            <div className="flex flex-wrap gap-2">
+              <Badge tone="blue">Public-sector opportunity intelligence</Badge>
+              <Badge tone="green">Workflow-ready output</Badge>
+            </div>
+            <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+              Turn public-sector money movement into next-step revenue actions.
             </h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
               Opportunity Scanner turns your company website into a source-backed opportunity
@@ -49,19 +52,51 @@ export default function HomePage({
               and workflow-ready payloads.
             </p>
             <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
-              {["Buyer and partner targets", "Source-backed evidence", "Workflow-ready actions"].map(
-                (item) => (
-                  <div key={item} className="rounded-lg border border-line bg-field p-4 text-sm font-semibold text-ink">
-                    {item}
-                  </div>
-                )
-              )}
+              {[
+                ["01", "Find where money moved"],
+                ["02", "Prioritize who to pursue"],
+                ["03", "Send the next action"]
+              ].map(([step, item]) => (
+                <div key={item} className="rounded-lg border border-line bg-white p-4 shadow-sm">
+                  <p className="text-xs font-semibold text-accent">{step}</p>
+                  <p className="mt-2 text-sm font-semibold leading-5 text-ink">{item}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 max-w-3xl rounded-lg border border-line bg-white p-4 shadow-panel">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
+                <p className="text-sm font-semibold text-ink">Opportunity Action Table</p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="green">High Actionability</Badge>
+                  <Badge tone="blue">Sell to Funded Buyer</Badge>
+                </div>
+              </div>
+              <div className="mt-4 grid gap-3 text-sm md:grid-cols-[1.1fr_.8fr_.8fr]">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">Target</p>
+                  <p className="mt-1 font-semibold text-ink">Funded buyer or partner</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">Contact path</p>
+                  <p className="mt-1 font-semibold text-ink">Program office / recipient</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">Next action</p>
+                  <p className="mt-1 font-semibold text-ink">CRM-ready outreach task</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <form id="scan" action="/api/scans" method="post" className="rounded-lg border border-line bg-white p-6 shadow-sm">
+          <form id="scan" action="/api/scans" method="post" className="rounded-lg border border-line bg-white p-6 shadow-panel">
             <input type="hidden" name="reportType" value="quick" />
-            <h2 className="text-xl font-semibold text-ink">Run Free Opportunity Scan</h2>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-ink">Run Free Opportunity Scan</h2>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-accent">2-3 sourced rows + full pipeline preview</p>
+              </div>
+              <Badge tone="amber">Beta</Badge>
+            </div>
             <p className="mt-2 text-sm leading-6 text-muted">
               Enter a website and work email. Add context if you want the pipeline prioritized for
               specific buyers, partners, regions, or public-sector money flows.
@@ -79,7 +114,7 @@ export default function HomePage({
                   name="companyUrl"
                   type="url"
                   placeholder="https://example.com"
-                  className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
+                  className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                 />
               </label>
               <label className="grid gap-2">
@@ -89,7 +124,7 @@ export default function HomePage({
                   name="email"
                   type="email"
                   placeholder="you@company.com"
-                  className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
+                  className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                 />
               </label>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -98,7 +133,7 @@ export default function HomePage({
                   <input
                     name="companyName"
                     placeholder="Optional"
-                    className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
+                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                   />
                 </label>
                 <label className="grid gap-2">
@@ -106,7 +141,7 @@ export default function HomePage({
                   <input
                     name="industry"
                     placeholder="Healthcare, education, SaaS..."
-                    className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
+                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                   />
                 </label>
               </div>
@@ -116,7 +151,7 @@ export default function HomePage({
                   <input
                     name="headquartersState"
                     placeholder="MD"
-                    className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
+                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                   />
                 </label>
                 <label className="grid gap-2">
@@ -124,7 +159,7 @@ export default function HomePage({
                   <input
                     name="targetStates"
                     placeholder="MD, CA, national"
-                    className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
+                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                   />
                 </label>
               </div>
@@ -133,7 +168,7 @@ export default function HomePage({
                 <select
                   name="customerType"
                   defaultValue=""
-                  className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
+                  className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                 >
                   <option value="">Optional</option>
                   {customerTypes.map((type) => (
@@ -147,7 +182,7 @@ export default function HomePage({
                   {focusOptions.map((option) => (
                     <label
                       key={option.value}
-                      className="flex items-center gap-2 rounded-md border border-line bg-field px-3 py-2 text-sm text-slate-700"
+                      className="flex items-center gap-2 rounded-md border border-line bg-white px-3 py-2 text-sm text-slate-700 hover:border-accent"
                     >
                       <input
                         type="checkbox"
@@ -166,7 +201,7 @@ export default function HomePage({
                   name="opportunityFocus"
                   rows={3}
                   placeholder="Example: buyer targets for city programs, workforce funding, or public event procurement"
-                  className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
+                  className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                 />
               </label>
               <ScanSubmitButton />
@@ -184,7 +219,7 @@ export default function HomePage({
           ["2. Prioritize", "It ranks source-backed opportunities by buyer clarity, timing, revenue motion, and fit."],
           ["3. Move", "Each row becomes a target, contact path, CRM-ready note, outreach angle, and workflow action."]
         ].map(([title, copy]) => (
-          <article key={title} className="rounded-lg border border-line bg-white p-5">
+          <article key={title} className="rounded-lg border border-line bg-white p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-ink">{title}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
           </article>
@@ -220,7 +255,7 @@ export default function HomePage({
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-2">
-        <article className="rounded-lg border border-line bg-white p-6">
+        <article className="rounded-lg border border-line bg-white p-6 shadow-sm">
           <div className="flex flex-wrap gap-2">
             <Badge tone="green">High Actionability</Badge>
             <Badge tone="blue">Sell to Funded Buyer</Badge>
@@ -237,7 +272,7 @@ export default function HomePage({
           </div>
         </article>
 
-        <article className="rounded-lg border border-line bg-white p-6">
+        <article className="rounded-lg border border-line bg-white p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-ink">Free vs Full report</h2>
           <div className="mt-5 grid gap-3">
             {[

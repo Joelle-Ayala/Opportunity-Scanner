@@ -239,7 +239,7 @@ function ReportHeader({
           {isPaid ? (
             <a
               href={`/api/reports/${scan.id}/export${access ? `?access=${encodeURIComponent(access)}` : ""}`}
-              className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
             >
               Download Report
             </a>
@@ -272,10 +272,17 @@ function ReportHeader({
           <p className="text-xs font-semibold uppercase text-muted">Rows shown</p>
           <p className="mt-1 text-sm font-semibold text-ink">{visibleSignals}</p>
         </div>
-        <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">Full-report rows</p>
-          <p className="mt-1 text-sm font-semibold text-ink">{isPaid ? 0 : lockedSignals}</p>
-        </div>
+        {!isPaid ? (
+          <div className="rounded-md border border-line bg-field p-3">
+            <p className="text-xs font-semibold uppercase text-muted">Locked rows</p>
+            <p className="mt-1 text-sm font-semibold text-ink">{lockedSignals}</p>
+          </div>
+        ) : (
+          <div className="rounded-md border border-line bg-field p-3">
+            <p className="text-xs font-semibold uppercase text-muted">Full access</p>
+            <p className="mt-1 text-sm font-semibold text-ink">Enabled</p>
+          </div>
+        )}
         <div className="rounded-md border border-line bg-field p-3">
           <p className="text-xs font-semibold uppercase text-muted">Status</p>
           <p className="mt-1 text-sm font-semibold text-ink">{reportStatusLabel(scan.status)}</p>
@@ -297,7 +304,9 @@ function ExecutiveSummaryCard({
     <section className="rounded-lg border border-line bg-white p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-ink">Executive Summary</h2>
-        <Badge tone={summary.confidence >= 75 ? "green" : "blue"}>Overall confidence {summary.confidence || "TBD"}</Badge>
+        <Badge tone={summary.confidence >= 75 ? "green" : "blue"}>
+          {summary.confidence >= 75 ? "Source-backed" : "Needs review"}
+        </Badge>
       </div>
       <div className="mt-4 grid gap-4 lg:grid-cols-4">
         <div className="rounded-md border border-line bg-field p-4 lg:col-span-2">
@@ -400,7 +409,7 @@ function PrimaryActionButton({
       href={href}
       target={opensSource ? "_blank" : undefined}
       rel={opensSource ? "noreferrer" : undefined}
-      className="rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700"
+      className="rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871]"
       title={classification.manual_research_instruction}
     >
       {label}
@@ -594,7 +603,7 @@ function OpportunityActionTable({
   access?: string;
 }) {
   return (
-    <section className="overflow-hidden rounded-lg border border-line bg-white">
+    <section className="hidden overflow-hidden rounded-lg border border-line bg-white shadow-sm md:block">
       <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line p-5">
         <div>
           <h2 className="text-lg font-semibold text-ink">Opportunity Action Table</h2>
@@ -793,7 +802,7 @@ function LockedOpportunityCard({
         <p>{classification.source_status}</p>
         <p>{classificationLabel(classification.contact_strategy)} in full report</p>
       </div>
-      <a href={fullReportRequestHref(scan, signal)} className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+      <a href={fullReportRequestHref(scan, signal)} className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
         Request Full Pipeline
       </a>
     </article>
@@ -812,11 +821,11 @@ function UnlockCTA({ scan }: { scan: ScanRecord }) {
     "PDF/export"
   ];
   return (
-    <section className="rounded-lg border border-blue-200 bg-blue-50 p-6">
+    <section className="rounded-lg border border-cyan-100 bg-mist p-6 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div>
           <h2 className="text-2xl font-semibold text-ink">Unlock the full opportunity pipeline</h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-900">
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-ink">
             Get the full workflow-ready pipeline: prioritized opportunities, buyer and partner
             targets, source-backed evidence, contact paths, CRM-ready notes, outreach angles, and
             workflow-ready payloads.
@@ -827,10 +836,10 @@ function UnlockCTA({ scan }: { scan: ScanRecord }) {
             ))}
           </div>
         </div>
-        <div className="rounded-lg border border-blue-200 bg-white p-4 text-center">
+        <div className="rounded-lg border border-cyan-100 bg-white p-4 text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-muted">Beta access</p>
           <p className="mt-1 text-2xl font-semibold text-ink">Full pipeline</p>
-          <a href={fullReportRequestHref(scan)} className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+          <a href={fullReportRequestHref(scan)} className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
             Request Full Report
           </a>
         </div>
@@ -1152,7 +1161,7 @@ export default async function ReportPage({
         />
 
         {searchParams?.unlock === "placeholder" ? (
-          <section className="rounded-lg border border-blue-200 bg-blue-50 p-5 text-sm leading-6 text-blue-900">
+          <section className="rounded-lg border border-cyan-100 bg-mist p-5 text-sm leading-6 text-ink">
             Full-report access is in beta. We will review the scan and follow up with the full
             opportunity pipeline, source links, contact paths, CRM notes, outreach angles, and
             workflow-ready export.
@@ -1173,6 +1182,28 @@ export default async function ReportPage({
         ) : null}
 
         <ExecutiveSummaryCard signals={reportSignals} profile={profile} />
+
+        {displayedSignals.length > 0 ? (
+          <OpportunityActionTable
+            scanId={scan.id}
+            signals={displayedSignals}
+            isPaid={isPaid}
+            profile={profile}
+            access={searchParams?.access}
+          />
+        ) : (
+          <section className="rounded-lg border border-amber-200 bg-amber-50 p-5">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-amber-800">
+              No workflow-ready opportunities yet
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-amber-900">
+              No strong source-backed opportunities were found in the scanned public sources.
+              Recommended next step: broaden the company context, add more source coverage, or
+              request analyst review.
+            </p>
+          </section>
+        )}
+
         <OpportunityProfileModule
           scan={scan}
           profile={profile}
@@ -1186,19 +1217,10 @@ export default async function ReportPage({
         />
 
         {displayedSignals.length > 0 ? (
-          <>
-            <OpportunityActionTable
-              scanId={scan.id}
-                signals={displayedSignals}
-                isPaid={isPaid}
-                profile={profile}
-                access={searchParams?.access}
-              />
-
-            <section className="grid gap-4">
+            <section className="grid gap-4 md:hidden">
               <div>
-                <h2 className="text-lg font-semibold text-ink">Pipeline Preview Rows</h2>
-                <p className="mt-2 text-sm text-muted">Concise opportunity cards for fast review before opening the full action path.</p>
+                <h2 className="text-lg font-semibold text-ink">Mobile Pipeline Rows</h2>
+                <p className="mt-2 text-sm text-muted">Concise opportunity cards for reviewing the action path on smaller screens.</p>
               </div>
               <div className="grid gap-4">
                 {displayedSignals.map((signal) => (
@@ -1213,19 +1235,7 @@ export default async function ReportPage({
                 ))}
               </div>
             </section>
-          </>
-        ) : (
-          <section className="rounded-lg border border-amber-200 bg-amber-50 p-5">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-amber-800">
-              No workflow-ready opportunities yet
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-amber-900">
-              No strong source-backed opportunities were found in the scanned public sources.
-              Recommended next step: broaden the company context, add more source coverage, or
-              request analyst review.
-            </p>
-          </section>
-        )}
+        ) : null}
 
         {!isPaid && lockedSignals.length > 0 ? (
           <section className="grid gap-4">

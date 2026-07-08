@@ -96,7 +96,7 @@ export default async function AdminReportsPage({
                         .map((playbook) => (
                           <span
                             key={playbook.playbook_id}
-                            className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700"
+                            className="rounded-md bg-mist px-2 py-1 text-xs font-medium text-accent"
                           >
                             {playbook.name}
                           </span>
@@ -116,7 +116,7 @@ export default async function AdminReportsPage({
                     <p className="text-sm text-slate-500">{formatDate(scan.completed_at)}</p>
                     <a
                       href={`/reports/${scan.id}?${accessParam}`}
-                      className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-[#176576]"
+                      className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
                     >
                       View full report
                     </a>

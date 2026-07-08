@@ -5,13 +5,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#0F172A",
-        field: "#F8FAFC",
-        line: "#E2E8F0",
-        accent: "#2563EB",
-        signal: "#10B981",
-        review: "#F59E0B",
-        muted: "#64748B"
+        ink: "#14213D",
+        field: "#F6F7F9",
+        line: "#D9DEE7",
+        accent: "#0E7C86",
+        signal: "#2E9D70",
+        review: "#C7861D",
+        muted: "#667085",
+        ember: "#D95D39",
+        steel: "#42526E",
+        mist: "#E9F4F3",
+        cream: "#FBFAF7"
+      },
+      boxShadow: {
+        panel: "0 18px 48px rgba(20, 33, 61, 0.09)",
+        lift: "0 10px 28px rgba(20, 33, 61, 0.12)"
       }
     }
   },

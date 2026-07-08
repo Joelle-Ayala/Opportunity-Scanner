@@ -3,13 +3,17 @@ import { ReactNode } from "react";
 export function OpportunityScannerLogo({ compact = false }: { compact?: boolean }) {
   return (
     <a href="/" className="flex items-center gap-3" aria-label="Opportunity Scanner home">
-      <span className="grid h-10 w-10 place-items-center rounded-lg bg-ink text-sm font-bold text-white">
-        OS
+      <span className="relative grid h-11 w-11 place-items-center rounded-lg bg-ink text-sm font-bold text-white shadow-lift">
+        <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-signal" />
+        <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-review" />
+        <span className="absolute bottom-2 left-2 h-2 w-2 rounded-full bg-ember" />
+        <span className="absolute bottom-2 right-2 h-2 w-2 rounded-full bg-accent" />
+        <span className="relative">OS</span>
       </span>
       {!compact ? (
         <span className="leading-tight">
           <span className="block text-base font-semibold text-ink">Opportunity Scanner</span>
-          <span className="block text-xs font-medium text-muted">by Opportunity Systems</span>
+          <span className="block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Opportunity Systems</span>
         </span>
       ) : null}
     </a>
@@ -18,7 +22,7 @@ export function OpportunityScannerLogo({ compact = false }: { compact?: boolean 
 
 export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
   return (
-    <header className="border-b border-line bg-white">
+    <header className="sticky top-0 z-20 border-b border-line/80 bg-white/92 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
         <OpportunityScannerLogo />
         <div className="flex items-center gap-3">{rightSlot}</div>
@@ -29,10 +33,10 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-white">
+    <footer className="border-t border-line bg-ink">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-muted">
-        <span>Opportunity Scanner by Opportunity Systems</span>
-        <span>Public-sector money-flow and buying-channel intelligence.</span>
+        <span className="font-semibold text-white">Opportunity Scanner by Opportunity Systems</span>
+        <span className="text-slate-300">Public-sector money-flow and buying-channel intelligence.</span>
       </div>
     </footer>
   );
@@ -46,10 +50,10 @@ export function Badge({
   tone?: "slate" | "blue" | "green" | "amber" | "red" | "locked";
 }) {
   const tones = {
-    slate: "border-line bg-field text-slate-700",
-    blue: "border-blue-100 bg-blue-50 text-blue-700",
-    green: "border-emerald-100 bg-emerald-50 text-emerald-700",
-    amber: "border-amber-100 bg-amber-50 text-amber-800",
+    slate: "border-line bg-white text-steel",
+    blue: "border-cyan-100 bg-mist text-accent",
+    green: "border-emerald-100 bg-emerald-50 text-signal",
+    amber: "border-amber-100 bg-amber-50 text-review",
     red: "border-red-100 bg-red-50 text-red-700",
     locked: "border-slate-200 bg-white text-slate-500"
   };
@@ -93,15 +97,14 @@ export function CompanyLogo({
       <img
         src={logoUrl}
         alt={`${name} logo`}
-        className="h-14 w-14 rounded-full border border-line bg-white object-contain p-1"
+      className="h-14 w-14 rounded-lg border border-line bg-white object-contain p-1 shadow-sm"
       />
     );
   }
 
   return (
-    <span className="grid h-14 w-14 place-items-center rounded-full border border-line bg-white text-base font-semibold text-ink">
+    <span className="grid h-14 w-14 place-items-center rounded-lg border border-line bg-white text-base font-semibold text-ink shadow-sm">
       {initials}
     </span>
   );
 }
-

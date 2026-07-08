@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Opportunity Scanner",
-  description: "Find hidden public-sector opportunities for your business."
+  description: "Turn public-sector money flows into buyer targets, contact paths, and next-step revenue actions."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

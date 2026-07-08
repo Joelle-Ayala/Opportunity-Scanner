@@ -20,7 +20,7 @@ function splitTerms(value: string): string[] {
 function pillClass(tone: "blue" | "green" | "amber" | "slate" = "slate"): string {
   const tones = {
     slate: "border-line bg-field text-slate-700",
-    blue: "border-blue-100 bg-blue-50 text-blue-700",
+    blue: "border-cyan-100 bg-mist text-accent",
     green: "border-emerald-100 bg-emerald-50 text-emerald-700",
     amber: "border-amber-100 bg-amber-50 text-amber-800"
   };
@@ -164,7 +164,7 @@ export function ProfileRefinementPanel({
             placeholder="Optional reason"
             className="mt-3 w-full rounded-md border border-line bg-field px-3 py-3 text-sm outline-none focus:border-accent"
           />
-          <button className="mt-3 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          <button className="mt-3 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
             Save Focus
           </button>
         </form>

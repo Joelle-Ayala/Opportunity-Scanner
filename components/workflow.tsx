@@ -165,7 +165,7 @@ export function SendToWorkflowModal({
                 <button
                   type="submit"
                   disabled={status === "sending"}
-                  className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-70"
+                  className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] disabled:opacity-70"
                 >
                   {status === "sending" ? "Sending..." : "Send Opportunity"}
                 </button>
