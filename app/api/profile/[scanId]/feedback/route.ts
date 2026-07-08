@@ -13,6 +13,7 @@ import {
   feedbackJsonFromSignal
 } from "@/lib/profileRefinement";
 import { ProfileFeedbackKind } from "@/lib/types";
+import { hasAdminAccess } from "@/lib/access";
 
 export const runtime = "nodejs";
 
@@ -60,6 +61,10 @@ export async function POST(request: Request, { params }: { params: { scanId: str
   const scan = await getScan(params.scanId);
   if (!scan) {
     return NextResponse.json({ error: "Scan not found." }, { status: 404 });
+  }
+  const access = new URL(request.url).searchParams.get("access") ?? undefined;
+  if (!hasAdminAccess(access, scan)) {
+    return NextResponse.json({ error: "Admin access required." }, { status: 403 });
   }
 
   const profileRecord = await getCompanyProfile(scan.id);

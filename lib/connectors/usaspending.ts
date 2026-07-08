@@ -13,6 +13,7 @@ import {
 
 type UsaAward = {
   "Award ID"?: string;
+  internal_id?: string;
   "Recipient Name"?: string;
   "Award Amount"?: number;
   "Start Date"?: string;
@@ -34,7 +35,8 @@ function formatMoney(value?: number): string {
   }).format(value);
 }
 
-function awardUrl(awardId?: string): string {
+function awardUrl(award?: UsaAward): string {
+  const awardId = award?.internal_id || award?.["Award ID"];
   if (!awardId) {
     return "https://www.usaspending.gov/search";
   }
@@ -310,7 +312,7 @@ export async function searchUsaSpending(profile: CompanyProfile): Promise<Opport
         opportunity_title: `${recipient} received ${amount}: ${lane}`,
         source_type: "historical_award",
         source_name: "USAspending.gov",
-        source_url: awardUrl(award["Award ID"]),
+        source_url: awardUrl(award),
         agency_or_funder: agency,
         deadline: award["End Date"] ?? "",
         geography: award["Place of Performance State Code"] ?? "",

@@ -77,6 +77,21 @@ npm run test:sam
 npm run test:sam -- "live music services"
 ```
 
+## Launch Checks
+
+Before publishing to the domain, configure production environment variables and run:
+
+```bash
+npm run build
+npm run check:launch-env
+```
+
+For controlled beta, the required production variables are `OPENAI_API_KEY`,
+`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE`,
+and `OPPORTUNITY_SCANNER_ADMIN_CODE`. `OPPORTUNITY_SCANNER_CONTACT_EMAIL` controls where
+full-report requests are sent. `SAM_API_KEY` and Snov credentials are recommended
+for stronger active-opportunity and contact-enrichment coverage.
+
 ## Environment
 
 Copy `.env.example` to `.env.local`.

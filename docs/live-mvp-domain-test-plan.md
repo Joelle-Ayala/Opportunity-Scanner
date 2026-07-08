@@ -1,7 +1,7 @@
 # Live MVP Domain Test Plan
 
 Date: 2026-07-01  
-Last updated: 2026-07-05
+Last updated: 2026-07-08
 
 Owner: Project Management Agent
 
@@ -15,10 +15,31 @@ The first domain test is not a broad launch. It is a controlled proof that the p
 
 ## Current Blockers
 
-1. Free/full access is still placeholder-level and not production-safe enough for real users.
-2. Workflow webhook guardrails are implemented but need a live safe-webhook smoke test before external users send records to automations.
-3. Normalized opportunity action fields are added but still need fresh domain-scan verification across report UI, export, and workflow payload.
-4. Domain testing requires a clear rollback/checkpoint cadence so multiple agents can work quickly without overwriting each other.
+1. Production hosting/domain access is still needed to publish the app.
+2. Production environment variables must be configured, especially OpenAI, Supabase, report access code, and admin access code.
+3. Supabase schema must be created from `db/schema.sql` in the production project before the scan flow can persist data.
+4. Workflow webhook behavior still needs one live safe-webhook smoke test before external users send records to automations.
+5. Fresh live-domain scans are still needed across Reparel, Jammcard, and SchoolGig.
+
+## Current Launch Status
+
+- Free/full access hardening is implemented with beta and admin access codes.
+- Normal users are blocked from admin/profile refinement surfaces.
+- Export, contact enrichment, and workflow send require full-report access.
+- Production fails closed if Supabase is missing, preventing accidental local JSON storage on the live domain.
+- Latest local report evaluator shows 0 issues across Jammcard, SchoolGig, and Reparel.
+- The scan route remains synchronous and is suitable for controlled beta traffic, not broad public launch volume.
+
+## Fastest Path To Domain
+
+1. Create or select the production Supabase project.
+2. Run `db/schema.sql` in the production Supabase SQL editor.
+3. Deploy the Next app to the hosting provider connected to the target domain.
+4. Set required production env vars: `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE`, and `OPPORTUNITY_SCANNER_ADMIN_CODE`.
+5. Set recommended connector env vars where available: `SAM_API_KEY`, `SNOV_CLIENT_ID`, and `SNOV_CLIENT_SECRET`.
+6. Run `npm run build` and `npm run check:launch-env` in the deployment environment or equivalent CI.
+7. Point the domain to the deployment.
+8. Run fresh Reparel, Jammcard, and SchoolGig scans on the domain and record scan/report URLs.
 
 ## P0 Task List
 

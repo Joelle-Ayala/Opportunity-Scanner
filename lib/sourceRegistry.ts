@@ -56,10 +56,10 @@ export function sourceCatalog({ samGovConfigured }: { samGovConfigured: boolean 
     {
       id: "state_local",
       name: "State/local portals",
-      status: "Active",
+      status: "Planned",
       key: "Varies",
-      value: "Routes searches into city, county, state, school, arts, parks, tourism, and procurement portals.",
-      next: "Replace high-value portal routes with deeper scrapers/API integrations as we validate repeatable sources."
+      value: "Models city, county, state, school, arts, parks, tourism, and procurement portal routes for follow-up research.",
+      next: "Activate deeper scrapers/API integrations after repeatable high-value portals are validated."
     },
     {
       id: "snov",

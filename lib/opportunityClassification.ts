@@ -242,6 +242,10 @@ function timeSensitivity(type: EstimatedOpportunityType, deadline: string): Time
 }
 
 function sourceNativeContactAvailable(signal: StoredOpportunitySignal): boolean {
+  if (signal.source_type === "active_grant" && signal.revenue_pathway !== "direct_apply") {
+    return false;
+  }
+
   const contacts = signal.raw_json?.pointOfContact;
   if (!Array.isArray(contacts)) return false;
   return contacts.some((item) => {
@@ -260,15 +264,17 @@ function contactStrategyFor(input: {
   const { signal, type, buyerType, hasSourceContact } = input;
   const text = evidenceText(signal);
 
-  if (hasSourceContact) return "use_source_native_contact";
   if (type === "policy_signal") return "monitor_source";
   if (type === "source_route" || type === "research_only") return "create_manual_research_task";
   if (signal.source_type === "active_contract" || signal.revenue_pathway === "procurement_bid") {
-    return "inspect_procurement_record";
+    return hasSourceContact ? "use_source_native_contact" : "inspect_procurement_record";
   }
   if (signal.source_type === "active_grant" || signal.revenue_pathway === "direct_apply") {
-    return "contact_grants_manager";
+    return hasSourceContact && signal.revenue_pathway === "direct_apply"
+      ? "use_source_native_contact"
+      : "contact_grants_manager";
   }
+  if (hasSourceContact) return "use_source_native_contact";
   if (buyerType === "agency" || buyerType === "procurement_office") return "contact_procurement_office";
   if (buyerType === "program_office") return "contact_program_office";
   if (buyerType === "award_recipient" || buyerType === "grantee" || buyerType === "funded_buyer") {

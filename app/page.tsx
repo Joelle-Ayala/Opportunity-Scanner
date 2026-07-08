@@ -1,4 +1,5 @@
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
+import { ScanSubmitButton } from "@/components/scan-submit-button";
 
 const customerTypes = ["B2B", "B2C", "Government", "Healthcare", "Education", "Nonprofit", "Other"];
 const focusOptions = [
@@ -168,9 +169,10 @@ export default function HomePage({
                   className="rounded-md border border-line bg-field px-3 py-3 outline-none focus:border-accent"
                 />
               </label>
-              <button className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
-                Build Free Pipeline Preview
-              </button>
+              <ScanSubmitButton />
+              <p className="text-xs leading-5 text-muted">
+                Scans usually take under a minute while we read the website and check public-sector sources.
+              </p>
             </div>
           </form>
         </div>

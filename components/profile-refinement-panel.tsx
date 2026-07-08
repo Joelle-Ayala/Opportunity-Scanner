@@ -31,12 +31,14 @@ export function ProfileRefinementPanel({
   scanId,
   initialProfile,
   initialStrategy,
-  initialFeedback
+  initialFeedback,
+  access
 }: {
   scanId: string;
   initialProfile: CompanyProfile;
   initialStrategy: ProfileSearchStrategy;
   initialFeedback: ProfileFeedbackRecord[];
+  access?: string;
 }) {
   const [profile, setProfile] = useState(initialProfile);
   const [strategy, setStrategy] = useState(initialStrategy);
@@ -66,7 +68,8 @@ export function ProfileRefinementPanel({
     prioritySignals?: string[];
   }) {
     setStatus("saving");
-    const response = await fetch(`/api/profile/${scanId}/feedback`, {
+    const accessQuery = access ? `?access=${encodeURIComponent(access)}` : "";
+    const response = await fetch(`/api/profile/${scanId}/feedback${accessQuery}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input)

@@ -220,6 +220,7 @@ export default async function ProfilePage({
           initialProfile={profile}
           initialStrategy={strategy}
           initialFeedback={feedback}
+          access={searchParams?.access}
         />
       </div>
     </main>

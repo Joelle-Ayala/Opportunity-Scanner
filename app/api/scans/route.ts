@@ -14,6 +14,7 @@ import { CustomerType, ReportType, ScanInput } from "@/lib/types";
 import { normalizeCompanyUrl } from "@/lib/url";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 function optionalString(value: FormDataEntryValue | null): string | undefined {
   if (typeof value !== "string") {

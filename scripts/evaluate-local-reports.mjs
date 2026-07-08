@@ -3,7 +3,7 @@ import path from "node:path";
 
 const dataPath = path.join(process.cwd(), ".data", "local-db.json");
 const outputPath = path.join(process.cwd(), "output", "quality", "report-quality-latest.json");
-const currentDate = "2026-06-29";
+const currentDate = new Date().toISOString().slice(0, 10);
 const defaultCompanyMatchers = [
   { key: "jammcard", label: "Jammcard", pattern: /jammcard/i },
   { key: "schoolgig", label: "SchoolGig", pattern: /schoolgig|schoolgig\.us/i },

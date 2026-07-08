@@ -11,7 +11,7 @@ import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { OpportunityEnrichmentType, StoredOpportunitySignal } from "@/lib/types";
-import { accessSuffix, hasFullReportAccess } from "@/lib/access";
+import { hasFullReportAccess } from "@/lib/access";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -80,6 +80,24 @@ function actionabilityLabel(value: string): string {
   return value;
 }
 
+function fullReportRequestHref(scanId: string, signal: StoredOpportunitySignal): string {
+  const email = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const subject = "Full Opportunity Scanner report request";
+  const body = [
+    "Hi Opportunity Systems,",
+    "",
+    "I would like full access to this Opportunity Scanner opportunity workspace.",
+    "",
+    `Scan ID: ${scanId}`,
+    `Opportunity: ${opportunityHeadline(signal)}`,
+    "",
+    "Please send the full source links, contact paths, CRM-ready notes, outreach angles, and workflow/export access.",
+    ""
+  ].join("\n");
+
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 function LockedOpportunityPreview({
   scanId,
   signal,
@@ -130,7 +148,7 @@ function LockedOpportunityPreview({
             {classification.next_best_action}
           </p>
           <a
-            href={`/reports/${scanId}?unlock=placeholder${accessSuffix(access)}`}
+            href={fullReportRequestHref(scanId, signal)}
             className="mt-5 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
           >
             Request Full Report
@@ -246,7 +264,7 @@ export default async function OpportunityPage({
               {classificationLabel(classification.contact_strategy)}
             </p>
             <p className="mt-2 text-sm text-slate-600">
-              {classification.source_status} · Score {classification.actionability_score}/100
+              {classification.source_status} · {actionabilityLabel(classification.actionability_label)}
             </p>
           </div>
         </section>
@@ -366,9 +384,6 @@ export default async function OpportunityPage({
               <p>
                 <span className="font-semibold text-ink">Source type:</span>{" "}
                 {signal.source_type.replaceAll("_", " ")}
-              </p>
-              <p>
-                <span className="font-semibold text-ink">Query used:</span> {signal.query_used || "Needs review"}
               </p>
               <p>
                 <span className="font-semibold text-ink">Start:</span> {startDate || "Unknown"}

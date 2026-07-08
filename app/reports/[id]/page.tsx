@@ -158,6 +158,34 @@ function reportStatusLabel(status: ScanRecord["status"]): string {
   return labels[status] ?? "In progress";
 }
 
+function fullReportRequestHref(scan: ScanRecord, signal?: StoredOpportunitySignal): string {
+  const email = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const subject = "Full Opportunity Scanner report request";
+  const body = [
+    "Hi Opportunity Systems,",
+    "",
+    "I would like full access to this Opportunity Scanner report.",
+    "",
+    `Company URL: ${scan.company_url}`,
+    `Scan ID: ${scan.id}`,
+    signal ? `Opportunity: ${opportunityHeadline(signal)}` : "",
+    "",
+    "Please send the full opportunity pipeline, source links, contact paths, CRM-ready notes, outreach angles, and workflow/export access.",
+    ""
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function actionabilityDisplayLabel(value: string): string {
+  if (value === "Strong") return "High Actionability";
+  if (value === "Medium") return "Medium Actionability";
+  if (value === "Research" || value === "Screened out" || value === "Low") return "Low Actionability";
+  return value;
+}
+
 function buildExecutiveSummary(signals: StoredOpportunitySignal[], profile?: CompanyProfile) {
   const summarySignals = signals.length > 0 ? signals : [];
   const sorted = [...summarySignals].sort(
@@ -633,9 +661,10 @@ function OpportunityActionTable({
                     <Badge tone="blue">{revenueMotionLabel(signal)}</Badge>
                   </td>
                   <td className="max-w-[310px] px-4 py-4 text-slate-700">
-                    <Badge tone={badgeTone(classification.actionability_label)}>{classification.actionability_label}</Badge>
+                    <Badge tone={badgeTone(classification.actionability_label)}>
+                      {actionabilityDisplayLabel(classification.actionability_label)}
+                    </Badge>
                     <p className="mt-2 leading-6">{classification.next_best_action}</p>
-                    <p className="mt-2 text-xs leading-5 text-muted">Actionability {classification.actionability_score}/100</p>
                   </td>
                   <td className="max-w-[210px] px-4 py-4">
                     <p className="font-semibold text-ink">{classificationLabel(classification.contact_strategy)}</p>
@@ -656,7 +685,9 @@ function OpportunityActionTable({
                         locked={!isPaid || !["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
                         access={access}
                       />
-                      <p className="text-xs leading-5 text-muted">{classification.workflow_payload_reason}</p>
+                      <p className="text-xs leading-5 text-muted">
+                        {classification.workflow_payload_ready ? "Workflow ready" : "Needs source check before workflow send"}
+                      </p>
                     </div>
                   </td>
                 </tr>
@@ -692,7 +723,9 @@ function OpportunitySignalCard({
   return (
     <article className="rounded-lg border border-line bg-white p-5">
       <div className="flex flex-wrap gap-2">
-        <Badge tone={badgeTone(classification.actionability_label)}>{classification.actionability_label}</Badge>
+        <Badge tone={badgeTone(classification.actionability_label)}>
+          {actionabilityDisplayLabel(classification.actionability_label)}
+        </Badge>
         <Badge tone={badgeTone(classification.estimated_opportunity_type)}>
           {classificationLabel(classification.estimated_opportunity_type)}
         </Badge>
@@ -731,7 +764,15 @@ function OpportunitySignalCard({
   );
 }
 
-function LockedOpportunityCard({ signal, profile }: { signal: StoredOpportunitySignal; profile?: CompanyProfile }) {
+function LockedOpportunityCard({
+  scan,
+  signal,
+  profile
+}: {
+  scan: ScanRecord;
+  signal: StoredOpportunitySignal;
+  profile?: CompanyProfile;
+}) {
   const classification = opportunityActionFor(signal, profile);
   return (
     <article className="rounded-lg border border-dashed border-line bg-white p-5">
@@ -752,14 +793,14 @@ function LockedOpportunityCard({ signal, profile }: { signal: StoredOpportunityS
         <p>{classification.source_status}</p>
         <p>{classificationLabel(classification.contact_strategy)} in full report</p>
       </div>
-      <a href="?unlock=placeholder" className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+      <a href={fullReportRequestHref(scan, signal)} className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
         Request Full Pipeline
       </a>
     </article>
   );
 }
 
-function UnlockCTA() {
+function UnlockCTA({ scan }: { scan: ScanRecord }) {
   const items = [
     "all prioritized opportunities",
     "buyer/partner targets",
@@ -789,7 +830,7 @@ function UnlockCTA() {
         <div className="rounded-lg border border-blue-200 bg-white p-4 text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-muted">Beta access</p>
           <p className="mt-1 text-2xl font-semibold text-ink">Full pipeline</p>
-          <a href="?unlock=placeholder" className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+          <a href={fullReportRequestHref(scan)} className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
             Request Full Report
           </a>
         </div>
@@ -1194,13 +1235,13 @@ export default async function ReportPage({
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               {lockedSignals.slice(0, 4).map((signal) => (
-                <LockedOpportunityCard key={signal.id} signal={signal} profile={profile} />
+                  <LockedOpportunityCard key={signal.id} scan={scan} signal={signal} profile={profile} />
               ))}
             </div>
           </section>
         ) : null}
 
-        {!isPaid ? <UnlockCTA /> : null}
+        {!isPaid ? <UnlockCTA scan={scan} /> : null}
 
         {isPaid ? (
           <>

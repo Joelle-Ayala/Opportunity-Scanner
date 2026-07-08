@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { saveReportFeedback } from "@/lib/storage";
+import { getScan, saveReportFeedback } from "@/lib/storage";
 import { ReportFeedbackKind } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -15,11 +15,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid feedback." }, { status: 400 });
   }
 
+  const scan = await getScan(scanId);
+  if (!scan) {
+    return NextResponse.json({ error: "Scan not found." }, { status: 404 });
+  }
+
   await saveReportFeedback({
     scanId,
     opportunityId,
     feedbackKind,
-    reason
+    reason: reason.slice(0, 500)
   });
 
   return NextResponse.redirect(new URL(`/reports/${scanId}?feedback=saved`, request.url), 303);
