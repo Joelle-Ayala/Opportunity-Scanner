@@ -177,6 +177,11 @@ Testing / Verification:
 - Verify the free state shows useful signals but locks deeper action details.
 - Verify the full state exposes the full action layer.
 
+Current Result:
+
+- Homepage and pricing copy no longer imply a live `$99` checkout during beta.
+- Full report access is positioned as request-based while checkout is being finalized.
+
 ### P0-5: Tighten SchoolGig Weak-Fit Filtering
 
 Owner: Back-End Agent with Product Strategy & Product Marketing Agent
@@ -246,6 +251,13 @@ Testing / Verification:
 - Send one test opportunity to a safe test webhook or mock endpoint.
 - Inspect the payload.
 - Confirm visible success/failure states.
+
+Current Result:
+
+- Workflow send now accepts only `scanId`, `opportunityId`, access, and webhook URL from the browser.
+- The API verifies full-report access, fetches the stored opportunity for that scan, rebuilds the workflow payload server-side, validates readiness, and sends only the server-owned payload.
+- HTTPS/no-credential URL guardrails remain in place.
+- A live safe-webhook smoke test is still pending before external beta testers.
 
 ### P0-7: Domain Launch Safety And Checkpoint
 

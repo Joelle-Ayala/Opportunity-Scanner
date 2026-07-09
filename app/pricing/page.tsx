@@ -84,11 +84,14 @@ export default function PricingPage() {
               <p className="text-sm font-semibold uppercase tracking-wide text-accent">Full report</p>
               <h2 className="mt-2 text-2xl font-semibold text-ink">Action-ready pipeline</h2>
             </div>
-            <p className="text-3xl font-semibold text-ink">$99</p>
+            <p className="text-right text-sm font-semibold uppercase tracking-wide text-accent">
+              Beta access
+            </p>
           </div>
           <p className="mt-4 text-sm leading-6 text-slate-600">
             Unlock all qualified signals plus the pursuit layer: who to pursue, why now, what to do
-            next, and how to move the row into outreach or CRM.
+            next, and how to move the row into outreach or CRM. During beta, full report access is
+            request-based while checkout is being finalized.
           </p>
           <ul className="mt-5 grid gap-3 text-sm text-slate-700">
             {paidItems.map((item) => (

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Badge, CompanyLogo, LockedBadge, OpportunityScannerLogo } from "@/components/brand";
-import { SendToWorkflowModal, WorkflowPayload } from "@/components/workflow";
+import { SendToWorkflowModal } from "@/components/workflow";
 import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/storage";
 import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types";
 import { accessSuffix, hasAdminAccess, hasFullReportAccess } from "@/lib/access";
@@ -11,18 +11,15 @@ import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { sourceCatalog } from "@/lib/sourceRegistry";
+import {
+  buildWorkflowPayload,
+  opportunityHeadline,
+  revenueMotionLabel,
+  sourceTypeLabel
+} from "@/lib/workflowPayload";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-function opportunityHeadline(signal: StoredOpportunitySignal): string {
-  const match = signal.opportunity_title.match(/^(.+?) received (\$[^:]+): (.+)$/);
-  if (match) {
-    const [, recipient, amount] = match;
-    return `${signalLane(signal)}: ${recipient} funded ${amount}`;
-  }
-  return signal.opportunity_title;
-}
 
 function hostname(value: string): string {
   try {
@@ -35,35 +32,6 @@ function hostname(value: string): string {
 function companyLogoUrl(companyUrl: string): string | null {
   const host = hostname(companyUrl);
   return host ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128` : null;
-}
-
-function revenueMotionLabel(signal: StoredOpportunitySignal): string {
-  const labels: Record<StoredOpportunitySignal["revenue_pathway"], string> = {
-    direct_apply: "Direct Apply",
-    sell_to_grantee: "Sell to Funded Buyer",
-    sell_to_agency: "Sell to Agency",
-    partner_with_recipient: "Partner with Recipient",
-    monitor_policy: "Monitor Policy",
-    build_channel_campaign: "Channel / Distributor Motion",
-    procurement_bid: "Sell to Agency",
-    reimbursement_strategy: "Research Only"
-  };
-  return labels[signal.revenue_pathway] ?? "Research Only";
-}
-
-function sourceTypeLabel(signal: StoredOpportunitySignal): string {
-  const labels: Record<StoredOpportunitySignal["source_type"], string> = {
-    active_grant: "Active funding",
-    active_contract: "Active procurement",
-    historical_award: "Historical market evidence",
-    funded_buyer: "Funded buyer",
-    policy_signal: "Policy signal",
-    procurement_category: "Procurement signal",
-    reimbursement_signal: "Reimbursement signal",
-    tax_incentive: "Tax incentive",
-    workforce_funding: "Workforce funding"
-  };
-  return labels[signal.source_type] ?? signal.source_type.replaceAll("_", " ");
 }
 
 function primaryActionLabel(signal: StoredOpportunitySignal, profile?: CompanyProfile): string {
@@ -87,46 +55,6 @@ function primaryActionLabel(signal: StoredOpportunitySignal, profile?: CompanyPr
     return "Monitor signal";
   }
   return "Validate fit";
-}
-
-function workflowPayload(
-  scanId: string,
-  signal: StoredOpportunitySignal,
-  profile: CompanyProfile | undefined,
-  isPaid: boolean
-): WorkflowPayload {
-  const classification = opportunityActionFor(signal, profile);
-  return {
-    scanId,
-    opportunityId: signal.id,
-    opportunity: opportunityHeadline(signal),
-    targetOrganization: signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review",
-    targetAccount: signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review",
-    source: signal.source_name,
-    signalType: sourceTypeLabel(signal),
-    opportunityType: classification.estimated_opportunity_type,
-    buyerPartnerType: classification.buyer_partner_type,
-    revenueMotion: revenueMotionLabel(signal),
-    actionability: classification.actionability_label,
-    actionabilityScore: classification.actionability_score,
-    contactPath: classificationLabel(classification.contact_strategy),
-    contactStrategy: classification.contact_strategy,
-    recommendedContactRoles: classification.recommended_contact_roles,
-    nextStep: classification.next_best_action,
-    nextBestAction: classification.next_best_action,
-    manualResearchInstruction: classification.manual_research_instruction,
-    crmNote: classification.crm_note,
-    outreachAngle: classification.outreach_angle,
-    followUpTask: classification.follow_up_task,
-    timeSensitivity: classification.time_sensitivity,
-    pursuitDifficulty: classification.pursuit_difficulty,
-    workflowPayloadReady: classification.workflow_payload_ready,
-    workflowPayloadReason: classification.workflow_payload_reason,
-    sourceStatus: classification.source_status,
-    sourceDeadline: classification.source_deadline,
-    sourceEvidence: signal.external_evidence_summary,
-    sourceUrl: isPaid ? signal.source_url : undefined
-  };
 }
 
 function visibleSignalCount(total: number): number {
@@ -591,7 +519,11 @@ function OpportunityDetail({
           <p className="mt-2 text-xs leading-5 text-muted">{classification.manual_research_instruction}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} access={access} />
-            <SendToWorkflowModal payload={workflowPayload(scanId, signal, profile, isPaid)} locked={!isPaid} access={access} />
+            <SendToWorkflowModal
+              payload={buildWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
+              locked={!isPaid}
+              access={access}
+            />
             <FindContactsButton
               scanId={scanId}
               opportunityId={signal.id}
@@ -703,7 +635,11 @@ function OpportunityActionTable({
                   <td className="min-w-[190px] px-4 py-4">
                     <div className="flex flex-col gap-2">
                       <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} access={access} />
-                      <SendToWorkflowModal payload={workflowPayload(scanId, signal, profile, isPaid)} locked={!isPaid} access={access} />
+                      <SendToWorkflowModal
+                        payload={buildWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
+                        locked={!isPaid}
+                        access={access}
+                      />
                       <FindContactsButton
                         scanId={scanId}
                         opportunityId={signal.id}

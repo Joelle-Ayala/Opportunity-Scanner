@@ -1,38 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-
-export type WorkflowPayload = {
-  scanId: string;
-  opportunityId: string;
-  opportunity: string;
-  targetOrganization: string;
-  targetAccount?: string;
-  source: string;
-  signalType: string;
-  opportunityType?: string;
-  buyerPartnerType?: string;
-  revenueMotion: string;
-  actionability: string;
-  actionabilityScore?: number;
-  contactPath: string;
-  contactStrategy?: string;
-  recommendedContactRoles?: string[];
-  nextStep: string;
-  nextBestAction?: string;
-  manualResearchInstruction?: string;
-  crmNote: string;
-  outreachAngle: string;
-  followUpTask?: string;
-  timeSensitivity?: string;
-  pursuitDifficulty?: string;
-  workflowPayloadReady?: boolean;
-  workflowPayloadReason?: string;
-  sourceStatus?: string;
-  sourceDeadline?: string;
-  sourceEvidence?: string;
-  sourceUrl?: string;
-};
+import type { WorkflowPayload } from "@/lib/workflowPayload";
 
 function prettyLabel(value?: string): string {
   return value ? value.replaceAll("_", " ") : "Needs review";
@@ -50,16 +19,34 @@ export function SendToWorkflowModal({
   const [open, setOpen] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function sendOpportunity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("sending");
+    setErrorMessage("");
     const response = await fetch("/api/workflow/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ webhookUrl, payload, access })
+      body: JSON.stringify({
+        webhookUrl,
+        scanId: payload.scanId,
+        opportunityId: payload.opportunityId,
+        access
+      })
     });
-    setStatus(response.ok ? "sent" : "error");
+    if (response.ok) {
+      setStatus("sent");
+      return;
+    }
+
+    const result = await response.json().catch(() => null);
+    setErrorMessage(
+      typeof result?.error?.message === "string"
+        ? result.error.message
+        : "Could not send opportunity. Check the webhook URL and try again."
+    );
+    setStatus("error");
   }
 
   if (locked) {
@@ -151,7 +138,7 @@ export function SendToWorkflowModal({
               ) : null}
               {status === "error" ? (
                 <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  Could not send opportunity. Check the webhook URL and try again.
+                  {errorMessage || "Could not send opportunity. Check the webhook URL and try again."}
                 </p>
               ) : null}
               <div className="flex justify-end gap-2">

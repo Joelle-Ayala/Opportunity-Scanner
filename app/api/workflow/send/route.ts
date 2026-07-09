@@ -1,49 +1,18 @@
 import { NextResponse } from "next/server";
 import { hasFullReportAccess } from "@/lib/access";
-import { getScan } from "@/lib/storage";
+import { getCompanyProfile, getScan, getStoredOpportunitySignal } from "@/lib/storage";
+import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
+import { buildWorkflowPayload, type WorkflowPayload } from "@/lib/workflowPayload";
 
 export const runtime = "nodejs";
 
 const MAX_WEBHOOK_PAYLOAD_BYTES = 25_000;
 const WEBHOOK_TIMEOUT_MS = 8_000;
 
-type WorkflowPayloadInput = Record<string, unknown>;
-
 type ValidationResult =
-  | { ok: true; webhookUrl: string; payload: WorkflowPayloadInput }
+  | { ok: true; webhookUrl: string; scanId: string; opportunityId: string }
   | { ok: false; status: number; code: string; message: string };
-
-const allowedPayloadFields = [
-  "scanId",
-  "opportunityId",
-  "opportunity",
-  "targetOrganization",
-  "targetAccount",
-  "source",
-  "signalType",
-  "opportunityType",
-  "buyerPartnerType",
-  "revenueMotion",
-  "actionability",
-  "actionabilityScore",
-  "contactPath",
-  "contactStrategy",
-  "recommendedContactRoles",
-  "nextStep",
-  "nextBestAction",
-  "manualResearchInstruction",
-  "crmNote",
-  "outreachAngle",
-  "followUpTask",
-  "timeSensitivity",
-  "pursuitDifficulty",
-  "workflowPayloadReady",
-  "workflowPayloadReason",
-  "sourceStatus",
-  "sourceDeadline",
-  "sourceEvidence",
-  "sourceUrl"
-] as const;
+type ValidationError = Extract<ValidationResult, { ok: false }>;
 
 function jsonError(status: number, code: string, message: string) {
   return NextResponse.json({ ok: false, error: { code, message } }, { status });
@@ -53,8 +22,8 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
-function stringValue(payload: WorkflowPayloadInput, key: string): string {
-  const value = payload[key];
+function stringValue(payload: unknown, key: string): string {
+  const value = isObject(payload) ? payload[key] : undefined;
   return typeof value === "string" ? value.trim() : "";
 }
 
@@ -67,17 +36,14 @@ function isAllowedWebhookUrl(value: string): boolean {
   }
 }
 
-function sanitizedPayload(payload: WorkflowPayloadInput): WorkflowPayloadInput {
-  return Object.fromEntries(
-    allowedPayloadFields
-      .filter((field) => payload[field] !== undefined)
-      .map((field) => [field, payload[field]])
-  );
-}
-
 function validateRequestBody(body: unknown): ValidationResult {
   if (!isObject(body)) {
-    return { ok: false, status: 400, code: "INVALID_JSON", message: "Send a JSON body with webhookUrl and payload." };
+    return {
+      ok: false,
+      status: 400,
+      code: "INVALID_JSON",
+      message: "Send a JSON body with webhookUrl, scanId, and opportunityId."
+    };
   }
 
   const webhookUrl = typeof body.webhookUrl === "string" ? body.webhookUrl.trim() : "";
@@ -94,11 +60,22 @@ function validateRequestBody(body: unknown): ValidationResult {
     };
   }
 
-  if (!isObject(body.payload)) {
-    return { ok: false, status: 400, code: "INVALID_PAYLOAD", message: "Workflow payload must be a JSON object." };
+  const scanId = stringValue(body, "scanId");
+  const opportunityId = stringValue(body, "opportunityId");
+
+  if (!scanId || !opportunityId) {
+    return {
+      ok: false,
+      status: 400,
+      code: "MISSING_WORKFLOW_TARGET",
+      message: "Scan ID and opportunity ID are required."
+    };
   }
 
-  const payload = sanitizedPayload(body.payload);
+  return { ok: true, webhookUrl, scanId, opportunityId };
+}
+
+function validateWorkflowPayload(payload: WorkflowPayload): ValidationError | null {
   const requiredTextFields = [
     "scanId",
     "opportunityId",
@@ -148,7 +125,7 @@ function validateRequestBody(body: unknown): ValidationResult {
     };
   }
 
-  return { ok: true, webhookUrl, payload };
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -160,13 +137,30 @@ export async function POST(request: Request) {
   }
 
   const access = isObject(body) && typeof body.access === "string" ? body.access.trim() : undefined;
-  const scanId = stringValue(validation.payload, "scanId");
-  const scan = await getScan(scanId);
+  const scan = await getScan(validation.scanId);
   if (!scan) {
     return jsonError(404, "SCAN_NOT_FOUND", "Scan not found.");
   }
   if (!hasFullReportAccess(access, scan)) {
     return jsonError(403, "FULL_REPORT_ACCESS_REQUIRED", "Full report access is required to send workflow payloads.");
+  }
+
+  const signal = await getStoredOpportunitySignal(validation.scanId, validation.opportunityId);
+  if (!signal) {
+    return jsonError(404, "OPPORTUNITY_NOT_FOUND", "Opportunity not found for this scan.");
+  }
+
+  const profileRecord = await getCompanyProfile(validation.scanId);
+  const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
+  const payload = buildWorkflowPayload({
+    scanId: validation.scanId,
+    signal,
+    profile,
+    includeSourceUrl: true
+  });
+  const payloadValidation = validateWorkflowPayload(payload);
+  if (payloadValidation) {
+    return jsonError(payloadValidation.status, payloadValidation.code, payloadValidation.message);
   }
 
   const controller = new AbortController();
@@ -180,7 +174,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         product: "Opportunity Scanner",
         sent_at: new Date().toISOString(),
-        opportunity: validation.payload
+        opportunity: payload
       })
     });
 
