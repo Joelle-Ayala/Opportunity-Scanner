@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { RelatedContentSection } from "@/components/resources/related-content-section";
 import { getSolutionPage, solutionPages, siteUrl } from "@/lib/marketingContent";
 
 type PageProps = {
@@ -103,6 +104,8 @@ export default function SolutionDetailPage({ params }: PageProps) {
       </section>
 
       <ReportPreview />
+
+      <RelatedContentSection relatedResourceSlugs={solution.relatedResourceSlugs} />
 
       <CTASection title={solution.cta}>
         <p>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { RelatedContentSection } from "@/components/resources/related-content-section";
 import { SampleReportPreview } from "@/components/sample-report";
 import { getIndustryPage, industryPages, siteUrl } from "@/lib/marketingContent";
 import { getSampleReportByIndustry } from "@/lib/sampleReports";
@@ -125,6 +126,8 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
       <div id="report-preview">
         <ReportPreview />
       </div>
+
+      <RelatedContentSection relatedResourceSlugs={industry.relatedResourceSlugs} />
 
       <CTASection title="Turn public-sector signals into a target list.">
         <p>

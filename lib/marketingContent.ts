@@ -105,6 +105,7 @@ export type IndustryPage = {
     nextAction: string;
   }>;
   searchIntent: string;
+  relatedResourceSlugs: RelatedResourceSlugs;
 };
 
 export type SolutionPage = {
@@ -121,7 +122,10 @@ export type SolutionPage = {
     value: string;
   }>;
   cta: string;
+  relatedResourceSlugs: RelatedResourceSlugs;
 };
+
+export type RelatedResourceSlugs = readonly [string, string, string];
 
 export const siteUrl = "https://www.opportunityscanner.ai";
 
@@ -174,7 +178,12 @@ export const solutionPages: SolutionPage[] = [
       { label: "Revenue motion", value: "Sell to Funded Buyer or Partner with Recipient." },
       { label: "Next action", value: "Create a source-backed outreach task and validate contact path." }
     ],
-    cta: "Find funded buyers from your website"
+    cta: "Find funded buyers from your website",
+    relatedResourceSlugs: [
+      "find-funded-buyers-before-cold-outreach",
+      "grants-contracts-funded-buyers",
+      "government-buyer-contact-paths"
+    ]
   },
   {
     slug: "public-sector-sales-workflow",
@@ -197,7 +206,12 @@ export const solutionPages: SolutionPage[] = [
       { label: "Revenue motion", value: "Direct Apply, Sell to Agency, Partner, Monitor, or Research Only." },
       { label: "Next action", value: "Push a CRM-ready task or workflow payload." }
     ],
-    cta: "Build a public-sector pipeline"
+    cta: "Build a public-sector pipeline",
+    relatedResourceSlugs: [
+      "public-sector-sales-pipeline-without-govcon-team",
+      "what-a-public-sector-opportunity-report-should-include",
+      "public-sector-deal-flow-for-commercial-companies"
+    ]
   },
   {
     slug: "contact-paths-and-enrichment",
@@ -220,7 +234,12 @@ export const solutionPages: SolutionPage[] = [
       { label: "Revenue motion", value: "Sell, partner, apply, register, monitor, or research." },
       { label: "Next action", value: "Use the right contact path before sending outreach." }
     ],
-    cta: "See contact paths for your opportunities"
+    cta: "See contact paths for your opportunities",
+    relatedResourceSlugs: [
+      "government-buyer-contact-paths",
+      "find-funded-buyers-before-cold-outreach",
+      "what-a-public-sector-opportunity-report-should-include"
+    ]
   }
 ];
 
@@ -261,7 +280,12 @@ export const industryPages: IndustryPage[] = [
         nextAction: "Build a source-backed outreach note and identify purchasing or partnerships owner."
       }
     ],
-    searchIntent: "healthcare government contracts, DME government contracts, medical supply public-sector opportunities"
+    searchIntent: "healthcare government contracts, DME government contracts, medical supply public-sector opportunities",
+    relatedResourceSlugs: [
+      "healthcare-public-sector-opportunities",
+      "grants-contracts-funded-buyers",
+      "government-buyer-contact-paths"
+    ]
   },
   {
     slug: "education-workforce-training",
@@ -299,7 +323,12 @@ export const industryPages: IndustryPage[] = [
         nextAction: "Create a partnership/outreach task tied to the funded program objective."
       }
     ],
-    searchIntent: "education workforce grants, school staffing government contracts, training public funding opportunities"
+    searchIntent: "education workforce grants, school staffing government contracts, training public funding opportunities",
+    relatedResourceSlugs: [
+      "education-workforce-opportunity-signals",
+      "grants-contracts-funded-buyers",
+      "find-funded-buyers-before-cold-outreach"
+    ]
   },
   {
     slug: "arts-creative-economy-live-events",
@@ -337,7 +366,12 @@ export const industryPages: IndustryPage[] = [
         nextAction: "Build partner/channel outreach with source-backed social proof."
       }
     ],
-    searchIntent: "arts grants for businesses, creative economy public funding, city event procurement"
+    searchIntent: "arts grants for businesses, creative economy public funding, city event procurement",
+    relatedResourceSlugs: [
+      "creative-economy-funding-opportunities",
+      "grants-contracts-funded-buyers",
+      "find-funded-buyers-before-cold-outreach"
+    ]
   },
   {
     slug: "software-b2b-services-ai",
@@ -375,7 +409,12 @@ export const industryPages: IndustryPage[] = [
         nextAction: "Identify partner/channel owner and prepare source-backed outreach."
       }
     ],
-    searchIntent: "software government contracts, AI public sector opportunities, B2B services government sales"
+    searchIntent: "software government contracts, AI public sector opportunities, B2B services government sales",
+    relatedResourceSlugs: [
+      "software-ai-public-sector-demand",
+      "sam-gov-is-not-enough",
+      "public-sector-sales-pipeline-without-govcon-team"
+    ]
   },
   {
     slug: "construction-infrastructure-engineering",
@@ -413,7 +452,12 @@ export const industryPages: IndustryPage[] = [
         nextAction: "Identify subcontracting, supplier, or partner route with source-backed context."
       }
     ],
-    searchIntent: "infrastructure government contracts, construction public sector opportunities, engineering government contracts"
+    searchIntent: "infrastructure government contracts, construction public sector opportunities, engineering government contracts",
+    relatedResourceSlugs: [
+      "infrastructure-opportunities-for-construction-companies",
+      "sam-gov-is-not-enough",
+      "find-funded-buyers-before-cold-outreach"
+    ]
   },
   {
     slug: "clean-energy-facilities-sustainability",
@@ -451,7 +495,12 @@ export const industryPages: IndustryPage[] = [
         nextAction: "Prepare source-backed outreach tied to the funded upgrade objective."
       }
     ],
-    searchIntent: "clean energy grants for businesses, energy efficiency government contracts, sustainability public sector funding"
+    searchIntent: "clean energy grants for businesses, energy efficiency government contracts, sustainability public sector funding",
+    relatedResourceSlugs: [
+      "clean-energy-public-sector-opportunities",
+      "grants-contracts-funded-buyers",
+      "find-funded-buyers-before-cold-outreach"
+    ]
   },
   {
     slug: "manufacturing-supply-chain-logistics",
@@ -489,7 +538,12 @@ export const industryPages: IndustryPage[] = [
         nextAction: "Identify operations, procurement, supplier, or partnerships owner for source-backed outreach."
       }
     ],
-    searchIntent: "manufacturing government contracts, supply chain public sector opportunities, logistics government contracts"
+    searchIntent: "manufacturing government contracts, supply chain public sector opportunities, logistics government contracts",
+    relatedResourceSlugs: [
+      "manufacturing-supply-chain-public-sector-demand",
+      "government-spending-growth-channel",
+      "find-funded-buyers-before-cold-outreach"
+    ]
   },
   {
     slug: "nonprofits-community-services-human-services",
@@ -527,7 +581,12 @@ export const industryPages: IndustryPage[] = [
         nextAction: "Route to program office, procurement path, or source-native contact before enrichment."
       }
     ],
-    searchIntent: "nonprofit government grants, human services public funding, community services government contracts"
+    searchIntent: "nonprofit government grants, human services public funding, community services government contracts",
+    relatedResourceSlugs: [
+      "nonprofit-community-services-funding-opportunities",
+      "grants-contracts-funded-buyers",
+      "government-buyer-contact-paths"
+    ]
   }
 ];
 

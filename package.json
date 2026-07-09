@@ -9,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "check:launch-env": "node scripts/check-launch-env.mjs",
+    "validate:related-content": "node scripts/validate-related-resources.mjs",
     "evaluate:reports": "node scripts/evaluate-local-reports.mjs",
     "test:sam": "node scripts/test-sam-connector.mjs",
     "test:apis": "node scripts/test-api-connectors.mjs",
