@@ -9,6 +9,11 @@ import {
   hasStrongEvidence,
   inferSignalLane
 } from "./shared";
+import {
+  connectorShouldStop,
+  fetchConnectorJson,
+  type ConnectorExecutionContext
+} from "./runtime";
 
 type GrantsSearchHit = {
   id?: string | number;
@@ -135,45 +140,63 @@ function opportunityUrl(id?: string | number): string {
   return `https://www.grants.gov/search-results-detail/${encodeURIComponent(String(id))}`;
 }
 
-async function searchGrants(term: string): Promise<GrantsSearchHit[]> {
-  const response = await fetch(searchEndpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      rows: 5,
-      keyword: term,
-      oppStatuses: "forecasted|posted",
-      eligibilities: "",
-      agencies: "",
-      aln: "",
-      fundingCategories: ""
-    })
-  });
-
-  if (!response.ok) {
+async function searchGrants(
+  term: string,
+  context: ConnectorExecutionContext
+): Promise<GrantsSearchHit[]> {
+  try {
+    const data = await fetchConnectorJson<{ data?: { oppHits?: GrantsSearchHit[] } }>(
+      context,
+      "Grants.gov",
+      searchEndpoint,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rows: 5,
+          keyword: term,
+          oppStatuses: "forecasted|posted",
+          eligibilities: "",
+          agencies: "",
+          aln: "",
+          fundingCategories: ""
+        })
+      },
+      term
+    );
+    return data.data?.oppHits ?? [];
+  } catch {
     return [];
   }
-
-  const data = await response.json();
-  return (data?.data?.oppHits ?? []) as GrantsSearchHit[];
 }
 
-async function fetchGrantOpportunity(id: string | number): Promise<GrantsOpportunityDetail | null> {
-  const response = await fetch(fetchEndpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ opportunityId: Number(id) })
-  });
-
-  if (!response.ok) {
+async function fetchGrantOpportunity(
+  id: string | number,
+  term: string,
+  context: ConnectorExecutionContext
+): Promise<GrantsOpportunityDetail | null> {
+  try {
+    const data = await fetchConnectorJson<{ data?: GrantsOpportunityDetail }>(
+      context,
+      "Grants.gov",
+      fetchEndpoint,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ opportunityId: Number(id) })
+      },
+      term
+    );
+    return data.data ?? null;
+  } catch {
     return null;
   }
-
-  const data = await response.json();
-  return (data?.data ?? null) as GrantsOpportunityDetail | null;
 }
 
-export async function searchGrantsGov(profile: CompanyProfile): Promise<OpportunitySignal[]> {
+export async function searchGrantsGov(
+  profile: CompanyProfile,
+  context: ConnectorExecutionContext
+): Promise<OpportunitySignal[]> {
   const terms = collectSearchTerms(profile, 18);
   const creativeProfile = isCreativeProfile(profile);
   const educationProfile = isEducationProfile(profile);
@@ -182,16 +205,18 @@ export async function searchGrantsGov(profile: CompanyProfile): Promise<Opportun
   const seen = new Set<string>();
 
   for (const term of terms) {
-    const hits = await searchGrants(term);
+    if (connectorShouldStop(context)) break;
+    const hits = await searchGrants(term, context);
 
     for (const hit of hits) {
+      if (connectorShouldStop(context)) break;
       const id = hit.id;
       if (!id || seen.has(String(id))) {
         continue;
       }
       seen.add(String(id));
 
-      const detail = await fetchGrantOpportunity(id);
+      const detail = await fetchGrantOpportunity(id, term, context);
       const synopsis = detail?.synopsis;
       const title = detail?.opportunityTitle || hit.title || "Untitled Grants.gov opportunity";
       const agency = synopsis?.agencyName || hit.agencyName || detail?.owningAgencyCode || hit.agencyCode || "Agency not listed";

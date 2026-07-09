@@ -9,6 +9,11 @@ import {
   hasStrongEvidence,
   inferSignalLane
 } from "./shared";
+import {
+  connectorShouldStop,
+  fetchConnectorJson,
+  type ConnectorExecutionContext
+} from "./runtime";
 
 type FederalRegisterDocument = {
   title?: string;
@@ -96,7 +101,10 @@ function isRelevantDocument(doc: FederalRegisterDocument, query: string, profile
   return hasRelevantWord && hasQueryWord && hasAgencyFit;
 }
 
-async function searchDocuments(query: string): Promise<FederalRegisterDocument[]> {
+async function searchDocuments(
+  query: string,
+  context: ConnectorExecutionContext
+): Promise<FederalRegisterDocument[]> {
   const params = new URLSearchParams({
     "conditions[term]": query,
     "conditions[publication_date][gte]": "2023-01-01",
@@ -104,22 +112,31 @@ async function searchDocuments(query: string): Promise<FederalRegisterDocument[]
     "per_page": "3"
   });
 
-  const response = await fetch(`https://www.federalregister.gov/api/v1/documents.json?${params}`);
-  if (!response.ok) {
+  try {
+    const data = await fetchConnectorJson<{ results?: FederalRegisterDocument[] }>(
+      context,
+      "Federal Register",
+      `https://www.federalregister.gov/api/v1/documents.json?${params}`,
+      {},
+      query
+    );
+    return data.results ?? [];
+  } catch {
     return [];
   }
-
-  const data = await response.json();
-  return (data?.results ?? []) as FederalRegisterDocument[];
 }
 
-export async function searchFederalRegister(profile: CompanyProfile): Promise<OpportunitySignal[]> {
+export async function searchFederalRegister(
+  profile: CompanyProfile,
+  context: ConnectorExecutionContext
+): Promise<OpportunitySignal[]> {
   const terms = collectSearchTerms(profile, 8);
   const signals: OpportunitySignal[] = [];
   const seen = new Set<string>();
 
   for (const term of terms) {
-    const docs = await searchDocuments(term);
+    if (connectorShouldStop(context)) break;
+    const docs = await searchDocuments(term, context);
 
     for (const doc of docs) {
       if (!isRelevantDocument(doc, term, profile)) {

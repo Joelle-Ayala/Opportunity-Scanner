@@ -27,6 +27,7 @@ import {
   supabaseUpdate
 } from "./supabaseRest";
 import { withNormalizedOpportunityAction } from "./opportunityAction";
+import type { ConnectorRunStatus } from "./connectors/runtime";
 
 type LocalDb = {
   scans: ScanRecord[];
@@ -256,6 +257,65 @@ export async function listCompletedScansWithProfiles(limit = 50): Promise<
     scan,
     profile: profiles[index]
   }));
+}
+
+export async function saveConnectorRunStatuses(
+  scanId: string,
+  runs: ConnectorRunStatus[]
+): Promise<SourceResultRecord[]> {
+  const saved: SourceResultRecord[] = [];
+
+  if (usesSupabase()) {
+    for (const run of runs) {
+      const record = await supabaseInsert<SourceResultRecord>("source_results", {
+        scan_id: scanId,
+        source_name: run.source_name,
+        source_type: "connector_run",
+        query_used: run.query_used.join(" | ") || null,
+        title: `${run.status}:${run.outcome}`,
+        url: null,
+        raw_json: run as unknown as Record<string, unknown>
+      });
+      saved.push(record);
+    }
+    return saved;
+  }
+
+  const db = normalizeLocalDb(await readLocalDb());
+  for (const run of runs) {
+    const record: SourceResultRecord = {
+      id: randomUUID(),
+      scan_id: scanId,
+      source_name: run.source_name,
+      source_type: "connector_run",
+      query_used: run.query_used.join(" | ") || null,
+      title: `${run.status}:${run.outcome}`,
+      url: null,
+      raw_json: run as unknown as Record<string, unknown>,
+      created_at: run.completed_at
+    };
+    db.source_results.push(record);
+    saved.push(record);
+  }
+  await writeLocalDb(db);
+  return saved;
+}
+
+export async function listConnectorRunStatuses(scanId: string): Promise<ConnectorRunStatus[]> {
+  let rows: SourceResultRecord[];
+  if (usesSupabase()) {
+    rows = await supabaseSelectMany<SourceResultRecord>(
+      "source_results",
+      `scan_id=eq.${scanId}&source_type=eq.connector_run&order=created_at.asc`
+    );
+  } else {
+    const db = normalizeLocalDb(await readLocalDb());
+    rows = db.source_results
+      .filter((row) => row.scan_id === scanId && row.source_type === "connector_run")
+      .sort((a, b) => a.created_at.localeCompare(b.created_at));
+  }
+
+  return rows.map((row) => row.raw_json as unknown as ConnectorRunStatus);
 }
 
 export async function saveOpportunitySignals(

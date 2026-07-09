@@ -3,10 +3,11 @@ import {
   createScan,
   listProfileFeedbackForCompanyUrl,
   saveCompanyProfile,
+  saveConnectorRunStatuses,
   saveOpportunitySignals,
   updateScan
 } from "@/lib/storage";
-import { discoverExternalSignals } from "@/lib/connectors/discover";
+import { discoverExternalSignalsWithStatus } from "@/lib/connectors/discover";
 import { generateCompanyProfile } from "@/lib/profile";
 import { applyProfileFeedbackToProfile } from "@/lib/profileRefinement";
 import { scrapeCompanyWebsite } from "@/lib/scraper";
@@ -72,8 +73,9 @@ export async function POST(request: Request) {
     await saveCompanyProfile(scan.id, profile, scraped.rawText, scraped.pages);
 
     await updateScan(scan.id, { status: "discovering" });
-    const signals = await discoverExternalSignals(profile);
-    await saveOpportunitySignals(scan.id, signals, profile);
+    const discovery = await discoverExternalSignalsWithStatus(profile);
+    await saveConnectorRunStatuses(scan.id, discovery.runs);
+    await saveOpportunitySignals(scan.id, discovery.signals, profile);
 
     await updateScan(scan.id, {
       status: "completed",

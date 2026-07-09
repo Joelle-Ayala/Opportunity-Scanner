@@ -10,6 +10,11 @@ import {
   inferSignalLane,
   isInfrastructureSignal
 } from "./shared";
+import {
+  connectorShouldStop,
+  fetchConnectorJson,
+  type ConnectorExecutionContext
+} from "./runtime";
 
 type UsaAward = {
   "Award ID"?: string;
@@ -186,63 +191,72 @@ function uniqueTerms(terms: string[]): string[] {
   return Array.from(new Set(terms.filter(Boolean)));
 }
 
-async function searchAwards(query: string): Promise<UsaAward[]> {
+async function searchAwards(query: string, context: ConnectorExecutionContext): Promise<UsaAward[]> {
   const endDate = new Date().toISOString().slice(0, 10);
   const awards: UsaAward[] = [];
 
   for (const awardTypeCodes of awardTypeGroups) {
-    const response = await fetch("https://api.usaspending.gov/api/v2/search/spending_by_award/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        filters: {
-          keywords: [query],
-          award_type_codes: awardTypeCodes,
-          time_period: [
-            {
-              start_date: "2024-01-01",
-              end_date: endDate
-            }
-          ],
-          award_amounts: [
-            {
-              lower_bound: 10000
-            }
-          ]
+    if (connectorShouldStop(context)) break;
+    try {
+      const data = await fetchConnectorJson<{ results?: UsaAward[] }>(
+        context,
+        "USAspending.gov",
+        "https://api.usaspending.gov/api/v2/search/spending_by_award/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            filters: {
+              keywords: [query],
+              award_type_codes: awardTypeCodes,
+              time_period: [
+                {
+                  start_date: "2024-01-01",
+                  end_date: endDate
+                }
+              ],
+              award_amounts: [
+                {
+                  lower_bound: 10000
+                }
+              ]
+            },
+            fields: [
+              "Award ID",
+              "Recipient Name",
+              "Award Amount",
+              "Start Date",
+              "End Date",
+              "Awarding Agency",
+              "Description",
+              "Award Type",
+              "Place of Performance State Code"
+            ],
+            page: 1,
+            limit: 3,
+            sort: "Award Amount",
+            order: "desc",
+            subawards: false
+          })
         },
-        fields: [
-          "Award ID",
-          "Recipient Name",
-          "Award Amount",
-          "Start Date",
-          "End Date",
-          "Awarding Agency",
-          "Description",
-          "Award Type",
-          "Place of Performance State Code"
-        ],
-        page: 1,
-        limit: 3,
-        sort: "Award Amount",
-        order: "desc",
-        subawards: false
-      })
-    });
-
-    if (!response.ok) {
-      continue;
+        query
+      );
+      awards.push(...(data.results ?? []));
+    } catch {
+      // Request diagnostics are recorded by fetchConnectorJson. Continue so one
+      // failed award group does not discard usable results from another group.
     }
-
-    const data = await response.json();
-    awards.push(...((data?.results ?? []) as UsaAward[]));
   }
 
   return awards;
 }
 
-export async function searchUsaSpending(profile: CompanyProfile): Promise<OpportunitySignal[]> {
+export async function searchUsaSpending(
+  profile: CompanyProfile,
+  context: ConnectorExecutionContext
+): Promise<OpportunitySignal[]> {
   const educationWorkforceProfile = isEducationWorkforceProfile(profile);
   const creativeWorkforceProfile = isCreativeWorkforceProfile(profile);
   const creativeOnlyProfile = creativeWorkforceProfile && !educationWorkforceProfile;
@@ -256,7 +270,8 @@ export async function searchUsaSpending(profile: CompanyProfile): Promise<Opport
   const perQueryCount = new Map<string, number>();
 
   for (const term of terms) {
-    const awards = await searchAwards(term);
+    if (connectorShouldStop(context)) break;
+    const awards = await searchAwards(term, context);
 
     for (const award of awards) {
       const awardId = award["Award ID"] ?? `${term}-${award["Recipient Name"]}`;

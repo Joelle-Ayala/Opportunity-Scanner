@@ -11,7 +11,9 @@
     "check:launch-env": "node scripts/check-launch-env.mjs",
     "evaluate:reports": "node scripts/evaluate-local-reports.mjs",
     "test:sam": "node scripts/test-sam-connector.mjs",
-    "test:apis": "node scripts/test-api-connectors.mjs"
+    "test:apis": "node scripts/test-api-connectors.mjs",
+    "test:connector-runtime": "node scripts/test-connector-runtime.mjs",
+    "test:public-connectors": "node scripts/test-public-connector-regressions.mjs"
   },
   "dependencies": {
     "@types/node": "^20.14.10",

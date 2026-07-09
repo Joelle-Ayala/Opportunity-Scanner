@@ -8,6 +8,11 @@ import {
   hasStrongEvidence,
   inferSignalLane
 } from "./shared";
+import {
+  connectorShouldStop,
+  fetchConnectorJson,
+  type ConnectorExecutionContext
+} from "./runtime";
 
 type SamOpportunity = {
   noticeId?: string;
@@ -220,7 +225,11 @@ function titleFor(item: SamOpportunity, lane: string): string {
   return `${type}: ${title} (${lane})`;
 }
 
-async function searchSam(term: string, ptypes: string[]): Promise<SamOpportunity[]> {
+async function searchSam(
+  term: string,
+  ptypes: string[],
+  context: ConnectorExecutionContext
+): Promise<SamOpportunity[]> {
   const apiKey = process.env.SAM_API_KEY;
   if (!apiKey) {
     return [];
@@ -229,6 +238,7 @@ async function searchSam(term: string, ptypes: string[]): Promise<SamOpportunity
   const results: SamOpportunity[] = [];
 
   for (const ptype of ptypes) {
+    if (connectorShouldStop(context)) break;
     const params = new URLSearchParams({
       api_key: apiKey,
       postedFrom: formatSamDate(oneYearAgo()),
@@ -239,19 +249,28 @@ async function searchSam(term: string, ptypes: string[]): Promise<SamOpportunity
       ptype
     });
 
-    const response = await fetch(`${samEndpoint}?${params}`);
-    if (!response.ok) {
-      continue;
+    try {
+      const data = await fetchConnectorJson<{ opportunitiesData?: SamOpportunity[] }>(
+        context,
+        "SAM.gov",
+        `${samEndpoint}?${params}`,
+        {},
+        term
+      );
+      results.push(...(data.opportunitiesData ?? []));
+    } catch {
+      // Keep other notice types available and let runtime diagnostics decide
+      // whether this was a partial or total connector failure.
     }
-
-    const data = await response.json();
-    results.push(...((data?.opportunitiesData ?? []) as SamOpportunity[]));
   }
 
   return results;
 }
 
-export async function searchSamGov(profile: CompanyProfile): Promise<OpportunitySignal[]> {
+export async function searchSamGov(
+  profile: CompanyProfile,
+  context: ConnectorExecutionContext
+): Promise<OpportunitySignal[]> {
   if (!isSamGovConfigured()) {
     return [];
   }
@@ -261,9 +280,10 @@ export async function searchSamGov(profile: CompanyProfile): Promise<Opportunity
   const seen = new Set<string>();
 
   for (const term of terms) {
+    if (connectorShouldStop(context)) break;
     const opportunities = [
-      ...(await searchSam(term, activeProcurementTypes)),
-      ...(await searchSam(term, awardProcurementTypes))
+      ...(await searchSam(term, activeProcurementTypes, context)),
+      ...(await searchSam(term, awardProcurementTypes, context))
     ];
 
     for (const item of opportunities) {
