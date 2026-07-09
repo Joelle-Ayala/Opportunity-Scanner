@@ -1,9 +1,20 @@
 import { ReactNode } from "react";
 
+const mainNavLinks = [
+  ["Product", "/"],
+  ["How It Works", "/how-it-works"],
+  ["Solutions", "/solutions"],
+  ["Industries", "/industries"],
+  ["Examples", "/examples"],
+  ["Public-Sector Revenue", "/public-sector-revenue"],
+  ["Resources", "/resources"],
+  ["Pricing", "/pricing"]
+];
+
 export function OpportunityScannerLogo({ compact = false }: { compact?: boolean }) {
   return (
-    <a href="/" className="flex items-center gap-3" aria-label="Opportunity Scanner home">
-      <span className="relative grid h-11 w-11 place-items-center rounded-lg bg-ink text-sm font-bold text-white shadow-lift">
+    <a href="/" className="flex min-w-0 items-center gap-3" aria-label="Opportunity Scanner home">
+      <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-ink text-sm font-bold text-white shadow-lift sm:h-11 sm:w-11">
         <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-signal" />
         <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-review" />
         <span className="absolute bottom-2 left-2 h-2 w-2 rounded-full bg-ember" />
@@ -11,9 +22,9 @@ export function OpportunityScannerLogo({ compact = false }: { compact?: boolean 
         <span className="relative">OS</span>
       </span>
       {!compact ? (
-        <span className="leading-tight">
-          <span className="block text-base font-semibold text-ink">Opportunity Scanner</span>
-          <span className="block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Opportunity Systems</span>
+        <span className="min-w-0 leading-tight">
+          <span className="block truncate text-sm font-semibold text-ink sm:text-base">Opportunity Scanner</span>
+          <span className="hidden text-xs font-semibold uppercase tracking-[0.12em] text-muted sm:block">Opportunity Systems</span>
         </span>
       ) : null}
     </a>
@@ -23,22 +34,38 @@ export function OpportunityScannerLogo({ compact = false }: { compact?: boolean 
 export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
   return (
     <header className="sticky top-0 z-20 border-b border-line/80 bg-white/92 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center justify-between gap-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:py-4">
+        <div className="min-w-0">
           <OpportunityScannerLogo />
-          <div className="lg:hidden">{rightSlot}</div>
         </div>
-        <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-semibold text-steel">
-          <a href="/" className="hover:text-accent">Product</a>
-          <a href="/how-it-works" className="hover:text-accent">How It Works</a>
-          <a href="/solutions" className="hover:text-accent">Solutions</a>
-          <a href="/industries" className="hover:text-accent">Industries</a>
-          <a href="/examples" className="hover:text-accent">Examples</a>
-          <a href="/public-sector-revenue" className="hover:text-accent">Public-Sector Revenue</a>
-          <a href="/resources" className="hover:text-accent">Resources</a>
-          <a href="/pricing" className="hover:text-accent">Pricing</a>
+
+        <nav className="hidden flex-1 items-center justify-center gap-x-4 gap-y-2 text-sm font-semibold text-steel lg:flex">
+          {mainNavLinks.map(([label, href]) => (
+            <a key={href} href={href} className="whitespace-nowrap hover:text-accent">
+              {label}
+            </a>
+          ))}
         </nav>
-        <div className="hidden items-center gap-3 lg:flex">{rightSlot}</div>
+
+        <div className="hidden shrink-0 items-center gap-3 lg:flex">{rightSlot}</div>
+
+        <div className="flex shrink-0 items-center gap-2 lg:hidden">
+          <a href="/#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold leading-none text-white shadow-sm hover:bg-[#0A6871]">
+            Scan
+          </a>
+          <details className="group relative">
+            <summary className="list-none rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold leading-none text-ink shadow-sm hover:border-accent [&::-webkit-details-marker]:hidden">
+              Menu
+            </summary>
+            <nav className="absolute right-0 top-11 grid w-[min(86vw,320px)] gap-1 rounded-lg border border-line bg-white p-2 text-sm font-semibold text-steel shadow-lift">
+              {mainNavLinks.map(([label, href]) => (
+                <a key={href} href={href} className="rounded-md px-3 py-2 hover:bg-mist hover:text-accent">
+                  {label}
+                </a>
+              ))}
+            </nav>
+          </details>
+        </div>
       </div>
     </header>
   );
