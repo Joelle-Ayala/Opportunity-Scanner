@@ -60,13 +60,11 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
               <div className="flex flex-wrap gap-2">
                 <Badge tone="blue">{article.category}</Badge>
                 <Badge tone="locked">{article.readTime}</Badge>
-                <Badge tone="green">{article.funnelStage}</Badge>
               </div>
               <h1 className="mt-5 text-4xl font-semibold leading-tight text-ink sm:text-5xl">
                 {article.title}
               </h1>
               <p className="mt-5 text-lg leading-8 text-slate-600">{article.description}</p>
-              <p className="mt-4 text-sm font-semibold text-muted">Primary topic: {article.primaryKeyword}</p>
             </div>
             {article.featuredImage ? (
               <div className="overflow-hidden rounded-lg border border-line bg-white shadow-panel">
@@ -125,7 +123,7 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
 
           {article.proofPoints?.length ? (
             <section className="mt-10 rounded-lg border border-line bg-white p-5 shadow-sm">
-              <h2 className="text-xl font-semibold text-ink">Stats and proof points</h2>
+              <h2 className="text-xl font-semibold text-ink">Sources cited</h2>
               <div className="mt-4 grid gap-3">
                 {article.proofPoints.map((point) => (
                   <a
@@ -140,17 +138,6 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
                   </a>
                 ))}
               </div>
-            </section>
-          ) : null}
-
-          {article.sourceNote ? (
-            <section className="mt-10 rounded-lg border border-line bg-white p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-accent">Source note</p>
-              <h2 className="mt-3 text-xl font-semibold leading-7 text-ink">{article.sourceNote.source}</h2>
-              <p className="mt-3 text-base leading-7 text-slate-700">{article.sourceNote.text}</p>
-              <a href={article.sourceNote.url} className="mt-4 inline-flex text-sm font-semibold text-accent hover:text-[#0A6871]" target="_blank" rel="noreferrer">
-                View source
-              </a>
             </section>
           ) : null}
 

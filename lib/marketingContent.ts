@@ -493,27 +493,27 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "government spending growth channel",
     funnelStage: "Awareness",
     intro:
-      "Most companies do not ignore public-sector money because it is irrelevant. They ignore it because it feels slow, scattered, and hard to translate into pipeline. The opportunity is bigger than bidding on contracts: public money can show which agencies are buying, which organizations were funded, which programs are expanding, and where demand is forming.",
+      "Most companies do not ignore public-sector money because it is irrelevant. They ignore it because it feels slow, scattered, and hard to translate into pipeline. That is a costly blind spot: SBA's FY2024 scorecard factsheet reported $183.5 billion in federal small-business prime contracting, or 28.76% of eligible federal contracting dollars. The opportunity is bigger than bidding on contracts: public money can show which agencies are buying, which organizations were funded, which programs are expanding, and where demand is forming.",
     sections: [
       {
         heading: "Public money is demand evidence",
         body: [
           "Government contracts, grants, funded programs, workforce dollars, policy priorities, reimbursement rules, and award history all point to demand. Even when a company is not ready to bid directly, these signals can identify funded buyers, award recipients, prime vendors, grantees, distributors, agencies, and program offices worth understanding.",
-          "That is why the best question is not always, 'Can we apply for this?' A better first question is, 'What does this public money tell us about who needs what we sell?'"
+          "SBA Administrator Isabel Casillas Guzman framed small-business contracting as part of 'ensuring competition and a level playing field.' For a founder or revenue leader, the practical takeaway is not abstract policy. It is that public buyers and publicly funded organizations already spend real money with businesses outside the largest incumbents."
         ]
       },
       {
         heading: "The data is public, but the action is hidden",
         body: [
-          "The hard part is not that public-sector records are unavailable. The hard part is that they are spread across portals, notices, award records, grant listings, regulations, and agency pages.",
-          "A sales team needs a target, a reason to reach out, a contact path, and a next step. Raw search results rarely provide that. Opportunity Scanner exists to turn those scattered records into an action-ready opportunity table."
+          "The hard part is not that public-sector records are unavailable. The hard part is that they are spread across portals, notices, award records, grant listings, regulations, and agency pages. SAM.gov, Grants.gov, USAspending.gov, Federal Register, and agency sites each answer different questions, and none of them are designed to become your sales team's next task.",
+          "A sales team needs a target, a reason to reach out, a contact path, and a next step. Raw search results rarely provide that. Opportunity Scanner exists to turn those scattered records into an action-ready opportunity table: source, target, revenue motion, contact path, actionability, and workflow-ready next action."
         ]
       },
       {
         heading: "The channel is not only for government contractors",
         body: [
-          "Some companies should sell directly to agencies. Others should partner with recipients, sell to funded buyers, monitor policy, register as vendors, contact program offices, or create research tasks for a sales or partnerships team.",
-          "That broader map is where many commercial companies can start. They do not need a full government capture team to learn whether public-sector demand exists around their product or service."
+          "Some companies should sell directly to agencies. Others should partner with recipients, sell to funded buyers, monitor policy, register as vendors, contact program offices, or create research tasks for a sales or partnerships team. The mistake is treating every public record as a grant application or government bid.",
+          "That broader map is where many commercial companies can start. They do not need a full government capture team to learn whether public-sector demand exists around their product or service. They need a first-pass scan that shows whether the channel is worth pursuing and which motion makes sense."
         ]
       }
     ],
@@ -529,27 +529,27 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "can my business sell to government",
     funnelStage: "Awareness",
     intro:
-      "Many companies assume government sales are only for defense contractors, large incumbents, or teams that already know procurement. Sometimes that is true. Often, the better first step is to check whether public-sector demand exists around what your company already sells.",
+      "Many companies assume government sales are only for defense contractors, large incumbents, or teams that already know procurement. Sometimes that is true. Often, the better first step is to check whether public-sector demand exists around what your company already sells. The federal small-business market alone is large enough to justify that check: SBA's FY2024 scorecard factsheet reported $183.5 billion in federal small-business prime contracting.",
     sections: [
       {
         heading: "Direct agency sales are only one path",
         body: [
           "A company might pursue a direct contract, but it might also sell to a funded buyer, partner with a grantee, work through a prime contractor, support a workforce program, route through a distributor, or monitor a policy signal until a clearer opportunity opens.",
-          "That matters because a business can learn from public money flows before it commits to a full government sales strategy."
+          "That matters because a business can learn from public money flows before it commits to a full government sales strategy. Guzman's point about 'competition and a level playing field' is useful here: the first question is not whether you already look like a government contractor. It is whether public buyers or funded organizations have a reason to need what you sell."
         ]
       },
       {
         heading: "Good fit starts with evidence",
         body: [
-          "Useful evidence includes agencies buying similar products, grants funding adjacent programs, award recipients serving the same market, workforce dollars flowing to relevant outcomes, or policy activity pointing to future demand.",
-          "If those signals exist, the next question becomes practical: who is the target organization, what is the revenue motion, and what should the team do next?"
+          "Useful evidence includes agencies buying similar products, grants funding adjacent programs, award recipients serving the same market, workforce dollars flowing to relevant outcomes, or policy activity pointing to future demand. SAM.gov contract notices can indicate active procurement; USAspending records can show who already won money; Grants.gov can reveal programs and future recipients.",
+          "If those signals exist, the next question becomes practical: who is the target organization, what is the revenue motion, and what should the team do next? A strong fit check should produce an action row, not a vague thumbs-up."
         ]
       },
       {
         heading: "Use a scan as a lightweight market test",
         body: [
-          "Opportunity Scanner reads your website, translates your commercial language into public-sector search terms, and looks for sourced signals that map back to your business.",
-          "The goal is not to promise instant contracts. The goal is to give you a credible first look at whether this channel deserves attention."
+          "Opportunity Scanner reads your website, translates your commercial language into public-sector search terms, and looks for sourced signals that map back to your business. That matters because a company's own language may not match public-sector categories; a product page may say automation, while public records say case management, modernization, compliance, training, or service delivery.",
+          "The goal is not to promise instant contracts. The goal is to give you a credible first look at whether this channel deserves attention, what type of pursuit makes sense, and which next step would move the opportunity forward."
         ]
       }
     ],
@@ -565,28 +565,28 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "public sector opportunity signal",
     funnelStage: "Awareness",
     intro:
-      "A public-sector opportunity signal is sourced evidence that public money, public demand, or public policy attention may create a revenue, funding, procurement, partnership, workforce, reimbursement, or business-development opportunity.",
+      "A public-sector opportunity signal is sourced evidence that public money, public demand, or public policy attention may create a revenue, funding, procurement, partnership, workforce, reimbursement, or business-development opportunity. The important word is sourced: the signal should point back to a public record, not an unsupported AI summary.",
     sections: [
       {
         heading: "Signals are not the same as opportunities",
         body: [
           "A grant listing, award record, policy notice, or procurement record is only useful when it points to a plausible next step. The record needs context: who is funded, who might buy, what changed, and what action makes sense.",
-          "Opportunity Scanner treats the source record as the beginning, not the final product."
+          "That distinction matters because public portals are built for transparency and compliance, not revenue teams. Opportunity Scanner treats the source record as the beginning, then translates it into a business-development decision."
         ]
       },
       {
         heading: "The main signal types",
         body: [
-          "Money already moved: award history and spending records that reveal funded buyers, prime vendors, agencies, or market patterns.",
-          "Money available now: active grants, procurement notices, solicitations, and funding programs.",
-          "Demand forming: policy, regulatory, workforce, reimbursement, and program signals that suggest future need."
+          "Money already moved: award history and spending records that reveal funded buyers, prime vendors, agencies, or market patterns. These records are often best for account targeting and partner mapping.",
+          "Money available now: active grants, procurement notices, solicitations, and funding programs. These records may support direct apply, vendor registration, agency sales, or funded-recipient outreach.",
+          "Demand forming: policy, regulatory, workforce, reimbursement, and program signals that suggest future need. These records may not justify outreach today, but they can tell a team what to monitor and where the market is moving."
         ]
       },
       {
         heading: "Useful signals become action rows",
         body: [
-          "A good opportunity row includes the target organization, source, revenue motion, actionability, contact path, next best action, and workflow-ready notes.",
-          "Paid reports may include source-native contact paths and capped contact enrichment where appropriate. When a direct contact is not available, the report recommends the best next step, such as a procurement office, program office, funded recipient, vendor registration path, partner target, or manual research task."
+          "A good opportunity row includes the target organization, source, revenue motion, actionability, contact path, next best action, and workflow-ready notes. For example: sell to an agency, partner with a funded recipient, register as a vendor, monitor a policy signal, or create a CRM task for a sales lead.",
+          "Paid reports may include source-native contact paths and capped contact enrichment where appropriate. When a direct contact is not available, the report should still recommend the best next step, such as a procurement office, program office, funded recipient, vendor registration path, partner target, or manual research task."
         ]
       }
     ],
@@ -602,27 +602,27 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "government contracts vs grants",
     funnelStage: "Awareness",
     intro:
-      "Public-sector opportunity gets confusing because different records point to different actions. A grant might be something you apply for, but it might also identify future grantees to sell to. A contract might be active, expired, or simply evidence that an agency buys a category. A funded buyer may be a better target than the agency itself.",
+      "Public-sector opportunity gets confusing because different records point to different actions. A grant might be something you apply for, but it might also identify future grantees to sell to. A contract might be active, expired, or simply evidence that an agency buys a category. A funded buyer may be a better target than the agency itself. That is why the business question is not 'grant or contract?' It is 'what does this record tell us to do next?'",
     sections: [
       {
         heading: "Grants are not always direct revenue",
         body: [
-          "Some grants are a fit for direct application. Others are better treated as market intelligence: they show which organizations may soon have money to spend, what outcomes are being funded, and which program offices control the agenda.",
-          "A business should ask whether it is eligible to apply, whether eligible recipients need vendors or partners, and whether the funder or program office signals future demand."
+          "Some grants are a fit for direct application. Others are better treated as market intelligence: they show which organizations may soon have money to spend, what outcomes are being funded, and which program offices control the agenda. Grants.gov lists grant-making agencies across commerce, education, energy, health, labor, transportation, veterans affairs, the arts, science, and small business, which is exactly why a generic grant search can become noisy fast.",
+          "A business should ask whether it is eligible to apply, whether eligible recipients need vendors or partners, and whether the funder or program office signals future demand. The action may be apply, but it may also be partner, sell, monitor, or research."
         ]
       },
       {
         heading: "Contracts show both active work and buying patterns",
         body: [
-          "An active solicitation may create a direct bid path. A historical award may not be open now, but it can reveal agencies, primes, recipients, or purchasing categories worth monitoring.",
-          "Opportunity Scanner separates money already moved from money available now so teams do not confuse market evidence with an active opportunity."
+          "An active solicitation may create a direct bid path. A historical award may not be open now, but it can reveal agencies, primes, recipients, or purchasing categories worth monitoring. SAM.gov contract opportunities cover procurement notices such as solicitations, awards, and sole-source notices, so status and timing matter.",
+          "Opportunity Scanner separates money already moved from money available now so teams do not confuse market evidence with an active opportunity. That distinction protects a sales team from treating every record as a bid when some records are better used for targeting."
         ]
       },
       {
         heading: "Funded buyers can be the fastest path",
         body: [
-          "A funded buyer is an organization with public money, a public mandate, or a funded program that may need products, services, partners, or implementation support.",
-          "For many companies, the first public-sector revenue motion is not a bid. It is selling to or partnering with the organization that already received the money."
+          "A funded buyer is an organization with public money, a public mandate, or a funded program that may need products, services, partners, or implementation support. This is where public-sector intelligence starts to look like sales pipeline instead of research.",
+          "For many companies, the first public-sector revenue motion is not a bid. It is selling to or partnering with the organization that already received the money. The row should say who the funded buyer is, why the source matters, what contact path makes sense, and what the next best action should be."
         ]
       }
     ],
@@ -638,27 +638,27 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "funded buyers",
     funnelStage: "Consideration",
     intro:
-      "Most cold outreach starts with a list and a guess. Public-sector money flow can make that outreach sharper by showing who received funding, who won awards, what agencies are buying, and which organizations are operating inside a funded program.",
+      "Most cold outreach starts with a list and a guess. Public-sector money flow can make that outreach sharper by showing who received funding, who won awards, what agencies are buying, and which organizations are operating inside a funded program. If federal small-business contracting can reach $183.5 billion in one fiscal year, the growth problem is not whether public money exists. It is whether your team can turn the right slice of it into relevant accounts and messages.",
     sections: [
       {
         heading: "A funded buyer is more than a lead",
         body: [
-          "A funded buyer has some combination of money, mandate, timing, and public evidence. That does not guarantee a sale, but it gives your team a better reason to research, prioritize, and reach out.",
-          "The best rows include a source link, relevant context, a revenue motion, and a practical next action."
+          "A funded buyer has some combination of money, mandate, timing, and public evidence. That does not guarantee a sale, but it gives your team a better reason to research, prioritize, and reach out. Treasury's State and Local Fiscal Recovery Funds program delivered $350 billion to state, local, territorial, and Tribal governments, creating thousands of places where public money could become vendor, partner, or program demand.",
+          "The best rows include a source link, relevant context, a revenue motion, and a practical next action. The difference from a normal lead list is that the outreach can reference a public objective instead of pretending the prospect is a random fit."
         ]
       },
       {
         heading: "Use source evidence in outreach",
         body: [
-          "A source-backed note can reference the program, award, funding category, or public objective that makes the outreach relevant. That is more useful than a generic pitch.",
-          "The outreach should still be careful: ask who owns the program, vendor path, partnership route, or procurement process instead of assuming one person controls the whole opportunity."
+          "A source-backed note can reference the program, award, funding category, or public objective that makes the outreach relevant. Treasury Deputy Secretary Wally Adeyemo said local governments did not need to wait to make SLFRF investments; for a revenue team, that kind of timing signal helps explain why an account may be active now.",
+          "The outreach should still be careful: ask who owns the program, vendor path, partnership route, or procurement process instead of assuming one person controls the whole opportunity. The best first touch often asks for routing, not a meeting."
         ]
       },
       {
         heading: "Contact path beats random email hunting",
         body: [
-          "Sometimes the best route is a named contact. Sometimes it is a program office, procurement office, vendor registration portal, partner organization, or manual research task.",
-          "Paid reports include source-native contact paths and capped contact enrichment where appropriate, but the product should never invent certainty where the source does not support it."
+          "Sometimes the best route is a named contact. Sometimes it is a program office, procurement office, vendor registration portal, partner organization, or manual research task. Public-sector outreach fails when every record gets treated like a request to find one personal email.",
+          "Paid reports include source-native contact paths and capped contact enrichment where appropriate, but the product should never invent certainty where the source does not support it. If contacts are not found, the next action should still be clear enough for a CRM task."
         ]
       }
     ],
@@ -710,27 +710,27 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "government buyer contacts",
     funnelStage: "Consideration",
     intro:
-      "One of the biggest mistakes in public-sector sales is assuming every opportunity should end with a personal email. Sometimes that is useful. Other times the right path is a procurement office, program office, source-native contact, vendor portal, funded recipient, prime contractor, partner, or manual research task.",
+      "One of the biggest mistakes in public-sector sales is assuming every opportunity should end with a personal email. Sometimes that is useful. Other times the right path is a procurement office, program office, source-native contact, vendor portal, funded recipient, prime contractor, partner, or manual research task. In Opportunity Scanner, contact data is valuable only when it supports the right route to action.",
     sections: [
       {
         heading: "Different signals require different contact paths",
         body: [
           "A SAM.gov procurement record may point to a contracting office. A grant may point to a program officer or future grantee. A USAspending award may point to an agency, prime, or award recipient. A policy signal may point to monitoring instead of outreach.",
-          "The contact path should match the revenue motion."
+          "The contact path should match the revenue motion. Sell to Agency, Sell to Funded Buyer, Partner with Recipient, and Monitor Policy are different motions, so they should not all produce the same contact strategy."
         ]
       },
       {
         heading: "Source-native contacts come first",
         body: [
-          "When a source record includes a useful contact, the report should preserve it. That contact may be best for program questions, eligibility, procurement routing, or official process guidance.",
-          "Third-party enrichment is useful when the target is a company, vendor, recipient, distributor, nonprofit, or partner organization."
+          "When a source record includes a useful contact, the report should preserve it. That contact may be best for program questions, eligibility, procurement routing, or official process guidance. It is usually more credible than guessing at a private email first.",
+          "Third-party enrichment is useful when the target is a company, vendor, recipient, distributor, nonprofit, or partner organization. Paid enrichment should be capped and relevant: the buyer role, partner owner, procurement lead, government sales contact, or program leader is more useful than a random executive."
         ]
       },
       {
         heading: "Good reports explain what to do when no contact is found",
         body: [
           "A missing email should not mean a dead end. The next step might be vendor registration, procurement office research, program office routing, LinkedIn research, partner mapping, or a CRM task for manual follow-up.",
-          "That is why Opportunity Scanner emphasizes contact paths, not just contact enrichment."
+          "That is why Opportunity Scanner emphasizes contact paths, not just contact enrichment. The paid value is not simply more contacts; it is knowing which contact path gives the opportunity a realistic chance to move."
         ]
       }
     ],
@@ -1077,7 +1077,7 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "creative economy funding opportunities",
     funnelStage: "Awareness",
     intro:
-      "Creative economy companies often miss public-sector demand because it does not always look like a traditional contract. The money may appear through arts grants, city events, tourism budgets, parks programming, cultural affairs offices, school arts programs, placemaking, community revitalization, or funded nonprofits that need artists, producers, venues, technology, or programming partners.",
+      "Creative economy companies often miss public-sector demand because it does not always look like a traditional contract. The money may appear through arts grants, city events, tourism budgets, parks programming, cultural affairs offices, school arts programs, placemaking, community revitalization, or funded nonprofits that need artists, producers, venues, technology, or programming partners. This is not a small side market: BEA reported that arts and cultural economic activity accounted for 4.2% of U.S. GDP, or $1.17 trillion, in 2023.",
     sections: [
       {
         heading: "The buyer is not always the funder",
@@ -1089,15 +1089,15 @@ const baseResourceArticles: ResourceArticle[] = [
       {
         heading: "Look for revenue language inside cultural language",
         body: [
-          "Words like activation, engagement, placemaking, performance, community programming, cultural district, tourism, youth arts, creative workforce, and parks events can all point to commercial action.",
-          "A strong scan should translate those public-sector phrases into a target list and action table instead of giving the team a long list of grants."
+          "Words like activation, engagement, placemaking, performance, community programming, cultural district, tourism, youth arts, creative workforce, and parks events can all point to commercial action. BEA also reported 5.4 million arts and cultural jobs nationwide in 2023, which is why workforce, tourism, education, and local economic-development records all matter for creative companies.",
+          "A strong scan should translate those public-sector phrases into a target list and action table instead of giving the team a long list of grants. The point is to find who owns the program, who received the money, who needs reliable partners, and what first touch would actually make sense."
         ]
       },
       {
         heading: "Build partner outreach around the public objective",
         body: [
           "Creative economy outreach works best when it references the public objective: more attendance, local economic activity, youth programming, cultural access, tourism, downtown activation, or arts education.",
-          "The social proof should be relevant to that objective. A music talent platform should not pitch generic entertainment; it should explain how it supports funded programming, vetted talent, public-facing performance, or reliable implementation."
+          "The social proof should be relevant to that objective. A music talent platform should not pitch generic entertainment; it should explain how it supports funded programming, vetted talent, public-facing performance, reliable implementation, or economic activation tied to the source record."
         ]
       },
       {
@@ -1120,7 +1120,7 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "education workforce opportunity signals",
     funnelStage: "Awareness",
     intro:
-      "Education and workforce companies can find public-sector demand across school districts, state agencies, workforce boards, training providers, apprenticeship programs, educator pipelines, arts education, nonprofits, and grant-funded intermediaries. The challenge is knowing which records imply an actual next step.",
+      "Education and workforce companies can find public-sector demand across school districts, state agencies, workforce boards, training providers, apprenticeship programs, educator pipelines, arts education, nonprofits, and grant-funded intermediaries. The challenge is knowing which records imply an actual next step. Treasury reported that communities budgeted nearly $12 billion in SLFRF funds for jobs and worker opportunities, which shows why workforce signals can become real buyer and partner lanes.",
     sections: [
       {
         heading: "Do not treat every education record as a lead",
@@ -1132,14 +1132,14 @@ const baseResourceArticles: ResourceArticle[] = [
       {
         heading: "The strongest routes are often funded buyers and partners",
         body: [
-          "Districts and agencies can be direct buyers, but many opportunities move through grant-funded providers, associations, workforce intermediaries, nonprofits, training organizations, or implementation partners.",
-          "That makes the funded-buyer motion important: identify who already has public money and determine whether they need software, staffing, training, outreach, curriculum, placement, or operational support."
+          "Districts and agencies can be direct buyers, but many opportunities move through grant-funded providers, associations, workforce intermediaries, nonprofits, training organizations, or implementation partners. Deputy Secretary Wally Adeyemo described SLFRF as a tool that can help governments train people, which is the kind of public objective vendors should map to their offer.",
+          "That makes the funded-buyer motion important: identify who already has public money and determine whether they need software, staffing, training, outreach, curriculum, placement, or operational support. The outreach should connect to shortages, access, credentialing, training capacity, or student outcomes, not a generic product pitch."
         ]
       },
       {
         heading: "Use a role-specific contact path",
         body: [
-          "Education opportunities may route to HR, procurement, program leadership, grants offices, workforce boards, district administrators, school partnerships, or nonprofit leadership.",
+          "Education opportunities may route to HR, procurement, program leadership, grants offices, workforce boards, district administrators, school partnerships, or nonprofit leadership. BLS projects total U.S. employment to grow by 5.2 million jobs from 2024 to 2034, so workforce and education buyers will continue to be measured against changing labor-market needs.",
           "The report should not default to 'find an email.' It should explain whether the next step is source-native contact review, district procurement, program-office routing, recipient outreach, or partner research."
         ]
       },
@@ -1163,26 +1163,26 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "software AI public sector demand",
     funnelStage: "Awareness",
     intro:
-      "Software and AI companies often think public-sector sales starts with a procurement portal. That is one path, but demand can also appear through modernization awards, data programs, cybersecurity priorities, workforce initiatives, compliance mandates, funded implementation partners, primes, and agencies trying to improve service delivery.",
+      "Software and AI companies often think public-sector sales starts with a procurement portal. That is one path, but demand can also appear through modernization awards, data programs, cybersecurity priorities, workforce initiatives, compliance mandates, funded implementation partners, primes, and agencies trying to improve service delivery. The federal IT Dashboard listed $102.31 billion in FY2025 IT spending, which makes public-sector software demand too large to treat as a niche only for incumbents.",
     sections: [
       {
         heading: "Translate your product into public-sector jobs-to-be-done",
         body: [
           "A commercial software category may not appear by name in public records. An AI workflow product might map to case management, analytics, document processing, fraud detection, constituent service, compliance, training, cybersecurity, or operations modernization.",
-          "The scan needs to translate what the company does into the problems agencies and funded organizations are publicly trying to solve."
+          "The scan needs to translate what the company does into the problems agencies and funded organizations are publicly trying to solve. That translation is especially important for AI because a generic AI pitch is weaker than a source-backed workflow, compliance, service, or data problem."
         ]
       },
       {
         heading: "Look beyond active bids",
         body: [
           "Active solicitations are important, but award history and funded programs can show where budgets already moved. Policy signals can show where demand may be forming. Prime contractor awards can reveal partner paths.",
-          "For many software companies, the first move is not a direct bid. It is partner research, funded-buyer outreach, agency-market mapping, or a workflow task for a revenue lead."
+          "For many software companies, the first move is not a direct bid. It is partner research, funded-buyer outreach, agency-market mapping, or a workflow task for a revenue lead. The opportunity row should say whether the target is an agency office, prime contractor, implementation partner, funded recipient, IT leader, program owner, or procurement route."
         ]
       },
       {
         heading: "Avoid generic AI positioning",
         body: [
-          "Public-sector buyers rarely need a generic AI pitch. They need a credible reason the tool fits a mission, compliance requirement, workflow pain, cost pressure, service backlog, data need, or program outcome.",
+          "Public-sector buyers rarely need a generic AI pitch. They need a credible reason the tool fits a mission, compliance requirement, workflow pain, cost pressure, service backlog, data need, or program outcome. Federal technology leaders are publicly under pressure to improve digital services; the useful outreach angle is the mission problem, not the model category.",
           "A strong opportunity report should tie every outreach angle back to the source record and the buyer's public objective."
         ]
       },
@@ -1232,7 +1232,7 @@ const baseResourceArticles: ResourceArticle[] = [
       {
         heading: "Turn content into outbound assets",
         body: [
-          "Each industry page should create a carousel, X thread, stat post, quote post, and founder-facing outbound note. The content should be useful even if someone never buys immediately.",
+          "Each industry page should create reusable social, newsletter, and outbound angles without exposing that production planning inside the article itself. The content should be useful even if someone never buys immediately.",
           "That is the compounding loop: industry education creates trust, sample reports create belief, mini-scans create relevance, and paid reports create action."
         ]
       }
@@ -1326,8 +1326,23 @@ const resourceFeaturedImages: Record<string, { image: string; alt: string }> = {
 
 const sourceProofLibrary = {
   smallBusinessContracts: {
-    stat: "AP reporting on SBA's FY2023 scorecard said federal agencies awarded $178.6B in contracts to small businesses, reaching 28.4% of eligible federal contracting dollars.",
-    source: "Associated Press reporting on SBA agency scorecards",
+    stat: "SBA's FY2024 scorecard factsheet reported $183.5B in federal small-business prime contracting, or 28.76% of eligible federal contract dollars.",
+    source: "SBA FY2024 Small Business Procurement Scorecard factsheet",
+    url: "https://www.sba.gov/sites/default/files/2025-07/FY24%20Scorecard%20-%20Small%20Business%20Factsheet%20-%20v1%20-%20508.pdf"
+  },
+  smallBusinessJobs: {
+    stat: "SBA's FY2024 scorecard factsheet reported that federal small-business contracting created or sustained 845,200 small-business jobs.",
+    source: "SBA FY2024 Small Business Procurement Scorecard factsheet",
+    url: "https://www.sba.gov/sites/default/files/2025-07/FY24%20Scorecard%20-%20Small%20Business%20Factsheet%20-%20v1%20-%20508.pdf"
+  },
+  sbaContractingAccess: {
+    stat: "SBA notes that federal agencies have an aggregate 23% small-business contracting target.",
+    source: "SBA Small Business Procurement Scorecard overview",
+    url: "https://www.sba.gov/document/support-small-business-procurement-scorecard-overview"
+  },
+  guzmanContractingQuote: {
+    stat: "AP quoted SBA Administrator Isabel Casillas Guzman describing small-business contracting as part of 'ensuring competition and a level playing field.'",
+    source: "Associated Press",
     url: "https://apnews.com/article/66dcce071bcda5bb334809061a2ae35c"
   },
   samOpportunities: {
@@ -1344,17 +1359,59 @@ const sourceProofLibrary = {
     stat: "Grants.gov search supports forecasted, posted, closed, and archived opportunity statuses, which is why timing and status matter in any funding workflow.",
     source: "Grants.gov Search Grants",
     url: "https://www.grants.gov/search-grants"
+  },
+  treasurySlf: {
+    stat: "The U.S. Treasury's State and Local Fiscal Recovery Funds program delivered $350B to state, local, territorial, and Tribal governments.",
+    source: "U.S. Treasury SLFRF program",
+    url: "https://home.treasury.gov/policy-issues/coronavirus/assistance-for-state-local-and-tribal-governments/state-and-local-fiscal-recovery-funds"
+  },
+  treasuryWorkforce: {
+    stat: "Treasury reported that communities budgeted nearly $12B in SLFRF funds for jobs and worker opportunities.",
+    source: "U.S. Treasury jobs and workforce release",
+    url: "https://home.treasury.gov/news/press-releases/jy1624"
+  },
+  creativeEconomy: {
+    stat: "BEA reported that arts and cultural economic activity accounted for 4.2% of U.S. GDP, or $1.17T, in 2023.",
+    source: "BEA Arts and Cultural Production Satellite Account",
+    url: "https://www.bea.gov/news/2025/arts-and-cultural-production-satellite-account-us-and-states-2023"
+  },
+  creativeJobs: {
+    stat: "BEA reported 5.4M arts and cultural jobs nationwide in 2023.",
+    source: "BEA Arts and Cultural Production Satellite Account",
+    url: "https://www.bea.gov/news/2025/arts-and-cultural-production-satellite-account-us-and-states-2023"
+  },
+  blsEmployment: {
+    stat: "BLS projects total U.S. employment to grow by 5.2M jobs from 2024 to 2034.",
+    source: "BLS Employment Projections",
+    url: "https://www.bls.gov/news.release/ecopro.nr0.htm"
+  },
+  federalItSpend: {
+    stat: "The federal IT Dashboard listed $102.31B in FY2025 federal IT spending.",
+    source: "Federal IT Dashboard",
+    url: "https://itdashboard.gov/"
   }
 };
 
 function proofPointsForArticle(article: ResourceArticle) {
+  if (article.slug === "creative-economy-funding-opportunities") {
+    return [sourceProofLibrary.creativeEconomy, sourceProofLibrary.creativeJobs, sourceProofLibrary.grantsAgencies];
+  }
+  if (article.slug === "education-workforce-opportunity-signals") {
+    return [sourceProofLibrary.treasuryWorkforce, sourceProofLibrary.blsEmployment, sourceProofLibrary.grantsAgencies];
+  }
+  if (article.slug === "software-ai-public-sector-demand") {
+    return [sourceProofLibrary.federalItSpend, sourceProofLibrary.samOpportunities, sourceProofLibrary.smallBusinessContracts];
+  }
+  if (article.slug === "find-funded-buyers-before-cold-outreach") {
+    return [sourceProofLibrary.treasurySlf, sourceProofLibrary.smallBusinessContracts, sourceProofLibrary.samOpportunities];
+  }
   if (article.category === "Government Contracts") {
-    return [sourceProofLibrary.samOpportunities, sourceProofLibrary.smallBusinessContracts, sourceProofLibrary.grantsAgencies];
+    return [sourceProofLibrary.samOpportunities, sourceProofLibrary.smallBusinessContracts, sourceProofLibrary.sbaContractingAccess];
   }
   if (article.category === "Industry Guides" || article.category === "Grants and Funding") {
     return [sourceProofLibrary.grantsAgencies, sourceProofLibrary.samOpportunities, sourceProofLibrary.grantsSearch];
   }
-  return [sourceProofLibrary.smallBusinessContracts, sourceProofLibrary.samOpportunities, sourceProofLibrary.grantsAgencies];
+  return [sourceProofLibrary.smallBusinessContracts, sourceProofLibrary.smallBusinessJobs, sourceProofLibrary.guzmanContractingQuote];
 }
 
 function sourceNoteForArticle(article: ResourceArticle) {
