@@ -39,7 +39,7 @@ Clay MCP test result:
 
 - Company tested: `degy.com`
 - Clay returned named DEGY contacts including Caite Kendrick, Nick DiRoma, Sean Sullivan, Paige Moyer, Aislinn Jones, and Jeff Hyman.
-- Email enrichment completed for several contacts, including `caite@degy.com`, `nick@degy.com`, `sean@degy.com`, `paige@degy.com`, `aislinn@degy.com`, and `jeff@degy.com`.
+- Email enrichment completed for several contacts. Do not publish the returned emails in public repo documentation; use Clay/task results or private outreach packages for actual contact values.
 
 This confirms Clay is a viable contact source for the Jammcard-style vendor/channel motion. The current blocker is production access, not enrichment quality.
 
