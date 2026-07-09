@@ -300,6 +300,158 @@ export const industryPages: IndustryPage[] = [
       }
     ],
     searchIntent: "software government contracts, AI public sector opportunities, B2B services government sales"
+  },
+  {
+    slug: "construction-infrastructure-engineering",
+    name: "Construction / Infrastructure / Engineering",
+    headline: "Find public-sector demand for construction, infrastructure, engineering, and specialty trades.",
+    description:
+      "Infrastructure money can create opportunities across local agencies, transportation, facilities, utilities, resilience, broadband, housing, schools, and funded prime contractors.",
+    outcome:
+      "Identify agency projects, funded primes, municipal buyers, grant-backed infrastructure programs, and subcontracting paths where construction and engineering teams can pursue work.",
+    signals: [
+      "Transportation, facilities, and public works procurement",
+      "Infrastructure grant and formula funding programs",
+      "Funded prime contractors and award recipients",
+      "Municipal, school, utility, and special district projects",
+      "Resilience, broadband, housing, and capital improvement signals"
+    ],
+    revenueMotions: [
+      "Sell to Agency",
+      "Sell to Award Recipient",
+      "Partner with Recipient",
+      "Channel / Distributor Motion",
+      "Monitor Policy"
+    ],
+    exampleRows: [
+      {
+        target: "City public works or capital projects office",
+        signal: "Funding, procurement, or award language around facilities, transportation, utilities, or resilience work",
+        revenueMotion: "Sell to Agency",
+        nextAction: "Validate project fit and route to procurement, public works, or capital programs contact path."
+      },
+      {
+        target: "Prime contractor or funded project recipient",
+        signal: "Award recipient managing adjacent infrastructure or facility work",
+        revenueMotion: "Sell to Award Recipient",
+        nextAction: "Identify subcontracting, supplier, or partner route with source-backed context."
+      }
+    ],
+    searchIntent: "infrastructure government contracts, construction public sector opportunities, engineering government contracts"
+  },
+  {
+    slug: "clean-energy-facilities-sustainability",
+    name: "Clean Energy / Facilities / Sustainability",
+    headline: "Find public-sector demand for energy, facilities, climate, and sustainability solutions.",
+    description:
+      "Public agencies, schools, utilities, housing authorities, and funded organizations are using grants, rebates, procurement, and policy mandates to modernize facilities and reduce energy costs.",
+    outcome:
+      "Find funded energy-efficiency, electrification, climate, facilities, resilience, and sustainability opportunities with clear buyer or partner paths.",
+    signals: [
+      "Energy-efficiency and building modernization grants",
+      "School, municipal, and facility procurement",
+      "Climate, resilience, and sustainability program funding",
+      "Utility, housing, and public building upgrade signals",
+      "Policy and rebate programs that create near-term demand"
+    ],
+    revenueMotions: [
+      "Sell to Agency",
+      "Sell to Funded Buyer",
+      "Partner with Recipient",
+      "Direct Apply",
+      "Monitor Policy"
+    ],
+    exampleRows: [
+      {
+        target: "Municipal facilities or sustainability office",
+        signal: "Funding or procurement language around facility upgrades, energy savings, electrification, or resilience",
+        revenueMotion: "Sell to Agency",
+        nextAction: "Route to facilities, sustainability, procurement, or program office contact path."
+      },
+      {
+        target: "Funded school, housing authority, or nonprofit recipient",
+        signal: "Grant or award funding building upgrades, climate work, or energy-cost reduction",
+        revenueMotion: "Sell to Funded Buyer",
+        nextAction: "Prepare source-backed outreach tied to the funded upgrade objective."
+      }
+    ],
+    searchIntent: "clean energy grants for businesses, energy efficiency government contracts, sustainability public sector funding"
+  },
+  {
+    slug: "manufacturing-supply-chain-logistics",
+    name: "Manufacturing / Supply Chain / Logistics",
+    headline: "Find public-sector opportunities for manufacturers, suppliers, logistics, and industrial service companies.",
+    description:
+      "Manufacturing and supply-chain demand can show up through procurement, economic development funding, workforce grants, reshoring programs, disaster response, logistics needs, and funded buyers.",
+    outcome:
+      "Find agency buyers, funded manufacturers, workforce programs, export or economic development signals, supplier paths, and prime/recipient opportunities.",
+    signals: [
+      "Agency procurement for goods, equipment, logistics, and services",
+      "Economic development and manufacturing grant programs",
+      "Workforce and training funding for industrial capacity",
+      "Funded primes, recipients, and supply-chain partners",
+      "Resilience, emergency, export, and reshoring demand signals"
+    ],
+    revenueMotions: [
+      "Sell to Agency",
+      "Sell to Funded Buyer",
+      "Sell to Award Recipient",
+      "Channel / Distributor Motion",
+      "Partner with Recipient"
+    ],
+    exampleRows: [
+      {
+        target: "Agency buyer or public procurement office",
+        signal: "Procurement or award evidence for products, equipment, materials, logistics, or industrial services",
+        revenueMotion: "Sell to Agency",
+        nextAction: "Validate commodity/category fit and inspect vendor registration or procurement contact path."
+      },
+      {
+        target: "Funded manufacturer, prime, or workforce recipient",
+        signal: "Public money supporting production capacity, training, resilience, or supply-chain programs",
+        revenueMotion: "Sell to Funded Buyer",
+        nextAction: "Identify operations, procurement, supplier, or partnerships owner for source-backed outreach."
+      }
+    ],
+    searchIntent: "manufacturing government contracts, supply chain public sector opportunities, logistics government contracts"
+  },
+  {
+    slug: "nonprofits-community-services-human-services",
+    name: "Nonprofits / Community Services / Human Services",
+    headline: "Find funded buyers, partners, and grant paths in community and human services.",
+    description:
+      "Community services demand moves through grants, public agencies, nonprofits, workforce boards, healthcare partners, housing programs, schools, and local service providers.",
+    outcome:
+      "Identify funders, grantees, agency programs, nonprofit partners, service providers, and funded organizations that may need services, tools, staffing, training, or implementation support.",
+    signals: [
+      "Human services, housing, workforce, and community grants",
+      "Funded nonprofit and provider recipients",
+      "Agency program offices and local service contracts",
+      "Healthcare, education, and workforce partner pathways",
+      "Policy or funding signals tied to emerging community needs"
+    ],
+    revenueMotions: [
+      "Direct Apply",
+      "Sell to Funded Buyer",
+      "Partner with Recipient",
+      "Sell to Agency",
+      "Monitor Policy"
+    ],
+    exampleRows: [
+      {
+        target: "Grant-funded nonprofit or community provider",
+        signal: "Award or grant evidence for services adjacent to the company's offer",
+        revenueMotion: "Partner with Recipient",
+        nextAction: "Build a partnership note tied to the funded program goal and identify program leadership."
+      },
+      {
+        target: "Agency human services or workforce program office",
+        signal: "Funding, policy, or procurement language around service delivery, training, outreach, or case support",
+        revenueMotion: "Sell to Agency",
+        nextAction: "Route to program office, procurement path, or source-native contact before enrichment."
+      }
+    ],
+    searchIntent: "nonprofit government grants, human services public funding, community services government contracts"
   }
 ];
 
@@ -664,6 +816,150 @@ export const resourceArticles: ResourceArticle[] = [
       }
     ],
     cta: "Scan your company to see a source-backed opportunity report with revenue motions and next actions."
+  },
+  {
+    slug: "infrastructure-opportunities-for-construction-companies",
+    title: "Infrastructure Opportunities for Construction Companies",
+    description:
+      "How construction, engineering, specialty trade, and infrastructure firms can use public spending signals to find projects, primes, and buyer paths.",
+    category: "Industry Guides",
+    readTime: "7 min read",
+    primaryKeyword: "infrastructure opportunities for construction companies",
+    funnelStage: "Awareness",
+    intro:
+      "Construction and infrastructure companies often know public-sector work exists, but the path is not always a direct bid. Public money can reveal agencies planning projects, primes winning adjacent work, funded recipients managing capital programs, and policy priorities that point to future demand.",
+    sections: [
+      {
+        heading: "Infrastructure signals are not only open bids",
+        body: [
+          "Active procurements matter, but awards, capital plans, grant programs, and funded recipients can show demand before a company sees a clean solicitation.",
+          "That earlier evidence helps teams decide whether to sell to an agency, pursue a subcontracting path, partner with a recipient, register as a vendor, or monitor a project."
+        ]
+      },
+      {
+        heading: "The best rows identify the route to revenue",
+        body: [
+          "A useful opportunity row should name the target organization, source record, project context, likely revenue motion, contact path, and next best action.",
+          "For construction and engineering teams, the contact path may be public works, facilities, capital projects, procurement, a prime contractor, or a funded recipient."
+        ]
+      },
+      {
+        heading: "Public money can reveal partner and supplier targets",
+        body: [
+          "A company may not be the prime bidder on a large infrastructure project, but it may still sell products, services, labor, engineering, inspection, specialty trade, materials, or support to the organizations executing the work.",
+          "Opportunity Scanner is designed to separate direct agency opportunities from subcontractor, supplier, and partner paths."
+        ]
+      }
+    ],
+    cta: "Scan your company website to find infrastructure and construction opportunity signals."
+  },
+  {
+    slug: "clean-energy-public-sector-opportunities",
+    title: "Clean Energy Public-Sector Opportunities",
+    description:
+      "How energy, facilities, climate, and sustainability companies can find public-sector demand through grants, procurement, rebates, and funded buyers.",
+    category: "Industry Guides",
+    readTime: "7 min read",
+    primaryKeyword: "clean energy public sector opportunities",
+    funnelStage: "Awareness",
+    intro:
+      "Clean energy and facilities companies are a strong fit for public-sector opportunity intelligence because demand can appear in many places at once: building upgrades, school facilities, municipal sustainability plans, climate programs, utility incentives, housing authorities, and grant-funded organizations.",
+    sections: [
+      {
+        heading: "Public-sector demand can come from mandates and money",
+        body: [
+          "Energy-efficiency goals, climate plans, resilience priorities, building standards, and public funding can all create demand for vendors, consultants, installers, auditors, software, and implementation partners.",
+          "The opportunity may be an agency procurement, a funded buyer, a grantee that needs help, or a policy signal worth monitoring."
+        ]
+      },
+      {
+        heading: "Facilities buyers need practical next steps",
+        body: [
+          "A good scan should show whether the route is a facilities office, sustainability office, school district, housing authority, utility partner, procurement team, or funded recipient.",
+          "That contact path is more useful than a generic list of agencies because it tells the revenue team how to move the opportunity forward."
+        ]
+      },
+      {
+        heading: "Funded buyers may be faster than direct applications",
+        body: [
+          "Some companies can apply directly for programs. Many will move faster by selling to or partnering with organizations that already received money for upgrades, implementation, training, or compliance.",
+          "Opportunity Scanner helps teams identify both paths and mark the best next action."
+        ]
+      }
+    ],
+    cta: "Run a scan to see clean energy, facilities, and sustainability signals for your company."
+  },
+  {
+    slug: "manufacturing-supply-chain-public-sector-demand",
+    title: "Manufacturing and Supply Chain Public-Sector Demand",
+    description:
+      "How manufacturers, suppliers, logistics providers, and industrial service companies can use public records to find funded buyers and procurement paths.",
+    category: "Industry Guides",
+    readTime: "7 min read",
+    primaryKeyword: "manufacturing government contracts",
+    funnelStage: "Awareness",
+    intro:
+      "Manufacturing and supply-chain companies often have more public-sector fit than they realize. Agencies buy goods and services directly, primes need suppliers, grant-funded organizations invest in capacity, and workforce programs can create demand for training, equipment, logistics, and industrial support.",
+    sections: [
+      {
+        heading: "Public records can reveal buyer categories",
+        body: [
+          "Procurement and award data can show which agencies buy similar products, equipment, logistics, materials, or industrial services.",
+          "Even when an opportunity is not open now, the record can identify repeat buyers, funded recipients, or prime contractors worth tracking."
+        ]
+      },
+      {
+        heading: "Economic development creates indirect opportunities",
+        body: [
+          "Public money often flows into manufacturing capacity, workforce training, export support, disaster response, supply-chain resilience, and regional economic development.",
+          "Those programs may create funded buyers or partner targets for companies that sell tools, services, logistics, training, equipment, or operational support."
+        ]
+      },
+      {
+        heading: "The next action should match the target",
+        body: [
+          "If the target is an agency, the next step may be vendor registration or procurement research. If the target is a prime or funded manufacturer, the next step may be supplier, operations, or partnerships outreach.",
+          "That distinction is why the revenue motion matters on every opportunity row."
+        ]
+      }
+    ],
+    cta: "Scan your company to find manufacturing, supplier, logistics, and funded buyer signals."
+  },
+  {
+    slug: "nonprofit-community-services-funding-opportunities",
+    title: "Nonprofit and Community Services Funding Opportunities",
+    description:
+      "How nonprofits, service providers, and companies selling into human services can track grants, funded recipients, agencies, and partner paths.",
+    category: "Industry Guides",
+    readTime: "7 min read",
+    primaryKeyword: "nonprofit community services funding opportunities",
+    funnelStage: "Awareness",
+    intro:
+      "Community services, human services, housing, workforce, healthcare-adjacent, and education-adjacent work is deeply connected to public funding. The opportunity is not only applying for grants. It is also finding funded partners, agencies, providers, and program offices that need help delivering outcomes.",
+    sections: [
+      {
+        heading: "Grant records can identify both funders and buyers",
+        body: [
+          "A grant may be something an organization can apply for directly. It may also show which nonprofits, providers, schools, workforce boards, or local agencies are receiving money and may need partners or vendors.",
+          "That is why a useful report should separate direct-apply opportunities from funded buyer and partner motions."
+        ]
+      },
+      {
+        heading: "Human services opportunities need contact strategy",
+        body: [
+          "The right contact may be a program office, grant contact, nonprofit executive, partnership lead, procurement office, or source-native contact from the funding record.",
+          "Third-party enrichment can help when the target is a nonprofit or service provider, but source-native contacts and program routing should come first when available."
+        ]
+      },
+      {
+        heading: "Actionable reports help teams move beyond research",
+        body: [
+          "For nonprofits and service providers, an opportunity row should explain the target, funding context, revenue motion, eligibility or partner path, contact strategy, and suggested first touch.",
+          "That lets teams decide whether to apply, partner, monitor, enrich, or add a CRM task."
+        ]
+      }
+    ],
+    cta: "Run a scan to find public funding, partner, and service-delivery opportunities for your organization."
   }
 ];
 
@@ -671,7 +967,8 @@ export const upcomingResourceIdeas = [
   "Healthcare Public-Sector Opportunities: VA, Medicaid, Rehab, DME, and Community Health Signals",
   "Creative Economy Funding: Arts Grants, City Events, Tourism, and Parks Opportunities",
   "Education and Workforce Opportunity Signals for EdTech, Training, and Staffing Companies",
-  "Software and AI Public-Sector Demand: How to Spot Agency and Funded Buyer Signals"
+  "Software and AI Public-Sector Demand: How to Spot Agency and Funded Buyer Signals",
+  "How to Turn Industry Pages into Paid Report Conversion Paths"
 ];
 
 export function getResourceArticle(slug: string): ResourceArticle | undefined {

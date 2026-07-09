@@ -13,9 +13,13 @@ const categories = [
   "Public-Sector Sales",
   "Government Contracts",
   "Funded Buyers",
+  "Industry Guides",
   "Grants and Funding",
   "Policy Signals",
-  "Workforce Funding"
+  "Workforce Funding",
+  "Infrastructure",
+  "Clean Energy",
+  "Manufacturing"
 ];
 
 export default function ResourcesPage() {

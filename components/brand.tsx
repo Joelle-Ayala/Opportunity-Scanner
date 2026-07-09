@@ -54,6 +54,10 @@ export function SiteFooter() {
     ["Education & Workforce", "/industries/education-workforce-training"],
     ["Arts & Creative Economy", "/industries/arts-creative-economy-live-events"],
     ["Software & B2B Services", "/industries/software-b2b-services-ai"],
+    ["Infrastructure", "/industries/construction-infrastructure-engineering"],
+    ["Clean Energy", "/industries/clean-energy-facilities-sustainability"],
+    ["Manufacturing", "/industries/manufacturing-supply-chain-logistics"],
+    ["Nonprofits", "/industries/nonprofits-community-services-human-services"],
     ["Resources", "/resources"],
     ["Pricing", "/pricing"]
   ];
