@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection } from "@/components/marketing";
+import { ArticleAnswer } from "@/components/resources/article-answer";
+import { ArticleBreadcrumbs } from "@/components/resources/article-breadcrumbs";
+import { ArticleCharts } from "@/components/resources/article-charts";
+import { ArticleMetadata } from "@/components/resources/article-metadata";
+import { ArticleStructuredData } from "@/components/resources/article-structured-data";
+import { ArticleTableOfContents, articleSectionId } from "@/components/resources/article-table-of-contents";
+import { RelatedReads } from "@/components/resources/related-reads";
 import { getResourceArticle, resourceArticles, siteUrl } from "@/lib/marketingContent";
 
 export function generateStaticParams() {
@@ -32,8 +39,12 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
               alt: article.featuredImageAlt || article.title
             }
           ]
-        : undefined
-    }
+        : undefined,
+      publishedTime: article.publishedAt,
+      modifiedTime: article.lastReviewedAt,
+      authors: article.author?.url ? [article.author.url] : undefined
+    },
+    authors: article.author ? [{ name: article.author.name, url: article.author.url }] : undefined
   };
 }
 
@@ -43,8 +54,14 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
     notFound();
   }
 
+  const relatedArticles = [
+    ...resourceArticles.filter((candidate) => candidate.slug !== article.slug && candidate.category === article.category),
+    ...resourceArticles.filter((candidate) => candidate.slug !== article.slug && candidate.category !== article.category)
+  ].slice(0, 3);
+
   return (
     <main className="min-h-screen bg-field">
+      <ArticleStructuredData article={article} siteUrl={siteUrl} />
       <SiteHeader
         rightSlot={
           <a href="/#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
@@ -55,7 +72,10 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
 
       <article>
         <header className="border-b border-line bg-cream">
-          <div className="mx-auto grid max-w-7xl gap-8 px-6 py-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.6fr)] lg:items-center">
+          <div className="mx-auto max-w-7xl px-6 pt-8">
+            <ArticleBreadcrumbs title={article.title} />
+          </div>
+          <div className="mx-auto grid max-w-7xl gap-8 px-6 pb-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.6fr)] lg:items-center">
             <div>
               <div className="flex flex-wrap gap-2">
                 <Badge tone="blue">{article.category}</Badge>
@@ -65,6 +85,7 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
                 {article.title}
               </h1>
               <p className="mt-5 text-lg leading-8 text-slate-600">{article.description}</p>
+              <ArticleMetadata article={article} />
             </div>
             {article.featuredImage ? (
               <div className="overflow-hidden rounded-lg border border-line bg-white shadow-panel">
@@ -79,24 +100,14 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
         </header>
 
         <div className="mx-auto max-w-4xl px-6 py-12">
-          <p className="text-lg leading-8 text-slate-700">{article.intro}</p>
-
-          {article.keyTakeaways?.length ? (
-            <section className="mt-8 rounded-lg border border-line bg-white p-5 shadow-sm">
-              <h2 className="text-xl font-semibold text-ink">Key takeaways</h2>
-              <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-700">
-                {article.keyTakeaways.map((takeaway) => (
-                  <li key={takeaway} className="rounded-md border border-line bg-field p-3">
-                    {takeaway}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
+          <div className="grid gap-6">
+            <ArticleAnswer article={article} />
+            <ArticleTableOfContents article={article} />
+          </div>
 
           <div className="mt-10 grid gap-10">
             {article.sections.map((section) => (
-              <section key={section.heading}>
+              <section key={section.heading} id={articleSectionId(section.heading)} className="scroll-mt-24">
                 <h2 className="text-2xl font-semibold text-ink">{section.heading}</h2>
                 <div className="mt-4 grid gap-4 text-base leading-8 text-slate-700">
                   {section.body.map((paragraph) => (
@@ -108,7 +119,7 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
           </div>
 
           {article.practicalList ? (
-            <section className="mt-10 rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section id="practical-checklist" className="mt-10 scroll-mt-24 rounded-lg border border-line bg-white p-5 shadow-sm">
               <h2 className="text-xl font-semibold text-ink">{article.practicalList.title}</h2>
               <ol className="mt-4 grid gap-3 text-sm leading-6 text-slate-700">
                 {article.practicalList.items.map((item, index) => (
@@ -121,8 +132,12 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
             </section>
           ) : null}
 
+          <div className="mt-10">
+            <ArticleCharts charts={article.chartAssets} />
+          </div>
+
           {article.proofPoints?.length ? (
-            <section className="mt-10 rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section id="sources-cited" className="mt-10 scroll-mt-24 rounded-lg border border-line bg-white p-5 shadow-sm">
               <h2 className="text-xl font-semibold text-ink">Sources cited</h2>
               <div className="mt-4 grid gap-3">
                 {article.proofPoints.map((point) => (
@@ -147,6 +162,10 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
             <a href="/#scan" className="mt-5 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
               Scan Your Company Website
             </a>
+          </div>
+
+          <div className="mt-12">
+            <RelatedReads articles={relatedArticles} />
           </div>
         </div>
       </article>

@@ -6,6 +6,12 @@ export type ResourceArticle = {
   readTime: string;
   primaryKeyword: string;
   funnelStage: string;
+  author?: {
+    name: string;
+    url?: string;
+  };
+  publishedAt?: string;
+  lastReviewedAt?: string;
   featuredImage?: string;
   featuredImageAlt?: string;
   intro: string;
@@ -45,6 +51,12 @@ export type ResourceArticle = {
     url?: string;
     altText: string;
     status: "planned" | "data-sourced" | "designed" | "published";
+    image?: {
+      src: string;
+      width: number;
+      height: number;
+      caption?: string;
+    };
   }>;
   republishingPack?: {
     medium?: string;
