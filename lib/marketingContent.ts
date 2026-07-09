@@ -960,6 +960,42 @@ export const resourceArticles: ResourceArticle[] = [
       }
     ],
     cta: "Run a scan to find public funding, partner, and service-delivery opportunities for your organization."
+  },
+  {
+    slug: "use-sample-opportunity-reports-in-outbound",
+    title: "How to Use Sample Opportunity Reports in Outbound",
+    description:
+      "A practical outbound motion: show a prospect an industry example, run a free mini-scan, then invite them to unlock the full opportunity table.",
+    category: "Public-Sector Sales",
+    readTime: "6 min read",
+    primaryKeyword: "sample opportunity reports",
+    funnelStage: "Decision",
+    intro:
+      "Most companies need to see public-sector opportunity before they believe it applies to them. A sample report solves that problem by making the idea concrete: here is a fictional company in your industry, here are real public-sector source examples, here are possible revenue motions, and here is what the next action could look like.",
+    sections: [
+      {
+        heading: "Lead with an industry example, not a generic pitch",
+        body: [
+          "If a prospect sells into healthcare, construction, education, clean energy, software, manufacturing, arts, or community services, send an example from that industry first.",
+          "The point is not to pretend the sample is their report. The point is to show the pattern: public records can become buyer targets, partner targets, contact paths, and outreach actions."
+        ]
+      },
+      {
+        heading: "Then offer a free mini-scan",
+        body: [
+          "A strong outbound sequence can invite the prospect to run a free scan from their website. The free version should show a few real signals and the total signal count, while making the full action layer clear.",
+          "That creates a natural paid unlock: all sourced rows, contact paths, enrichment where appropriate, CRM-ready notes, first-touch angles, source links, and workflow export."
+        ]
+      },
+      {
+        heading: "Make the handoff actionable",
+        body: [
+          "The outbound asset should give the recipient something they can use immediately: who the target might be, why the public source matters, which revenue motion fits, and what the next best action should be.",
+          "For higher-value prospects, the same structure can become a custom mini-scan that includes a few real company-specific signals and a clear invitation to unlock the complete report."
+        ]
+      }
+    ],
+    cta: "Browse the sample reports, then run a scan for a real company to turn the example into an opportunity table."
   }
 ];
 

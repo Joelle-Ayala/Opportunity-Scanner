@@ -33,6 +33,7 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
           <a href="/how-it-works" className="hover:text-accent">How It Works</a>
           <a href="/solutions" className="hover:text-accent">Solutions</a>
           <a href="/industries" className="hover:text-accent">Industries</a>
+          <a href="/examples" className="hover:text-accent">Examples</a>
           <a href="/public-sector-revenue" className="hover:text-accent">Public-Sector Revenue</a>
           <a href="/resources" className="hover:text-accent">Resources</a>
           <a href="/pricing" className="hover:text-accent">Pricing</a>
@@ -47,6 +48,7 @@ export function SiteFooter() {
   const links = [
     ["Public-Sector Revenue", "/public-sector-revenue"],
     ["Solutions", "/solutions"],
+    ["Sample Reports", "/examples"],
     ["Funded Buyers", "/solutions/funded-buyer-intelligence"],
     ["Sales Workflow", "/solutions/public-sector-sales-workflow"],
     ["Contact Paths", "/solutions/contact-paths-and-enrichment"],

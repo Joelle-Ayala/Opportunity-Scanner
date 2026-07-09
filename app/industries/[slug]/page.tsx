@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { SampleReportPreview } from "@/components/sample-report";
 import { getIndustryPage, industryPages, siteUrl } from "@/lib/marketingContent";
+import { getSampleReportByIndustry } from "@/lib/sampleReports";
 
 export function generateStaticParams() {
   return industryPages.map((industry) => ({ slug: industry.slug }));
@@ -34,6 +36,7 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
   if (!industry) {
     notFound();
   }
+  const sampleReport = getSampleReportByIndustry(industry.slug);
 
   return (
     <main className="min-h-screen bg-field">
@@ -91,6 +94,8 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
           </div>
         </div>
       </section>
+
+      {sampleReport ? <SampleReportPreview report={sampleReport} /> : null}
 
       <section className="mx-auto max-w-7xl px-6 py-12">
         <SectionIntro title="Example opportunity rows" eyebrow="What you might see">
