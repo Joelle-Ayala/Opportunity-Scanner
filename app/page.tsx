@@ -1,4 +1,5 @@
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
+import { ReportPreview } from "@/components/marketing";
 import { ScanSubmitButton } from "@/components/scan-submit-button";
 
 const customerTypes = ["B2B", "B2C", "Government", "Healthcare", "Education", "Nonprofit", "Other"];
@@ -219,6 +220,8 @@ export default function HomePage({
           </form>
         </div>
       </section>
+
+      <ReportPreview />
 
       <section className="mx-auto grid max-w-7xl gap-5 px-6 py-12 md:grid-cols-3">
         {[

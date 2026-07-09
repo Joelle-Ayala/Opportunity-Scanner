@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingCard, MarketingHero, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingCard, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
 
 export const metadata: Metadata = {
   title: "Public-Sector Revenue",
@@ -39,6 +39,8 @@ export default function PublicSectorRevenuePage() {
           Scanner helps companies find where that money connects to what they sell.
         </p>
       </MarketingHero>
+
+      <ReportPreview />
 
       <section className="mx-auto grid max-w-7xl gap-5 px-6 py-12 md:grid-cols-2 lg:grid-cols-4">
         {signalTypes.map(([title, copy]) => (

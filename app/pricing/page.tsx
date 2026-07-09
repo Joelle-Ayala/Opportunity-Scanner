@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingHero, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -50,6 +50,8 @@ export default function PricingPage() {
           and next actions.
         </p>
       </MarketingHero>
+
+      <ReportPreview />
 
       <section className="mx-auto grid max-w-7xl gap-5 px-6 py-12 lg:grid-cols-2">
         <article className="rounded-lg border border-line bg-white p-6 shadow-panel">

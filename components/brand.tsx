@@ -23,26 +23,50 @@ export function OpportunityScannerLogo({ compact = false }: { compact?: boolean 
 export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
   return (
     <header className="sticky top-0 z-20 border-b border-line/80 bg-white/92 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
-        <OpportunityScannerLogo />
-        <nav className="hidden items-center gap-5 text-sm font-semibold text-steel md:flex">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center justify-between gap-4">
+          <OpportunityScannerLogo />
+          <div className="lg:hidden">{rightSlot}</div>
+        </div>
+        <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-semibold text-steel">
+          <a href="/" className="hover:text-accent">Product</a>
           <a href="/how-it-works" className="hover:text-accent">How It Works</a>
+          <a href="/industries" className="hover:text-accent">Industries</a>
           <a href="/public-sector-revenue" className="hover:text-accent">Public-Sector Revenue</a>
           <a href="/resources" className="hover:text-accent">Resources</a>
           <a href="/pricing" className="hover:text-accent">Pricing</a>
         </nav>
-        <div className="flex items-center gap-3">{rightSlot}</div>
+        <div className="hidden items-center gap-3 lg:flex">{rightSlot}</div>
       </div>
     </header>
   );
 }
 
 export function SiteFooter() {
+  const links = [
+    ["Public-Sector Revenue", "/public-sector-revenue"],
+    ["Healthcare", "/industries/healthcare-dme-medical-supply"],
+    ["Education & Workforce", "/industries/education-workforce-training"],
+    ["Arts & Creative Economy", "/industries/arts-creative-economy-live-events"],
+    ["Software & B2B Services", "/industries/software-b2b-services-ai"],
+    ["Resources", "/resources"],
+    ["Pricing", "/pricing"]
+  ];
+
   return (
     <footer className="border-t border-line bg-ink">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-muted">
-        <span className="font-semibold text-white">Opportunity Scanner by Opportunity Systems</span>
-        <span className="text-slate-300">Public-sector money-flow and buying-channel intelligence.</span>
+      <div className="mx-auto grid max-w-7xl gap-6 px-6 py-8 text-sm text-muted lg:grid-cols-[1fr_1.4fr]">
+        <div>
+          <span className="font-semibold text-white">Opportunity Scanner by Opportunity Systems</span>
+          <p className="mt-2 max-w-md text-slate-300">Public-sector money-flow and buying-channel intelligence for companies exploring a new revenue path.</p>
+        </div>
+        <nav className="flex flex-wrap gap-x-5 gap-y-3">
+          {links.map(([label, href]) => (
+            <a key={href} href={href} className="text-slate-300 hover:text-white">
+              {label}
+            </a>
+          ))}
+        </nav>
       </div>
     </footer>
   );
