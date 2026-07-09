@@ -14,6 +14,7 @@ Make Opportunity Scanner easier for search engines, AI answer engines, social pl
 - Robots route.
 - Unique resource featured images.
 - Resource posts with stats, quotes, social blocks, and repurposing prompts.
+- Blog data, visual, and repurposing system documented in `docs/blog-data-visual-repurposing-system.md`.
 
 ## Code-Side Work Codex Can Do
 
@@ -29,6 +30,10 @@ Status: active / in progress.
 - Add canonical URLs to important pages as needed.
 - Add FAQ/how-to structured content where it matches visible page content.
 - Add internal links from resources to sample reports and industry pages over time.
+- Add article-level `Article`, `BreadcrumbList`, and selective `FAQPage` / `HowTo` structured data.
+- Add article author, publish date, last-reviewed date, answer box, table of contents, related reads, and contextual CTAs.
+- Add support for sourced chart/graph assets in article pages where the data story improves the post.
+- Replace stock featured images with generated or owned visual assets over time.
 
 ## Offsite Work Joelle Needs To Do
 
@@ -77,7 +82,29 @@ Priority public sources to cite on site:
 - Add website to founder LinkedIn profile.
 - Add Opportunity Scanner to relevant directories where appropriate.
 - Publish 3-5 high-value posts before heavy outbound promotion.
-- Repurpose each post into one carousel, one X thread, one stat post, and one quote post.
+- Repurpose each post into Medium, Substack, LinkedIn Article, X Article/long-form, LinkedIn carousel, X thread, stat/source post, quote post when a real named quote exists, newsletter snippet, and outbound hook.
+- Use the canonical Opportunity Scanner article as the source of truth and link back from republished versions where each platform allows it.
+
+## Blog Asset Definition Of Done
+
+A post is not fully launch-ready until it includes:
+
+- Canonical website article.
+- Research brief and proof ledger.
+- Source-backed stats integrated into the article narrative.
+- Chart or graph plan when credible data exists.
+- AI-generated or owned featured image direction.
+- Supporting visual/media plan.
+- Medium adaptation.
+- Substack/newsletter adaptation.
+- LinkedIn Article adaptation.
+- X Article/long-form adaptation.
+- LinkedIn carousel outline.
+- X thread.
+- Stat/source post.
+- Quote post only when there is a real named-person quote.
+- Outbound hook for one relevant ICP segment.
+- UTM or campaign link map for republished assets.
 
 ## Definition Of Done For Launch Hygiene
 

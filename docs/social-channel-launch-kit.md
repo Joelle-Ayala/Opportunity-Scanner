@@ -80,6 +80,26 @@ It is built for founders, revenue teams, partnerships leads, agencies, and opera
 - Description: Practical breakdowns of government spending, funded buyers, procurement, grants, and public-sector opportunity signals for businesses exploring a new revenue channel.
 - Starter cadence: weekly
 
+### Medium
+
+- Publication/name: Opportunity Scanner or Public-Sector Revenue Brief
+- Bio: Research-backed guides on public-sector revenue, funded buyers, grants, procurement, policy signals, and opportunity intelligence for business operators.
+- Publishing rule: adapt from the canonical Opportunity Scanner article and link back to the original post where possible.
+- Style: editorial, useful, source-backed, with 1-2 visuals or charts.
+
+### LinkedIn Articles
+
+- Publishing source: founder profile first, company page after launch.
+- Style: executive-friendly, skimmable, practical, with a chart or framework visual near the top.
+- CTA: invite readers to run a free scan or view a sample report.
+- Tagging rule: tag people or organizations only when the post truthfully references them and the source supports it.
+
+### X Articles / Long-Form
+
+- Style: sharper, shorter paragraphs, opinionated hook, one chart or visual, and a companion X thread.
+- CTA: link to the canonical website article and scan page.
+- Note: confirm current X account requirements before relying on long-form publishing for launch.
+
 ## Email Address Recommendation
 
 Create these aliases/inboxes:
@@ -99,6 +119,9 @@ Minimum viable setup:
 - Add metadata, structured data, sitemap, robots, and AEO-oriented content files.
 - Prepare channel descriptions, pinned posts, bios, and launch copy.
 - Create first social post drafts and content repurposing packs.
+- Create Medium, Substack, LinkedIn Article, and X Article adaptations from canonical posts.
+- Create sourced chart concepts and visual briefs for priority posts.
+- Generate or prepare AI image prompts and Canva-ready creative directions.
 - Add a public source/citations page.
 - Add a `/llms.txt` file for AI-readable site context.
 - Keep the launch queue updated.
@@ -110,6 +133,8 @@ Minimum viable setup:
 - Add Opportunity Scanner to personal LinkedIn experience/projects after the LinkedIn company page exists.
 - Decide whether the public founder email should be `joelle@opportunityscanner.ai`, `founder@opportunityscanner.ai`, or both.
 - Approve which social channels launch first.
+- Create or confirm Medium, Substack, LinkedIn, and X publishing access.
+- Approve final generated visuals before using them in paid/outbound campaigns.
 
 ## Recommended Launch Order
 
@@ -130,3 +155,22 @@ Minimum viable setup:
 - Industry examples: healthcare, education/workforce, creative economy, software/AI, construction, clean energy, manufacturing, nonprofits.
 - Sample report breakdowns.
 - Founder POV: what most companies misunderstand about public money.
+
+## Per-Post Repurposing Checklist
+
+For each canonical article, prepare:
+
+- Medium adaptation.
+- Substack/newsletter adaptation.
+- LinkedIn Article adaptation.
+- X Article/long-form adaptation.
+- LinkedIn text post.
+- LinkedIn carousel.
+- X thread.
+- Stat/source post.
+- Quote post only when a real named-person quote exists.
+- Outbound hook.
+- Featured image prompt.
+- Chart or graph plan.
+- Canva resize/export notes.
+- UTM links for each channel.

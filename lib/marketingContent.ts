@@ -23,6 +23,43 @@ export type ResourceArticle = {
     source: string;
     url: string;
   }>;
+  researchBrief?: {
+    thesis: string;
+    icpPainPoint: string;
+    coreClaim: string;
+    citationNeeded?: string[];
+  };
+  proofLedger?: Array<{
+    claim: string;
+    source: string;
+    url: string;
+    retrievalDate?: string;
+    articlePlacement?: string;
+    caveat?: string;
+  }>;
+  chartAssets?: Array<{
+    title: string;
+    chartType: "bar" | "line" | "stacked-bar" | "map" | "table" | "flow" | "matrix";
+    takeaway: string;
+    source: string;
+    url?: string;
+    altText: string;
+    status: "planned" | "data-sourced" | "designed" | "published";
+  }>;
+  republishingPack?: {
+    medium?: string;
+    substack?: string;
+    linkedInArticle?: string;
+    xArticle?: string;
+    canonicalUrl?: string;
+  };
+  visualPack?: {
+    featuredImagePrompt: string;
+    supportingVisualPrompts?: string[];
+    canvaTemplate?: string;
+    motionPrompt?: string;
+    usageNotes?: string;
+  };
   sourceNote?: {
     text: string;
     source: string;
