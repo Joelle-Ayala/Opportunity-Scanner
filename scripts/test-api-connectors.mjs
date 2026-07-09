@@ -380,16 +380,28 @@ async function testClay() {
     warn("Clay", "CLAY_API_KEY not configured");
     return;
   }
+  if (!process.env.CLAY_CONTACT_WORKFLOW_URL && !process.env.CLAY_CONTACT_ENRICHMENT_WEBHOOK_URL) {
+    warn("Clay", "CLAY_API_KEY configured; add CLAY_CONTACT_WORKFLOW_URL before production contact enrichment");
+    return;
+  }
 
-  const response = await fetch("https://api.clay.com/v3", {
+  const response = await fetch(process.env.CLAY_CONTACT_WORKFLOW_URL || process.env.CLAY_CONTACT_ENRICHMENT_WEBHOOK_URL, {
+    method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.CLAY_API_KEY}`,
       "Content-Type": "application/json"
-    }
+    },
+    body: JSON.stringify({
+      health_check: true,
+      company_domain: "example.com",
+      company_name: "Example",
+      target_roles: ["Business Development"],
+      contact_limit: 1
+    })
   });
   const text = await response.text();
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${text.slice(0, 160)}`);
-  warn("Clay", "key is configured, but the root endpoint does not validate auth; choose a Clay workflow endpoint before production use");
+  pass("Clay", "contact workflow endpoint responded");
 }
 
 const tests = [

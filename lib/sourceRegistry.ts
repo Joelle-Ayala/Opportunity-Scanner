@@ -80,10 +80,10 @@ export function sourceCatalog({ samGovConfigured }: { samGovConfigured: boolean 
     {
       id: "clay",
       name: "Clay enrichment orchestration",
-      status: "Available",
-      key: "CLAY_API_KEY",
-      value: "Potential workflow/export layer for running enrichment tables once the opportunity list is qualified.",
-      next: "Choose the exact Clay workflow endpoint before wiring production calls."
+      status: process.env.CLAY_CONTACT_WORKFLOW_URL || process.env.CLAY_CONTACT_ENRICHMENT_WEBHOOK_URL ? "Active" : "Available",
+      key: "CLAY_API_KEY / CLAY_CONTACT_WORKFLOW_URL",
+      value: "Runs capped contact workflow enrichment for paid outreach packages after the opportunity list is qualified.",
+      next: "Configure the Clay contact workflow URL in production to enrich named contacts before falling back to Snov."
     }
   ];
 }

@@ -32,6 +32,8 @@ type EnrichedContact = {
   name: string;
   title: string;
   email: string;
+  linkedinUrl: string;
+  sourceUrl: string;
   confidence: string;
   source: string;
 };
@@ -99,10 +101,12 @@ function enrichedContacts(requests: OpportunityEnrichmentRequestRecord[]): Enric
         name: typeof contact.name === "string" ? contact.name : "",
         title: typeof contact.title === "string" ? contact.title : "",
         email: typeof contact.email === "string" ? contact.email : "",
+        linkedinUrl: typeof contact.linkedin_url === "string" ? contact.linkedin_url : "",
+        sourceUrl: typeof contact.source_url === "string" ? contact.source_url : "",
         confidence: typeof contact.confidence === "string" ? contact.confidence : "",
         source: typeof request.result_json?.provider === "string" ? request.result_json.provider : "enrichment"
       }))
-      .filter((contact) => contact.email || contact.name);
+      .filter((contact) => contact.email || contact.name || contact.linkedinUrl);
   });
 }
 
@@ -113,6 +117,8 @@ function contactInfoFor(signal: StoredOpportunitySignal, requests: OpportunityEn
       contact.name,
       contact.title,
       contact.email,
+      contact.linkedinUrl ? `LinkedIn: ${contact.linkedinUrl}` : "",
+      contact.sourceUrl ? `Source: ${contact.sourceUrl}` : "",
       contact.confidence ? `${contact.confidence} confidence` : "",
       contact.source
     ]
