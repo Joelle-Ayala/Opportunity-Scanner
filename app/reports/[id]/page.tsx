@@ -227,6 +227,8 @@ function ReportHeader({
   access?: string;
 }) {
   const companyName = profile?.company_name || scan.company_name || hostname(scan.company_url);
+  const accessQuery = access ? `?access=${encodeURIComponent(access)}` : "";
+  const packageBase = `/api/reports/${scan.id}/outreach-package${accessQuery}`;
 
   return (
     <header className="rounded-lg border border-line bg-white p-6">
@@ -237,15 +239,29 @@ function ReportHeader({
             Run New Scan
           </a>
           {isPaid ? (
-            <a
-              href={`/api/reports/${scan.id}/export${access ? `?access=${encodeURIComponent(access)}` : ""}`}
-              className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
-            >
-              Download Report
-            </a>
+            <>
+              <a
+                href={`/api/reports/${scan.id}/export${accessQuery}`}
+                className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent"
+              >
+                Report CSV
+              </a>
+              <a
+                href={packageBase}
+                className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
+              >
+                Outreach CSV
+              </a>
+              <a
+                href={`${packageBase}${accessQuery ? "&" : "?"}format=md`}
+                className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent"
+              >
+                Outreach MD
+              </a>
+            </>
           ) : (
             <span className="rounded-md border border-line bg-field px-3 py-2 text-sm font-semibold text-muted">
-              Full report download
+              Outreach package locked
             </span>
           )}
         </div>
