@@ -20,6 +20,12 @@ Workspace:
 
 - `https://app.clay.com/workspaces/364973/home`
 
+Opportunity Scanner workbook:
+
+- `https://app.clay.com/workspaces/364973/workbooks/wb_0thwuuyhXsesGkfVnJp`
+- Current status: workbook exists and is named `Opportunity Scanner`.
+- Browser inspection showed this workbook is currently a workspace shell with create/import/table options visible, not yet a confirmed production-callable contact workflow.
+
 Relevant existing Clay table:
 
 - `Find key decision makers at any company with just a website URL`
@@ -42,6 +48,27 @@ Clay MCP test result:
 - Email enrichment completed for several contacts. Do not publish the returned emails in public repo documentation; use Clay/task results or private outreach packages for actual contact values.
 
 This confirms Clay is a viable contact source for the Jammcard-style vendor/channel motion. The current blocker is production access, not enrichment quality.
+
+## Clay MCP Status
+
+Clay MCP is connected and useful for operator-assisted enrichment inside agent sessions.
+
+Current MCP capabilities observed:
+
+- Can run company/contact searches such as finding decision makers at a company domain.
+- Can add contact enrichment data points such as work email when explicitly requested.
+- Can return task context with enriched contact values.
+
+Current MCP limitation:
+
+- No custom subroutines are currently exposed by `list_subroutines`.
+- The connected MCP is not the same thing as a public production endpoint for the Opportunity Scanner website.
+- Do not assume the live Next.js app can call this Codex/ChatGPT MCP connection directly.
+
+Recommended use:
+
+- Use Clay MCP for manual premium report builds and QA enrichment checks.
+- Use a Clay Function, webhook, or API endpoint for production paid-user enrichment.
 
 ## Production Contract Needed
 
