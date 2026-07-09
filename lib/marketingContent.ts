@@ -534,39 +534,280 @@ export const industryPages: IndustryPage[] = [
 const baseResourceArticles: ResourceArticle[] = [
   {
     slug: "government-spending-growth-channel",
-    title: "Why Government Spending Is the Most Overlooked Growth Channel for Businesses",
+    title: "Why Government Spending Is an Overlooked Growth Channel for Businesses",
     description:
-      "Public-sector money is not only contracts and grants. It can reveal funded buyers, partner targets, policy demand, and new sales channels.",
+      "Learn how official spending, procurement, grant, award, and forecast records reveal agencies, funded buyers, partners, and practical next actions.",
     category: "Public-Sector Sales",
-    readTime: "6 min read",
+    readTime: "9 min read",
     primaryKeyword: "government spending growth channel",
     funnelStage: "Awareness",
     intro:
-      "Most companies do not ignore public-sector money because it is irrelevant. They ignore it because it feels slow, scattered, and hard to translate into pipeline. That is a costly blind spot: SBA's FY2024 scorecard factsheet reported $183.5 billion in federal small-business prime contracting, or 28.76% of eligible federal contracting dollars. The opportunity is bigger than bidding on contracts: public money can show which agencies are buying, which organizations were funded, which programs are expanding, and where demand is forming.",
+      "Most companies do not ignore public-sector money because it is irrelevant. They ignore it because the records feel slow, scattered, and difficult to translate into pipeline. The U.S. Small Business Administration's FY2024 scorecard factsheet reported that small businesses received $183.5 billion in federal prime contracting dollars, or 28.76% of eligible federal contract dollars. That figure covers one federal contracting market; it is not total government spending and it does not mean every company should bid. It does show why public records are worth investigating as market evidence. They can reveal agencies buying, organizations already funded, primes delivering adjacent work, programs creating future recipients, and demand worth monitoring.",
+    keyTakeaways: [
+      "Government spending records can reveal direct agency opportunities, funded buyers, award recipients, primes, partners, and demand signals.",
+      "Historical awards, active notices, grant forecasts, and procurement forecasts prove different things and should not produce the same action.",
+      "A useful signal becomes a target, revenue motion, contact path, and next best action before it enters a sales workflow."
+    ],
     sections: [
       {
-        heading: "Public money is demand evidence",
+        heading: "Government spending is market evidence before it is a sales opportunity",
         body: [
-          "Government contracts, grants, funded programs, workforce dollars, policy priorities, reimbursement rules, and award history all point to demand. Even when a company is not ready to bid directly, these signals can identify funded buyers, award recipients, prime vendors, grantees, distributors, agencies, and program offices worth understanding.",
-          "SBA Administrator Isabel Casillas Guzman framed small-business contracting as part of 'ensuring competition and a level playing field.' For a founder or revenue leader, the practical takeaway is not abstract policy. It is that public buyers and publicly funded organizations already spend real money with businesses outside the largest incumbents."
+          "A public record becomes useful when it gives a team evidence about money, mandate, timing, or a named organization. An active solicitation may support a bid decision. A historical award may reveal a repeat buyer, prime contractor, or funded recipient. A grant notice may create a direct application path for one organization and a future funded-buyer path for another.",
+          "The SBA factsheet also reported that FY2024 federal small-business contract spending created or sustained 845,200 small-business jobs. That proof belongs in context: it describes federal small-business prime contracting in one fiscal year, not the addressable market for any specific company. The practical question is whether a smaller, relevant slice of public activity maps to what the company already sells.",
+          "That distinction protects a revenue team from treating every public record as an opportunity. The source is evidence. Fit, target, timing, and a credible next step determine whether the evidence deserves action."
         ]
       },
       {
-        heading: "The data is public, but the action is hidden",
+        heading: "Four growth paths beyond a direct government bid",
         body: [
-          "The hard part is not that public-sector records are unavailable. The hard part is that they are spread across portals, notices, award records, grant listings, regulations, and agency pages. SAM.gov, Grants.gov, USAspending.gov, Federal Register, and agency sites each answer different questions, and none of them are designed to become your sales team's next task.",
-          "A sales team needs a target, a reason to reach out, a contact path, and a next step. Raw search results rarely provide that. Opportunity Scanner exists to turn those scattered records into an action-ready opportunity table: source, target, revenue motion, contact path, actionability, and workflow-ready next action."
+          "Direct agency sales are one path, not the whole channel. SBA distinguishes prime contractors, which work directly with government, from subcontractors, which work for other contractors. SBA notes that subcontracting can let businesses that are not prepared to work directly with an agency participate in federal procurement, although registration and contract-specific requirements still apply.",
+          "The same broader logic applies across public money flows. A business may sell to an agency, sell to a funded buyer or award recipient, partner with a recipient or prime contractor, or monitor a program until a clearer buying event appears. Some organizations may be eligible to apply directly for funding; others are better positioned as vendors or partners to the organizations that receive it.",
+          "These motions are not interchangeable. Each one changes the target, evidence, contact path, and first action. Treating every record as a grant application or bid hides the routes that may be more realistic for a commercial team."
         ]
       },
       {
-        heading: "The channel is not only for government contractors",
+        heading: "What each public source can and cannot tell you",
         body: [
-          "Some companies should sell directly to agencies. Others should partner with recipients, sell to funded buyers, monitor policy, register as vendors, contact program offices, or create research tasks for a sales or partnerships team. The mistake is treating every public record as a grant application or government bid.",
-          "That broader map is where many commercial companies can start. They do not need a full government capture team to learn whether public-sector demand exists around their product or service. They need a first-pass scan that shows whether the channel is worth pursuing and which motion makes sense."
+          "SAM.gov defines contract opportunities as procurement notices from federal contracting offices, including pre-solicitation, solicitation, award, and sole-source notices. Notice type and status matter: an award notice is not an open bid, and a pre-solicitation is not a final solicitation.",
+          "USAspending defines a recipient as a company, organization, individual, or government entity that receives federal funding. Recipient and award data can support market research, but a recipient is not automatically a buyer for a specific product or service. Award, transaction, obligation, and outlay fields also need to be interpreted carefully before they become a chart or market claim.",
+          "Grants.gov separates forecasted, posted, closed, and archived opportunities and warns that a forecast is not guaranteed to become a funding announcement. A grant program or opportunity may reveal a direct application, a future recipient, or a program office, but eligibility and current status must be verified on the specific notice.",
+          "Agency procurement forecasts can indicate demand that may emerge later. Acquisition.gov maintains links to recurring agency forecasts, but a forecast is a planning signal, not a solicitation, award, or promise that an acquisition will occur as described."
+        ]
+      },
+      {
+        heading: "Turn the record into an opportunity action row",
+        body: [
+          "A revenue team does not need another folder of portal links. It needs a repeatable translation from public evidence into a business-development decision. Start with five fields: source, target, revenue motion, contact path, and next action.",
+          "The source explains what is known. The target names the agency, program office, funded buyer, recipient, prime, or partner that controls purchasing, delivery, or access. The revenue motion explains whether the team should sell, partner, apply, register, monitor, or research. The contact path may be a source-native contact, procurement office, program office, vendor portal, recipient role, prime contractor, or manual research task.",
+          "The next action should reduce uncertainty. It might be validating current program scope, checking eligibility, reviewing amendments, researching a vendor path, identifying a partner owner, or moving a qualified row into a CRM workflow. The action should never assume that a historical award is active demand or that a funded recipient wants a specific offer."
+        ]
+      },
+      {
+        heading: "Qualify the signal before your team acts",
+        body: [
+          "A first-pass scan is useful because it lets a company test public-sector fit before investing in broad registrations, certifications, capture tools, or a dedicated government sales function. The goal is not to promise instant contracts. It is to identify which signals deserve pursuit, which need monitoring, and which should be rejected.",
+          "A qualified row should preserve the official source, describe why the signal fits the company, distinguish active money from historical evidence, recommend a realistic contact path, and assign one owner and next step. That is the difference between public data and a government spending growth channel a normal revenue team can evaluate."
         ]
       }
     ],
-    cta: "Scan your company website to see where public-sector money may connect to what you sell."
+    practicalList: {
+      title: "7 questions before your team pursues a public-sector signal",
+      items: [
+        "Is the source official and current enough for the decision?",
+        "Is the record active, historical, forecasted, closed, or only contextual?",
+        "Does the evidence map to what the company actually sells?",
+        "Who is the most plausible buyer, recipient, prime, partner, or program office?",
+        "Which revenue motion fits the record?",
+        "What contact path is credible for this target?",
+        "What single next action would reduce the most uncertainty?"
+      ]
+    },
+    proofPoints: [
+      {
+        stat: "SBA reported $183.5 billion in FY2024 federal small-business prime contracting, equal to 28.76% of eligible federal contract dollars, and said this spending created or sustained 845,200 small-business jobs.",
+        source: "SBA FY2024 Small Business Scorecard Factsheet",
+        url: "https://www.sba.gov/sites/default/files/2025-07/FY24%20Scorecard%20-%20Small%20Business%20Factsheet%20-%20v1%20-%20508.pdf"
+      },
+      {
+        stat: "SBA distinguishes prime contractors from subcontractors and explains that subcontracting can provide a participation path for businesses not prepared to work directly with an agency.",
+        source: "SBA Prime and Subcontracting Guide",
+        url: "https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting"
+      },
+      {
+        stat: "SAM.gov describes contract opportunities as procurement notices that include pre-solicitation, solicitation, award, and sole-source notices.",
+        source: "SAM.gov Contract Opportunities",
+        url: "https://sam.gov/opportunities"
+      },
+      {
+        stat: "USAspending defines a recipient as a company, organization, individual, or government entity that receives federal funding.",
+        source: "USAspending Recipient Definition",
+        url: "https://www.usaspending.gov/featured-content/data-definitions/what-is-a-recipient"
+      },
+      {
+        stat: "Grants.gov distinguishes forecasted, posted, closed, and archived opportunities and warns that a forecast is not guaranteed to become a funding announcement.",
+        source: "Grants.gov Search Grants Help",
+        url: "https://grants.gov/help/search-grants/search-grants-tab"
+      },
+      {
+        stat: "Acquisition.gov maintains links to recurring procurement forecasts published by federal agencies.",
+        source: "Acquisition.gov Agency Procurement Forecasts",
+        url: "https://www.acquisition.gov/procurement-forecasts"
+      }
+    ],
+    cta: "Scan your company website to see which source-backed public-sector signals match what you sell, or view a sample report to see how evidence becomes an action row.",
+    researchBrief: {
+      thesis:
+        "Government spending is useful to a business before it is ready to bid or apply because official records can reveal agencies buying, organizations already funded, primes delivering adjacent work, future recipients, and demand worth monitoring.",
+      icpPainPoint:
+        "Founders and revenue teams struggle to translate fragmented procurement notices, awards, grants, forecasts, and program records into a qualified target, contact path, and next action.",
+      coreClaim:
+        "The opportunity is not the raw public record; it is the source-backed business-development decision produced from that record: target, revenue motion, contact path, and next best action."
+    },
+    proofLedger: [
+      {
+        claim:
+          "In FY2024, small businesses received $183.5 billion, or 28.76%, of eligible federal contract dollars, and the spending created or sustained 845,200 small-business jobs.",
+        source: "SBA FY2024 Small Business Scorecard Factsheet",
+        url: "https://www.sba.gov/sites/default/files/2025-07/FY24%20Scorecard%20-%20Small%20Business%20Factsheet%20-%20v1%20-%20508.pdf",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Introduction and market-evidence section",
+        caveat:
+          "This is federal small-business prime contracting in one fiscal year, not all government spending or the addressable market for a specific company. Preserve the phrase created or sustained."
+      },
+      {
+        claim:
+          "The annual SBA scorecard reports agency progress on small-business contracting goals, and aggregate agency goals meet the 23% federal target.",
+        source: "SBA Small Business Procurement Scorecard Overview",
+        url: "https://www.sba.gov/document/support-small-business-procurement-scorecard-overview",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Research context",
+        caveat: "A federal goal is not a guarantee for a vendor, and agency goals differ."
+      },
+      {
+        claim:
+          "SAM.gov contract opportunities include pre-solicitation, solicitation, award, and sole-source notices, and anyone may search without an account.",
+        source: "SAM.gov Contract Opportunities",
+        url: "https://sam.gov/opportunities",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Source comparison section",
+        caveat:
+          "Notice type and status matter. An award notice is not an open bid, and a pre-solicitation is not a final solicitation."
+      },
+      {
+        claim:
+          "USAspending defines a recipient as a company, organization, individual, or government entity that receives federal funding.",
+        source: "USAspending: What Is a Recipient?",
+        url: "https://www.usaspending.gov/featured-content/data-definitions/what-is-a-recipient",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Source comparison section",
+        caveat:
+          "A recipient is evidence of money flow, not proof that the recipient is a buyer for a specific offer."
+      },
+      {
+        claim:
+          "USAspending Advanced Search can filter award spending by recipient information and supports data downloads for analysis.",
+        source: "USAspending Analyst's Guide to Federal Spending Data",
+        url: "https://www.usaspending.gov/federal-spending-guide",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Source comparison and chart caveat",
+        caveat:
+          "Award, transaction, obligation, and outlay fields are not interchangeable; any future data chart needs a defined metric and double-counting review."
+      },
+      {
+        claim:
+          "Grants.gov Search Grants is used to find specific funding opportunities, while SAM.gov Assistance Listings is the authoritative source for federal assistance programs.",
+        source: "Grants.gov Grant Programs",
+        url: "https://www.grants.gov/learn-grants/grant-programs.html",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Source comparison section",
+        caveat:
+          "A program listing is not the same as an open opportunity; eligibility and status must be checked on the specific notice."
+      },
+      {
+        claim:
+          "Grants.gov defines forecasted, posted, closed, and archived opportunity statuses and says a forecast is not guaranteed to become a funding announcement.",
+        source: "Grants.gov Search Grants Help",
+        url: "https://grants.gov/help/search-grants/search-grants-tab",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Source comparison and qualification checklist",
+        caveat: "Do not describe forecasted funding as available now."
+      },
+      {
+        claim:
+          "SBA distinguishes prime contractors from subcontractors and notes that subcontracting can help businesses not prepared to work directly with an agency participate in federal procurement.",
+        source: "SBA Prime and Subcontracting Guide",
+        url: "https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Growth paths section",
+        caveat:
+          "This is an indirect participation path, not assurance that subcontracting work is available to a specific business."
+      },
+      {
+        claim: "Acquisition.gov maintains links to recurring procurement forecasts from federal agencies.",
+        source: "Acquisition.gov Agency Recurring Procurement Forecasts",
+        url: "https://www.acquisition.gov/procurement-forecasts",
+        retrievalDate: "2026-07-09",
+        articlePlacement: "Source comparison and monitoring section",
+        caveat:
+          "A forecast is a planning signal, not a solicitation, award, or promise that an acquisition will occur as described."
+      }
+    ],
+    chartAssets: [
+      {
+        title: "FY2024 small-business share of eligible federal contract dollars",
+        chartType: "stacked-bar",
+        takeaway:
+          "SBA reported that small businesses received 28.76% of eligible federal contract dollars, or $183.5 billion, in FY2024. Any complementary segment must be labeled as a derived remainder rather than a separately reported SBA metric.",
+        source: "SBA FY2024 Small Business Scorecard Factsheet",
+        url: "https://www.sba.gov/sites/default/files/2025-07/FY24%20Scorecard%20-%20Small%20Business%20Factsheet%20-%20v1%20-%20508.pdf",
+        altText:
+          "Stacked bar showing 28.76 percent of eligible FY2024 federal contract dollars awarded to small businesses, equal to $183.5 billion; source: SBA.",
+        status: "data-sourced"
+      },
+      {
+        title: "From public record to growth action",
+        chartType: "flow",
+        takeaway:
+          "An official record becomes commercially useful after it is translated into evidence, a target organization, a revenue motion, a contact path, and a next best action.",
+        source: "Illustrative framework based on the article's official source set",
+        altText:
+          "Diagram showing an official public record becoming a target, revenue motion, contact path, and next action.",
+        status: "planned"
+      },
+      {
+        title: "What each public source can and cannot prove",
+        chartType: "table",
+        takeaway:
+          "SAM.gov, USAspending, Grants.gov, and agency procurement forecasts answer different questions and should not produce the same action.",
+        source: "SAM.gov, USAspending, Grants.gov, SBA, and Acquisition.gov official guidance",
+        altText:
+          "Table comparing what SAM.gov, USAspending, Grants.gov, and agency procurement forecasts can tell a business.",
+        status: "planned"
+      }
+    ],
+    republishingPack: {
+      medium: [
+        "Government Spending Is a Market Map, Not Just a Bid Board",
+        "Most businesses hear government spending and picture a long procurement process, a grant application, or a market reserved for experienced contractors. That frame misses the larger business-development value of public records.",
+        "SBA reported that small businesses received 28.76% of eligible federal contract dollars, or $183.5 billion, in FY2024. That is one federal contracting market, not a promise that every company has a government sales opportunity. It does show that public demand is commercially meaningful enough to investigate.",
+        "The investigation should begin with what the record proves. SAM.gov can show procurement notices and stage. USAspending can show recipients and prior money flow. Grants.gov can show funding status and eligibility. Agency forecasts can suggest demand worth monitoring.",
+        "Translate each qualified record into five decisions: source, target, revenue motion, contact path, and next action. That is the difference between a portal search and an opportunity pipeline.",
+        "Opportunity Scanner helps companies test that path from their website without promising revenue or assuming every answer is a direct bid."
+      ].join("\n\n"),
+      substack: [
+        "The Public Money Your Sales Team Never Checks",
+        "Most founders hear government spending and think contracts or grants. Both matter. Neither is the whole map.",
+        "SBA reported $183.5 billion in FY2024 federal small-business prime contracting, equal to 28.76% of eligible federal contract dollars. That is one federal market, not a guarantee for a specific company, but it is a strong reason to investigate public records carefully.",
+        "SAM.gov can show procurement timing. USAspending can show who already received federal money. Grants.gov can show eligibility and status. Agency forecasts can show demand worth monitoring.",
+        "The practical workflow is to verify the source, identify the target, choose the revenue motion, choose the contact path, and assign one next action. Good opportunity intelligence reduces uncertainty instead of manufacturing urgency."
+      ].join("\n\n"),
+      linkedInArticle: [
+        "Why Government Spending Belongs in More B2B Growth Strategies",
+        "Government spending is often treated as a specialist sales channel. That makes sense if the only question is how to win a direct contract. It makes less sense when the goal is to understand where money, mandate, and demand are moving.",
+        "The SBA FY2024 scorecard factsheet reported $183.5 billion in federal small-business prime contracting, or 28.76% of eligible federal contract dollars. The figure is specific to one federal market, but it shows why the channel deserves a careful first look.",
+        "Procurement notices can reveal buying stages. Award records can reveal recipients and primes. Grant notices can reveal direct-apply paths and future recipients. Forecasts can identify demand to monitor.",
+        "A useful opportunity row needs a source, target organization, revenue motion, contact path, and next best action. The goal is not more research. It is a better decision about where to spend time."
+      ].join("\n\n"),
+      xArticle: [
+        "Government Spending Is More Than Contracts and Grants",
+        "Most businesses ignore public-sector data because the records do not look like pipeline. They look like procurement notices, award histories, grant listings, forecasts, and program pages.",
+        "SBA reported that small businesses received $183.5 billion in federal prime contracting dollars in FY2024, equal to 28.76% of eligible federal contract dollars. That does not mean every company should bid. It means the market is real enough to investigate carefully.",
+        "Different records should produce different actions. A solicitation may justify a bid decision. A historical award may justify account research. A grant may identify a future funded buyer. A forecast may justify monitoring.",
+        "The growth channel is the set of business-development actions the evidence supports: source, target, revenue motion, contact path, and next action."
+      ].join("\n\n"),
+      canonicalUrl: siteUrl + "/resources/government-spending-growth-channel"
+    },
+    visualPack: {
+      featuredImagePrompt:
+        "Create a modern B2B editorial image of a small leadership team reviewing a clean opportunity table that connects public records to agencies, funded organizations, partner paths, and next actions. Use navy, teal, cream, and restrained orange, with negative space for a headline. Do not include dollar amounts, agency seals, customer logos, fake certifications, or fabricated source records.",
+      supportingVisualPrompts: [
+        "Create a product-style source-to-action flow using only the generic labels official record, evidence, target, revenue motion, contact path, and next action.",
+        "Create a clean comparison table for SAM.gov, USAspending, Grants.gov, and agency procurement forecasts using simple text labels and no government seals or logos.",
+        "Create a sourced SBA proof card using only $183.5 billion, 28.76%, and 845,200 jobs created or sustained, with a visible source and retrieval-date footer."
+      ],
+      usageNotes:
+        "No owned or AI-generated image has been produced. Keep the existing public image until a reviewed asset replaces it. The stacked-bar data is sourced but not designed; the flow and source comparison are illustrative and planned. Any future SBA visual must cite the FY2024 factsheet and retrieval date 2026-07-09."
+    }
   },
   {
     slug: "can-my-business-sell-to-government",
