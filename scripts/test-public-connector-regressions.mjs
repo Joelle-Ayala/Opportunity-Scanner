@@ -9,7 +9,7 @@ const cases = [
   { company: "SchoolGig", term: "teacher recruitment" }
 ];
 
-async function fetchJson(url, init = {}, timeoutMs = 30_000) {
+async function fetchJson(url, init = {}, timeoutMs = 45_000) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -77,15 +77,13 @@ async function testFederalRegister(testCase) {
   return results.length;
 }
 
-await Promise.all(
-  cases.map(async (testCase) => {
-    const [spending, grants, policy] = await Promise.all([
-      testUsaSpending(testCase),
-      testGrantsGov(testCase),
-      testFederalRegister(testCase)
-    ]);
-    console.log(
-      `PASS ${testCase.company}: USAspending ${spending}, Grants.gov ${grants}, Federal Register ${policy} raw result(s)`
-    );
-  })
-);
+for (const testCase of cases) {
+  const [spending, grants, policy] = await Promise.all([
+    testUsaSpending(testCase),
+    testGrantsGov(testCase),
+    testFederalRegister(testCase)
+  ]);
+  console.log(
+    `PASS ${testCase.company}: USAspending ${spending}, Grants.gov ${grants}, Federal Register ${policy} raw result(s)`
+  );
+}
