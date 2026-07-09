@@ -12,7 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/resources",
     "/examples",
     "/public-sector-revenue",
-    "/solutions"
+    "/solutions",
+    "/source-coverage"
   ];
 
   return [

@@ -1,0 +1,60 @@
+# Opportunity Scanner
+
+> Opportunity Scanner turns a company website into sourced public-sector opportunity intelligence: funding, procurement, funded buyers, policy, workforce, reimbursement, and money-flow signals translated into target organizations, revenue motions, contact paths, and next best actions.
+
+Opportunity Scanner is a B2B SaaS product by Opportunity Systems. It is not a generic grant finder or raw government database search tool. The product promise is to translate public-sector data into business development actions.
+
+## Core Pages
+
+- [Homepage](https://www.opportunityscanner.ai): Product overview and scan form.
+- [How It Works](https://www.opportunityscanner.ai/how-it-works): Scan-to-report workflow.
+- [Public-Sector Revenue](https://www.opportunityscanner.ai/public-sector-revenue): Explanation of the public-sector revenue channel.
+- [Pricing](https://www.opportunityscanner.ai/pricing): Free scan and paid report unlock.
+- [Source Coverage](https://www.opportunityscanner.ai/source-coverage): Public source categories and citation context.
+
+## Solutions
+
+- [Funded Buyer Intelligence](https://www.opportunityscanner.ai/solutions/funded-buyer-intelligence): Find organizations with public money before your competitors reach them.
+- [Public-Sector Sales Workflow](https://www.opportunityscanner.ai/solutions/public-sector-sales-workflow): Turn public-sector research into a sales workflow, not a static report.
+- [Contact Paths & Enrichment](https://www.opportunityscanner.ai/solutions/contact-paths-and-enrichment): Know who to pursue, even when a personal email is not the right answer.
+
+## Industries
+
+- [Healthcare / DME / Medical Supply](https://www.opportunityscanner.ai/industries/healthcare-dme-medical-supply): Public-sector revenue paths for healthcare, rehab, DME, and medical supply companies.
+- [Education / Workforce / Training](https://www.opportunityscanner.ai/industries/education-workforce-training): District, workforce board, agency, and training opportunity signals.
+- [Arts / Creative Economy / Live Events](https://www.opportunityscanner.ai/industries/arts-creative-economy-live-events): Public funding, procurement, and buyer signals for creative economy and live event revenue.
+- [Software / B2B Services / AI](https://www.opportunityscanner.ai/industries/software-b2b-services-ai): Public-sector demand for software, AI, automation, consulting, and B2B services.
+- [Construction / Infrastructure / Engineering](https://www.opportunityscanner.ai/industries/construction-infrastructure-engineering): Public-sector demand for construction, infrastructure, engineering, and specialty trades.
+- [Clean Energy / Facilities / Sustainability](https://www.opportunityscanner.ai/industries/clean-energy-facilities-sustainability): Energy, facilities, climate, and sustainability opportunity signals.
+- [Manufacturing / Supply Chain / Logistics](https://www.opportunityscanner.ai/industries/manufacturing-supply-chain-logistics): Public-sector opportunities for manufacturers, suppliers, logistics, and industrial service companies.
+- [Nonprofits / Community Services / Human Services](https://www.opportunityscanner.ai/industries/nonprofits-community-services-human-services): Funded buyers, partners, and grant paths in community and human services.
+
+## Sample Reports
+
+- [Healthcare DME Opportunity Scan](https://www.opportunityscanner.ai/examples/healthcare-dme-opportunity-scan): Sample report using fictional company context and real public-source examples.
+- [Education Workforce Opportunity Scan](https://www.opportunityscanner.ai/examples/education-workforce-opportunity-scan): Sample report using fictional company context and real public-source examples.
+- [Creative Economy Live Events Opportunity Scan](https://www.opportunityscanner.ai/examples/creative-economy-live-events-opportunity-scan): Sample report using fictional company context and real public-source examples.
+- [Software AI B2B Services Opportunity Scan](https://www.opportunityscanner.ai/examples/software-ai-b2b-services-opportunity-scan): Sample report using fictional company context and real public-source examples.
+
+## Resources
+
+- [Why Government Spending Is the Most Overlooked Growth Channel for Businesses](https://www.opportunityscanner.ai/resources/government-spending-growth-channel)
+- [Can My Business Sell to the Government?](https://www.opportunityscanner.ai/resources/can-my-business-sell-to-government)
+- [What Is a Public-Sector Opportunity Signal?](https://www.opportunityscanner.ai/resources/public-sector-opportunity-signal)
+- [Grants vs Contracts vs Funded Buyers](https://www.opportunityscanner.ai/resources/grants-contracts-funded-buyers)
+- [How to Find Funded Buyers Before Cold Outreach](https://www.opportunityscanner.ai/resources/find-funded-buyers-before-cold-outreach)
+- [Healthcare Public-Sector Opportunities](https://www.opportunityscanner.ai/resources/healthcare-public-sector-opportunities)
+- [Creative Economy Funding Opportunities](https://www.opportunityscanner.ai/resources/creative-economy-funding-opportunities)
+- [Education and Workforce Opportunity Signals](https://www.opportunityscanner.ai/resources/education-workforce-opportunity-signals)
+- [Software and AI Public-Sector Demand](https://www.opportunityscanner.ai/resources/software-ai-public-sector-demand)
+
+## Interpretation Notes
+
+- Public-sector source records are evidence, not guaranteed revenue.
+- Historical awards should not be confused with active solicitations.
+- Contact path does not always mean personal email. Program offices, procurement offices, source-native contacts, vendor registration, funded recipients, partners, and manual research can be better paths.
+- Paid reports should unlock all rows, source links, contact paths, CRM-ready notes, outreach angles, and workflow/export actions.
+
+## Optional
+
+- [Sitemap](https://www.opportunityscanner.ai/sitemap.xml): Complete sitemap.

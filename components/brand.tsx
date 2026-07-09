@@ -34,6 +34,7 @@ const navGroups = [
     links: [
       ["Resources", "/resources"],
       ["Sample Reports", "/examples"],
+      ["Source Coverage", "/source-coverage"],
       ["Government Spending Channel", "/resources/government-spending-growth-channel"],
       ["Can My Business Sell?", "/resources/can-my-business-sell-to-government"]
     ]
@@ -121,6 +122,7 @@ export function SiteFooter() {
     ["Public-Sector Revenue", "/public-sector-revenue"],
     ["Solutions", "/solutions"],
     ["Sample Reports", "/examples"],
+    ["Source Coverage", "/source-coverage"],
     ["Funded Buyers", "/solutions/funded-buyer-intelligence"],
     ["Sales Workflow", "/solutions/public-sector-sales-workflow"],
     ["Contact Paths", "/solutions/contact-paths-and-enrichment"],
