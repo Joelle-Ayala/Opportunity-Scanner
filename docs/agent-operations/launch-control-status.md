@@ -13,8 +13,8 @@ This is the source of truth for launch status. It reconciles the current reposit
 Repository snapshot at audit time:
 
 - Branch: `main`; working tree clean after integration.
-- Local branch is seven commits ahead of `origin/main`; nothing has been pushed or deployed.
-- Integrated checkpoints cover launch control, resource article UX, content packages, workflow contract tests, beta workflow hardening, connector runtime visibility, and public connector regression stability.
+- The integrated launch checkpoints are local to `main`; nothing has been pushed or deployed.
+- Integrated checkpoints cover launch control, resource article UX, content packages, the refreshed government-spending flagship, workflow contract tests, beta workflow hardening, connector runtime visibility, and public connector regression stability.
 - Beta workflow payloads are rebuilt from stored server data, and public pricing copy no longer implies a live `$99` checkout.
 - No secrets, `.env` files, `.data`, `.next`, `node_modules`, or generated output were committed.
 
@@ -31,7 +31,7 @@ Repository snapshot at audit time:
 | Workflow verification tests | Back-End | **Done locally** | Tests cover invalid/non-HTTPS URLs, embedded credentials, missing IDs, scan/opportunity mismatch, full-access denial, non-ready payloads, server reconstruction, payload size, and delivery failures. | `scripts/test-workflow-contract.mjs` passes 11/11. | Add a real safe-endpoint smoke test after production setup; private-network destination policy remains a beta security decision. |
 | Safe-webhook smoke test | Back-End + PM; founder approves policy/destination | **Blocked by founder/credentials** | One full-access opportunity reaches an approved safe endpoint; received payload matches the stored row and excludes secrets, raw connector data, debug fields, and hidden free details; UI success and failure states are visible. | Needs founder/Chief of Staff decision on beta webhook policy and an approved safe endpoint. Must wait for tests, checkpoint, environment setup, and a known-good scan. | Use one test opportunity only, inspect the received payload, test one controlled failure, and record date, scan ID, opportunity ID, endpoint class, and result without recording credentials. |
 | Production environment and controlled-test scope | Founder + Chief of Staff | **Blocked by founder/credentials** | Domain/preview selected; Supabase schema installed; required variables configured; tester audience and webhook policy approved; deployment explicitly authorized. | Founder decisions and private account access are outside agent authority. | Decide domain, internal/founder-invited scope, payment placeholder policy, and webhook policy; then authorize environment setup and deployment. |
-| Clean launch checkpoint | Chief of Staff + PM | **Done locally** | Accepted P0 bundle is committed with no secrets or generated artifacts; staged scope is reviewed; checkpoint IDs are recorded on `main`. | Main working tree is clean and seven commits ahead of origin. No push or deployment was performed. | Keep commits local until founder authorizes the production/deployment path. |
+| Clean launch checkpoint | Chief of Staff + PM | **Done locally** | Accepted P0 bundle is committed with no secrets or generated artifacts; staged scope is reviewed; checkpoint IDs are recorded on `main`. | Main working tree is clean with local launch checkpoints. No push or deployment was performed. | Keep commits local until founder authorizes the production/deployment path. |
 | Live-domain regression evidence package | PM + Back-End + Front-End | **Not Started** | Domain, environment, timestamp, company URLs, scan IDs, report URLs, counts, evaluator result, free/full screenshots or notes, mobile result, webhook result, and checkpoint ID are recorded. | Depends on environment, checkpoint, and deployment. | Run the controlled test pass and attach evidence to the Chief of Staff go/no-go review. |
 | External beta invitation | Founder + Chief of Staff | **Not Started** | All go criteria pass, known limitations are documented, tester list is approved, and rollback/support owner is named. | All P0 verification above must complete first. | Make a founder go/no-go decision only after the evidence package is reviewed. |
 
@@ -41,8 +41,8 @@ These streams can continue, but they must not delay or overwrite P0 launch verif
 
 | Workstream | Owner | Status | Acceptance criteria | Blocker / verification | Next action |
 |---|---|---|---|---|---|
-| Blog editorial queue and first packages | Product Strategy / Content | **Done for first wave** | Deduplicated queue and research-backed packages support ICP acquisition without changing pricing or major positioning. | Forty-three canonical resources are organized; government-spending and Building Local Credibility packages are committed. | Move the flagship government-spending package into the canonical article, then scale the pattern. |
-| Resource article template | Front-End | **Done locally** | Reusable, responsive article template supports breadcrumbs, answer box, table of contents, related reads, optional metadata, structured data, and chart assets without exposing internal fields. | Typecheck and production build pass; all 20 resource URLs generate. | Verify again after the flagship content data is integrated. |
+| Blog editorial queue and first packages | Product Strategy / Content | **Done for first wave** | Deduplicated queue and research-backed packages support ICP acquisition without changing pricing or major positioning. | Forty-three canonical resources are organized; government-spending and Building Local Credibility packages are committed; the government-spending flagship is integrated into the canonical article. | Use the same evidence-to-action standard for the next approved article refresh. |
+| Resource article template | Front-End | **Done locally** | Reusable, responsive article template supports breadcrumbs, answer box, table of contents, related reads, optional metadata, structured data, and chart assets without exposing internal fields. | Typecheck and production build pass after flagship integration; all 20 resource URLs generate, and internal editorial fields remain absent from the built page. | Preserve the template during the next content refresh and include it in live-domain visual review. |
 | Connector reliability and readiness | Connector | **Done locally / live monitoring pending** | Connector requests are bounded; no matches are distinct from failures; status is stored internally; no new APIs are added. | Runtime tests pass; public regressions pass for Reparel, Jammcard, and SchoolGig. SAM.gov is valid-looking but quota-throttled until 2026-07-10 00:00 UTC. | Re-test SAM after the throttle clears and inspect connector-run records during live scans. |
 
 ## Precise P0 sequence
@@ -67,10 +67,11 @@ Dependency chain: founder decisions/credentials → production setup → deploym
 
 ## Verification record for this audit
 
-- `git status --short --branch`: clean on `main`, seven commits ahead of `origin/main` at the end of the integration wave.
+- `git status --short --branch`: clean on `main` with local launch checkpoints not pushed to `origin/main`.
 - `git diff --check`: passed with no whitespace errors.
 - TypeScript check: passed.
 - Production build: passed; all 20 resource URLs generated.
+- Flagship article source review: official SBA, SAM.gov, USAspending, Grants.gov, and Acquisition.gov claims checked; the built public page contains no internal research, republishing, or visual-production fields.
 - Workflow contract: passed 11/11 without real delivery or credentials.
 - Connector runtime: passed no-match/failure separation, partial-failure preservation, timeout bounds, credential skips, and error sanitization.
 - Report evaluator: passed with 0 issues for Jammcard, SchoolGig, and Reparel.
