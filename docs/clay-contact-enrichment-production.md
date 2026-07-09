@@ -67,8 +67,21 @@ Current MCP limitation:
 
 Recommended use:
 
-- Use Clay MCP for manual premium report builds and QA enrichment checks.
+- Chief of Staff/Codex should use Clay MCP for operator-assisted premium report builds and QA enrichment checks.
+- The founder should not be expected to manually run Clay enrichment, assemble reports, or move report data between tools.
 - Use a Clay Function, webhook, or API endpoint for production paid-user enrichment.
+
+## Operating Rule For Reports
+
+Until production Clay automation is available, report and Clay work is still owned by the agent/operator layer.
+
+For client-ready or paid-style reports:
+
+- Chief of Staff/Codex pulls or refreshes the relevant opportunity signals.
+- Chief of Staff/Codex uses Clay MCP/workbook enrichment where appropriate.
+- Chief of Staff/Codex keeps source-native contacts and Snov fallback in the package when Clay is not the right path or does not return enough contacts.
+- Chief of Staff/Codex creates the final report, outreach package, contact file, Markdown handoff, and workflow-ready artifacts.
+- The founder reviews the output and gives strategic direction, but does not manually operate Clay or build report packages.
 
 ## Production Contract Needed
 
