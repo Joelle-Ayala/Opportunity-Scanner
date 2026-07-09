@@ -31,7 +31,122 @@ export type IndustryPage = {
   searchIntent: string;
 };
 
+export type SolutionPage = {
+  slug: string;
+  name: string;
+  headline: string;
+  description: string;
+  audience: string;
+  pain: string;
+  outcome: string;
+  proofPoints: string[];
+  reportRows: Array<{
+    label: string;
+    value: string;
+  }>;
+  cta: string;
+};
+
 export const siteUrl = "https://www.opportunityscanner.ai";
+
+export const revenueOutcomes = [
+  {
+    label: "Sell to an agency",
+    detail: "Find agencies, program offices, procurement paths, and source records tied to demand."
+  },
+  {
+    label: "Sell to a funded buyer",
+    detail: "Spot organizations that received public money and may need vendors, partners, or implementation support."
+  },
+  {
+    label: "Partner with a recipient",
+    detail: "Identify grantees, award recipients, primes, nonprofits, or channel partners already funded for adjacent work."
+  },
+  {
+    label: "Apply or register",
+    detail: "Separate direct-apply grants, vendor registration paths, and active procurement opportunities from research-only signals."
+  },
+  {
+    label: "Monitor emerging demand",
+    detail: "Track policy, workforce, reimbursement, and regulatory signals before a clean buying event appears."
+  },
+  {
+    label: "Move rows into workflow",
+    detail: "Turn each signal into CRM-ready notes, outreach angles, contact paths, and workflow/export actions."
+  }
+];
+
+export const solutionPages: SolutionPage[] = [
+  {
+    slug: "funded-buyer-intelligence",
+    name: "Funded Buyer Intelligence",
+    headline: "Find organizations with public money before your competitors reach them.",
+    description:
+      "Opportunity Scanner turns awards, grants, and spending records into funded buyer targets with source evidence, fit context, contact paths, and next actions.",
+    audience: "Revenue teams, founders, partnerships leads, and agencies looking for account targets backed by public funding evidence.",
+    pain:
+      "Most outbound lists do not tell you whether the account has money, mandate, timing, or a public reason to care.",
+    outcome:
+      "Build a source-backed target list of funded buyers, recipients, and partners that can move into outbound or CRM workflows.",
+    proofPoints: [
+      "Shows the source record behind each funded buyer signal.",
+      "Separates historical money-flow evidence from active opportunities.",
+      "Recommends whether to contact the buyer, recipient, program office, or partner path."
+    ],
+    reportRows: [
+      { label: "Signal", value: "Public money already moved to an adjacent buyer or recipient." },
+      { label: "Revenue motion", value: "Sell to Funded Buyer or Partner with Recipient." },
+      { label: "Next action", value: "Create a source-backed outreach task and validate contact path." }
+    ],
+    cta: "Find funded buyers from your website"
+  },
+  {
+    slug: "public-sector-sales-workflow",
+    name: "Public-Sector Sales Workflow",
+    headline: "Turn public-sector research into a sales workflow, not a static report.",
+    description:
+      "The full report packages opportunity rows with targets, evidence, revenue motions, contact paths, outreach context, and workflow-ready exports.",
+    audience: "Teams that want to test public-sector revenue without building a full government capture function first.",
+    pain:
+      "Public data is scattered across portals and often dies as a long research memo instead of becoming sales action.",
+    outcome:
+      "Move prioritized rows into CRM, Airtable, Notion, Slack, Zapier, Make, n8n, or outbound operations.",
+    proofPoints: [
+      "Every row includes a next best action, not just a source summary.",
+      "Contact strategy handles offices, portals, recipients, vendors, and manual research paths.",
+      "Exports are structured for workflow handoff and outbound package creation."
+    ],
+    reportRows: [
+      { label: "Signal", value: "Agency, funding, buyer, policy, or workforce evidence." },
+      { label: "Revenue motion", value: "Direct Apply, Sell to Agency, Partner, Monitor, or Research Only." },
+      { label: "Next action", value: "Push a CRM-ready task or workflow payload." }
+    ],
+    cta: "Build a public-sector pipeline"
+  },
+  {
+    slug: "contact-paths-and-enrichment",
+    name: "Contact Paths & Enrichment",
+    headline: "Know who to pursue, even when a personal email is not the right answer.",
+    description:
+      "Opportunity Scanner prioritizes source-native contacts, procurement offices, program owners, vendor paths, recipient research, and capped enrichment where appropriate.",
+    audience: "Founders and sales teams that need actionable outreach paths without pretending every opportunity has a perfect email.",
+    pain:
+      "Generic enrichment tools often find emails without explaining whether that person is actually the right route for the opportunity.",
+    outcome:
+      "Give your team a practical contact strategy: source-native contact, office route, partner target, vendor registration, enrichment, or manual research task.",
+    proofPoints: [
+      "Source-native contacts are preferred before third-party enrichment.",
+      "Company/domain targets can use capped enrichment for paid reports.",
+      "No-contact cases still produce a recommended next step instead of a dead end."
+    ],
+    reportRows: [
+      { label: "Signal", value: "Target organization has a plausible buyer, partner, or program-owner path." },
+      { label: "Revenue motion", value: "Sell, partner, apply, register, monitor, or research." },
+      { label: "Next action", value: "Use the right contact path before sending outreach." }
+    ],
+    cta: "See contact paths for your opportunities"
+  }
+];
 
 export const industryPages: IndustryPage[] = [
   {
@@ -477,6 +592,78 @@ export const resourceArticles: ResourceArticle[] = [
       }
     ],
     cta: "Start with a free scan and turn the best rows into a public-sector sales workflow."
+  },
+  {
+    slug: "public-sector-deal-flow-for-commercial-companies",
+    title: "Public-Sector Deal Flow for Commercial Companies",
+    description:
+      "How businesses outside traditional government contracting can use public money signals to find new buyers, partners, and sales motions.",
+    category: "Public-Sector Sales",
+    readTime: "6 min read",
+    primaryKeyword: "public sector deal flow",
+    funnelStage: "Awareness",
+    intro:
+      "Public-sector deal flow is not only for companies that already sell to government. Public spending, grants, workforce programs, policy changes, and funded organizations can reveal commercial buyer and partner targets that most sales teams never see.",
+    sections: [
+      {
+        heading: "Public money can point to commercial action",
+        body: [
+          "A government award might identify an agency buyer. It might also identify a funded nonprofit, prime contractor, distributor, school district, healthcare provider, workforce board, or event vendor.",
+          "The useful question is whether the public record creates a practical revenue motion: sell, partner, apply, register, monitor, or research."
+        ]
+      },
+      {
+        heading: "Most companies need translation, not more portals",
+        body: [
+          "Public-sector data is scattered and written for compliance, not business development. A commercial team needs fit, target, timing, contact path, and next action.",
+          "Opportunity Scanner translates a company website into public-sector search logic, then translates source records back into pipeline rows."
+        ]
+      },
+      {
+        heading: "Start with evidence before building a motion",
+        body: [
+          "Before hiring a government sales team, buying capture software, or chasing registrations, companies can run a lightweight signal scan.",
+          "If the scan shows relevant funded buyers, agencies, recipients, or policy demand, the company can decide whether to invest further."
+        ]
+      }
+    ],
+    cta: "Run a scan to see whether public-sector deal flow exists around what your company sells."
+  },
+  {
+    slug: "what-a-public-sector-opportunity-report-should-include",
+    title: "What a Public-Sector Opportunity Report Should Include",
+    description:
+      "A useful report should go beyond source summaries and give your team target organizations, revenue motions, contact paths, and next actions.",
+    category: "Opportunity Intelligence",
+    readTime: "7 min read",
+    primaryKeyword: "public sector opportunity report",
+    funnelStage: "Consideration",
+    intro:
+      "A public-sector opportunity report is only useful if it helps a team decide what to do next. Long summaries, raw records, and generic AI writeups are not enough. The report needs to convert evidence into action.",
+    sections: [
+      {
+        heading: "Every row needs a revenue motion",
+        body: [
+          "A source record should be mapped to a pursuit path such as Direct Apply, Sell to Agency, Sell to Funded Buyer, Sell to Award Recipient, Partner with Recipient, Channel / Distributor Motion, Monitor Policy, or Research Only.",
+          "Without the revenue motion, the reader is left guessing whether the record is a bid, a grant, a partner lead, a buyer signal, or simply background research."
+        ]
+      },
+      {
+        heading: "Contact path matters as much as contact data",
+        body: [
+          "The right next step is not always finding a personal email. Some opportunities should go through source-native contacts, procurement offices, program offices, vendor portals, funded recipients, or manual research.",
+          "Contact enrichment is valuable when it supports the correct path. It should not replace the strategic routing decision."
+        ]
+      },
+      {
+        heading: "The output should be workflow-ready",
+        body: [
+          "The best reports produce rows that can become CRM tasks, outreach drafts, Slack alerts, Airtable records, Notion tasks, or webhook payloads.",
+          "That is the difference between a research memo and an opportunity pipeline."
+        ]
+      }
+    ],
+    cta: "Scan your company to see a source-backed opportunity report with revenue motions and next actions."
   }
 ];
 
@@ -493,4 +680,8 @@ export function getResourceArticle(slug: string): ResourceArticle | undefined {
 
 export function getIndustryPage(slug: string): IndustryPage | undefined {
   return industryPages.find((industry) => industry.slug === slug);
+}
+
+export function getSolutionPage(slug: string): SolutionPage | undefined {
+  return solutionPages.find((solution) => solution.slug === slug);
 }

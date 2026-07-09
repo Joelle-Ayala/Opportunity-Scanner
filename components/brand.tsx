@@ -31,6 +31,7 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
         <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-semibold text-steel">
           <a href="/" className="hover:text-accent">Product</a>
           <a href="/how-it-works" className="hover:text-accent">How It Works</a>
+          <a href="/solutions" className="hover:text-accent">Solutions</a>
           <a href="/industries" className="hover:text-accent">Industries</a>
           <a href="/public-sector-revenue" className="hover:text-accent">Public-Sector Revenue</a>
           <a href="/resources" className="hover:text-accent">Resources</a>
@@ -45,6 +46,10 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
 export function SiteFooter() {
   const links = [
     ["Public-Sector Revenue", "/public-sector-revenue"],
+    ["Solutions", "/solutions"],
+    ["Funded Buyers", "/solutions/funded-buyer-intelligence"],
+    ["Sales Workflow", "/solutions/public-sector-sales-workflow"],
+    ["Contact Paths", "/solutions/contact-paths-and-enrichment"],
     ["Healthcare", "/industries/healthcare-dme-medical-supply"],
     ["Education & Workforce", "/industries/education-workforce-training"],
     ["Arts & Creative Economy", "/industries/arts-creative-economy-live-events"],

@@ -1,6 +1,7 @@
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { ReportPreview } from "@/components/marketing";
+import { ReportPreview, RevenueOutcomeGrid, SectionIntro } from "@/components/marketing";
 import { ScanSubmitButton } from "@/components/scan-submit-button";
+import { solutionPages } from "@/lib/marketingContent";
 
 const customerTypes = ["B2B", "B2C", "Government", "Healthcare", "Education", "Nonprofit", "Other"];
 const focusOptions = [
@@ -39,12 +40,12 @@ export default function HomePage({
               <Badge tone="green">New deal-flow channel</Badge>
             </div>
             <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">
-              Find public-sector revenue opportunities hiding in plain sight.
+              Find a new public-sector revenue channel from your company website.
             </h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-              Opportunity Scanner turns your company website into an action-ready pipeline of
-              government contracts, funded buyers, grants, policy signals, workforce programs,
-              reimbursement pathways, and public money flows.
+              Opportunity Scanner finds government contracts, funded buyers, grants, policy
+              signals, workforce programs, reimbursement pathways, and public money flows, then
+              turns them into actions your team can actually pursue.
             </p>
             <p className="mt-5 max-w-2xl text-sm leading-6 text-muted">
               Most companies treat public-sector money as too confusing, too slow, or irrelevant.
@@ -61,9 +62,9 @@ export default function HomePage({
             </div>
             <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
               {[
-                ["01", "Find where money moved"],
-                ["02", "Prioritize who to pursue"],
-                ["03", "Send the next action"]
+                ["01", "Find money and demand signals"],
+                ["02", "Choose the right revenue motion"],
+                ["03", "Route the next action"]
               ].map(([step, item]) => (
                 <div key={item} className="rounded-lg border border-line bg-white p-4 shadow-sm">
                   <p className="text-xs font-semibold text-accent">{step}</p>
@@ -222,6 +223,30 @@ export default function HomePage({
       </section>
 
       <ReportPreview />
+
+      <RevenueOutcomeGrid />
+
+      <section className="mx-auto max-w-7xl px-6 py-12">
+        <SectionIntro title="Three ways teams use Opportunity Scanner" eyebrow="Solutions">
+          <p>
+            The product is designed for companies that do not yet know public-sector revenue is a
+            practical channel. Start with a scan, then route the best rows into sales, partnerships,
+            research, or workflow.
+          </p>
+        </SectionIntro>
+        <div className="mt-6 grid gap-5 lg:grid-cols-3">
+          {solutionPages.map((solution) => (
+            <article key={solution.slug} className="rounded-lg border border-line bg-white p-5 shadow-sm">
+              <Badge tone="blue">{solution.name}</Badge>
+              <h2 className="mt-4 text-xl font-semibold leading-7 text-ink">{solution.headline}</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{solution.description}</p>
+              <a href={`/solutions/${solution.slug}`} className="mt-5 inline-flex text-sm font-semibold text-accent hover:text-[#0A6871]">
+                View solution
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="mx-auto grid max-w-7xl gap-5 px-6 py-12 md:grid-cols-3">
         {[
