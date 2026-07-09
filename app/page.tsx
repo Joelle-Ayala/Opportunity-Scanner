@@ -1,7 +1,7 @@
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { ReportPreview, RevenueOutcomeGrid, SectionIntro } from "@/components/marketing";
 import { ScanSubmitButton } from "@/components/scan-submit-button";
-import { solutionPages } from "@/lib/marketingContent";
+import { industryPages, solutionPages } from "@/lib/marketingContent";
 
 const customerTypes = ["B2B", "B2C", "Government", "Healthcare", "Education", "Nonprofit", "Other"];
 const focusOptions = [
@@ -245,6 +245,34 @@ export default function HomePage({
               </a>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="border-y border-line bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-12">
+          <SectionIntro title="Public-sector revenue can show up in markets that do not think of themselves as government vendors." eyebrow="Industries">
+            <p>
+              Opportunity Scanner is built for companies exploring public money, funded buyers,
+              agencies, partners, and policy demand as a new deal-flow channel.
+            </p>
+          </SectionIntro>
+          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {industryPages.map((industry) => (
+              <article key={industry.slug} className="rounded-lg border border-line bg-field p-5 shadow-sm">
+                <Badge tone="blue">{industry.name}</Badge>
+                <h2 className="mt-4 text-lg font-semibold leading-6 text-ink">{industry.headline}</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{industry.outcome}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {industry.revenueMotions.slice(0, 2).map((motion) => (
+                    <Badge key={motion} tone="green">{motion}</Badge>
+                  ))}
+                </div>
+                <a href={`/industries/${industry.slug}`} className="mt-5 inline-flex text-sm font-semibold text-accent hover:text-[#0A6871]">
+                  View industry path
+                </a>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
