@@ -25,6 +25,12 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
     <header className="sticky top-0 z-20 border-b border-line/80 bg-white/92 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
         <OpportunityScannerLogo />
+        <nav className="hidden items-center gap-5 text-sm font-semibold text-steel md:flex">
+          <a href="/how-it-works" className="hover:text-accent">How It Works</a>
+          <a href="/public-sector-revenue" className="hover:text-accent">Public-Sector Revenue</a>
+          <a href="/resources" className="hover:text-accent">Resources</a>
+          <a href="/pricing" className="hover:text-accent">Pricing</a>
+        </nav>
         <div className="flex items-center gap-3">{rightSlot}</div>
       </div>
     </header>

@@ -34,23 +34,30 @@ export default function HomePage({
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_500px] lg:py-14">
           <div className="self-center">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="blue">Public-sector opportunity intelligence</Badge>
-              <Badge tone="green">Workflow-ready output</Badge>
+              <Badge tone="blue">Public-sector revenue intelligence</Badge>
+              <Badge tone="green">New deal-flow channel</Badge>
             </div>
             <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">
-              Turn public-sector money movement into next-step revenue actions.
+              Find public-sector revenue opportunities hiding in plain sight.
             </h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-              Opportunity Scanner turns your company website into a source-backed opportunity
-              pipeline across funding, procurement, policy, workforce, reimbursement, and public
-              spending. Each row points to a buyer or partner target, evidence, contact path,
-              revenue motion, and next action.
+              Opportunity Scanner turns your company website into an action-ready pipeline of
+              government contracts, funded buyers, grants, policy signals, workforce programs,
+              reimbursement pathways, and public money flows.
             </p>
             <p className="mt-5 max-w-2xl text-sm leading-6 text-muted">
-              Free scan includes 2-3 sourced opportunities. Unlock the full report for the action
-              layer: buyer and partner targets, source records, CRM-ready notes, outreach angles,
-              and workflow-ready payloads.
+              Most companies treat public-sector money as too confusing, too slow, or irrelevant.
+              We show where money is already moving, who may be a buyer or partner, what is
+              available now, and what your team should do next.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#scan" className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+                Scan Your Company Website
+              </a>
+              <a href="/public-sector-revenue" className="rounded-md border border-line bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:border-accent">
+                Learn About This Channel
+              </a>
+            </div>
             <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
               {[
                 ["01", "Find where money moved"],
@@ -276,8 +283,8 @@ export default function HomePage({
           <h2 className="text-xl font-semibold text-ink">Free vs Full report</h2>
           <div className="mt-5 grid gap-3">
             {[
-              ["Free scan", "A preview with 2-3 sourced opportunities, target lanes, source summaries, and next steps."],
-              ["Full scan - $99", "The full workflow-ready pipeline: all prioritized opportunities, buyer/partner targets, source records, contact paths, CRM notes, outreach angles, workflow send, and PDF/export."]
+              ["Free scan", "A preview with 2-3 sourced opportunity signals, total signals found, target lanes, source summaries, and next steps."],
+              ["Full scan - $99", "The full action layer: all prioritized opportunities, source links, revenue motions, contact paths, CRM-ready notes, outreach drafts, workflow export, and capped contact enrichment where appropriate."]
             ].map(([title, copy]) => (
               <div key={title} className="rounded-md border border-line bg-field p-4">
                 <h3 className="font-semibold text-ink">{title}</h3>
