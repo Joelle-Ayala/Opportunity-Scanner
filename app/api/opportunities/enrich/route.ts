@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { enrichContactsWithSnov } from "@/lib/connectors/snov";
+import { ensureContactEnrichment } from "@/lib/contactEnrichment";
 import { getScan, getStoredOpportunitySignal, saveOpportunityEnrichmentRequest } from "@/lib/storage";
 import { OpportunityEnrichmentType } from "@/lib/types";
 import { hasFullReportAccess } from "@/lib/access";
@@ -37,14 +37,17 @@ export async function POST(request: Request) {
 
   if (enrichmentType === "find_contacts") {
     const signal = await getStoredOpportunitySignal(scanId, opportunityId);
-    const result = signal ? await enrichContactsWithSnov(signal) : null;
-    await saveOpportunityEnrichmentRequest({
-      scanId,
-      opportunityId,
-      enrichmentType,
-      status: result?.status === "failed" ? "failed" : "completed",
-      resultJson: result ? (result as unknown as Record<string, unknown>) : { message: "Opportunity not found." }
-    });
+    if (signal) {
+      await ensureContactEnrichment({ scanId, signal });
+    } else {
+      await saveOpportunityEnrichmentRequest({
+        scanId,
+        opportunityId,
+        enrichmentType,
+        status: "failed",
+        resultJson: { message: "Opportunity not found." }
+      });
+    }
   } else {
     await saveOpportunityEnrichmentRequest({
       scanId,

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { hasFullReportAccess } from "@/lib/access";
+import { ensureContactEnrichmentForSignals } from "@/lib/contactEnrichment";
 import {
   buildOutreachPackage,
   outreachPackageCsv,
@@ -18,6 +19,14 @@ function downloadResponse(body: string, filename: string, contentType: string): 
       "Content-Disposition": `attachment; filename="${filename}"`
     }
   });
+}
+
+function autoEnrichLimit(): number {
+  const configured = Number(process.env.OPPORTUNITY_SCANNER_AUTO_ENRICH_LIMIT ?? 5);
+  if (!Number.isFinite(configured)) {
+    return 5;
+  }
+  return Math.max(0, Math.min(10, Math.floor(configured)));
 }
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
@@ -41,6 +50,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
         opportunityActionFor(b, profile).actionability_score -
         opportunityActionFor(a, profile).actionability_score
     );
+  await ensureContactEnrichmentForSignals({
+    scanId: scan.id,
+    signals,
+    limit: autoEnrichLimit()
+  });
   const rows = await buildOutreachPackage({ scan, profile, signals });
   const format = url.searchParams.get("format") ?? "csv";
   const basename = `opportunity-outreach-package-${params.id}`;
