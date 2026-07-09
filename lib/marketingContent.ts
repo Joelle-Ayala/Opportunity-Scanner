@@ -6,11 +6,40 @@ export type ResourceArticle = {
   readTime: string;
   primaryKeyword: string;
   funnelStage: string;
+  featuredImage?: string;
+  featuredImageAlt?: string;
   intro: string;
+  keyTakeaways?: string[];
   sections: Array<{
     heading: string;
     body: string[];
   }>;
+  practicalList?: {
+    title: string;
+    items: string[];
+  };
+  proofPoints?: Array<{
+    stat: string;
+    source: string;
+    url: string;
+  }>;
+  quote?: {
+    text: string;
+    source: string;
+    url: string;
+    taggable: string;
+    approvalStatus: string;
+  };
+  socialPack?: {
+    carouselTitle: string;
+    carouselSlides: string[];
+    xThreadHook: string;
+    xThreadPosts: string[];
+    statPost: string;
+    quotePost: string;
+    featuredImagePrompt: string;
+    suggestedTags: string[];
+  };
   cta: string;
 };
 
@@ -455,7 +484,7 @@ export const industryPages: IndustryPage[] = [
   }
 ];
 
-export const resourceArticles: ResourceArticle[] = [
+const baseResourceArticles: ResourceArticle[] = [
   {
     slug: "government-spending-growth-channel",
     title: "Why Government Spending Is the Most Overlooked Growth Channel for Businesses",
@@ -996,15 +1025,477 @@ export const resourceArticles: ResourceArticle[] = [
       }
     ],
     cta: "Browse the sample reports, then run a scan for a real company to turn the example into an opportunity table."
+  },
+  {
+    slug: "healthcare-public-sector-opportunities",
+    title: "Healthcare Public-Sector Opportunities: VA, Medicaid, Rehab, DME, and Community Health Signals",
+    description:
+      "A practical guide for healthcare, rehab, DME, medical supply, and patient-support companies that want to find public-sector buyer and partner paths.",
+    category: "Industry Guides",
+    readTime: "11 min read",
+    primaryKeyword: "healthcare public sector opportunities",
+    funnelStage: "Awareness",
+    intro:
+      "Healthcare companies often assume public-sector opportunity means a complex federal bid or a grant application. In reality, the strongest path may be a funded provider, VA purchasing route, distributor, community health program, Medicaid-adjacent initiative, rehab supplier, or policy signal that points to future demand. The job is to separate real action paths from broad healthcare noise.",
+    sections: [
+      {
+        heading: "Start by separating buying paths from funding paths",
+        body: [
+          "A VA or HHS procurement record may point to an agency buyer. A community health grant may point to a funded recipient. A Medicaid or reimbursement signal may point to emerging demand rather than a near-term contact. Treating all of these as the same kind of lead creates confusion.",
+          "The first pass should classify each signal by route: sell to an agency, sell to a funded provider, work through a distributor, partner with a recipient, apply directly, or monitor a policy/reimbursement shift."
+        ]
+      },
+      {
+        heading: "Use public records to map the category, not just the buyer",
+        body: [
+          "Healthcare records often use category language that does not match a company's website. A recovery product might map to rehab, physical therapy, post-op support, DME-adjacent supplies, orthotics, prosthetics, community care, or patient support.",
+          "Opportunity Scanner is useful here because it translates commercial language into public-sector search language, then brings the evidence back as a practical opportunity row."
+        ]
+      },
+      {
+        heading: "Prioritize source-native contacts before enrichment",
+        body: [
+          "Healthcare procurement and grants records can include official contacts, ordering offices, program offices, or agency routing details. Those should be preserved before third-party enrichment is attempted.",
+          "Enrichment is more useful when the target is a distributor, vendor, nonprofit, recipient, or private healthcare organization. If the target is an agency or public program, the better first step may be source-native contact review or procurement-office routing."
+        ]
+      },
+      {
+        heading: "What a healthcare opportunity row should include",
+        body: [
+          "The row should name the target organization, source, category fit, revenue motion, estimated value when available, contact path, source link, and next best action.",
+          "For a paid report, the action layer should also include outreach angles, CRM-ready notes, source-native contacts, enrichment status, and the fallback path if no direct contact is found."
+        ]
+      }
+    ],
+    cta: "Run a scan to see whether your healthcare, rehab, DME, or medical supply company maps to public-sector buyer and partner paths."
+  },
+  {
+    slug: "creative-economy-funding-opportunities",
+    title: "Creative Economy Funding: Arts Grants, City Events, Tourism, and Parks Opportunities",
+    description:
+      "How creative, music, event, arts, and cultural organizations can turn public funding and procurement records into partner and buyer targets.",
+    category: "Industry Guides",
+    readTime: "10 min read",
+    primaryKeyword: "creative economy funding opportunities",
+    funnelStage: "Awareness",
+    intro:
+      "Creative economy companies often miss public-sector demand because it does not always look like a traditional contract. The money may appear through arts grants, city events, tourism budgets, parks programming, cultural affairs offices, school arts programs, placemaking, community revitalization, or funded nonprofits that need artists, producers, venues, technology, or programming partners.",
+    sections: [
+      {
+        heading: "The buyer is not always the funder",
+        body: [
+          "An arts agency may fund a nonprofit. A city may hire an event producer. A tourism office may support placemaking. A school program may need teaching artists. Each path implies a different outreach motion.",
+          "The useful question is: should the company apply, sell to the agency, sell to the funded recipient, partner with a recipient, or monitor the next funding cycle?"
+        ]
+      },
+      {
+        heading: "Look for revenue language inside cultural language",
+        body: [
+          "Words like activation, engagement, placemaking, performance, community programming, cultural district, tourism, youth arts, creative workforce, and parks events can all point to commercial action.",
+          "A strong scan should translate those public-sector phrases into a target list and action table instead of giving the team a long list of grants."
+        ]
+      },
+      {
+        heading: "Build partner outreach around the public objective",
+        body: [
+          "Creative economy outreach works best when it references the public objective: more attendance, local economic activity, youth programming, cultural access, tourism, downtown activation, or arts education.",
+          "The social proof should be relevant to that objective. A music talent platform should not pitch generic entertainment; it should explain how it supports funded programming, vetted talent, public-facing performance, or reliable implementation."
+        ]
+      },
+      {
+        heading: "What to track before reaching out",
+        body: [
+          "Track award amount, funder, recipient, program purpose, likely owner, contact path, deadline, partner need, and whether the source record supports immediate outreach or only market mapping.",
+          "For paid reports, each creative economy row should include custom first-touch drafts and role-specific contact paths because arts, parks, tourism, and education buyers all route differently."
+        ]
+      }
+    ],
+    cta: "Run a scan to find arts, creative economy, tourism, parks, and event opportunity signals for your company."
+  },
+  {
+    slug: "education-workforce-opportunity-signals",
+    title: "Education and Workforce Opportunity Signals for EdTech, Training, and Staffing Companies",
+    description:
+      "A practical framework for finding school, workforce board, agency, provider, and funded-recipient opportunities.",
+    category: "Industry Guides",
+    readTime: "11 min read",
+    primaryKeyword: "education workforce opportunity signals",
+    funnelStage: "Awareness",
+    intro:
+      "Education and workforce companies can find public-sector demand across school districts, state agencies, workforce boards, training providers, apprenticeship programs, educator pipelines, arts education, nonprofits, and grant-funded intermediaries. The challenge is knowing which records imply an actual next step.",
+    sections: [
+      {
+        heading: "Do not treat every education record as a lead",
+        body: [
+          "A broad education grant is not automatically relevant. A workforce award is not automatically a staffing opportunity. A school program is not automatically a vendor path.",
+          "A useful scan screens for explicit fit: hiring, staffing, training, credentialing, educator pipeline, student support, school partnerships, enrichment, workforce development, or program implementation."
+        ]
+      },
+      {
+        heading: "The strongest routes are often funded buyers and partners",
+        body: [
+          "Districts and agencies can be direct buyers, but many opportunities move through grant-funded providers, associations, workforce intermediaries, nonprofits, training organizations, or implementation partners.",
+          "That makes the funded-buyer motion important: identify who already has public money and determine whether they need software, staffing, training, outreach, curriculum, placement, or operational support."
+        ]
+      },
+      {
+        heading: "Use a role-specific contact path",
+        body: [
+          "Education opportunities may route to HR, procurement, program leadership, grants offices, workforce boards, district administrators, school partnerships, or nonprofit leadership.",
+          "The report should not default to 'find an email.' It should explain whether the next step is source-native contact review, district procurement, program-office routing, recipient outreach, or partner research."
+        ]
+      },
+      {
+        heading: "What to include in the action table",
+        body: [
+          "Each row should include target organization, source evidence, program purpose, revenue motion, actionability, contact path, next best action, and a short outreach angle tied to the public objective.",
+          "For education and workforce buyers, the outreach angle should name the problem the public money is trying to solve: shortages, access, credentialing, training capacity, student outcomes, employer pathways, or educator pipelines."
+        ]
+      }
+    ],
+    cta: "Run a scan to find education, workforce, training, school staffing, and funded-provider opportunity signals."
+  },
+  {
+    slug: "software-ai-public-sector-demand",
+    title: "Software and AI Public-Sector Demand: How to Spot Agency and Funded Buyer Signals",
+    description:
+      "How software, AI, automation, data, cybersecurity, and B2B service companies can identify public-sector demand before building a full government sales motion.",
+    category: "Industry Guides",
+    readTime: "11 min read",
+    primaryKeyword: "software AI public sector demand",
+    funnelStage: "Awareness",
+    intro:
+      "Software and AI companies often think public-sector sales starts with a procurement portal. That is one path, but demand can also appear through modernization awards, data programs, cybersecurity priorities, workforce initiatives, compliance mandates, funded implementation partners, primes, and agencies trying to improve service delivery.",
+    sections: [
+      {
+        heading: "Translate your product into public-sector jobs-to-be-done",
+        body: [
+          "A commercial software category may not appear by name in public records. An AI workflow product might map to case management, analytics, document processing, fraud detection, constituent service, compliance, training, cybersecurity, or operations modernization.",
+          "The scan needs to translate what the company does into the problems agencies and funded organizations are publicly trying to solve."
+        ]
+      },
+      {
+        heading: "Look beyond active bids",
+        body: [
+          "Active solicitations are important, but award history and funded programs can show where budgets already moved. Policy signals can show where demand may be forming. Prime contractor awards can reveal partner paths.",
+          "For many software companies, the first move is not a direct bid. It is partner research, funded-buyer outreach, agency-market mapping, or a workflow task for a revenue lead."
+        ]
+      },
+      {
+        heading: "Avoid generic AI positioning",
+        body: [
+          "Public-sector buyers rarely need a generic AI pitch. They need a credible reason the tool fits a mission, compliance requirement, workflow pain, cost pressure, service backlog, data need, or program outcome.",
+          "A strong opportunity report should tie every outreach angle back to the source record and the buyer's public objective."
+        ]
+      },
+      {
+        heading: "What paid contact enrichment should do",
+        body: [
+          "Enrichment should focus on the right target: agency office, prime contractor, implementation partner, funded recipient, IT leader, program owner, business development lead, or procurement route.",
+          "Paid users should get capped, relevant enrichment and clear fallback steps when personal contacts are not appropriate or not found."
+        ]
+      }
+    ],
+    cta: "Run a scan to see whether your software, AI, automation, or B2B service company maps to public-sector demand."
+  },
+  {
+    slug: "industry-pages-paid-report-conversion",
+    title: "How to Turn Industry Pages into Paid Report Conversion Paths",
+    description:
+      "A practical content and outbound playbook for using industry pages, sample reports, and mini-scans to convert prospects into paid Opportunity Scanner reports.",
+    category: "Public-Sector Sales",
+    readTime: "10 min read",
+    primaryKeyword: "industry pages paid report conversion",
+    funnelStage: "Decision",
+    intro:
+      "Industry pages should do more than rank for search terms. For Opportunity Scanner, each industry page should help a prospect understand the public-sector demand pattern, see a concrete sample report, run a free scan, and understand why the paid action layer is worth unlocking.",
+    sections: [
+      {
+        heading: "Use the industry page to make the invisible channel visible",
+        body: [
+          "Most prospects do not wake up searching for public-sector opportunity intelligence. They need to see how public money connects to their market: healthcare, education, arts, software, construction, clean energy, manufacturing, or community services.",
+          "The page should explain the signal types, revenue motions, contact paths, and example rows in language that fits that industry."
+        ]
+      },
+      {
+        heading: "Pair every industry page with a sample report",
+        body: [
+          "A sample report turns the concept into something concrete. It shows fictional-company context, real public-source examples, opportunity rows, source links, revenue motions, contact paths, and next best actions.",
+          "That makes outbound easier too: send the sample first, then invite the prospect to run a free scan for their own company."
+        ]
+      },
+      {
+        heading: "Make the free-to-paid unlock obvious",
+        body: [
+          "The free scan should show real value: a few sourced signals, total signal count, target lanes, and source summaries. It should also make the paid value obvious: all rows, contact paths, enrichment where appropriate, outreach drafts, CRM-ready notes, and workflow export.",
+          "The paid report is not paying for more words. It is paying for the action layer."
+        ]
+      },
+      {
+        heading: "Turn content into outbound assets",
+        body: [
+          "Each industry page should create a carousel, X thread, stat post, quote post, and founder-facing outbound note. The content should be useful even if someone never buys immediately.",
+          "That is the compounding loop: industry education creates trust, sample reports create belief, mini-scans create relevance, and paid reports create action."
+        ]
+      }
+    ],
+    cta: "Use the industry pages and sample reports to invite prospects into a free scan, then unlock the full opportunity table."
   }
 ];
 
+const resourceFeaturedImages: Record<string, { image: string; alt: string }> = {
+  "government-spending-growth-channel": {
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80",
+    alt: "Business owner reviewing public-sector revenue data and financial documents"
+  },
+  "can-my-business-sell-to-government": {
+    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1400&q=80",
+    alt: "Founder reviewing contracts and business paperwork"
+  },
+  "public-sector-opportunity-signal": {
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80",
+    alt: "Analytics dashboard showing business opportunity signals"
+  },
+  "grants-contracts-funded-buyers": {
+    image: "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=1400&q=80",
+    alt: "Team comparing funding, contract, and buyer records"
+  },
+  "find-funded-buyers-before-cold-outreach": {
+    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1400&q=80",
+    alt: "Revenue team reviewing a funded buyer target list"
+  },
+  "sam-gov-is-not-enough": {
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80",
+    alt: "Operator reviewing procurement data on a laptop"
+  },
+  "government-buyer-contact-paths": {
+    image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1400&q=80",
+    alt: "Team discussing outreach paths around a laptop"
+  },
+  "public-sector-sales-pipeline-without-govcon-team": {
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
+    alt: "Small business team planning a new sales pipeline"
+  },
+  "public-sector-deal-flow-for-commercial-companies": {
+    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1400&q=80",
+    alt: "Commercial team reviewing deal flow and revenue opportunities"
+  },
+  "what-a-public-sector-opportunity-report-should-include": {
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
+    alt: "Dashboard report with charts and action rows"
+  },
+  "infrastructure-opportunities-for-construction-companies": {
+    image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1400&q=80",
+    alt: "Construction and infrastructure team reviewing project plans"
+  },
+  "clean-energy-public-sector-opportunities": {
+    image: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=1400&q=80",
+    alt: "Clean energy facilities and public infrastructure"
+  },
+  "manufacturing-supply-chain-public-sector-demand": {
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1400&q=80",
+    alt: "Manufacturing operator reviewing production and supply-chain data"
+  },
+  "nonprofit-community-services-funding-opportunities": {
+    image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1400&q=80",
+    alt: "Community services team planning funded programs"
+  },
+  "use-sample-opportunity-reports-in-outbound": {
+    image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1400&q=80",
+    alt: "Sales team preparing an outbound report package"
+  },
+  "healthcare-public-sector-opportunities": {
+    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1400&q=80",
+    alt: "Healthcare operator reviewing patient-support and procurement data"
+  },
+  "creative-economy-funding-opportunities": {
+    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
+    alt: "Live event and creative economy team planning public programming"
+  },
+  "education-workforce-opportunity-signals": {
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80",
+    alt: "Education and workforce team reviewing program opportunities"
+  },
+  "software-ai-public-sector-demand": {
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
+    alt: "Software team reviewing analytics and workflow signals"
+  },
+  "industry-pages-paid-report-conversion": {
+    image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80",
+    alt: "Go-to-market team planning industry pages and conversion paths"
+  }
+};
+
+const sourceProofLibrary = {
+  smallBusinessContracts: {
+    stat: "AP reporting on SBA's FY2023 scorecard said federal agencies awarded $178.6B in contracts to small businesses, reaching 28.4% of eligible federal contracting dollars.",
+    source: "Associated Press reporting on SBA agency scorecards",
+    url: "https://apnews.com/article/66dcce071bcda5bb334809061a2ae35c"
+  },
+  samOpportunities: {
+    stat: "SAM.gov describes contract opportunities as procurement notices from federal contracting offices, including pre-solicitation, solicitation, award, and sole-source notices.",
+    source: "SAM.gov Contract Opportunities",
+    url: "https://sam.gov/content/opportunities"
+  },
+  grantsAgencies: {
+    stat: "Grants.gov lists federal grant-making agencies across departments such as Commerce, Education, Energy, HHS, Labor, Transportation, VA, NEA, NSF, and SBA.",
+    source: "Grants.gov Grant-Making Agencies",
+    url: "https://www.grants.gov/learn-grants/grant-making-agencies"
+  },
+  grantsSearch: {
+    stat: "Grants.gov search supports forecasted, posted, closed, and archived opportunity statuses, which is why timing and status matter in any funding workflow.",
+    source: "Grants.gov Search Grants",
+    url: "https://www.grants.gov/search-grants"
+  }
+};
+
+function proofPointsForArticle(article: ResourceArticle) {
+  if (article.category === "Government Contracts") {
+    return [sourceProofLibrary.samOpportunities, sourceProofLibrary.smallBusinessContracts, sourceProofLibrary.grantsAgencies];
+  }
+  if (article.category === "Industry Guides" || article.category === "Grants and Funding") {
+    return [sourceProofLibrary.grantsAgencies, sourceProofLibrary.samOpportunities, sourceProofLibrary.grantsSearch];
+  }
+  return [sourceProofLibrary.smallBusinessContracts, sourceProofLibrary.samOpportunities, sourceProofLibrary.grantsAgencies];
+}
+
+function quoteForArticle(article: ResourceArticle) {
+  if (article.category === "Government Contracts") {
+    return {
+      text: "Contract opportunities are procurement notices from federal contracting offices.",
+      source: "SAM.gov",
+      url: "https://sam.gov/content/opportunities",
+      taggable: "GSA / SAM.gov",
+      approvalStatus: "Public source; safe to cite, do not imply endorsement."
+    };
+  }
+  if (article.title.toLowerCase().includes("grant") || article.category === "Industry Guides") {
+    return {
+      text: "Grants.gov provides access to information about federal grant-making agencies.",
+      source: "Grants.gov",
+      url: "https://www.grants.gov/learn-grants/grant-making-agencies",
+      taggable: "Grants.gov / HHS",
+      approvalStatus: "Public source; safe to cite, do not imply endorsement."
+    };
+  }
+  return {
+    text: "Anyone may search contract opportunities without an account.",
+    source: "SAM.gov",
+    url: "https://sam.gov/content/opportunities",
+    taggable: "GSA / SAM.gov",
+    approvalStatus: "Public source; safe to cite, do not imply endorsement."
+  };
+}
+
+function practicalListForArticle(article: ResourceArticle) {
+  const isIndustry = article.category === "Industry Guides";
+  const isContact = article.category === "Contact Paths";
+
+  if (isContact) {
+    return {
+      title: "7 contact paths to check before enriching emails",
+      items: [
+        "Source-native contact in the record",
+        "Contracting or procurement office",
+        "Program office or grant manager",
+        "Funded recipient leadership",
+        "Prime contractor or vendor-relations route",
+        "Vendor registration or supplier portal",
+        "Manual research task when the source does not support a direct contact"
+      ]
+    };
+  }
+
+  if (isIndustry) {
+    return {
+      title: "8-step industry opportunity scan checklist",
+      items: [
+        "Translate the company website into public-sector search language",
+        "Separate active money from historical money-flow evidence",
+        "Identify the likely target organization or recipient",
+        "Classify the revenue motion",
+        "Check whether the source includes a native contact",
+        "Decide whether enrichment is appropriate",
+        "Write the next best action in plain English",
+        "Move qualified rows into outbound or CRM workflow"
+      ]
+    };
+  }
+
+  return {
+    title: "7 questions to turn public records into pipeline",
+    items: [
+      "What public source created the signal?",
+      "Is money available now or did money already move?",
+      "Who is the likely buyer, recipient, partner, or office?",
+      "Which revenue motion fits this record?",
+      "What contact path is appropriate?",
+      "What should a sales or partnerships lead do next?",
+      "Should the row be contacted, monitored, enriched, exported, or deferred?"
+    ]
+  };
+}
+
+function socialPackForArticle(article: ResourceArticle) {
+  const list = practicalListForArticle(article);
+  const proof = proofPointsForArticle(article)[0];
+  const quote = quoteForArticle(article);
+
+  return {
+    carouselTitle: article.title.length > 74 ? article.title.slice(0, 71) + "..." : article.title,
+    carouselSlides: [
+      article.title,
+      "Why this matters: most companies miss public-sector demand because the data is scattered.",
+      `Framework: ${list.title}`,
+      "The opportunity row: source, target, revenue motion, contact path, next action.",
+      "The paid layer: all signals, contacts where appropriate, CRM notes, outreach angles, workflow export.",
+      "CTA: run a scan from your company website."
+    ],
+    xThreadHook: `${article.title}: most teams do not need more portals. They need public records translated into action.`,
+    xThreadPosts: [
+      `1/ ${article.description}`,
+      `2/ Start with the source. Is this an active opportunity, award history, grant program, policy signal, or funded buyer?`,
+      `3/ Classify the motion: sell to agency, sell to funded buyer, partner, apply, register, monitor, or research.`,
+      `4/ Contact path matters. A personal email is not always the right first step.`,
+      `5/ ${proof.stat}`,
+      `6/ Opportunity Scanner turns the record into a row your team can act on.`
+    ],
+    statPost: `${proof.stat} The point is not just that public money exists. The point is that businesses need to turn those records into target accounts, contact paths, and next actions.`,
+    quotePost: `"${quote.text}" - ${quote.source}. That is the starting point. The business-development value comes from knowing what to do with the record.`,
+    featuredImagePrompt: `Create a polished B2B SaaS editorial image for "${article.title}" showing business operators reviewing public-sector opportunity intelligence, with subtle dashboard/table elements and no fake logos.`,
+    suggestedTags: [quote.taggable, proof.source, "Opportunity Systems"]
+  };
+}
+
+function keyTakeawaysForArticle(article: ResourceArticle) {
+  return [
+    "Public-sector records are only useful when they become a target, revenue motion, contact path, and next step.",
+    "The best opportunity is not always a direct grant or contract; funded buyers, recipients, primes, agencies, and program offices can be better first paths.",
+    "Opportunity Scanner's USP is translating public data into action rows a revenue team can actually work."
+  ];
+}
+
+export const resourceArticles: ResourceArticle[] = baseResourceArticles.map((article) => {
+  const visual = resourceFeaturedImages[article.slug] || resourceFeaturedImages["government-spending-growth-channel"];
+
+  return {
+    ...article,
+    featuredImage: article.featuredImage || visual.image,
+    featuredImageAlt: article.featuredImageAlt || visual.alt,
+    keyTakeaways: article.keyTakeaways || keyTakeawaysForArticle(article),
+    practicalList: article.practicalList || practicalListForArticle(article),
+    proofPoints: article.proofPoints || proofPointsForArticle(article),
+    quote: article.quote || quoteForArticle(article),
+    socialPack: article.socialPack || socialPackForArticle(article)
+  };
+});
+
 export const upcomingResourceIdeas = [
-  "Healthcare Public-Sector Opportunities: VA, Medicaid, Rehab, DME, and Community Health Signals",
-  "Creative Economy Funding: Arts Grants, City Events, Tourism, and Parks Opportunities",
-  "Education and Workforce Opportunity Signals for EdTech, Training, and Staffing Companies",
-  "Software and AI Public-Sector Demand: How to Spot Agency and Funded Buyer Signals",
-  "How to Turn Industry Pages into Paid Report Conversion Paths"
+  "State and Local Procurement: How to Find City, County, School, and Special District Opportunity Signals",
+  "How to Qualify Public-Sector Opportunity Rows Before Sales Outreach",
+  "What Paid Contact Enrichment Should and Should Not Do in Public-Sector Sales",
+  "How Founders Can Test Government Revenue Without Hiring a GovCon Team",
+  "Opportunity Scanner vs Grant Finders: What Actionable Public-Sector Intelligence Should Include"
 ];
 
 export function getResourceArticle(slug: string): ResourceArticle | undefined {

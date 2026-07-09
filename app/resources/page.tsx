@@ -54,20 +54,37 @@ export default function ResourcesPage() {
         </SectionIntro>
         <div className="mt-6 grid gap-5 lg:grid-cols-3">
           {resourceArticles.map((article) => (
-            <article key={article.slug} className="rounded-lg border border-line bg-white p-5 shadow-sm">
-              <div className="flex flex-wrap gap-2">
-                <Badge tone="blue">{article.category}</Badge>
-                <Badge tone="locked">{article.readTime}</Badge>
-              </div>
-              <h2 className="mt-4 text-xl font-semibold leading-7 text-ink">
-                <a href={`/resources/${article.slug}`} className="hover:text-accent">
-                  {article.title}
+            <article key={article.slug} className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
+              {article.featuredImage ? (
+                <a href={`/resources/${article.slug}`} className="block">
+                  <img
+                    src={article.featuredImage}
+                    alt={article.featuredImageAlt || article.title}
+                    className="h-44 w-full object-cover"
+                    loading="lazy"
+                  />
                 </a>
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{article.description}</p>
-              <a href={`/resources/${article.slug}`} className="mt-5 inline-flex text-sm font-semibold text-accent hover:text-[#0A6871]">
-                Read guide
-              </a>
+              ) : null}
+              <div className="p-5">
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="blue">{article.category}</Badge>
+                  <Badge tone="locked">{article.readTime}</Badge>
+                </div>
+                <h2 className="mt-4 text-xl font-semibold leading-7 text-ink">
+                  <a href={`/resources/${article.slug}`} className="hover:text-accent">
+                    {article.title}
+                  </a>
+                </h2>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{article.description}</p>
+                {article.practicalList ? (
+                  <p className="mt-4 rounded-md bg-field px-3 py-2 text-xs font-semibold leading-5 text-steel">
+                    Includes: {article.practicalList.title}
+                  </p>
+                ) : null}
+                <a href={`/resources/${article.slug}`} className="mt-5 inline-flex text-sm font-semibold text-accent hover:text-[#0A6871]">
+                  Read guide
+                </a>
+              </div>
             </article>
           ))}
         </div>
