@@ -143,61 +143,14 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
             </section>
           ) : null}
 
-          {article.quote ? (
-            <section className="mt-10 rounded-lg border border-line bg-ink p-5 text-white shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">Source-backed quote</p>
-              <blockquote className="mt-3 text-xl font-semibold leading-8">"{article.quote.text}"</blockquote>
-              <p className="mt-3 text-sm text-slate-300">
-                Source: <a href={article.quote.url} className="underline" target="_blank" rel="noreferrer">{article.quote.source}</a>
-              </p>
-              <p className="mt-2 text-xs text-slate-400">
-                Social note: {article.quote.taggable}. {article.quote.approvalStatus}
-              </p>
-            </section>
-          ) : null}
-
-          {article.socialPack ? (
+          {article.sourceNote ? (
             <section className="mt-10 rounded-lg border border-line bg-white p-5 shadow-sm">
-              <div className="flex flex-wrap gap-2">
-                <Badge tone="blue">Carousel-ready</Badge>
-                <Badge tone="green">X thread-ready</Badge>
-                <Badge tone="amber">Stat + quote post</Badge>
-              </div>
-              <h2 className="mt-4 text-xl font-semibold text-ink">Repurposing source block</h2>
-              <div className="mt-5 grid gap-5">
-                <div>
-                  <h3 className="text-sm font-semibold text-ink">Carousel angle</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{article.socialPack.carouselTitle}</p>
-                  <ol className="mt-3 grid gap-2 text-sm text-slate-700">
-                    {article.socialPack.carouselSlides.map((slide, index) => (
-                      <li key={slide} className="rounded-md bg-field px-3 py-2">
-                        {index + 1}. {slide}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-ink">X thread hook</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{article.socialPack.xThreadHook}</p>
-                </div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-md border border-line bg-field p-4">
-                    <h3 className="text-sm font-semibold text-ink">Stat post</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{article.socialPack.statPost}</p>
-                  </div>
-                  <div className="rounded-md border border-line bg-field p-4">
-                    <h3 className="text-sm font-semibold text-ink">Quote post</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{article.socialPack.quotePost}</p>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-ink">Featured image direction</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{article.socialPack.featuredImagePrompt}</p>
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted">
-                    Suggested social tags: {article.socialPack.suggestedTags.join(", ")}
-                  </p>
-                </div>
-              </div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-accent">Source note</p>
+              <h2 className="mt-3 text-xl font-semibold leading-7 text-ink">{article.sourceNote.source}</h2>
+              <p className="mt-3 text-base leading-7 text-slate-700">{article.sourceNote.text}</p>
+              <a href={article.sourceNote.url} className="mt-4 inline-flex text-sm font-semibold text-accent hover:text-[#0A6871]" target="_blank" rel="noreferrer">
+                View source
+              </a>
             </section>
           ) : null}
 

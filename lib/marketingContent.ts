@@ -23,12 +23,10 @@ export type ResourceArticle = {
     source: string;
     url: string;
   }>;
-  quote?: {
+  sourceNote?: {
     text: string;
     source: string;
     url: string;
-    taggable: string;
-    approvalStatus: string;
   };
   socialPack?: {
     carouselTitle: string;
@@ -1359,31 +1357,25 @@ function proofPointsForArticle(article: ResourceArticle) {
   return [sourceProofLibrary.smallBusinessContracts, sourceProofLibrary.samOpportunities, sourceProofLibrary.grantsAgencies];
 }
 
-function quoteForArticle(article: ResourceArticle) {
+function sourceNoteForArticle(article: ResourceArticle) {
   if (article.category === "Government Contracts") {
     return {
       text: "Contract opportunities are procurement notices from federal contracting offices.",
       source: "SAM.gov",
-      url: "https://sam.gov/content/opportunities",
-      taggable: "GSA / SAM.gov",
-      approvalStatus: "Public source; safe to cite, do not imply endorsement."
+      url: "https://sam.gov/content/opportunities"
     };
   }
   if (article.title.toLowerCase().includes("grant") || article.category === "Industry Guides") {
     return {
       text: "Grants.gov provides access to information about federal grant-making agencies.",
       source: "Grants.gov",
-      url: "https://www.grants.gov/learn-grants/grant-making-agencies",
-      taggable: "Grants.gov / HHS",
-      approvalStatus: "Public source; safe to cite, do not imply endorsement."
+      url: "https://www.grants.gov/learn-grants/grant-making-agencies"
     };
   }
   return {
     text: "Anyone may search contract opportunities without an account.",
     source: "SAM.gov",
-    url: "https://sam.gov/content/opportunities",
-    taggable: "GSA / SAM.gov",
-    approvalStatus: "Public source; safe to cite, do not imply endorsement."
+    url: "https://sam.gov/content/opportunities"
   };
 }
 
@@ -1439,7 +1431,7 @@ function practicalListForArticle(article: ResourceArticle) {
 function socialPackForArticle(article: ResourceArticle) {
   const list = practicalListForArticle(article);
   const proof = proofPointsForArticle(article)[0];
-  const quote = quoteForArticle(article);
+  const sourceNote = sourceNoteForArticle(article);
 
   return {
     carouselTitle: article.title.length > 74 ? article.title.slice(0, 71) + "..." : article.title,
@@ -1461,9 +1453,9 @@ function socialPackForArticle(article: ResourceArticle) {
       `6/ Opportunity Scanner turns the record into a row your team can act on.`
     ],
     statPost: `${proof.stat} The point is not just that public money exists. The point is that businesses need to turn those records into target accounts, contact paths, and next actions.`,
-    quotePost: `"${quote.text}" - ${quote.source}. That is the starting point. The business-development value comes from knowing what to do with the record.`,
+    quotePost: `${sourceNote.source} says: "${sourceNote.text}" The business-development value comes from knowing what to do with the record.`,
     featuredImagePrompt: `Create a polished B2B SaaS editorial image for "${article.title}" showing business operators reviewing public-sector opportunity intelligence, with subtle dashboard/table elements and no fake logos.`,
-    suggestedTags: [quote.taggable, proof.source, "Opportunity Systems"]
+    suggestedTags: [sourceNote.source, proof.source, "Opportunity Systems"]
   };
 }
 
@@ -1485,7 +1477,7 @@ export const resourceArticles: ResourceArticle[] = baseResourceArticles.map((art
     keyTakeaways: article.keyTakeaways || keyTakeawaysForArticle(article),
     practicalList: article.practicalList || practicalListForArticle(article),
     proofPoints: article.proofPoints || proofPointsForArticle(article),
-    quote: article.quote || quoteForArticle(article),
+    sourceNote: article.sourceNote || sourceNoteForArticle(article),
     socialPack: article.socialPack || socialPackForArticle(article)
   };
 });
