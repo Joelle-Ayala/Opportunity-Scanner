@@ -14,6 +14,89 @@ const focusOptions = [
   { value: "not_sure", label: "Not sure" }
 ];
 
+const visualMoments = [
+  {
+    title: "Founder sees a new channel",
+    copy: "The scan turns a normal company website into public-sector search logic, then shows where money and demand already exist.",
+    image:
+      "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    title: "Sales team gets a target list",
+    copy: "Instead of a raw research memo, each signal becomes a buyer, partner, agency, recipient, or contact path to work.",
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    title: "Ops can route the next step",
+    copy: "Rows can move into outreach, CRM, Zapier, Make, n8n, Airtable, Slack, or a founder's research workflow.",
+    image:
+      "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80"
+  }
+];
+
+function HeroSignalVisual() {
+  return (
+    <div className="overflow-hidden rounded-lg border border-line bg-ink shadow-panel">
+      <div className="relative min-h-[260px]">
+        <img
+          src="https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1200&q=80"
+          alt="Business team reviewing revenue opportunities on a laptop"
+          className="absolute inset-0 h-full w-full object-cover opacity-75"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
+        <div className="relative flex min-h-[260px] flex-col justify-end p-5 text-white">
+          <Badge tone="green">Example customer moment</Badge>
+          <h2 className="mt-3 text-xl font-semibold leading-7">
+            A founder sees public-sector demand they were not tracking.
+          </h2>
+          <p className="mt-2 max-w-md text-sm leading-6 text-slate-200">
+            The scan should feel like a revenue team opening a new channel, not reading a static AI report.
+          </p>
+        </div>
+      </div>
+      <div className="grid gap-3 border-t border-white/10 bg-ink p-4 text-sm text-white">
+        {[
+          ["Signal", "Funded buyer / active program"],
+          ["Revenue motion", "Sell to Agency or Partner"],
+          ["Next step", "Source-backed outreach task"]
+        ].map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between gap-3 rounded-md bg-white/8 px-3 py-2">
+            <span className="text-slate-300">{label}</span>
+            <span className="text-right font-semibold">{value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CustomerVisualSection() {
+  return (
+    <section className="border-y border-line bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <SectionIntro title="Built for operators who need another path to revenue, not another database to search." eyebrow="What buyers should picture">
+          <p>
+            The page should make a prospect imagine their own team finding buyer targets, funded
+            partners, public programs, and next steps they did not know to look for.
+          </p>
+        </SectionIntro>
+        <div className="mt-6 grid gap-5 lg:grid-cols-3">
+          {visualMoments.map((moment) => (
+            <article key={moment.title} className="overflow-hidden rounded-lg border border-line bg-field shadow-sm">
+              <img src={moment.image} alt="" className="h-48 w-full object-cover" loading="lazy" />
+              <div className="p-5">
+                <h3 className="text-lg font-semibold text-ink">{moment.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{moment.copy}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage({
   searchParams
 }: {
@@ -97,132 +180,147 @@ export default function HomePage({
             </div>
           </div>
 
-          <form id="scan" action="/api/scans" method="post" className="rounded-lg border border-line bg-white p-6 shadow-panel">
-            <input type="hidden" name="reportType" value="quick" />
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-ink">Run Free Opportunity Scan</h2>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-accent">2-3 sourced rows + full pipeline preview</p>
-              </div>
-              <Badge tone="amber">Beta</Badge>
-            </div>
-            <p className="mt-2 text-sm leading-6 text-muted">
-              Enter a website and work email. Add context if you want the pipeline prioritized for
-              specific buyers, partners, regions, or public-sector money flows.
-            </p>
-            {errorMessage ? (
-              <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                {errorMessage}
-              </div>
-            ) : null}
-            <div className="mt-5 grid gap-4">
-              <label className="grid gap-2">
-                <span className="text-sm font-medium text-ink">Company website URL</span>
-                <input
-                  required
-                  name="companyUrl"
-                  type="url"
-                  placeholder="https://example.com"
-                  className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-                />
-              </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-medium text-ink">Work email</span>
-                <input
-                  required
-                  name="email"
-                  type="email"
-                  placeholder="you@company.com"
-                  className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-                />
-              </label>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="grid gap-2">
-                  <span className="text-sm font-medium text-ink">Company name</span>
-                  <input
-                    name="companyName"
-                    placeholder="Optional"
-                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-                  />
-                </label>
-                <label className="grid gap-2">
-                  <span className="text-sm font-medium text-ink">Industry</span>
-                  <input
-                    name="industry"
-                    placeholder="Healthcare, education, SaaS..."
-                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-                  />
-                </label>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="grid gap-2">
-                  <span className="text-sm font-medium text-ink">Headquarters state</span>
-                  <input
-                    name="headquartersState"
-                    placeholder="MD"
-                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-                  />
-                </label>
-                <label className="grid gap-2">
-                  <span className="text-sm font-medium text-ink">Target states / regions</span>
-                  <input
-                    name="targetStates"
-                    placeholder="MD, CA, national"
-                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-                  />
-                </label>
-              </div>
-              <label className="grid gap-2">
-                <span className="text-sm font-medium text-ink">Customer type</span>
-                <select
-                  name="customerType"
-                  defaultValue=""
-                  className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-                >
-                  <option value="">Optional</option>
-                  {customerTypes.map((type) => (
-                    <option key={type}>{type}</option>
-                  ))}
-                </select>
-              </label>
-              <fieldset className="grid gap-3">
-                <legend className="text-sm font-medium text-ink">What are you looking for?</legend>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {focusOptions.map((option) => (
-                    <label
-                      key={option.value}
-                      className="flex items-center gap-2 rounded-md border border-line bg-white px-3 py-2 text-sm text-slate-700 hover:border-accent"
-                    >
-                      <input
-                        type="checkbox"
-                        name="prioritySignals"
-                        value={option.value}
-                        className="h-4 w-4 rounded border-line"
-                      />
-                      <span>{option.label}</span>
-                    </label>
-                  ))}
+          <div className="grid gap-4">
+            <form id="scan" action="/api/scans" method="post" className="rounded-lg border border-line bg-white p-5 shadow-panel">
+              <input type="hidden" name="reportType" value="quick" />
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-ink">Run Free Opportunity Scan</h2>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-accent">Start with website + email</p>
                 </div>
-              </fieldset>
-              <label className="grid gap-2">
-                <span className="text-sm font-medium text-ink">Optional context</span>
-                <textarea
-                  name="opportunityFocus"
-                  rows={3}
-                  placeholder="Example: buyer targets for city programs, workforce funding, or public event procurement"
-                  className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-                />
-              </label>
-              <ScanSubmitButton />
-              <p className="text-xs leading-5 text-muted">
-                Scans usually take under a minute while we read the website and check public-sector sources.
+                <Badge tone="amber">Beta</Badge>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-muted">
+                Get 2-3 sourced rows now. Add optional context only if you want a tighter scan.
               </p>
-            </div>
-          </form>
+              {errorMessage ? (
+                <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {errorMessage}
+                </div>
+              ) : null}
+              <div className="mt-5 grid gap-3">
+                <label className="grid gap-2">
+                  <span className="text-sm font-medium text-ink">Company website URL</span>
+                  <input
+                    required
+                    name="companyUrl"
+                    type="url"
+                    placeholder="https://example.com"
+                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-sm font-medium text-ink">Work email</span>
+                  <input
+                    required
+                    name="email"
+                    type="email"
+                    placeholder="you@company.com"
+                    className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+                  />
+                </label>
+
+                <details className="rounded-lg border border-line bg-field p-3">
+                  <summary className="cursor-pointer list-none text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
+                    Prioritize my scan with more context
+                    <span className="ml-2 text-xs font-medium text-muted">Optional</span>
+                  </summary>
+                  <div className="mt-4 grid gap-3">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <label className="grid gap-2">
+                        <span className="text-sm font-medium text-ink">Company name</span>
+                        <input
+                          name="companyName"
+                          placeholder="Optional"
+                          className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+                        />
+                      </label>
+                      <label className="grid gap-2">
+                        <span className="text-sm font-medium text-ink">Industry</span>
+                        <input
+                          name="industry"
+                          placeholder="Healthcare, education, SaaS..."
+                          className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+                        />
+                      </label>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <label className="grid gap-2">
+                        <span className="text-sm font-medium text-ink">HQ state</span>
+                        <input
+                          name="headquartersState"
+                          placeholder="MD"
+                          className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+                        />
+                      </label>
+                      <label className="grid gap-2">
+                        <span className="text-sm font-medium text-ink">Target regions</span>
+                        <input
+                          name="targetStates"
+                          placeholder="MD, CA, national"
+                          className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+                        />
+                      </label>
+                    </div>
+                    <label className="grid gap-2">
+                      <span className="text-sm font-medium text-ink">Customer type</span>
+                      <select
+                        name="customerType"
+                        defaultValue=""
+                        className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+                      >
+                        <option value="">Optional</option>
+                        {customerTypes.map((type) => (
+                          <option key={type}>{type}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <fieldset className="grid gap-3">
+                      <legend className="text-sm font-medium text-ink">What should we look for?</legend>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {focusOptions.map((option) => (
+                          <label
+                            key={option.value}
+                            className="flex items-center gap-2 rounded-md border border-line bg-white px-3 py-2 text-sm text-slate-700 hover:border-accent"
+                          >
+                            <input
+                              type="checkbox"
+                              name="prioritySignals"
+                              value={option.value}
+                              className="h-4 w-4 rounded border-line"
+                            />
+                            <span>{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <label className="grid gap-2">
+                      <span className="text-sm font-medium text-ink">Extra context</span>
+                      <textarea
+                        name="opportunityFocus"
+                        rows={3}
+                        placeholder="Example: buyer targets for city programs, workforce funding, or public event procurement"
+                        className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+                      />
+                    </label>
+                  </div>
+                </details>
+
+                <ScanSubmitButton />
+                <p className="text-xs leading-5 text-muted">
+                  Scans usually take under a minute while we read the website and check public-sector sources.
+                </p>
+              </div>
+            </form>
+
+            <HeroSignalVisual />
+          </div>
         </div>
       </section>
 
       <ReportPreview />
+
+      <CustomerVisualSection />
 
       <RevenueOutcomeGrid />
 

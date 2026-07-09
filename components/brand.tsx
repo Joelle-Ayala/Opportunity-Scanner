@@ -1,14 +1,43 @@
 import { ReactNode } from "react";
 
-const mainNavLinks = [
-  ["Product", "/"],
-  ["How It Works", "/how-it-works"],
-  ["Solutions", "/solutions"],
-  ["Industries", "/industries"],
-  ["Examples", "/examples"],
-  ["Public-Sector Revenue", "/public-sector-revenue"],
-  ["Resources", "/resources"],
-  ["Pricing", "/pricing"]
+const navGroups = [
+  {
+    label: "Product",
+    links: [
+      ["Overview", "/"],
+      ["How It Works", "/how-it-works"],
+      ["Public-Sector Revenue", "/public-sector-revenue"],
+      ["Pricing", "/pricing"]
+    ]
+  },
+  {
+    label: "Solutions",
+    links: [
+      ["All Solutions", "/solutions"],
+      ["Funded Buyer Intelligence", "/solutions/funded-buyer-intelligence"],
+      ["Sales Workflow", "/solutions/public-sector-sales-workflow"],
+      ["Contact Paths", "/solutions/contact-paths-and-enrichment"]
+    ]
+  },
+  {
+    label: "Industries",
+    links: [
+      ["All Industries", "/industries"],
+      ["Healthcare & DME", "/industries/healthcare-dme-medical-supply"],
+      ["Education & Workforce", "/industries/education-workforce-training"],
+      ["Arts & Live Events", "/industries/arts-creative-economy-live-events"],
+      ["Software & B2B Services", "/industries/software-b2b-services-ai"]
+    ]
+  },
+  {
+    label: "Resources",
+    links: [
+      ["Resources", "/resources"],
+      ["Sample Reports", "/examples"],
+      ["Government Spending Channel", "/resources/government-spending-growth-channel"],
+      ["Can My Business Sell?", "/resources/can-my-business-sell-to-government"]
+    ]
+  }
 ];
 
 export function OpportunityScannerLogo({ compact = false }: { compact?: boolean }) {
@@ -39,11 +68,20 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
           <OpportunityScannerLogo />
         </div>
 
-        <nav className="hidden flex-1 items-center justify-center gap-x-4 gap-y-2 text-sm font-semibold text-steel lg:flex">
-          {mainNavLinks.map(([label, href]) => (
-            <a key={href} href={href} className="whitespace-nowrap hover:text-accent">
-              {label}
-            </a>
+        <nav className="hidden flex-1 items-center justify-center gap-x-2 text-sm font-semibold text-steel lg:flex">
+          {navGroups.map((group) => (
+            <details key={group.label} className="group relative">
+              <summary className="list-none rounded-md px-3 py-2 hover:bg-mist hover:text-accent [&::-webkit-details-marker]:hidden">
+                {group.label}
+              </summary>
+              <div className="absolute left-0 top-10 z-30 w-72 rounded-lg border border-line bg-white p-2 shadow-lift">
+                {group.links.map(([label, href]) => (
+                  <a key={href} href={href} className="block rounded-md px-3 py-2 text-sm font-semibold text-steel hover:bg-mist hover:text-accent">
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </details>
           ))}
         </nav>
 
@@ -57,11 +95,18 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
             <summary className="list-none rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold leading-none text-ink shadow-sm hover:border-accent [&::-webkit-details-marker]:hidden">
               Menu
             </summary>
-            <nav className="absolute right-0 top-11 grid w-[min(86vw,320px)] gap-1 rounded-lg border border-line bg-white p-2 text-sm font-semibold text-steel shadow-lift">
-              {mainNavLinks.map(([label, href]) => (
-                <a key={href} href={href} className="rounded-md px-3 py-2 hover:bg-mist hover:text-accent">
-                  {label}
-                </a>
+            <nav className="absolute right-0 top-11 grid max-h-[75vh] w-[min(88vw,340px)] gap-2 overflow-y-auto rounded-lg border border-line bg-white p-3 text-sm font-semibold text-steel shadow-lift">
+              {navGroups.map((group) => (
+                <div key={group.label} className="rounded-md border border-line bg-field p-2">
+                  <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-muted">{group.label}</p>
+                  <div className="grid gap-1">
+                    {group.links.map(([label, href]) => (
+                      <a key={href} href={href} className="rounded-md bg-white px-3 py-2 hover:bg-mist hover:text-accent">
+                        {label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
               ))}
             </nav>
           </details>
