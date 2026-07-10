@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import {
   CompanyProfile,
   CompanyProfileRecord,
+  LeadMagnetCaptureRecord,
   OpportunityEnrichmentRequestRecord,
   OpportunityEnrichmentType,
   OpportunityRecord,
@@ -38,6 +39,7 @@ type LocalDb = {
   report_feedback: ReportFeedbackRecord[];
   profile_feedback: ProfileFeedbackRecord[];
   opportunity_enrichment_requests: OpportunityEnrichmentRequestRecord[];
+  lead_magnet_captures: LeadMagnetCaptureRecord[];
 };
 
 const localDbPath = path.join(process.cwd(), ".data", "local-db.json");
@@ -68,7 +70,8 @@ async function readLocalDb(): Promise<LocalDb> {
       scan_opportunities: [],
       report_feedback: [],
       profile_feedback: [],
-      opportunity_enrichment_requests: []
+      opportunity_enrichment_requests: [],
+      lead_magnet_captures: []
     };
   }
 }
@@ -82,7 +85,8 @@ function normalizeLocalDb(db: Partial<LocalDb>): LocalDb {
     scan_opportunities: db.scan_opportunities ?? [],
     report_feedback: db.report_feedback ?? [],
     profile_feedback: db.profile_feedback ?? [],
-    opportunity_enrichment_requests: db.opportunity_enrichment_requests ?? []
+    opportunity_enrichment_requests: db.opportunity_enrichment_requests ?? [],
+    lead_magnet_captures: db.lead_magnet_captures ?? []
   };
 }
 
@@ -692,4 +696,50 @@ export async function listOpportunityEnrichmentRequests(
   return db.opportunity_enrichment_requests
     .filter((item) => item.scan_id === scanId && item.opportunity_id === opportunityId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+
+export async function saveLeadMagnetCapture(input: {
+  leadMagnetSlug: string;
+  name: string;
+  email: string;
+  company?: string | null;
+  website?: string | null;
+  source?: string | null;
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
+  utmContent?: string | null;
+  utmTerm?: string | null;
+  marketingConsent: boolean;
+  consentedAt: string | null;
+}): Promise<LeadMagnetCaptureRecord> {
+  const payload = {
+    lead_magnet_slug: input.leadMagnetSlug,
+    name: input.name,
+    email: input.email,
+    company: input.company || null,
+    website: input.website || null,
+    source: input.source || null,
+    utm_source: input.utmSource || null,
+    utm_medium: input.utmMedium || null,
+    utm_campaign: input.utmCampaign || null,
+    utm_content: input.utmContent || null,
+    utm_term: input.utmTerm || null,
+    marketing_consent: input.marketingConsent,
+    consented_at: input.marketingConsent ? input.consentedAt : null
+  };
+
+  if (usesSupabase()) {
+    return supabaseInsert<LeadMagnetCaptureRecord>("lead_magnet_captures", payload);
+  }
+
+  const db = normalizeLocalDb(await readLocalDb());
+  const record: LeadMagnetCaptureRecord = {
+    id: randomUUID(),
+    ...payload,
+    created_at: new Date().toISOString()
+  };
+  db.lead_magnet_captures.push(record);
+  await writeLocalDb(db);
+  return record;
 }

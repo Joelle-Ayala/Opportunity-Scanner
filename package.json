@@ -14,7 +14,8 @@
     "test:sam": "node scripts/test-sam-connector.mjs",
     "test:apis": "node scripts/test-api-connectors.mjs",
     "test:connector-runtime": "node scripts/test-connector-runtime.mjs",
-    "test:public-connectors": "node scripts/test-public-connector-regressions.mjs"
+    "test:public-connectors": "node scripts/test-public-connector-regressions.mjs",
+    "test:lead-magnets": "node scripts/test-lead-magnet-contract.mjs"
   },
   "dependencies": {
     "@types/node": "^20.14.10",

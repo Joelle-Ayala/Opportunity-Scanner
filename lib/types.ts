@@ -341,3 +341,21 @@ export type OpportunityEnrichmentRequestRecord = {
   result_json: Record<string, unknown>;
   created_at: string;
 };
+
+export type LeadMagnetCaptureRecord = {
+  id: string;
+  lead_magnet_slug: string;
+  name: string;
+  email: string;
+  company?: string | null;
+  website?: string | null;
+  source?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
+  marketing_consent: boolean;
+  consented_at: string | null;
+  created_at: string;
+};

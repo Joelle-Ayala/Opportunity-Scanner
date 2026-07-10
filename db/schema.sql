@@ -125,6 +125,33 @@ create table if not exists opportunity_enrichment_requests (
   created_at timestamptz not null default now()
 );
 
+create table if not exists lead_magnet_captures (
+  id uuid primary key default gen_random_uuid(),
+  lead_magnet_slug text not null check (
+    lead_magnet_slug in (
+      'public-sector-revenue-opportunity-playbook-2026',
+      'healthcare-dme-public-sector-opportunity-report-2026'
+    )
+  ),
+  name text not null check (char_length(name) between 1 and 120),
+  email text not null check (char_length(email) between 3 and 254),
+  company text check (company is null or char_length(company) <= 160),
+  website text check (website is null or char_length(website) <= 500),
+  source text check (source is null or char_length(source) <= 100),
+  utm_source text check (utm_source is null or char_length(utm_source) <= 160),
+  utm_medium text check (utm_medium is null or char_length(utm_medium) <= 160),
+  utm_campaign text check (utm_campaign is null or char_length(utm_campaign) <= 160),
+  utm_content text check (utm_content is null or char_length(utm_content) <= 160),
+  utm_term text check (utm_term is null or char_length(utm_term) <= 160),
+  marketing_consent boolean not null default false,
+  consented_at timestamptz,
+  check (
+    (marketing_consent = true and consented_at is not null)
+    or (marketing_consent = false and consented_at is null)
+  ),
+  created_at timestamptz not null default now()
+);
+
 create index if not exists scans_status_idx on scans(status);
 create index if not exists company_profiles_scan_id_idx on company_profiles(scan_id);
 create index if not exists source_results_scan_id_idx on source_results(scan_id);
@@ -136,3 +163,4 @@ create index if not exists profile_feedback_company_url_idx on profile_feedback(
 create index if not exists profile_feedback_company_profile_id_idx on profile_feedback(company_profile_id);
 create index if not exists opportunity_enrichment_requests_scan_id_idx on opportunity_enrichment_requests(scan_id);
 create index if not exists opportunity_enrichment_requests_opportunity_id_idx on opportunity_enrichment_requests(opportunity_id);
+create index if not exists lead_magnet_captures_slug_created_at_idx on lead_magnet_captures(lead_magnet_slug, created_at desc);
