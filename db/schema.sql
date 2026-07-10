@@ -152,6 +152,8 @@ create table if not exists lead_magnet_captures (
   created_at timestamptz not null default now()
 );
 
+alter table lead_magnet_captures enable row level security;
+
 create index if not exists scans_status_idx on scans(status);
 create index if not exists company_profiles_scan_id_idx on company_profiles(scan_id);
 create index if not exists source_results_scan_id_idx on source_results(scan_id);

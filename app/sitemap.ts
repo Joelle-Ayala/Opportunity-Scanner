@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { leadMagnets } from "@/lib/leadMagnets";
 import { industryPages, resourceArticles, siteUrl, solutionPages } from "@/lib/marketingContent";
 import { sampleReports } from "@/lib/sampleReports";
 
@@ -9,7 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/how-it-works",
     "/industries",
     "/pricing",
+    "/privacy",
     "/resources",
+    "/guides",
     "/examples",
     "/public-sector-revenue",
     "/solutions",
@@ -28,6 +31,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.7
+    })),
+    ...leadMagnets.map((guide) => ({
+      url: `${siteUrl}/guides/${guide.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.8
     })),
     ...industryPages.map((industry) => ({
       url: `${siteUrl}/industries/${industry.slug}`,

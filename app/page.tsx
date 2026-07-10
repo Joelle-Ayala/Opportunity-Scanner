@@ -220,6 +220,11 @@ export default function HomePage({
                   />
                 </label>
 
+                <p className="text-xs leading-5 text-muted">
+                  We use your email to provide and support the requested scan. See our{" "}
+                  <a href="/privacy" className="font-semibold text-accent hover:underline">privacy notice</a>.
+                </p>
+
                 <details className="rounded-lg border border-line bg-field p-3">
                   <summary className="cursor-pointer list-none text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
                     Prioritize my scan with more context

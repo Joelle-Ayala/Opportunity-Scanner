@@ -1,13 +1,52 @@
 export const LEAD_MAGNET_CATALOG = {
   "public-sector-revenue-opportunity-playbook-2026": {
-    accessPath: "/lead-magnets/public-sector-revenue-opportunity-playbook-2026.pdf"
+    accessPath: "/lead-magnets/public-sector-revenue-opportunity-playbook-2026.pdf",
+    title: "The 2026 Public-Sector Revenue Opportunity Playbook",
+    shortTitle: "Public-Sector Revenue Playbook",
+    category: "Flagship guide",
+    description:
+      "A source-backed method for finding agencies, funded buyers, recipients, primes, partners, contact paths, and practical next actions.",
+    promise:
+      "Turn official public records into a qualified opportunity pipeline without treating every record as a bid or grant.",
+    includes: [
+      "Seven-step opportunity method",
+      "Source and status comparison",
+      "Qualification scorecard",
+      "30-day operating plan"
+    ],
+    updatedAt: "July 2026"
   },
   "healthcare-dme-public-sector-opportunity-report-2026": {
-    accessPath: "/lead-magnets/healthcare-dme-public-sector-opportunity-report-2026.pdf"
+    accessPath: "/lead-magnets/healthcare-dme-public-sector-opportunity-report-2026.pdf",
+    title: "The 2026 Healthcare and DME Public-Sector Opportunity Report",
+    shortTitle: "Healthcare and DME Opportunity Report",
+    category: "Industry report",
+    description:
+      "A practical guide to VA procurement, Medicare supplier signals, funded providers, recipients, channel partners, and source-backed next actions.",
+    promise:
+      "Separate six healthcare opportunity lanes before deciding whether to sell, partner, apply, monitor, or research.",
+    includes: [
+      "Six-lane healthcare opportunity map",
+      "Current 2026 CMS constraint",
+      "VA, HRSA, and Medicare source guide",
+      "Healthcare 30-day action plan"
+    ],
+    updatedAt: "July 2026"
   }
 } as const;
 
 export type LeadMagnetSlug = keyof typeof LEAD_MAGNET_CATALOG;
+
+export const leadMagnets = Object.entries(LEAD_MAGNET_CATALOG).map(([slug, guide]) => ({
+  slug: slug as LeadMagnetSlug,
+  ...guide
+}));
+
+export function getLeadMagnet(slug: string) {
+  return slug in LEAD_MAGNET_CATALOG
+    ? { slug: slug as LeadMagnetSlug, ...LEAD_MAGNET_CATALOG[slug as LeadMagnetSlug] }
+    : undefined;
+}
 
 export type LeadMagnetCaptureInput = {
   leadMagnetSlug: LeadMagnetSlug;

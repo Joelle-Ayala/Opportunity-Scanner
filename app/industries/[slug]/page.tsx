@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { LeadMagnetPromo } from "@/components/lead-magnet-promo";
 import { RelatedContentSection } from "@/components/resources/related-content-section";
 import { SampleReportPreview } from "@/components/sample-report";
 import { getIndustryPage, industryPages, siteUrl } from "@/lib/marketingContent";
@@ -128,6 +129,10 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
       </div>
 
       <RelatedContentSection relatedResourceSlugs={industry.relatedResourceSlugs} />
+
+      {industry.slug === "healthcare-dme-medical-supply" ? (
+        <LeadMagnetPromo slug="healthcare-dme-public-sector-opportunity-report-2026" />
+      ) : null}
 
       <CTASection title="Turn public-sector signals into a target list.">
         <p>

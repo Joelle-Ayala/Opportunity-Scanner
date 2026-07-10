@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, SectionIntro } from "@/components/marketing";
+import { leadMagnets } from "@/lib/leadMagnets";
 import { resourceArticles, upcomingResourceIdeas } from "@/lib/marketingContent";
 
 export const metadata: Metadata = {
@@ -44,6 +45,26 @@ export default function ResourcesPage() {
           procurement, policy signals, workforce programs, and public-sector sales channels.
         </p>
       </MarketingHero>
+
+      <section className="border-b border-line bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-10">
+          <SectionIntro title="Free field guides" eyebrow="Downloadable research">
+            <p>Use the flagship method or start with the healthcare and DME industry report.</p>
+          </SectionIntro>
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            {leadMagnets.map((guide) => (
+              <article key={guide.slug} className="rounded-lg border border-line bg-field p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent">{guide.category}</p>
+                <h2 className="mt-2 text-xl font-semibold leading-7 text-ink">{guide.shortTitle}</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{guide.promise}</p>
+                <a href={`/guides/${guide.slug}`} className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-accent hover:text-[#0A6871]">
+                  Get the free guide
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="mx-auto max-w-7xl px-6 py-12">
         <SectionIntro title="Featured guides" eyebrow="Start here">

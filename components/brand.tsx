@@ -33,6 +33,7 @@ const navGroups = [
     label: "Resources",
     links: [
       ["Resources", "/resources"],
+      ["Free Guides", "/guides"],
       ["Sample Reports", "/examples"],
       ["Source Coverage", "/source-coverage"],
       ["Government Spending Channel", "/resources/government-spending-growth-channel"],
@@ -135,6 +136,8 @@ export function SiteFooter() {
     ["Manufacturing", "/industries/manufacturing-supply-chain-logistics"],
     ["Nonprofits", "/industries/nonprofits-community-services-human-services"],
     ["Resources", "/resources"],
+    ["Free Guides", "/guides"],
+    ["Privacy", "/privacy"],
     ["Pricing", "/pricing"]
   ];
 

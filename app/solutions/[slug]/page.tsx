@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { LeadMagnetPromo } from "@/components/lead-magnet-promo";
 import { RelatedContentSection } from "@/components/resources/related-content-section";
 import { getSolutionPage, solutionPages, siteUrl } from "@/lib/marketingContent";
 
@@ -106,6 +107,8 @@ export default function SolutionDetailPage({ params }: PageProps) {
       <ReportPreview />
 
       <RelatedContentSection relatedResourceSlugs={solution.relatedResourceSlugs} />
+
+      <LeadMagnetPromo slug="public-sector-revenue-opportunity-playbook-2026" />
 
       <CTASection title={solution.cta}>
         <p>
