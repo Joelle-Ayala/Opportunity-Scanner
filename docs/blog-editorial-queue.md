@@ -4,11 +4,11 @@
 
 This internal queue merges the founder's 36-topic list with the 20 live resources in lib/marketingContent.ts. It removes duplicate search intent, preserves every live URL, and adds the local-business credibility topic requested for launch planning.
 
-The result is 43 canonical resources:
+The result is 57 canonical resources after adding the minimum industry and solution clusters:
 
 - 16 existing articles that already cover the intended topic.
 - 4 refreshes where a live article should absorb or sharpen a founder topic rather than create a competing URL.
-- 23 net-new articles, including the added local-business credibility article.
+- 37 net-new articles, including the local-business credibility article and 14 deduplicated cluster additions.
 
 ## Status and sequencing rules
 
@@ -98,6 +98,124 @@ Founder numbers refer to the numbered list in the founder brief. A dash means th
 | How to Prioritize Opportunity Signals: Relevance, Confidence, Novelty, and Actionability | prioritize-opportunity-signals | 33 | Net-new | Next | Define each score, explain how to avoid false precision, and show a qualitative prioritization matrix. |
 | How to Decide Whether a Public-Sector Opportunity Is Worth Pursuing | qualify-public-sector-opportunity | 34 | Net-new | Next | Give a pursuit checklist covering fit, evidence, timing, eligibility, buyer path, difficulty, and next action. |
 | How to Use Webhooks to Turn Opportunity Research Into Sales Workflow | webhooks-opportunity-research-sales-workflow | 36 | Net-new | Expansion | Teach payload planning, destinations, error handling, ownership, and follow-up without promising a native integration. |
+
+## Industry page content clusters
+
+Each live industry page owns a minimum three-post cluster. Existing and already queued topics are reused before any net-new topic is introduced. Net-new cluster additions in this section are canonical queue entries even when they do not appear in the earlier founder-topic tables.
+
+### Healthcare / DME / Medical Supply
+
+Parent page: `/industries/healthcare-dme-medical-supply`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Healthcare Public-Sector Opportunities: VA, Medicaid, Rehab, DME, and Community Health Signals (`healthcare-public-sector-opportunities`) | healthcare public-sector opportunities; understand the full opportunity map | Awareness | Shows how Opportunity Scanner separates agency procurement, funded providers, recipients, distributors, reimbursement signals, and monitor-only rows. | CMS NHE and DMEPOS guidance; VA OPAL/FSS; HRSA grants and health-center data; SAM.gov and USAspending. | Parent industry page; `/solutions/funded-buyer-intelligence`; healthcare/DME lead magnet; sample reports. | Scan a healthcare company or view the healthcare sample report. | Existing; source refresh required |
+| How DME and Medical Supply Companies Find Government Buyers and Channel Partners (`dme-medical-supply-government-buyers-channel-partners`) | DME government buyers; medical supply channel partners | Consideration | Turns product categories into VA/FSS, agency, prime, distributor, funded-provider, and recipient target lanes with distinct contact paths. | VA Schedule 65 II A and commodities schedules; SAM.gov notice types; SBA prime/subcontracting; USAspending recipient filters. | Parent industry page; healthcare pillar; `/solutions/contact-paths-and-enrichment`; healthcare/DME lead magnet. | Run a DME or medical-supply scan. | Net-new; already queued |
+| How CMS Data Reveals Healthcare, Reimbursement, and Provider Market Signals (`cms-data-healthcare-market-signals`) | CMS data for healthcare market research | Consideration | Explains when a CMS record should become Monitor Policy, provider-market research, supplier-readiness work, or a funded-buyer row instead of generic outreach. | CMS NHE; DMEPOS enrollment, quality standards, fee schedules, orders, and Federal Register notices; explicit reimbursement caveats. | Parent industry page; healthcare pillar; public-source cluster; healthcare/DME lead magnet. | Scan for healthcare policy and buyer signals. | Net-new; already queued |
+
+### Education / Workforce / Training
+
+Parent page: `/industries/education-workforce-training`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Education and Workforce Opportunity Signals for EdTech, Training, and Staffing Companies (`education-workforce-opportunity-signals`) | education workforce opportunity signals | Awareness | Maps districts, agencies, workforce boards, providers, and grant recipients into buyer and partner rows rather than a generic grants list. | Department of Education, DOL/ETA, BLS, College Scorecard, Grants.gov, USAspending, and state workforce pages. | Parent industry page; `/solutions/funded-buyer-intelligence`; SchoolGig-style sample report. | Scan an education, staffing, or training company. | Existing; package refresh required |
+| How Training Companies Find Workforce Development Funding Signals (`training-companies-workforce-funding-signals`) | workforce development funding for training companies | Consideration | Separates Direct Apply from selling to workforce boards, funded training providers, employers, intermediaries, and award recipients. | DOL/ETA grants and program pages; Apprenticeship.gov; state/local workforce boards; USAspending and Grants.gov. | Parent industry page; education/workforce pillar; funded-buyer solution. | Find funded training buyers and partner paths. | Net-new; already queued |
+| How College Scorecard Data Reveals Training and Education Opportunities (`college-scorecard-training-education-opportunities`) | use College Scorecard for education market research | Consideration | Converts institution and program evidence into account research, partner targets, and manual validation tasks while exposing the limits of outcome data. | Department of Education College Scorecard documentation/data; IPEDS/Census as needed; institution procurement and grant records for validation. | Parent industry page; education/workforce pillar; best-public-data-sources article. | Scan an education or workforce company. | Net-new; already queued |
+
+### Arts / Creative Economy / Live Events
+
+Parent page: `/industries/arts-creative-economy-live-events`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Creative Economy Funding: Arts Grants, City Events, Tourism, and Parks Opportunities (`creative-economy-funding-opportunities`) | creative economy funding opportunities | Awareness | Shows how one creative-company scan can distinguish Direct Apply, Sell to Agency, Partner with Recipient, and city-event vendor paths. | BEA Arts and Cultural Production data; NEA grant data; city parks, tourism, cultural affairs, school, and procurement sources. | Parent industry page; funded-buyer solution; Jammcard-style sample report. | Scan a creative, music, or event company. | Existing; package refresh required |
+| How City Events, Tourism, and Parks Departments Buy Creative Services (`city-events-tourism-parks-procurement`) | city event procurement; tourism and parks vendor opportunities | Consideration | Turns scattered local calendars, procurement notices, cultural plans, and prior awards into agency targets, vendor paths, and timing-aware action rows. | Official city/county procurement portals; parks, tourism, cultural affairs, and event-office pages; USAspending only where federal pass-through money is relevant. | Parent industry page; creative-economy pillar; contact-path solution; local-business credibility article. | Find city-event and public-programming buyer paths. | Net-new; cluster addition |
+| How to Find Funded Arts Organizations and Cultural Partners (`funded-arts-recipients-partner-targets`) | funded arts organizations; cultural partnership opportunities | Consideration | Uses award recipients and grantees to identify plausible partner or funded-buyer targets, then adds source evidence and a role-specific contact path. | NEA grant search; state arts agency awards; city cultural grants; IRS/nonprofit records only for validation; recipient websites. | Parent industry page; creative-economy pillar; funded-buyer solution. | Scan for funded creative buyers and partners. | Net-new; cluster addition |
+
+### Software / B2B Services / AI
+
+Parent page: `/industries/software-b2b-services-ai`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Software and AI Public-Sector Demand: How to Spot Agency and Funded Buyer Signals (`software-ai-public-sector-demand`) | software AI public-sector demand | Awareness | Shows how Opportunity Scanner translates commercial product language into agency missions, funded programs, primes, and workflow problems. | Federal IT Dashboard; SAM.gov; USAspending; agency modernization, cybersecurity, data, and service-delivery pages. | Parent industry page; public-sector sales workflow solution; software sample report. | Scan a software or B2B-services company. | Existing; package refresh required |
+| How to Translate Software Features Into Public-Sector Use Cases (`translate-software-into-public-sector-use-cases`) | sell software to government; public-sector software use cases | Consideration | Demonstrates the website-to-search translation layer: product features become mission problems, public terminology, source queries, and explainable fit evidence. | Agency strategic plans, budget justifications, Digital.gov, CISA/NIST where relevant, and procurement category documentation. | Parent industry page; website-reveals-opportunities article; public-sector-opportunity-signal article. | Scan a software website to test public-sector fit. | Net-new; cluster addition |
+| How Software Companies Find Prime Contractors and Funded Implementation Partners (`software-prime-contractor-funded-partner-opportunities`) | government prime contractor partners for software | Decision | Converts award records into prime, integrator, recipient, and partner targets with channel-specific outreach angles rather than assuming a direct agency sale. | USAspending prime/subaward data; SBA subcontracting resources; agency award pages; SAM.gov interested-vendor and notice context. | Parent industry page; funded-buyer solution; contact-path solution; funded-buyers article. | Find software primes and funded implementation partners. | Net-new; cluster addition |
+
+### Construction / Infrastructure / Engineering
+
+Parent page: `/industries/construction-infrastructure-engineering`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Infrastructure Opportunities for Construction Companies (`infrastructure-opportunities-for-construction-companies`) | infrastructure opportunities for construction companies | Awareness | Separates direct agency projects, funded recipients, prime contractors, specialty-trade, supplier, and monitor-policy paths. | DOT, FHWA, EPA, HUD, USDA, state/local capital plans, Grants.gov, SAM.gov, and USAspending. | Parent industry page; funded-buyer solution; construction sample report. | Scan a construction or engineering company. | Existing |
+| How Capital Plans and Infrastructure Grants Reveal Upcoming Projects (`capital-plans-infrastructure-grants-upcoming-projects`) | find upcoming public infrastructure projects | Consideration | Combines forward-looking capital plans and grants with prior awards so teams can distinguish demand forming from active procurement. | Official municipal capital improvement plans; DOT/FHWA grant awards; EPA/HUD/USDA infrastructure programs; procurement forecasts. | Parent industry page; Federal Register/forecast article; opportunity-signal pillar. | Find projects to monitor before the bid appears. | Net-new; cluster addition |
+| How Subcontractors and Suppliers Find Funded Primes (`construction-subcontractor-supplier-funded-primes`) | government subcontracting opportunities for construction suppliers | Decision | Uses award evidence to identify prime contractors and recipients, then routes the row to supplier, subcontractor, or partner outreach with realistic qualification tasks. | USAspending award/subaward data; SBA SUBNet and prime-contractor directories; DOT/agency subcontracting resources. | Parent industry page; funded-buyer solution; contact-path solution; funded-buyers article. | Build a source-backed prime and supplier target list. | Net-new; cluster addition |
+
+### Clean Energy / Facilities / Sustainability
+
+Parent page: `/industries/clean-energy-facilities-sustainability`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Clean Energy Public-Sector Opportunities (`clean-energy-public-sector-opportunities`) | clean energy public-sector opportunities | Awareness | Maps grants, rebates, facilities procurement, funded schools/housing authorities, recipients, and policy signals to distinct revenue motions. | DOE, EPA, Treasury, HUD, USDA, utility and state energy-office programs; SAM.gov and USAspending. | Parent industry page; funded-buyer solution; clean-energy sample report. | Scan an energy, facilities, or sustainability company. | Existing |
+| How to Find Funded Facilities-Upgrade Buyers (`funded-facilities-upgrade-buyers`) | funded facilities upgrades; energy efficiency buyers | Consideration | Turns award and program records into school, housing, municipal, nonprofit, and facility-owner targets with funding context and buyer-specific next actions. | DOE and EPA awards; HUD and school-facilities programs; USAspending recipients; local capital plans and utility incentives. | Parent industry page; funded-buyer solution; funded-buyers article. | Find funded facilities buyers. | Net-new; cluster addition |
+| How Energy Policy, Rebates, and Grants Become Implementation Demand (`energy-policy-rebates-implementation-demand`) | energy policy business opportunities; rebate implementation demand | Consideration | Separates Monitor Policy from direct apply, funded buyer, installer, consultant, software, and implementation-partner motions. | Federal Register; DOE/EPA/Treasury guidance; state energy offices; utility program rules; Grants.gov. | Parent industry page; policy-signal article; grants/contracts/funded-buyers pillar. | Scan for implementation and monitor-policy signals. | Net-new; cluster addition |
+
+### Manufacturing / Supply Chain / Logistics
+
+Parent page: `/industries/manufacturing-supply-chain-logistics`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Manufacturing and Supply Chain Public-Sector Demand (`manufacturing-supply-chain-public-sector-demand`) | manufacturing government contracts; supply-chain public-sector opportunities | Awareness | Shows how procurement, funded manufacturers, primes, workforce programs, logistics demand, and economic-development signals become separate action rows. | SAM.gov; USAspending; Commerce/NIST/EDA; DOL; DOT; state economic-development and emergency-management sources. | Parent industry page; funded-buyer solution; manufacturing sample report. | Scan a manufacturer, supplier, or logistics company. | Existing |
+| How Manufacturers Use SAM.gov and USAspending to Map Buyers (`manufacturing-usaspending-sam-buyer-map`) | use SAM.gov and USAspending for manufacturing sales | Consideration | Combines active notices with historical buyers, product/service codes, primes, recipients, and vendor-registration paths instead of returning a bid list. | SAM.gov notice and data documentation; USAspending NAICS/PSC/recipient filters; SBA contracting guidance. | Parent industry page; SAM.gov guide; USAspending guide; funded-buyer solution. | Build a source-backed manufacturing buyer map. | Net-new; cluster addition |
+| How Workforce and Economic-Development Funding Creates Industrial Demand (`workforce-economic-development-funded-manufacturers`) | manufacturing workforce grants; economic-development funded manufacturers | Consideration | Finds funded manufacturers, training providers, regional intermediaries, and capacity programs that may need equipment, logistics, training, software, or suppliers. | EDA, DOL/ETA, NIST MEP, state workforce/economic-development awards, USAspending and Grants.gov. | Parent industry page; workforce-data article; economic-development article; funded-buyer solution. | Find funded industrial buyers and partners. | Net-new; cluster addition |
+
+### Nonprofits / Community Services / Human Services
+
+Parent page: `/industries/nonprofits-community-services-human-services`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Nonprofit and Community Services Funding Opportunities (`nonprofit-community-services-funding-opportunities`) | nonprofit community-services funding opportunities | Awareness | Separates direct application from agency sales, funded-provider, recipient-partner, and monitor-policy paths. | HHS/ACF, HUD, DOL, DOJ, HRSA, Grants.gov, USAspending, and local human-services procurement. | Parent industry page; grants/contracts/funded-buyers pillar; nonprofit sample report. | Scan a nonprofit or community-services organization. | Existing |
+| How to Find Funded Nonprofits as Buyers and Partners (`find-funded-nonprofits-buyers-partners`) | funded nonprofit buyers; grant recipient partners | Consideration | Uses grant and award records to identify recipients, program purpose, likely vendor/partner needs, contact roles, and evidence-backed outreach angles. | USAspending, Grants.gov, agency award announcements, IRS Tax Exempt Organization Search for validation, recipient sites. | Parent industry page; funded-buyer solution; funded-buyers article; contact-path solution. | Find funded nonprofit buyers and partners. | Net-new; cluster addition |
+| Direct Apply, Sell, or Partner? A Human-Services Opportunity Guide (`human-services-direct-apply-sell-partner`) | human services grants vs contracts; nonprofit partnership strategy | Decision | Applies Opportunity Scanner's revenue-motion taxonomy to eligibility, funded recipients, program offices, procurement, and provider networks. | Grants.gov eligibility and notices; HHS/ACF program guidance; state/local human-services procurements; USAspending recipients. | Parent industry page; revenue-motion article; grants/contracts/funded-buyers pillar. | Scan the organization and compare the viable motions. | Net-new; cluster addition |
+
+## Solution page content clusters
+
+Each live solution page owns at least three articles tied to the problem, workflow, and conversion moment on that page.
+
+### Funded Buyer Intelligence
+
+Parent page: `/solutions/funded-buyer-intelligence`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| How to Turn Government Data Into Sales Targets Before Cold Outreach (`find-funded-buyers-before-cold-outreach`) | funded buyers; government data sales targets | Consideration | Explains how Opportunity Scanner turns public money flow into target, evidence, contact path, outreach angle, and next action. | USAspending recipients/awards; SBA subcontracting; Treasury or agency program data where relevant. | Parent solution; USAspending guide; government-spending pillar; contact-path solution. | Find funded buyers from a company website. | Existing; refresh queued |
+| How to Use USAspending.gov to Find Market Evidence (`use-usaspending-gov-market-evidence`) | USAspending market research | Consideration | Teaches the official source while showing the product layer that distinguishes buyer evidence, partner evidence, historical context, and active opportunity. | USAspending Federal Spending Guide, Advanced Search, recipient and award definitions, data disclosures. | Parent solution; funded-buyers article; best-public-data-sources article. | Turn award evidence into a buyer list. | Net-new; already queued |
+| How Sales Teams Use Public-Sector Signals as Trigger Events (`public-sector-signals-sales-trigger-events`) | public-sector sales trigger events | Decision | Converts grants, awards, notices, and policy events into prioritized account tasks with source-backed relevance instead of generic intent data. | USAspending, SAM.gov, Grants.gov, Federal Register, and official award announcements; no performance claims until measured. | Parent solution; CRM article; funded-buyers article. | Scan target accounts for source-backed triggers. | Net-new; already queued |
+
+### Public-Sector Sales Workflow
+
+Parent page: `/solutions/public-sector-sales-workflow`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| How to Build a Public-Sector Sales Pipeline Without a GovCon Team (`public-sector-sales-pipeline-without-govcon-team`) | public-sector sales pipeline | Consideration | Shows the lightweight scan-to-row-to-owner workflow before a company invests in a full capture stack. | Official source workflow examples; SBA readiness guidance; product process described without customer-result claims. | Parent solution; opportunity-signal pillar; action-table article. | Build a first public-sector pipeline. | Existing |
+| From Public-Sector Research Report to Opportunity Action Table (`what-a-public-sector-opportunity-report-should-include`) | public-sector opportunity report; action table | Consideration | Defines the exact fields that turn research into source-backed work: target, motion, contact path, score, owner, note, and next action. | Product schema and public-source examples; no fabricated rows or results. | Parent solution; funded-buyer solution; contact-path solution; sample reports. | View a sample action table or run a scan. | Existing; refresh queued |
+| How to Push Public-Sector Opportunity Signals Into Your CRM (`public-sector-opportunity-signals-crm`) | public-sector opportunities CRM workflow | Decision | Provides field mapping, evidence preservation, deduplication, ownership, and follow-up rules for webhook/CSV handoff without promising a native integration. | Current workflow payload contract; CRM field conventions; security/privacy guidance; product capability validation before publish. | Parent solution; action-table article; webhook article. | Generate workflow-ready opportunity rows. | Net-new; already queued |
+
+### Contact Paths & Enrichment
+
+Parent page: `/solutions/contact-paths-and-enrichment`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Government Buyer Contact Paths: Who Do You Actually Reach Out To? (`government-buyer-contact-paths`) | government buyer contacts; procurement contact path | Consideration | Reframes contact discovery around revenue motion and official route: source-native contact, office, portal, recipient, prime, partner, or manual research. | SAM.gov notice contacts; Grants.gov contacts; agency procurement and program offices; official vendor portals. | Parent solution; funded-buyer solution; revenue-motion article. | Get a contact path for each qualified signal. | Existing |
+| Source-Native Contacts Before Email Enrichment (`source-native-contacts-before-enrichment`) | source-native government contacts; procurement contact research | Consideration | Shows why official record contacts and office routes should be preserved before third-party enrichment and how Opportunity Scanner records fallbacks. | SAM.gov, Grants.gov, agency and local procurement documentation; source-contact use limitations. | Parent solution; government contact-path article; action-table article. | Scan for source-backed contact paths. | Net-new; cluster addition |
+| What Paid Contact Enrichment Should—and Should Not—Do in Public-Sector Sales (`paid-contact-enrichment-public-sector-sales`) | public-sector contact enrichment | Decision | Sets clear boundaries for capped enrichment: enrich private recipients, primes, partners, and vendors when appropriate; do not replace official agency or program routes. | Provider documentation before publish; privacy and suppression requirements; official source contacts; product entitlement rules. | Parent solution; source-native contact article; funded-buyer solution. | Unlock relevant contact research for qualified rows. | Net-new; cluster addition |
 
 ## Founder list reconciliation
 
