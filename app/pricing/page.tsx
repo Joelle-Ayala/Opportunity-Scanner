@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
+import { CheckoutButton } from "@/components/checkout-button";
 import { CTASection, SectionIntro } from "@/components/marketing";
+import { PricingAnalytics } from "@/components/page-analytics";
+import { getStripeServerConfig } from "@/lib/payments/config";
+
+export const dynamic = "force-dynamic";
 
 const title = "Pricing | Opportunity Scanner";
 const description =
@@ -42,15 +47,15 @@ const plans = [
     price: "$99",
     cadence: "per month",
     annual: "$990/year when billed annually",
-    summary: "Keep one company profile current with a focused weekly scan.",
+    summary: "Keep one saved company profile current with weekly opportunity monitoring.",
     badge: "2 months free annually",
     tone: "mist",
     features: [
-      "Up to 1 company profile scan per week",
-      "Weekly signal refresh and prioritization",
+      "1 saved company profile",
+      "Weekly opportunity monitoring and alerts",
       "Full action layer for every included scan",
-      "10 contact-enrichment credits per month",
-      "Exports and workflow send"
+      "CSV and Markdown exports",
+      "Workflow-ready opportunity data"
     ]
   },
   {
@@ -58,18 +63,27 @@ const plans = [
     price: "$249",
     cadence: "per month",
     annual: "$2,490/year when billed annually",
-    summary: "Build a daily opportunity pipeline across multiple profiles.",
+    summary: "Build a daily opportunity pipeline across up to three saved profiles.",
     badge: "For active pursuit",
     tone: "ink",
     features: [
-      "Up to 3 company profile scans per day",
-      "Daily signal discovery and prioritization",
+      "Up to 3 saved company profiles",
+      "Daily opportunity monitoring and alerts",
       "Full action layer for every included scan",
       "30 contact-enrichment credits per month",
-      "Exports and workflow send"
+      "CRM/webhook workflows and outreach drafts"
     ]
   }
 ] as const;
+
+function checkoutIsConfigured(): boolean {
+  try {
+    getStripeServerConfig();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const faqs = [
   {
@@ -83,9 +97,9 @@ const faqs = [
       "Annual Monitor is $990 and annual Growth is $2,490. Each is billed once per year at the cost of 10 monthly payments, giving you 12 months of access for the price of 10."
   },
   {
-    question: "What counts toward a scan limit?",
+    question: "How do profile limits work?",
     answer:
-      "A scan is one run for one company profile. Monitor includes up to one profile scan each week. Growth includes up to three profile scans each day, whether those runs refresh existing profiles or evaluate new ones."
+      "A saved profile represents one company your monitoring plan follows over time. Monitor includes one saved company profile with weekly opportunity monitoring. Growth includes up to three saved company profiles with daily monitoring."
   },
   {
     question: "Can I buy a paid plan today?",
@@ -94,9 +108,24 @@ const faqs = [
   }
 ];
 
-export default function PricingPage() {
+export default function PricingPage({
+  searchParams
+}: {
+  searchParams?: { checkout?: string; source?: string; scanId?: string };
+}) {
+  const checkoutEnabled = checkoutIsConfigured();
+  const reportScanId = searchParams?.source === "report_gate" ? searchParams.scanId : undefined;
+  const analyticsSource = searchParams?.checkout
+    ? "checkout_return"
+    : searchParams?.source === "report_gate"
+      ? "report_gate"
+      : searchParams?.source === "navigation"
+        ? "navigation"
+        : "unknown";
+
   return (
     <main className="min-h-screen bg-field">
+      <PricingAnalytics source={analyticsSource} />
       <SiteHeader
         rightSlot={
           <a
@@ -133,6 +162,7 @@ export default function PricingPage() {
           {plans.map((plan) => {
             const featured = plan.tone === "ink";
             const monitor = plan.tone === "mist";
+            const checkoutPlan = plan.name === "Report" ? "report" : plan.name === "Monitor" ? "monitor" : "growth";
 
             return (
               <article
@@ -188,23 +218,21 @@ export default function PricingPage() {
                   ))}
                 </ul>
 
-                <a
-                  href="/#scan"
-                  className={`mt-5 inline-flex w-full justify-center rounded-md px-4 py-3 text-sm font-semibold shadow-sm ${
-                    featured
-                      ? "bg-white text-ink hover:bg-mist"
-                      : "bg-accent text-white hover:bg-[#0A6871]"
-                  }`}
-                >
-                  Start With a Free Scan
-                </a>
+                <CheckoutButton
+                  plan={checkoutPlan}
+                  checkoutEnabled={checkoutEnabled}
+                  featured={featured}
+                  scanId={plan.name === "Report" ? reportScanId : undefined}
+                />
               </article>
             );
           })}
         </div>
-        <p className="mt-4 text-center text-xs leading-5 text-muted">
-          Paid self-serve checkout is coming in the revenue-rails rollout. The free scan is available now.
-        </p>
+        {!checkoutEnabled ? (
+          <p className="mt-4 text-center text-xs leading-5 text-muted">
+            Paid self-serve checkout is coming in the revenue-rails rollout. The free scan is available now.
+          </p>
+        ) : null}
       </section>
 
       <section className="border-y border-line bg-white">
@@ -236,7 +264,11 @@ export default function PricingPage() {
           {faqs.map((faq) => (
             <article key={faq.question} className="border-t border-line pt-4">
               <h3 className="text-base font-semibold text-ink">{faq.question}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{faq.answer}</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                {faq.question === "Can I buy a paid plan today?" && checkoutEnabled
+                  ? "Yes. Monitor and Growth can be purchased here through secure Stripe checkout. The $49 report can be purchased from an existing free report so access returns to the correct scan."
+                  : faq.answer}
+              </p>
             </article>
           ))}
         </div>
