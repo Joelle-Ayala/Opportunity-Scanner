@@ -7,6 +7,16 @@ import {
 
 const PLAYBOOK_SLUG = "public-sector-revenue-opportunity-playbook-2026";
 const HEALTHCARE_SLUG = "healthcare-dme-public-sector-opportunity-report-2026";
+const INDUSTRY_SLUGS = [
+  HEALTHCARE_SLUG,
+  "education-workforce-public-sector-opportunity-report-2026",
+  "creative-economy-live-events-public-sector-opportunity-report-2026",
+  "software-ai-public-sector-opportunity-report-2026",
+  "infrastructure-construction-public-sector-opportunity-report-2026",
+  "clean-energy-facilities-public-sector-opportunity-report-2026",
+  "manufacturing-supply-chain-public-sector-opportunity-report-2026",
+  "nonprofit-community-services-public-sector-opportunity-report-2026"
+];
 
 function requestWith(body, headers = {}) {
   return new Request("http://local.test/api/lead-magnets/access", {
@@ -68,8 +78,8 @@ function test(name, run) {
   tests.push({ name, run });
 }
 
-test("catalog contains exactly the two approved lead magnets and safe local paths", async () => {
-  assert.deepEqual(Object.keys(LEAD_MAGNET_CATALOG).sort(), [HEALTHCARE_SLUG, PLAYBOOK_SLUG].sort());
+test("catalog contains the flagship and one guide per industry with safe local paths", async () => {
+  assert.deepEqual(Object.keys(LEAD_MAGNET_CATALOG).sort(), [PLAYBOOK_SLUG, ...INDUSTRY_SLUGS].sort());
   for (const entry of Object.values(LEAD_MAGNET_CATALOG)) {
     assert.match(entry.accessPath, /^\/lead-magnets\/[a-z0-9-]+\.pdf$/);
     assert.doesNotMatch(entry.accessPath, /:|\/\//);
@@ -200,7 +210,7 @@ test("fails closed with a stable user-safe error when persistence fails", async 
 });
 
 test("persists normalized bounded fields before returning only the catalog access path", async () => {
-  for (const slug of [PLAYBOOK_SLUG, HEALTHCARE_SLUG]) {
+  for (const slug of [PLAYBOOK_SLUG, ...INDUSTRY_SLUGS]) {
     const state = harness();
     const response = await handleLeadMagnetAccessRequest(
       requestWith(validBody({ slug })),

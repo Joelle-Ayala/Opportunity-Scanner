@@ -19,6 +19,7 @@ from reportlab.platypus import (
     Spacer,
     Table,
     TableStyle,
+    Flowable,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,6 +37,19 @@ LINE = colors.HexColor("#D9DEE7")
 MIST = colors.HexColor("#E9F4F3")
 CREAM = colors.HexColor("#FBFAF7")
 
+def report(slug, title, subtitle, stats, lanes, path):
+    return {
+        "source": ROOT / "docs" / "lead-magnets" / f"{slug}.md",
+        "output": OUTPUT_DIR / f"{slug}.pdf",
+        "eyebrow": "OPPORTUNITY SCANNER INDUSTRY REPORT",
+        "title": title,
+        "subtitle": subtitle,
+        "stats": stats,
+        "lanes": lanes,
+        "path": path,
+    }
+
+
 DOCUMENTS = [
     {
         "source": ROOT / "docs" / "lead-magnets" / "public-sector-revenue-opportunity-playbook-2026.md",
@@ -48,6 +62,8 @@ DOCUMENTS = [
             ("~$273B", "FY2025 prime plus subcontract awards reported to small businesses"),
             ("7 steps", "From company context to an owned next action"),
         ],
+        "lanes": ["Live notices", "Award history", "Funding flows", "Recipients", "Policy signals", "Partner routes"],
+        "path": ["Read company context", "Find official evidence", "Choose revenue motion", "Name contact path", "Assign next action"],
     },
     {
         "source": ROOT / "docs" / "lead-magnets" / "healthcare-dme-public-sector-opportunity-report-2026.md",
@@ -60,8 +76,109 @@ DOCUMENTS = [
             ("2026", "Current CMS enrollment constraint clearly separated from sales paths"),
             ("30 days", "A focused operating plan for qualifying the first target list"),
         ],
+        "lanes": ["VA procurement", "CMS signals", "Funded providers", "Award recipients", "Distribution", "Policy demand"],
+        "path": ["Confirm product fit", "Separate six lanes", "Qualify buyer or partner", "Route to right office", "Run 30-day test"],
     },
+    report(
+        "education-workforce-public-sector-opportunity-report-2026",
+        "The 2026 Education, Workforce, and Training Opportunity Report",
+        "A field guide to districts, workforce boards, state agencies, funded providers, implementation partners, and training demand.",
+        [("6 lanes", "District, workforce, grant, recipient, partner, and policy routes"), ("30 days", "A practical first-market operating plan"), ("2 layers", "Direct buyers and publicly funded implementers")],
+        ["District buying", "Workforce boards", "State programs", "Grant recipients", "Training partners", "Policy demand"],
+        ["Define learner outcome", "Find funding signal", "Name implementer", "Confirm buying path", "Start focused outreach"],
+    ),
+    report(
+        "creative-economy-live-events-public-sector-opportunity-report-2026",
+        "The 2026 Creative Economy and Live Events Opportunity Report",
+        "A source-backed guide to arts agencies, tourism, parks, civic events, cultural grants, recipients, and production partners.",
+        [("6 lanes", "Agency, event, grant, recipient, tourism, and partner routes"), ("Local first", "City and regional implementation matters"), ("30 days", "A focused market-entry plan")],
+        ["Arts agencies", "Civic events", "Tourism", "Parks and venues", "Grant recipients", "Production partners"],
+        ["Define offer", "Find local signal", "Map funded organizer", "Choose role", "Build timely outreach"],
+    ),
+    report(
+        "software-ai-public-sector-opportunity-report-2026",
+        "The 2026 Software and AI Public-Sector Opportunity Report",
+        "A practical guide to acquisition signals, modernization demand, funded agencies, primes, compliance paths, and responsible AI opportunities.",
+        [("6 lanes", "Acquisition, modernization, awards, primes, grants, and policy"), ("Fit first", "Security and acquisition constraints shape the route"), ("30 days", "A qualification-led market test")],
+        ["Active acquisition", "Modernization", "Award history", "Prime partners", "Funded programs", "AI policy"],
+        ["Scope use case", "Check constraints", "Find buying evidence", "Choose direct or partner", "Run qualified pursuit"],
+    ),
+    report(
+        "infrastructure-construction-public-sector-opportunity-report-2026",
+        "The 2026 Infrastructure, Construction, and Engineering Opportunity Report",
+        "A field guide to capital plans, federal funding flows, local projects, prime contractors, subcontract routes, and pre-bid intelligence.",
+        [("6 lanes", "Capital, grant, project, prime, subcontract, and planning routes"), ("Flow down", "Funding must be traced to implementers"), ("30 days", "A geography-led pursuit plan")],
+        ["Capital plans", "Federal grants", "Local projects", "Prime awards", "Subcontracting", "Planning signals"],
+        ["Define capability", "Choose geography", "Trace money flow", "Map project actors", "Engage before bid"],
+    ),
+    report(
+        "clean-energy-facilities-public-sector-opportunity-report-2026",
+        "The 2026 Clean Energy, Facilities, and Sustainability Opportunity Report",
+        "A source-backed guide to public buildings, resilience programs, energy funding, implementation partners, contractors, and funded buyers.",
+        [("6 lanes", "Facilities, grants, recipients, projects, partners, and policy"), ("Buyer map", "Owners and implementers may differ"), ("30 days", "A focused account plan")],
+        ["Facility plans", "Energy grants", "Funded owners", "Implementation projects", "Prime partners", "Policy demand"],
+        ["Define outcome", "Find funded owner", "Identify implementer", "Check procurement route", "Start account plan"],
+    ),
+    report(
+        "manufacturing-supply-chain-public-sector-opportunity-report-2026",
+        "The 2026 Manufacturing and Supply Chain Opportunity Report",
+        "A practical guide to public procurement, industrial-base demand, award history, primes, suppliers, reshoring programs, and logistics signals.",
+        [("6 lanes", "Procurement, awards, primes, suppliers, programs, and policy"), ("Route matters", "Direct and subcontract paths differ"), ("30 days", "A capability-led pursuit plan")],
+        ["Procurement", "Award history", "Prime contractors", "Supplier gaps", "Industrial programs", "Policy demand"],
+        ["Define capability", "Match codes and buyers", "Trace prior awards", "Choose sales tier", "Open targeted pursuit"],
+    ),
+    report(
+        "nonprofit-community-services-public-sector-opportunity-report-2026",
+        "The 2026 Nonprofit and Community Services Opportunity Report",
+        "A source-backed guide to grants, cooperative agreements, contracts, subawards, intermediaries, local implementation, and policy signals.",
+        [("6 lanes", "Grant, contract, subaward, intermediary, local, and policy routes"), ("Fit first", "Mission alignment is not eligibility"), ("30 days", "A capacity-aware funding plan")],
+        ["Federal grants", "Service contracts", "Subawards", "Intermediaries", "Local programs", "Policy signals"],
+        ["Define service outcome", "Check eligibility", "Map funding chain", "Assess capacity", "Pursue best-fit route"],
+    ),
 ]
+
+
+class ProcessDiagram(Flowable):
+    def __init__(self, title: str, items: list[str], color=ACCENT):
+        super().__init__()
+        self.title = title
+        self.items = items
+        self.color = color
+        self.width = 7.2 * inch
+        self.height = 1.28 * inch
+
+    def draw(self):
+        canvas = self.canv
+        canvas.setFillColor(INK)
+        canvas.setFont("Helvetica-Bold", 10)
+        canvas.drawString(0, self.height - 12, self.title)
+        gap = 8
+        box_width = (self.width - gap * (len(self.items) - 1)) / len(self.items)
+        y = 7
+        for index, item in enumerate(self.items):
+            x = index * (box_width + gap)
+            canvas.setFillColor(MIST if index % 2 == 0 else FIELD)
+            canvas.setStrokeColor(self.color)
+            canvas.roundRect(x, y, box_width, 53, 4, fill=1, stroke=1)
+            canvas.setFillColor(self.color)
+            canvas.setFont("Helvetica-Bold", 7)
+            canvas.drawString(x + 7, y + 39, f"{index + 1:02d}")
+            canvas.setFillColor(INK)
+            text = canvas.beginText(x + 7, y + 27)
+            text.setFont("Helvetica-Bold", 7.1)
+            words, line = item.split(), ""
+            lines = []
+            for word in words:
+                candidate = f"{line} {word}".strip()
+                if canvas.stringWidth(candidate, "Helvetica-Bold", 7.1) > box_width - 14 and line:
+                    lines.append(line)
+                    line = word
+                else:
+                    line = candidate
+            lines.append(line)
+            for value in lines[:3]:
+                text.textLine(value)
+            canvas.drawText(text)
 
 
 class LeadMagnetDoc(BaseDocTemplate):
@@ -96,6 +213,8 @@ def draw_mark(canvas, x: float, y: float, size: float = 7) -> None:
 def draw_page(canvas, doc) -> None:
     page = canvas.getPageNumber()
     canvas.saveState()
+    canvas.setFillColor(colors.white)
+    canvas.rect(0, 0, letter[0], letter[1], fill=1, stroke=0)
     if page > 1:
         canvas.setStrokeColor(LINE)
         canvas.line(doc.leftMargin, letter[1] - 38, letter[0] - doc.rightMargin, letter[1] - 38)
@@ -106,7 +225,7 @@ def draw_page(canvas, doc) -> None:
         canvas.setFillColor(MUTED)
         canvas.setFont("Helvetica", 8)
         canvas.drawRightString(letter[0] - doc.rightMargin, 24, f"{page}")
-        canvas.drawString(doc.leftMargin, 24, "Source-backed opportunity intelligence | As of July 10, 2026")
+        canvas.drawString(doc.leftMargin, 24, "Source-backed opportunity intelligence | As of July 11, 2026")
     canvas.restoreState()
 
 
@@ -171,7 +290,7 @@ def inline(text: str) -> str:
         lambda m: f'<link href="{m.group(1)}" color="#0E7C86">official source</link>',
         text,
     )
-    text = re.sub(r"`([^`]+)`", r"<font name=\"Courier\">\1</font>", text)
+    text = re.sub(r"`([^`]+)`", r'<font name="Courier">\1</font>', text)
     text = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", text)
     return text
 
@@ -245,7 +364,7 @@ def cover(document: dict, style_map: dict) -> list:
         Spacer(1, 0.65 * inch),
         Paragraph("Opportunity Scanner by Opportunity Systems", style_map["h3"]),
         Paragraph(
-            "Research current as of July 10, 2026. Always recheck time-sensitive official sources before acting.",
+            "Research current as of July 11, 2026. Always recheck time-sensitive official sources before acting.",
             style_map["cover_note"],
         ),
         PageBreak(),
@@ -313,6 +432,23 @@ def parse_markdown(path: Path, style_map: dict) -> list:
 def build(document: dict) -> None:
     style_map = styles()
     story = cover(document, style_map)
+    story.extend([
+        Paragraph("The opportunity landscape", style_map["h2"]),
+        Paragraph(
+            "Use these lanes to separate records that imply different buyers, partners, timing, and next actions.",
+            style_map["body"],
+        ),
+        Spacer(1, 8),
+        ProcessDiagram("Six evidence lanes to investigate", document["lanes"]),
+        Spacer(1, 14),
+        ProcessDiagram("From signal to an owned revenue action", document["path"], SIGNAL),
+        Spacer(1, 10),
+        Paragraph(
+            "These diagrams are operating maps, not a promise that every lane is open. The report explains the evidence, constraints, and qualification checks behind each route.",
+            style_map["cover_note"],
+        ),
+        PageBreak(),
+    ])
     story.extend(parse_markdown(document["source"], style_map))
     story.extend([
         Spacer(1, 14),

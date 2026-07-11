@@ -28,7 +28,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
   const guide = getLeadMagnet(params.slug);
   if (!guide) notFound();
 
-  const isHealthcare = guide.slug === "healthcare-dme-public-sector-opportunity-report-2026";
+  const isIndustryReport = guide.category === "Industry report";
 
   return (
     <main className="min-h-screen bg-field">
@@ -43,7 +43,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       <header className="border-b border-line bg-cream">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="flex flex-wrap gap-2">
-            <Badge tone={isHealthcare ? "green" : "blue"}>{guide.category}</Badge>
+            <Badge tone={isIndustryReport ? "green" : "blue"}>{guide.category}</Badge>
             <Badge tone="locked">Research current July 2026</Badge>
           </div>
           <h1 className="mt-5 max-w-5xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">{guide.title}</h1>
@@ -67,9 +67,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           <div className="mt-10 border-y border-line py-6">
             <h2 className="text-xl font-semibold text-ink">Built from official source evidence</h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              {isHealthcare
-                ? "The report uses current CMS, VA, HRSA, SAM.gov, and federal award sources, with explicit warnings where data is preliminary, historical, or time-sensitive."
-                : "The playbook uses current SBA, SAM.gov, USAspending, Grants.gov, and Acquisition.gov guidance and keeps forecasts, awards, recipients, and active notices distinct."}
+              {guide.evidenceSummary}
             </p>
           </div>
 
@@ -87,7 +85,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           <div className="mt-6">
             <LeadMagnetForm
               slug={guide.slug}
-              buttonLabel={isHealthcare ? "Get the healthcare report" : "Get the free playbook"}
+              buttonLabel={guide.buttonLabel}
             />
           </div>
         </aside>

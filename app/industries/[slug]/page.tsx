@@ -6,6 +6,7 @@ import { LeadMagnetPromo } from "@/components/lead-magnet-promo";
 import { RelatedContentSection } from "@/components/resources/related-content-section";
 import { SampleReportPreview } from "@/components/sample-report";
 import { getIndustryPage, industryPages, siteUrl } from "@/lib/marketingContent";
+import { getLeadMagnetForIndustry } from "@/lib/leadMagnets";
 import { getSampleReportByIndustry } from "@/lib/sampleReports";
 
 export function generateStaticParams() {
@@ -39,6 +40,7 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
     notFound();
   }
   const sampleReport = getSampleReportByIndustry(industry.slug);
+  const industryGuide = getLeadMagnetForIndustry(industry.slug);
 
   return (
     <main className="min-h-screen bg-field">
@@ -130,9 +132,7 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
 
       <RelatedContentSection relatedResourceSlugs={industry.relatedResourceSlugs} />
 
-      {industry.slug === "healthcare-dme-medical-supply" ? (
-        <LeadMagnetPromo slug="healthcare-dme-public-sector-opportunity-report-2026" />
-      ) : null}
+      {industryGuide ? <LeadMagnetPromo slug={industryGuide.slug} /> : null}
 
       <CTASection title="Turn public-sector signals into a target list.">
         <p>

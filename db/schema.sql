@@ -130,7 +130,14 @@ create table if not exists lead_magnet_captures (
   lead_magnet_slug text not null check (
     lead_magnet_slug in (
       'public-sector-revenue-opportunity-playbook-2026',
-      'healthcare-dme-public-sector-opportunity-report-2026'
+      'healthcare-dme-public-sector-opportunity-report-2026',
+      'education-workforce-public-sector-opportunity-report-2026',
+      'creative-economy-live-events-public-sector-opportunity-report-2026',
+      'software-ai-public-sector-opportunity-report-2026',
+      'infrastructure-construction-public-sector-opportunity-report-2026',
+      'clean-energy-facilities-public-sector-opportunity-report-2026',
+      'manufacturing-supply-chain-public-sector-opportunity-report-2026',
+      'nonprofit-community-services-public-sector-opportunity-report-2026'
     )
   ),
   name text not null check (char_length(name) between 1 and 120),
