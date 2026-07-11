@@ -597,7 +597,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "Learn how official spending, procurement, grant, award, and forecast records reveal agencies, funded buyers, partners, and practical next actions.",
     category: "Public-Sector Sales",
-    readTime: "9 min read",
+    readTime: "6 min read",
     primaryKeyword: "government spending growth channel",
     funnelStage: "Awareness",
     intro:
@@ -874,7 +874,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "A practical way to think about public-sector fit before you build a government sales motion.",
     category: "Government Contracts",
-    readTime: "5 min read",
+    readTime: "3 min read",
     primaryKeyword: "can my business sell to government",
     funnelStage: "Awareness",
     intro:
@@ -910,7 +910,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "A simple definition of the signals Opportunity Scanner looks for across spending, grants, procurement, policy, workforce, and reimbursement data.",
     category: "Opportunity Intelligence",
-    readTime: "6 min read",
+    readTime: "3 min read",
     primaryKeyword: "public sector opportunity signal",
     funnelStage: "Awareness",
     intro:
@@ -947,7 +947,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "The best public-sector opportunity is not always a grant or bid. Learn how to separate direct apply, procurement, and funded buyer paths.",
     category: "Opportunity Intelligence",
-    readTime: "7 min read",
+    readTime: "3 min read",
     primaryKeyword: "government contracts vs grants",
     funnelStage: "Awareness",
     intro:
@@ -983,7 +983,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "Source-backed public spending signals can help sales teams identify better target accounts and write more relevant outreach.",
     category: "Funded Buyers",
-    readTime: "6 min read",
+    readTime: "3 min read",
     primaryKeyword: "funded buyers",
     funnelStage: "Consideration",
     intro:
@@ -1019,7 +1019,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "SAM.gov is important, but public-sector demand can show up before an active solicitation appears.",
     category: "Government Contracts",
-    readTime: "6 min read",
+    readTime: "2 min read",
     primaryKeyword: "SAM.gov alternative",
     funnelStage: "Consideration",
     intro:
@@ -1055,7 +1055,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "Public-sector outreach is not always about finding one email. Learn how to think about procurement, program offices, funded recipients, partners, and manual research paths.",
     category: "Contact Paths",
-    readTime: "7 min read",
+    readTime: "3 min read",
     primaryKeyword: "government buyer contacts",
     funnelStage: "Consideration",
     intro:
@@ -1089,37 +1089,171 @@ const baseResourceArticles: ResourceArticle[] = [
     slug: "public-sector-sales-pipeline-without-govcon-team",
     title: "How to Build a Public-Sector Sales Pipeline Without a GovCon Team",
     description:
-      "A practical path for companies that want to explore public-sector revenue before hiring a capture team.",
+      "A practical 30-day market test for companies that want to validate public-sector demand before hiring a capture team.",
     category: "Public-Sector Sales",
-    readTime: "7 min read",
+    readTime: "10 min read",
     primaryKeyword: "public sector sales pipeline",
     funnelStage: "Decision",
     intro:
-      "A company does not need to hire a full government contracting team before learning whether public-sector demand exists. A lightweight public-sector pipeline can start with signals, target accounts, contact paths, and disciplined next actions.",
+      "You do not need a full government contracting department to test whether public-sector demand exists. Start with a small, evidence-backed pipeline: a few qualified source records, the right revenue motion for each one, a credible contact route, and a next action your existing team can own.",
+    keyTakeaways: [
+      "Treat the first month as a channel test, not a commitment to build a GovCon department.",
+      "Keep active solicitations, historical spending, grants, funded recipients, and forecasts in separate pipeline lanes.",
+      "Do not register, enrich contacts, or chase every keyword match before fit, eligibility, timing, and route are clear.",
+      "The useful output is an Opportunity Action Table with evidence, target, motion, owner, and next action."
+    ],
     sections: [
       {
-        heading: "Start with fit, not bureaucracy",
+        heading: "Test the channel before you build the department",
         body: [
-          "The first question is whether public-sector buyers, recipients, programs, or partners show demand related to what your company already sells.",
-          "A scan can reveal whether the channel deserves more time before the team invests in registrations, certifications, capture tools, or dedicated staff."
+          "The first public-sector decision is not which registration to complete or which bid portal to buy. It is whether agencies, prime contractors, funded organizations, schools, health systems, workforce programs, or other public-sector participants show repeat demand for something your company already delivers well.",
+          "That distinction matters because a commercial company can spend weeks learning acronyms and completing profiles without proving there is a realistic market. The U.S. Small Business Administration recommends starting with market research: determine whether government buyers purchase what you sell, how much demand exists, and which organizations buy it. Historical spending and agency procurement forecasts can help answer those questions before a team commits to a pursuit.",
+          "Define the test narrowly. Choose two or three existing offers, one or two buyer problems, and a small set of industries or geographies. The goal is not to collect every government-adjacent record. The goal is to find enough credible evidence to decide whether to pursue directly, sell to an agency, sell to a funded buyer, partner with a recipient, subcontract through a prime, monitor future demand, or stop."
         ]
       },
       {
-        heading: "Build rows your sales team can use",
+        heading: "Gate 1: Check readiness before pursuing a solicitation",
         body: [
-          "Each row should include the source, target organization, opportunity type, revenue motion, contact path, next action, and CRM-ready note.",
-          "This turns public-sector research into a pipeline object instead of a long memo."
+          "A relevant keyword is not the same as a pursuable opportunity. Before assigning a seller, check whether the company can describe the offer in the buyer's terminology, deliver at the likely scale and location, support the required timeline, and meet the compliance or performance conditions visible in the source record. A company should also identify the NAICS codes that genuinely describe its work; SBA size standards vary by NAICS code, so there is no single threshold that makes every company a small business for every opportunity.",
+          "SAM.gov registration becomes necessary when a company plans to bid or apply directly as a prime awardee. Registration is free, produces the Unique Entity ID, must be renewed, and can take time to activate. That makes registration an operational dependency to plan for, not the first proof that a market exists. A business that is only researching, targeting funded recipients, or exploring subcontracting may be able to validate the lane before treating full registration as the immediate next step.",
+          "Use outside help when the requirements exceed the team's experience. SBA points businesses to APEX Accelerators for readiness assessment, registration, certification questions, and research into past opportunities. The right early adviser can prevent a team from mistaking a registration task for a sales strategy or pursuing a notice it cannot responsibly perform."
         ]
       },
       {
-        heading: "Use workflows before native integrations",
+        heading: "Gate 2: Build evidence from four official source lanes",
         body: [
-          "Early teams do not need a complex integration stack. A CSV, webhook, Zapier, Make, n8n, Airtable, Notion, Slack, or CRM-ready payload is enough to validate whether the workflow creates action.",
-          "Native CRM integrations can come later once the opportunity-to-action loop is proven."
+          "SAM.gov is the active federal procurement lane. Anyone can search contract opportunities without an account, although an account supports saved searches and followed opportunities. Notice type matters: a solicitation or combined synopsis/solicitation is different from a presolicitation, special notice, award notice, justification, or Sources Sought notice. FAR 15.201 explains that an RFI may be used for planning when the government does not presently intend to award a contract and that responses are not offers. A Sources Sought response can be a useful early-market action, but it should not be represented as a bid or guaranteed future solicitation.",
+          "USAspending.gov is the historical money-flow lane. It shows contracts, grants, loans, and other federal financial assistance, including agencies, recipients, award amounts, award types, and places of performance. This can reveal prior buyers, incumbent vendors, funded nonprofits, universities, health providers, workforce organizations, distributors, and primes. It is market evidence, not an open opportunity. An old award can justify buyer research or forecast monitoring, but it does not prove that budget is currently available.",
+          "Grants.gov is the federal funding lane. Search filters distinguish forecasted, posted, closed, and archived opportunities, and the official notice controls eligibility. A posted grant restricted to state agencies, school districts, workforce boards, universities, or nonprofits is not a Direct Apply opportunity for an ineligible commercial company. It may instead point to a future funded buyer or partner lane, but the team should wait for credible recipient evidence before describing any organization as funded.",
+          "Agency procurement forecasts are the planning lane. Acquisition.gov maintains links to agency forecasts, business-opportunity pages, small-business offices, and vendor communication plans. Forecasts can reveal anticipated demand before a solicitation is posted, but they remain planning signals. Keep the expected quarter, office, category, and procurement method visible, and route the row to research or monitoring until an official active notice creates a different action."
+        ]
+      },
+      {
+        heading: "Gate 3: Turn source records into qualified action rows",
+        body: [
+          "A public-sector pipeline should not be a bookmark folder. Each retained record needs an official source URL, source and retrieval dates, target organization, evidence summary, status, revenue motion, fit assessment, eligibility assessment, contact route, next action, owner, due date when one exists, and a clear disqualifier. That structure allows an existing sales or partnerships team to work the pipeline without learning every portal first.",
+          "Use a small set of revenue motions consistently. Direct Apply means the company is plausibly eligible to submit. Sell to Agency means the agency or public entity is the likely buyer. Sell to Funded Buyer or Sell to Award Recipient means a named recipient may need vendors or implementation support. Partner with Recipient covers a credible complementary role. Channel or Distributor Motion is appropriate when a funded prime, distributor, or implementation partner is the practical route. Monitor Policy and Research Only keep early or incomplete evidence visible without inflating the active pipeline.",
+          "Qualification should remove more rows than it promotes. Reject weak keyword matches, expired records with no continuing market value, grants where the company is ineligible and no recipient path exists, requirements materially outside the offer, unrealistic deadlines, and records with no credible buyer, partner, registration, response, or monitoring route. A truthful zero-match result is more useful than a long table of false positives."
+        ]
+      },
+      {
+        heading: "Choose the contact route that matches the signal",
+        body: [
+          "The correct next person is not always a named buyer with an enriched email. For an active SAM.gov notice, start with the source-native point of contact and the response instructions. After a solicitation is released, FAR 15.201 identifies the contracting officer as the focal point for exchanges with potential offerors. Do not use informal outreach to work around the official process or seek nonpublic source-selection information.",
+          "Earlier in the market cycle, an agency small-business office, program office, forecast owner, vendor-registration page, industry day, or APEX adviser may be the better route. SBA recommends researching forecasts and historical awards before approaching an Office of Small and Disadvantaged Business Utilization or Office of Small Business Programs. That preparation lets the team ask a specific capability and timing question instead of sending a generic introduction.",
+          "For a funded commercial or nonprofit recipient, the route may be a program leader, partnerships owner, procurement contact, operations leader, or prime-contractor relationship. Verify the organization and its role before using paid enrichment. Public agencies should generally remain routed to official offices, portals, and source contacts rather than indiscriminate personal-email discovery."
+        ]
+      },
+      {
+        heading: "Run a 30-day public-sector pipeline test",
+        body: [
+          "In week one, translate the company's offers into buyer problems, mission language, likely NAICS codes, product or service terms, and obvious exclusions. Decide what would count as a strong signal before searching: a current notice with fit and time to respond, repeated historical spending by a relevant agency, a forecast tied to the offer, or a funded organization with a credible vendor or partner need.",
+          "In week two, collect a deliberately small evidence set across SAM.gov, USAspending, Grants.gov, and selected agency forecasts. Preserve official links and source dates. Do not merge the lanes into one generic opportunity list. Five well-explained records are enough to test classification, while fifty weak matches usually hide the decisions the team needs to make.",
+          "In week three, qualify each row and assign one owner and one next action. That action might be reviewing attachments, responding to a Sources Sought notice, confirming eligibility, checking an agency forecast, mapping an incumbent prime, researching a recipient, registering in a vendor portal, requesting APEX guidance, or scheduling a future monitoring date. Use a CSV, webhook, task list, or existing CRM before investing in a complex native integration.",
+          "In week four, review what the evidence says. Continue when relevant demand repeats, the company can perform, and at least one practical route survives qualification. Narrow the segment when only one buyer type or motion appears credible. Partner or subcontract when direct prime pursuit is unrealistic. Pause when timing or readiness is the main blocker. Stop when the evidence repeatedly fails fit, eligibility, capacity, or route."
+        ]
+      },
+      {
+        heading: "Three examples of evidence becoming action",
+        body: [
+          "A software company may find repeated USAspending awards for a relevant service. The initial row should be Research Only or Sell to Agency, with the agency, incumbent, award history, office, and a next step to check forecasts or active notices. Historical spending alone does not mean a new purchase is available, and no meeting or revenue outcome should be assumed.",
+          "A training company may find a posted workforce grant limited to workforce boards or nonprofits. If the company is not eligible, the row should not say Direct Apply. It can become Partner with Recipient research, with a task to monitor official awards and assess a complementary delivery role only after a recipient is credibly identified.",
+          "An equipment or services company may find a matching SAM.gov Sources Sought notice. The row should preserve the notice type, agency, response instructions, NAICS code, deadline, and contracting contact. The next action may be a capability response, but the record should not be called a contract or solicitation, and responding does not imply an award will follow."
+        ]
+      },
+      {
+        heading: "Know when to invest further and when to stop",
+        body: [
+          "A successful test does not require an immediate contract. It requires enough credible evidence to make the next investment rational: complete registration, focus on a specific agency or funded-buyer segment, build a partner route, prepare for a forecasted procurement, or establish a repeatable monitoring and qualification cadence.",
+          "Do not scale the effort because the source list is long. Scale when the same buyer problems appear across official records, the team can meet the likely requirements, and the action table produces work that owners actually complete. Opportunity Scanner can accelerate the source-to-action translation, but it does not guarantee eligibility, access, solicitations, responses, meetings, or awards."
         ]
       }
     ],
-    cta: "Start with a free scan and turn the best rows into a public-sector sales workflow."
+    practicalList: {
+      title: "30-day pipeline test checklist",
+      items: [
+        "Choose two or three existing commercial offers to test.",
+        "Translate each offer into buyer problems, mission terms, likely NAICS codes, and search phrases.",
+        "Verify small-business status separately for each relevant NAICS code.",
+        "Search SAM.gov without treating every notice type as a solicitation.",
+        "Record notice status, response date, office, set-aside, NAICS code, attachments, and official contact.",
+        "Use USAspending to test historical agency and recipient demand while keeping awards separate from active opportunities.",
+        "Check Grants.gov eligibility before assigning a Direct Apply motion.",
+        "Treat ineligible grant records as recipient or partner research only when a credible downstream route exists.",
+        "Review agency forecasts and small-business-office routes for earlier demand.",
+        "Assign one revenue motion, one owner, and one next action to every retained row.",
+        "Preserve the official source URL and retrieval date.",
+        "Reject weak fit, failed eligibility, expired timing, unrealistic performance, and records with no credible route.",
+        "Plan SAM.gov registration when direct federal bidding or application becomes an actual motion.",
+        "Use APEX or an appropriate adviser when requirements exceed the team's expertise.",
+        "Move qualified rows through a simple CSV, webhook, task list, or existing CRM before buying a complex stack.",
+        "After 30 days, decide whether to invest, narrow, partner, subcontract, monitor, pause, or stop."
+      ]
+    },
+    proofPoints: [
+      {
+        stat: "SBA recommends assessing whether the government buys what a business sells, the size of that market, and the agencies that buy it before pursuing contracts.",
+        source: "U.S. Small Business Administration - Assess your business",
+        url: "https://www.sba.gov/federal-contracting/contracting-guide/assess-your-business"
+      },
+      {
+        stat: "SAM.gov registration is free, assigns a Unique Entity ID, requires renewal, and can take time to activate.",
+        source: "SAM.gov - Entity registration",
+        url: "https://sam.gov/entity-registration"
+      },
+      {
+        stat: "Anyone can search SAM.gov contract opportunities without an account; notice types and official response instructions determine the appropriate action.",
+        source: "SAM.gov - Contract opportunities",
+        url: "https://sam.gov/opportunities"
+      },
+      {
+        stat: "RFIs may support acquisition planning when the government does not presently intend to award a contract, and responses are not offers.",
+        source: "Federal Acquisition Regulation 15.201",
+        url: "https://www.acquisition.gov/far/15.201"
+      },
+      {
+        stat: "USAspending is the official source for federal spending data across contracts, grants, loans, and other financial assistance.",
+        source: "USAspending.gov - About the data",
+        url: "https://www.usaspending.gov/about"
+      },
+      {
+        stat: "Grants.gov distinguishes forecasted, posted, closed, and archived opportunities; the official notice and instructions control eligibility.",
+        source: "Grants.gov - Search Grants",
+        url: "https://www.grants.gov/help/search-grants/search-grants-tab"
+      },
+      {
+        stat: "Acquisition.gov maintains official links to agency procurement forecasts, business-opportunity pages, small-business offices, and vendor communication plans.",
+        source: "Acquisition.gov - Procurement forecasts",
+        url: "https://www.acquisition.gov/procurement-forecasts"
+      },
+      {
+        stat: "APEX Accelerators provide assistance with federal contracting readiness, registration, certifications, and past-opportunity research.",
+        source: "U.S. Small Business Administration - Federal contracting assistance",
+        url: "https://www.sba.gov/local-assistance/federal-contracting-assistance"
+      }
+    ],
+    chartAssets: [
+      {
+        title: "From official source to owned sales action",
+        chartType: "flow",
+        takeaway: "Different source records create different revenue motions. Qualification and routing must happen before a record becomes pipeline.",
+        source: "Opportunity Scanner framework using official SAM.gov, USAspending.gov, Grants.gov, and acquisition forecast lanes",
+        altText: "Flow diagram showing official public-sector sources moving through qualification into an Opportunity Action Table and owned next actions",
+        status: "published",
+        image: {
+          src: "/resources/public-sector-pipeline-source-to-action.svg",
+          width: 1200,
+          height: 675,
+          caption: "Illustrative workflow; it does not represent measured conversion results."
+        }
+      }
+    ],
+    sourceNote: {
+      text: "Official sources provide evidence and process rules; they do not guarantee eligibility, active demand, access, or an award.",
+      source: "SBA, SAM.gov, USAspending.gov, Grants.gov, and Acquisition.gov",
+      url: "https://www.sba.gov/federal-contracting/contracting-guide/assess-your-business"
+    },
+    cta: "Run a free scan to turn your company website and official public-sector records into a small, evidence-backed Opportunity Action Table."
   },
   {
     slug: "public-sector-deal-flow-for-commercial-companies",
@@ -1127,7 +1261,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "How businesses outside traditional government contracting can use public money signals to find new buyers, partners, and sales motions.",
     category: "Public-Sector Sales",
-    readTime: "6 min read",
+    readTime: "2 min read",
     primaryKeyword: "public sector deal flow",
     funnelStage: "Awareness",
     intro:
@@ -1163,7 +1297,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "A useful report should go beyond source summaries and give your team target organizations, revenue motions, contact paths, and next actions.",
     category: "Opportunity Intelligence",
-    readTime: "7 min read",
+    readTime: "2 min read",
     primaryKeyword: "public sector opportunity report",
     funnelStage: "Consideration",
     intro:
@@ -1199,7 +1333,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "How construction, engineering, specialty trade, and infrastructure firms can use public spending signals to find projects, primes, and buyer paths.",
     category: "Industry Guides",
-    readTime: "7 min read",
+    readTime: "2 min read",
     primaryKeyword: "infrastructure opportunities for construction companies",
     funnelStage: "Awareness",
     intro:
@@ -1235,7 +1369,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "How energy, facilities, climate, and sustainability companies can find public-sector demand through grants, procurement, rebates, and funded buyers.",
     category: "Industry Guides",
-    readTime: "7 min read",
+    readTime: "2 min read",
     primaryKeyword: "clean energy public sector opportunities",
     funnelStage: "Awareness",
     intro:
@@ -1271,7 +1405,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "How manufacturers, suppliers, logistics providers, and industrial service companies can use public records to find funded buyers and procurement paths.",
     category: "Industry Guides",
-    readTime: "7 min read",
+    readTime: "2 min read",
     primaryKeyword: "manufacturing government contracts",
     funnelStage: "Awareness",
     intro:
@@ -1307,7 +1441,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "How nonprofits, service providers, and companies selling into human services can track grants, funded recipients, agencies, and partner paths.",
     category: "Industry Guides",
-    readTime: "7 min read",
+    readTime: "2 min read",
     primaryKeyword: "nonprofit community services funding opportunities",
     funnelStage: "Awareness",
     intro:
@@ -1343,7 +1477,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "A practical outbound motion: show a prospect an industry example, run a free mini-scan, then invite them to unlock the full opportunity table.",
     category: "Public-Sector Sales",
-    readTime: "6 min read",
+    readTime: "2 min read",
     primaryKeyword: "sample opportunity reports",
     funnelStage: "Decision",
     intro:
@@ -1379,7 +1513,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "A practical guide for healthcare, rehab, DME, medical supply, and patient-support companies that want to find public-sector buyer and partner paths.",
     category: "Industry Guides",
-    readTime: "11 min read",
+    readTime: "3 min read",
     primaryKeyword: "healthcare public sector opportunities",
     funnelStage: "Awareness",
     intro:
@@ -1422,7 +1556,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "How creative, music, event, arts, and cultural organizations can turn public funding and procurement records into partner and buyer targets.",
     category: "Industry Guides",
-    readTime: "10 min read",
+    readTime: "3 min read",
     primaryKeyword: "creative economy funding opportunities",
     funnelStage: "Awareness",
     intro:
@@ -1465,7 +1599,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "A practical framework for finding school, workforce board, agency, provider, and funded-recipient opportunities.",
     category: "Industry Guides",
-    readTime: "11 min read",
+    readTime: "3 min read",
     primaryKeyword: "education workforce opportunity signals",
     funnelStage: "Awareness",
     intro:
@@ -1508,7 +1642,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "How software, AI, automation, data, cybersecurity, and B2B service companies can identify public-sector demand before building a full government sales motion.",
     category: "Industry Guides",
-    readTime: "11 min read",
+    readTime: "3 min read",
     primaryKeyword: "software AI public sector demand",
     funnelStage: "Awareness",
     intro:
@@ -1551,7 +1685,7 @@ const baseResourceArticles: ResourceArticle[] = [
     description:
       "A practical content and outbound playbook for using industry pages, sample reports, and mini-scans to convert prospects into paid Opportunity Scanner reports.",
     category: "Public-Sector Sales",
-    readTime: "10 min read",
+    readTime: "3 min read",
     primaryKeyword: "industry pages paid report conversion",
     funnelStage: "Decision",
     intro:

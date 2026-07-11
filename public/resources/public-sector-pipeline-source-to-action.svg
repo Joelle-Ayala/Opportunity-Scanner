@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">From official source to owned sales action</title>
+  <desc id="desc">Four public-sector source lanes move through qualification into an Opportunity Action Table and an owned next action.</desc>
+  <rect width="1200" height="675" fill="#F4F7F6"/>
+  <text x="70" y="78" fill="#14213D" font-family="Arial, sans-serif" font-size="34" font-weight="700">From official source to owned sales action</text>
+  <text x="70" y="116" fill="#52606D" font-family="Arial, sans-serif" font-size="20">A source record becomes pipeline only after fit, status, eligibility, and route are clear.</text>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="70" y="170" width="230" height="92" rx="8" fill="#FFFFFF" stroke="#0E7C86" stroke-width="3"/>
+    <circle cx="101" cy="201" r="10" fill="#0E7C86"/>
+    <text x="122" y="208" fill="#14213D" font-size="24" font-weight="700">SAM.gov</text>
+    <text x="101" y="238" fill="#52606D" font-size="17">Active procurement notices</text>
+
+    <rect x="70" y="282" width="230" height="92" rx="8" fill="#FFFFFF" stroke="#2E9D70" stroke-width="3"/>
+    <circle cx="101" cy="313" r="10" fill="#2E9D70"/>
+    <text x="122" y="320" fill="#14213D" font-size="24" font-weight="700">USAspending</text>
+    <text x="101" y="350" fill="#52606D" font-size="17">Historical money flow</text>
+
+    <rect x="70" y="394" width="230" height="92" rx="8" fill="#FFFFFF" stroke="#C7861D" stroke-width="3"/>
+    <circle cx="101" cy="425" r="10" fill="#C7861D"/>
+    <text x="122" y="432" fill="#14213D" font-size="24" font-weight="700">Grants.gov</text>
+    <text x="101" y="462" fill="#52606D" font-size="17">Funding and eligibility</text>
+
+    <rect x="70" y="506" width="230" height="92" rx="8" fill="#FFFFFF" stroke="#D95D39" stroke-width="3"/>
+    <circle cx="101" cy="537" r="10" fill="#D95D39"/>
+    <text x="122" y="544" fill="#14213D" font-size="24" font-weight="700">Forecasts</text>
+    <text x="101" y="574" fill="#52606D" font-size="17">Planned agency demand</text>
+
+    <path d="M325 216H415M325 328H415M325 440H415M325 552H415" stroke="#8795A1" stroke-width="4" stroke-linecap="round"/>
+    <path d="m403 204 16 12-16 12M403 316l16 12-16 12M403 428l16 12-16 12M403 540l16 12-16 12" fill="none" stroke="#8795A1" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="435" y="244" width="300" height="280" rx="10" fill="#14213D"/>
+    <text x="475" y="294" fill="#FFFFFF" font-size="27" font-weight="700">Qualification gate</text>
+    <line x1="475" y1="315" x2="695" y2="315" stroke="#52717B" stroke-width="2"/>
+    <text x="475" y="358" fill="#E9F4F3" font-size="21">Fit and capacity</text>
+    <text x="475" y="398" fill="#E9F4F3" font-size="21">Status and timing</text>
+    <text x="475" y="438" fill="#E9F4F3" font-size="21">Eligibility</text>
+    <text x="475" y="478" fill="#E9F4F3" font-size="21">Buyer or partner route</text>
+
+    <path d="M760 384H835" stroke="#0E7C86" stroke-width="5" stroke-linecap="round"/>
+    <path d="m823 372 16 12-16 12" fill="none" stroke="#0E7C86" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="855" y="190" width="275" height="196" rx="10" fill="#FFFFFF" stroke="#14213D" stroke-width="3"/>
+    <text x="891" y="236" fill="#14213D" font-size="26" font-weight="700">Opportunity Action Table</text>
+    <text x="891" y="278" fill="#52606D" font-size="19">Evidence + target</text>
+    <text x="891" y="312" fill="#52606D" font-size="19">Revenue motion</text>
+    <text x="891" y="346" fill="#52606D" font-size="19">Contact path</text>
+
+    <path d="M992 410V462" stroke="#2E9D70" stroke-width="5" stroke-linecap="round"/>
+    <path d="m980 450 12 16 12-16" fill="none" stroke="#2E9D70" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="855" y="482" width="275" height="116" rx="10" fill="#E9F4F3" stroke="#2E9D70" stroke-width="3"/>
+    <text x="891" y="528" fill="#14213D" font-size="25" font-weight="700">Owned next action</text>
+    <text x="891" y="564" fill="#52606D" font-size="18">Owner + due date + route</text>
+  </g>
+</svg>

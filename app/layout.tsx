@@ -25,7 +25,8 @@ export const metadata: Metadata = {
     canonical: "https://www.opportunityscanner.ai"
   },
   icons: {
-    icon: "/opportunity-scanner-logo.svg",
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
     apple: "/opportunity-scanner-logo.svg"
   },
   openGraph: {

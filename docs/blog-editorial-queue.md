@@ -92,7 +92,7 @@ Founder numbers refer to the numbered list in the founder brief. A dash means th
 |---|---|---:|---|---|---|
 | How to Turn Government Data Into Sales Targets Before Cold Outreach | find-funded-buyers-before-cold-outreach | 7 | Refresh | Launch | Keep the live slug. Expand beyond funded buyers to agency, recipient, prime, and partner targets while retaining source-backed outreach guardrails. |
 | Government Buyer Contact Paths: Who Do You Actually Reach Out To? | government-buyer-contact-paths | 9, 35 | Existing | Launch | Consolidate both founder contact-path topics here. Do not create a second article for “find the right contact path.” |
-| How to Build a Public-Sector Sales Pipeline Without a GovCon Team | public-sector-sales-pipeline-without-govcon-team | 31 | Existing | Next | Preserve the lightweight market-test and workflow-first angle. |
+| How to Build a Public-Sector Sales Pipeline Without a GovCon Team | public-sector-sales-pipeline-without-govcon-team | 31 | Refresh | Launch | Replace the thin live version with a 1,200-1,800 word practical guide. Preserve the lightweight market-test and workflow-first angle; add official-source evidence, a staged pipeline framework, qualification rules, ownership cadence, common failure modes, and an accurate read time. |
 | From Public-Sector Research Report to Opportunity Action Table | what-a-public-sector-opportunity-report-should-include | 10 | Refresh | Launch | Reframe the live article around the action table while keeping its report-quality search intent. |
 | How to Push Public-Sector Opportunity Signals Into Your CRM | public-sector-opportunity-signals-crm | 32 | Net-new | Next | Explain field mapping, evidence links, ownership, follow-up tasks, and safe handoff before discussing native integrations. |
 | How to Prioritize Opportunity Signals: Relevance, Confidence, Novelty, and Actionability | prioritize-opportunity-signals | 33 | Net-new | Next | Define each score, explain how to avoid false precision, and show a qualitative prioritization matrix. |
@@ -203,7 +203,7 @@ Parent page: `/solutions/public-sector-sales-workflow`
 
 | Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
 |---|---|---|---|---|---|---|---|
-| How to Build a Public-Sector Sales Pipeline Without a GovCon Team (`public-sector-sales-pipeline-without-govcon-team`) | public-sector sales pipeline | Consideration | Shows the lightweight scan-to-row-to-owner workflow before a company invests in a full capture stack. | Official source workflow examples; SBA readiness guidance; product process described without customer-result claims. | Parent solution; opportunity-signal pillar; action-table article. | Build a first public-sector pipeline. | Existing |
+| How to Build a Public-Sector Sales Pipeline Without a GovCon Team (`public-sector-sales-pipeline-without-govcon-team`) | public-sector sales pipeline | Consideration | Shows the lightweight scan-to-row-to-owner workflow before a company invests in a full capture stack. | Official source workflow examples; SBA readiness guidance; product process described without customer-result claims. | Parent solution; opportunity-signal pillar; action-table article. | Build a first public-sector pipeline. | Refresh in progress; thin live version is not final |
 | From Public-Sector Research Report to Opportunity Action Table (`what-a-public-sector-opportunity-report-should-include`) | public-sector opportunity report; action table | Consideration | Defines the exact fields that turn research into source-backed work: target, motion, contact path, score, owner, note, and next action. | Product schema and public-source examples; no fabricated rows or results. | Parent solution; funded-buyer solution; contact-path solution; sample reports. | View a sample action table or run a scan. | Existing; refresh queued |
 | How to Push Public-Sector Opportunity Signals Into Your CRM (`public-sector-opportunity-signals-crm`) | public-sector opportunities CRM workflow | Decision | Provides field mapping, evidence preservation, deduplication, ownership, and follow-up rules for webhook/CSV handoff without promising a native integration. | Current workflow payload contract; CRM field conventions; security/privacy guidance; product capability validation before publish. | Parent solution; action-table article; webhook article. | Generate workflow-ready opportunity rows. | Net-new; already queued |
 
@@ -239,6 +239,7 @@ Parent page: `/solutions/contact-paths-and-enrichment`
 
 ## Definition of done for each queued package
 
+- Strategic guides normally contain at least 1,200 words of useful depth; any shorter format needs an explicit editorial reason and an honest read time.
 - Canonical article brief and verified proof ledger.
 - Primary keyword, supporting questions, and answer-box direction.
 - Integrated data story with conservative claim language.
@@ -248,3 +249,32 @@ Parent page: `/solutions/contact-paths-and-enrichment`
 - LinkedIn carousel, LinkedIn text post, X thread, X short/source post, newsletter snippet, and relevant outbound hook.
 - UTM map and review status.
 - Public copy contains no internal production labels.
+
+## Published depth remediation queue
+
+The July 11, 2026 editorial audit found that all 20 published resources were below their assigned strategic-guide depth and that their displayed read times were overstated. Read times must be corrected immediately; public expansion follows this order.
+
+| Priority | Published resource | Target useful depth | Required remediation |
+|---:|---|---:|---|
+| Launch 1 | Government Spending Is an Overlooked Growth Channel | 1,400-1,800 words | Expand the current proof-led flagship and publish its sourced visual evidence. |
+| Launch 2 | What Is a Public-Sector Opportunity Signal? | 1,200-1,500 words | Add source taxonomy, classification examples, disqualifiers, and official proof. |
+| Launch 3 | Grants vs Contracts vs Funded Buyers | 1,400-1,700 words | Deepen eligibility, recipient, buyer, timing, and revenue-motion distinctions. |
+| Launch 4 | Public-Sector Deal Flow for Commercial Companies | 1,400-1,700 words | Replace the thin overview with a practical commercial-company operating guide. |
+| Launch 5 | How to Find Funded Buyers Before Cold Outreach | 1,400-1,700 words | Integrate recipient validation, target roles, outreach guardrails, and a sourced workflow. |
+| Launch 6 | Government Buyer Contact Paths | 1,400-1,700 words | Add route-by-signal guidance, official-office examples, and enrichment boundaries. |
+| Launch 7 | What a Public-Sector Opportunity Report Should Include | 1,400-1,700 words | Build the complete action-table field guide with examples and report-quality checks. |
+| Launch 8 | Healthcare Public-Sector Opportunities | 1,500-1,800 words | Add healthcare/DME buyer, reimbursement, provider, channel, and procurement depth. |
+| Next 1 | Can My Business Sell to the Government? | 1,000-1,300 words | Expand the fit and readiness self-assessment. |
+| Next 2 | SAM.gov Is Not Enough | 1,200-1,500 words | Add an evidence-backed multi-source workflow and notice-type distinctions. |
+| Next 3 | Public-Sector Sales Pipeline Without a GovCon Team | 1,200-1,800 words | Full source-backed rewrite in progress; this becomes the model workflow guide. |
+| Next 4 | Creative Economy Funding Opportunities | 1,400-1,700 words | Deepen city, parks, tourism, arts-recipient, and production-partner motions. |
+| Next 5 | Education and Workforce Opportunity Signals | 1,400-1,700 words | Deepen district, workforce-board, grant-recipient, staffing, and training motions. |
+| Next 6 | Software and AI Public-Sector Demand | 1,400-1,700 words | Deepen use-case translation, buyer evidence, primes, and implementation paths. |
+| Expansion 1 | Infrastructure Opportunities for Construction Companies | 1,200-1,500 words | Add capital-plan, prime, subcontractor, supplier, and timing guidance. |
+| Expansion 2 | Clean Energy Public-Sector Opportunities | 1,200-1,500 words | Add facilities, rebate, implementation, policy, and funded-buyer distinctions. |
+| Expansion 3 | Manufacturing and Supply Chain Demand | 1,200-1,500 words | Add agency, prime, supplier, workforce, logistics, and economic-development paths. |
+| Expansion 4 | Nonprofit and Community Services Funding | 1,200-1,500 words | Add direct-apply, funded-provider, partner, agency-sales, and eligibility depth. |
+| Expansion 5 | Using Sample Opportunity Reports in Outbound | 1,000-1,300 words | Add evidence packaging, personalization, compliance, and follow-up workflow. |
+| Expansion 6 | Turning Industry Pages Into Paid Conversion Paths | 1,000-1,300 words | Add page-to-report journey, measurement, content routing, and conversion controls. |
+
+**Global publishing rule:** No resource may publish or remain classified as complete until it meets its assigned useful-depth range, passes the framework, source-proof, data-story, actionability, and product-connection checks, and recalculates read time from rendered public copy at 200-225 words per minute.

@@ -94,6 +94,7 @@ Avoid:
 
 A post is publish-ready when it:
 
+- Normally provides at least 1,200 words of useful depth for a strategic guide; shorter formats require an explicit editorial reason and must never inflate their read time.
 - Teaches something useful even if the reader does not buy.
 - Makes public-sector opportunity feel concrete.
 - Includes at least one reusable list/framework.
