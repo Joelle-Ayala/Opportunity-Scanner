@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Five public-sector evidence lanes</title>
+  <desc id="desc">Illustrative framework mapping public records to defensible business actions.</desc>
+  <rect width="1200" height="720" fill="#f7f8f5"/>
+  <text x="72" y="74" fill="#17211b" font-family="Arial, sans-serif" font-size="34" font-weight="700">Five public-sector evidence lanes</text>
+  <text x="72" y="108" fill="#53605a" font-family="Arial, sans-serif" font-size="17">Classify the source before assigning urgency, a target, or a revenue motion.</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="72" y="152" width="1056" height="82" rx="6" fill="#123f32"/>
+    <text x="98" y="186" fill="#ffffff" font-size="20" font-weight="700">ACTIVE NOTICE</text>
+    <text x="330" y="186" fill="#d9efe6" font-size="17">Current response path</text>
+    <text x="650" y="186" fill="#ffffff" font-size="17">Review fit, instructions, deadline</text>
+    <text x="650" y="214" fill="#d9efe6" font-size="15">Possible motion: Sell to Agency / Direct Apply</text>
+    <rect x="72" y="246" width="1056" height="82" rx="6" fill="#246b55"/>
+    <text x="98" y="280" fill="#ffffff" font-size="20" font-weight="700">HISTORICAL AWARD</text>
+    <text x="330" y="280" fill="#e0f2eb" font-size="17">Money moved or was promised</text>
+    <text x="650" y="280" fill="#ffffff" font-size="17">Research buyer, incumbent, pattern</text>
+    <text x="650" y="308" fill="#e0f2eb" font-size="15">Possible motion: Research / Sell to Agency</text>
+    <rect x="72" y="340" width="1056" height="82" rx="6" fill="#d7a22a"/>
+    <text x="98" y="374" fill="#17211b" font-size="20" font-weight="700">GRANT OPPORTUNITY</text>
+    <text x="330" y="374" fill="#2b2d24" font-size="17">Funding status and eligibility</text>
+    <text x="650" y="374" fill="#17211b" font-size="17">Verify notice and applicant class</text>
+    <text x="650" y="402" fill="#2b2d24" font-size="15">Possible motion: Direct Apply / Monitor</text>
+    <rect x="72" y="434" width="1056" height="82" rx="6" fill="#cfe0e7"/>
+    <text x="98" y="468" fill="#17211b" font-size="20" font-weight="700">FUNDED RECIPIENT</text>
+    <text x="330" y="468" fill="#33444b" font-size="17">Named organization and purpose</text>
+    <text x="650" y="468" fill="#17211b" font-size="17">Validate buyer or partner need</text>
+    <text x="650" y="496" fill="#33444b" font-size="15">Possible motion: Sell / Partner / Channel</text>
+    <rect x="72" y="528" width="1056" height="82" rx="6" fill="#ded9c8"/>
+    <text x="98" y="562" fill="#17211b" font-size="20" font-weight="700">FORECAST</text>
+    <text x="330" y="562" fill="#4f4a3f" font-size="17">Anticipated, not active</text>
+    <text x="650" y="562" fill="#17211b" font-size="17">Prepare, research, schedule review</text>
+    <text x="650" y="590" fill="#4f4a3f" font-size="15">Possible motion: Monitor / Research</text>
+  </g>
+  <text x="72" y="666" fill="#53605a" font-family="Arial, sans-serif" font-size="15">Illustrative framework. It does not show measured volume, availability, or conversion.</text>
+</svg>

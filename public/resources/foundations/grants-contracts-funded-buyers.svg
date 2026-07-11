@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Grants, contracts, and funded buyers</title>
+  <desc id="desc">Comparison of public record types, targets, and revenue motions.</desc>
+  <rect width="1200" height="720" fill="#f7f8f5"/>
+  <text x="72" y="70" fill="#17211b" font-family="Arial, sans-serif" font-size="34" font-weight="700">Grants, contracts, and funded buyers</text>
+  <text x="72" y="104" fill="#53605a" font-family="Arial, sans-serif" font-size="17">The record type changes the target, qualification test, and next action.</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="72" y="150" width="1056" height="52" fill="#17211b"/>
+    <text x="94" y="183" fill="#ffffff" font-size="16" font-weight="700">RECORD</text>
+    <text x="310" y="183" fill="#ffffff" font-size="16" font-weight="700">PRIMARY TARGET</text>
+    <text x="586" y="183" fill="#ffffff" font-size="16" font-weight="700">VALIDATE</text>
+    <text x="882" y="183" fill="#ffffff" font-size="16" font-weight="700">POSSIBLE MOTION</text>
+    <rect x="72" y="202" width="1056" height="100" fill="#e0f2eb"/>
+    <text x="94" y="244" fill="#123f32" font-size="19" font-weight="700">Contract</text>
+    <text x="310" y="244" fill="#17211b" font-size="16">Agency or prime</text>
+    <text x="586" y="238" fill="#17211b" font-size="16">Notice, fit, readiness,</text><text x="586" y="263" fill="#17211b" font-size="16">deadline, instructions</text>
+    <text x="882" y="238" fill="#17211b" font-size="16">Sell to Agency</text><text x="882" y="263" fill="#17211b" font-size="16">Channel / Distributor</text>
+    <rect x="72" y="302" width="1056" height="100" fill="#f4e7bd"/>
+    <text x="94" y="344" fill="#6a5115" font-size="19" font-weight="700">Grant</text>
+    <text x="310" y="344" fill="#17211b" font-size="16">Program and applicant</text>
+    <text x="586" y="338" fill="#17211b" font-size="16">Status, legal eligibility,</text><text x="586" y="363" fill="#17211b" font-size="16">program and application fit</text>
+    <text x="882" y="344" fill="#17211b" font-size="16">Direct Apply</text>
+    <rect x="72" y="402" width="1056" height="100" fill="#e4eef2"/>
+    <text x="94" y="444" fill="#33444b" font-size="19" font-weight="700">Funded recipient</text>
+    <text x="310" y="444" fill="#17211b" font-size="16">Named award recipient</text>
+    <text x="586" y="438" fill="#17211b" font-size="16">Award, purpose, timing,</text><text x="586" y="463" fill="#17211b" font-size="16">plausible outside need</text>
+    <text x="882" y="438" fill="#17211b" font-size="16">Sell to Funded Buyer</text><text x="882" y="463" fill="#17211b" font-size="16">Partner with Recipient</text>
+    <rect x="72" y="502" width="1056" height="100" fill="#ece9df"/>
+    <text x="94" y="544" fill="#4f4a3f" font-size="19" font-weight="700">Forecast/history</text>
+    <text x="310" y="544" fill="#17211b" font-size="16">Future or prior market</text>
+    <text x="586" y="538" fill="#17211b" font-size="16">Timing, lineage, current</text><text x="586" y="563" fill="#17211b" font-size="16">status, repeated demand</text>
+    <text x="882" y="538" fill="#17211b" font-size="16">Monitor</text><text x="882" y="563" fill="#17211b" font-size="16">Research Only</text>
+  </g>
+  <text x="72" y="662" fill="#53605a" font-family="Arial, sans-serif" font-size="15">Illustrative framework. Verify eligibility, availability, recipient need, and process on the official record.</text>
+</svg>

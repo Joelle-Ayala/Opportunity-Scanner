@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Four gates to government sales readiness</title>
+  <desc id="desc">Illustrative sequence covering market, performance, administrative, and route readiness.</desc>
+  <rect width="1200" height="720" fill="#f7f8f5"/>
+  <text x="72" y="74" fill="#17211b" font-family="Arial, sans-serif" font-size="34" font-weight="700">Four gates to government sales readiness</text>
+  <text x="72" y="108" fill="#53605a" font-family="Arial, sans-serif" font-size="17">A direct pursuit is credible only when all four questions have defensible answers.</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="72" y="168" width="238" height="330" rx="6" fill="#123f32"/>
+    <text x="96" y="210" fill="#a8dbc8" font-size="15" font-weight="700">GATE 1</text>
+    <text x="96" y="250" fill="#ffffff" font-size="25" font-weight="700">Market</text>
+    <text x="96" y="294" fill="#e0f2eb" font-size="17">Do official records</text>
+    <text x="96" y="320" fill="#e0f2eb" font-size="17">show repeated demand?</text>
+    <text x="96" y="374" fill="#ffffff" font-size="15">Buyer set</text>
+    <text x="96" y="400" fill="#ffffff" font-size="15">Offer fit</text>
+    <text x="96" y="426" fill="#ffffff" font-size="15">Market evidence</text>
+    <rect x="336" y="168" width="238" height="330" rx="6" fill="#246b55"/>
+    <text x="360" y="210" fill="#d9efe6" font-size="15" font-weight="700">GATE 2</text>
+    <text x="360" y="250" fill="#ffffff" font-size="25" font-weight="700">Performance</text>
+    <text x="360" y="294" fill="#e0f2eb" font-size="17">Can the company</text>
+    <text x="360" y="320" fill="#e0f2eb" font-size="17">deliver responsibly?</text>
+    <text x="360" y="374" fill="#ffffff" font-size="15">Capacity</text>
+    <text x="360" y="400" fill="#ffffff" font-size="15">Timing</text>
+    <text x="360" y="426" fill="#ffffff" font-size="15">Cash flow</text>
+    <rect x="600" y="168" width="238" height="330" rx="6" fill="#d7a22a"/>
+    <text x="624" y="210" fill="#3b321e" font-size="15" font-weight="700">GATE 3</text>
+    <text x="624" y="250" fill="#17211b" font-size="25" font-weight="700">Administrative</text>
+    <text x="624" y="294" fill="#332f25" font-size="17">Can requirements</text>
+    <text x="624" y="320" fill="#332f25" font-size="17">be met and maintained?</text>
+    <text x="624" y="374" fill="#17211b" font-size="15">NAICS and size</text>
+    <text x="624" y="400" fill="#17211b" font-size="15">Registration</text>
+    <text x="624" y="426" fill="#17211b" font-size="15">Compliance</text>
+    <rect x="864" y="168" width="264" height="330" rx="6" fill="#cfe0e7"/>
+    <text x="888" y="210" fill="#33444b" font-size="15" font-weight="700">GATE 4</text>
+    <text x="888" y="250" fill="#17211b" font-size="25" font-weight="700">Route</text>
+    <text x="888" y="294" fill="#33444b" font-size="17">Is there a lawful,</text>
+    <text x="888" y="320" fill="#33444b" font-size="17">realistic next path?</text>
+    <text x="888" y="374" fill="#17211b" font-size="15">Buyer or prime</text>
+    <text x="888" y="400" fill="#17211b" font-size="15">Official contact</text>
+    <text x="888" y="426" fill="#17211b" font-size="15">Owned next action</text>
+    <rect x="278" y="548" width="644" height="66" rx="6" fill="#17211b"/>
+    <text x="600" y="589" text-anchor="middle" fill="#ffffff" font-size="21" font-weight="700">Pursue, prepare, partner, subcontract, monitor, or stop</text>
+  </g>
+  <text x="72" y="666" fill="#53605a" font-family="Arial, sans-serif" font-size="15">Illustrative framework. Readiness and registration do not guarantee eligibility, selection, or an award.</text>
+</svg>

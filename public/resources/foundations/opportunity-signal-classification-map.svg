@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Opportunity signal classification map</title>
+  <desc id="desc">Matrix showing what six signal classes prove and which action they support.</desc>
+  <rect width="1200" height="720" fill="#f7f8f5"/>
+  <text x="72" y="70" fill="#17211b" font-family="Arial, sans-serif" font-size="34" font-weight="700">Opportunity signal classification map</text>
+  <text x="72" y="104" fill="#53605a" font-family="Arial, sans-serif" font-size="17">What the evidence proves should control what the team does next.</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="72" y="142" width="1056" height="52" fill="#17211b"/>
+    <text x="94" y="175" fill="#ffffff" font-size="16" font-weight="700">SIGNAL CLASS</text>
+    <text x="340" y="175" fill="#ffffff" font-size="16" font-weight="700">WHAT IT PROVES</text>
+    <text x="765" y="175" fill="#ffffff" font-size="16" font-weight="700">DEFENSIBLE ACTION</text>
+    <g font-size="16">
+      <rect x="72" y="194" width="1056" height="70" fill="#e0f2eb"/>
+      <text x="94" y="235" fill="#123f32" font-weight="700">Active</text><text x="340" y="235" fill="#17211b">A current response or application route</text><text x="765" y="235" fill="#17211b">Qualify and pursue</text>
+      <rect x="72" y="264" width="1056" height="70" fill="#ffffff"/>
+      <text x="94" y="305" fill="#123f32" font-weight="700">Historical</text><text x="340" y="305" fill="#17211b">Money moved or was promised before</text><text x="765" y="305" fill="#17211b">Research buyer and timing</text>
+      <rect x="72" y="334" width="1056" height="70" fill="#f4e7bd"/>
+      <text x="94" y="375" fill="#6a5115" font-weight="700">Forecasted</text><text x="340" y="375" fill="#17211b">Activity is anticipated, not active</text><text x="765" y="375" fill="#17211b">Prepare and monitor</text>
+      <rect x="72" y="404" width="1056" height="70" fill="#e4eef2"/>
+      <text x="94" y="445" fill="#33444b" font-weight="700">Funded recipient</text><text x="340" y="445" fill="#17211b">An organization received an award</text><text x="765" y="445" fill="#17211b">Validate buyer or partner role</text>
+      <rect x="72" y="474" width="1056" height="70" fill="#ffffff"/>
+      <text x="94" y="515" fill="#123f32" font-weight="700">Policy</text><text x="340" y="515" fill="#17211b">A rule or program may shape demand</text><text x="765" y="515" fill="#17211b">Monitor implementation</text>
+      <rect x="72" y="544" width="1056" height="70" fill="#ece9df"/>
+      <text x="94" y="585" fill="#4f4a3f" font-weight="700">Research</text><text x="340" y="585" fill="#17211b">Context exists, but the route is incomplete</text><text x="765" y="585" fill="#17211b">Investigate, defer, or reject</text>
+    </g>
+  </g>
+  <text x="72" y="666" fill="#53605a" font-family="Arial, sans-serif" font-size="15">Illustrative framework. It does not show measured signal quality, availability, or conversion.</text>
+</svg>
