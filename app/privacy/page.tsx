@@ -26,7 +26,7 @@ export default function PrivacyPage() {
     <main className="min-h-screen bg-field">
       <SiteHeader />
       <article className="mx-auto max-w-3xl px-6 py-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">Last updated July 10, 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">Last reviewed July 11, 2026</p>
         <h1 className="mt-4 text-4xl font-semibold text-ink">Privacy notice</h1>
         <p className="mt-5 text-base leading-8 text-slate-700">
           Opportunity Scanner collects only the information needed to run requested scans, provide requested guides, operate the beta, and understand which product and content experiences are useful.
@@ -42,8 +42,29 @@ export default function PrivacyPage() {
             <p className="mt-3">We use this information to provide the requested scan or guide, maintain product reliability, respond to requests, evaluate interest, and improve Opportunity Scanner. Downloading a guide does not automatically enroll someone in marketing. Marketing updates require the optional checkbox.</p>
           </section>
           <section>
+            <h2 className="text-xl font-semibold text-ink">Optional product analytics</h2>
+            <p className="mt-3">
+              When configured, we may use Vercel Analytics and PostHog to understand page visits and
+              basic product actions, such as starting or completing a scan or opening checkout.
+              PostHog session replay and autocapture are disabled. Our custom analytics events do
+              not include form entries such as email addresses, company URLs, or free-text responses.
+              These analytics providers process usage and technical data to provide and operate
+              their services for us.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold text-ink">Checkout and payments</h2>
+            <p className="mt-3">
+              Paid purchases use Stripe-hosted checkout. Payment card details are submitted directly
+              to and handled by Stripe rather than Opportunity Scanner. We may receive and store
+              related transaction details, such as payment status, the product purchased, and Stripe
+              reference identifiers, so we can provide access and support the purchase. Stripe
+              processes checkout and payment information to operate its payment services.
+            </p>
+          </section>
+          <section>
             <h2 className="text-xl font-semibold text-ink">Storage and sharing</h2>
-            <p className="mt-3">Production records are intended to be stored in the configured Supabase project and processed by services needed to operate the product. We do not sell submitted personal information. We do not include email addresses, company URLs, or free-text form data in public analytics events.</p>
+            <p className="mt-3">Production records are intended to be stored in the configured Supabase project and processed by providers needed to operate the product, including the analytics and payment providers described above when those features are enabled. We do not sell submitted personal information.</p>
           </section>
           <section>
             <h2 className="text-xl font-semibold text-ink">Retention and choices</h2>
