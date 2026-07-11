@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Infrastructure stage-to-revenue-motion map</title>
+  <desc id="desc">Illustrative map separating planning, funding, procurement, and award stages from commercial actions.</desc>
+  <rect width="1200" height="675" fill="#f8faf8"/>
+  <text x="70" y="75" fill="#1d2f32" font-family="Arial, sans-serif" font-size="34" font-weight="700">Infrastructure stage-to-revenue-motion map</text>
+  <text x="70" y="112" fill="#5b6869" font-family="Arial, sans-serif" font-size="17">Illustrative framework. Confirm the owner and procurement source before treating a project as active.</text>
+  <g font-family="Arial, sans-serif">
+    <text x="70" y="174" fill="#166b59" font-size="16" font-weight="700">PROJECT EVIDENCE</text>
+    <rect x="70" y="200" width="230" height="72" rx="6" fill="#fff" stroke="#9dbab1"/><text x="92" y="243" fill="#203c36" font-size="18">Capital plan</text>
+    <rect x="70" y="292" width="230" height="72" rx="6" fill="#fff" stroke="#9dbab1"/><text x="92" y="335" fill="#203c36" font-size="18">Funding / recipient</text>
+    <rect x="70" y="384" width="230" height="72" rx="6" fill="#fff" stroke="#9dbab1"/><text x="92" y="427" fill="#203c36" font-size="18">Owner procurement</text>
+    <path d="M325 328H385" stroke="#166b59" stroke-width="4"/><path d="m385 328-14-9v18z" fill="#166b59"/>
+    <text x="395" y="174" fill="#166b59" font-size="16" font-weight="700">STAGE CHECK</text>
+    <rect x="395" y="200" width="350" height="256" rx="8" fill="#e9f2ed" stroke="#7aa493"/>
+    <text x="423" y="244" fill="#203c36" font-size="20" font-weight="700">Planning / design</text>
+    <text x="423" y="288" fill="#203c36" font-size="18">Selected / obligated</text>
+    <text x="423" y="332" fill="#203c36" font-size="18">Soliciting / bidding</text>
+    <text x="423" y="376" fill="#203c36" font-size="18">Awarded / executing</text>
+    <text x="423" y="420" fill="#203c36" font-size="18">Capacity + compliance</text>
+    <path d="M770 328H830" stroke="#166b59" stroke-width="4"/><path d="m830 328-14-9v18z" fill="#166b59"/>
+    <text x="840" y="174" fill="#166b59" font-size="16" font-weight="700">PRACTICAL ROUTE</text>
+    <rect x="840" y="200" width="290" height="56" rx="6" fill="#244d45"/><text x="862" y="235" fill="#fff" font-size="18">Monitor public owner</text>
+    <rect x="840" y="268" width="290" height="56" rx="6" fill="#244d45"/><text x="862" y="303" fill="#fff" font-size="18">Sell to agency</text>
+    <rect x="840" y="336" width="290" height="56" rx="6" fill="#244d45"/><text x="862" y="371" fill="#fff" font-size="18">Prime / subcontractor</text>
+    <rect x="840" y="404" width="290" height="56" rx="6" fill="#244d45"/><text x="862" y="439" fill="#fff" font-size="18">Supplier / partner</text>
+    <rect x="70" y="532" width="1060" height="82" rx="6" fill="#fff" stroke="#c9d6d1"/>
+    <text x="95" y="568" fill="#203c36" font-size="18" font-weight="700">Not active bids:</text><text x="245" y="568" fill="#4d605b" font-size="18">plans, selections, obligations, and awards without current procurement evidence</text>
+    <text x="95" y="597" fill="#4d605b" font-size="17">Retain them as dated market evidence or monitoring rows until the official buyer route appears.</text>
+  </g>
+</svg>

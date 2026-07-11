@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Clean-energy mechanism-to-action map</title>
+  <desc id="desc">Illustrative map separating clean-energy mechanisms and implementation routes.</desc>
+  <rect width="1200" height="675" fill="#f7faf8"/>
+  <text x="70" y="75" fill="#17342f" font-family="Arial, sans-serif" font-size="34" font-weight="700">Clean-energy mechanism-to-action map</text>
+  <text x="70" y="112" fill="#566b66" font-family="Arial, sans-serif" font-size="17">Illustrative framework. Availability, eligibility, and implementation rules vary by place and date.</text>
+  <g font-family="Arial, sans-serif">
+    <text x="70" y="170" fill="#397544" font-size="16" font-weight="700">MECHANISM</text>
+    <rect x="70" y="195" width="260" height="58" rx="6" fill="#fff" stroke="#a2bda6"/><text x="92" y="231" fill="#24462d" font-size="18">Procurement</text>
+    <rect x="70" y="267" width="260" height="58" rx="6" fill="#fff" stroke="#a2bda6"/><text x="92" y="303" fill="#24462d" font-size="18">Grant / award</text>
+    <rect x="70" y="339" width="260" height="58" rx="6" fill="#fff" stroke="#a2bda6"/><text x="92" y="375" fill="#24462d" font-size="18">Rebate / credit / loan</text>
+    <rect x="70" y="411" width="260" height="58" rx="6" fill="#fff" stroke="#a2bda6"/><text x="92" y="447" fill="#24462d" font-size="18">Policy / facilities plan</text>
+    <path d="M355 332H425" stroke="#397544" stroke-width="4"/><path d="m425 332-14-9v18z" fill="#397544"/>
+    <text x="435" y="170" fill="#397544" font-size="16" font-weight="700">VERIFY IMPLEMENTATION</text>
+    <rect x="435" y="195" width="315" height="274" rx="8" fill="#eaf4eb" stroke="#83a98a"/>
+    <text x="462" y="240" fill="#24462d" font-size="19" font-weight="700">Current status + dates</text>
+    <text x="462" y="282" fill="#24462d" font-size="18">Administrator / recipient</text>
+    <text x="462" y="324" fill="#24462d" font-size="18">Geography + eligibility</text>
+    <text x="462" y="366" fill="#24462d" font-size="18">Procurement / enrollment</text>
+    <text x="462" y="408" fill="#24462d" font-size="18">Installation conditions</text>
+    <path d="M775 332H845" stroke="#397544" stroke-width="4"/><path d="m845 332-14-9v18z" fill="#397544"/>
+    <text x="855" y="170" fill="#397544" font-size="16" font-weight="700">ACTION</text>
+    <rect x="855" y="195" width="275" height="58" rx="6" fill="#285a34"/><text x="877" y="231" fill="#fff" font-size="18">Apply or sell to agency</text>
+    <rect x="855" y="267" width="275" height="58" rx="6" fill="#285a34"/><text x="877" y="303" fill="#fff" font-size="18">Sell to funded buyer</text>
+    <rect x="855" y="339" width="275" height="58" rx="6" fill="#285a34"/><text x="877" y="375" fill="#fff" font-size="18">Channel / partner</text>
+    <rect x="855" y="411" width="275" height="58" rx="6" fill="#285a34"/><text x="877" y="447" fill="#fff" font-size="18">Monitor or reject</text>
+    <rect x="70" y="535" width="1060" height="78" rx="6" fill="#fff" stroke="#c8d8cb"/>
+    <text x="95" y="571" fill="#24462d" font-size="18" font-weight="700">Two-source rule:</text><text x="240" y="571" fill="#4d6254" font-size="18">keep the program source and the current implementation or procurement source.</text>
+    <text x="95" y="599" fill="#4d6254" font-size="17">A federal announcement alone does not prove local availability, vendor access, or buyer demand.</text>
+  </g>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Software and AI evidence-to-action map</title>
+  <desc id="desc">Illustrative map from official source lanes through qualification to revenue motions and next actions.</desc>
+  <rect width="1200" height="675" fill="#f7faf9"/>
+  <text x="70" y="75" fill="#102a2e" font-family="Arial, sans-serif" font-size="34" font-weight="700">Software and AI evidence-to-action map</text>
+  <text x="70" y="112" fill="#52666a" font-family="Arial, sans-serif" font-size="17">Illustrative framework. Source type determines the route; it does not measure demand.</text>
+  <g font-family="Arial, sans-serif">
+    <text x="70" y="170" fill="#0b6f78" font-size="16" font-weight="700">OFFICIAL EVIDENCE</text>
+    <rect x="70" y="195" width="270" height="64" rx="6" fill="#ffffff" stroke="#9bbfc1"/><text x="92" y="234" fill="#17383c" font-size="18">SAM.gov notice</text>
+    <rect x="70" y="273" width="270" height="64" rx="6" fill="#ffffff" stroke="#9bbfc1"/><text x="92" y="312" fill="#17383c" font-size="18">USAspending award</text>
+    <rect x="70" y="351" width="270" height="64" rx="6" fill="#ffffff" stroke="#9bbfc1"/><text x="92" y="390" fill="#17383c" font-size="18">Agency forecast</text>
+    <rect x="70" y="429" width="270" height="64" rx="6" fill="#ffffff" stroke="#9bbfc1"/><text x="92" y="468" fill="#17383c" font-size="18">Program or policy</text>
+    <path d="M365 342H445" stroke="#0b6f78" stroke-width="4"/><path d="m445 342-14-9v18z" fill="#0b6f78"/>
+    <text x="455" y="170" fill="#0b6f78" font-size="16" font-weight="700">QUALIFY</text>
+    <rect x="455" y="195" width="290" height="298" rx="8" fill="#e9f4f2" stroke="#6ba7a7"/>
+    <text x="482" y="240" fill="#17383c" font-size="20" font-weight="700">Mission workflow</text>
+    <text x="482" y="282" fill="#17383c" font-size="18">Status and timing</text>
+    <text x="482" y="324" fill="#17383c" font-size="18">Security and data</text>
+    <text x="482" y="366" fill="#17383c" font-size="18">Eligibility and route</text>
+    <text x="482" y="408" fill="#17383c" font-size="18">Target and contact path</text>
+    <text x="482" y="450" fill="#17383c" font-size="18">Disqualifier</text>
+    <path d="M770 342H850" stroke="#0b6f78" stroke-width="4"/><path d="m850 342-14-9v18z" fill="#0b6f78"/>
+    <text x="860" y="170" fill="#0b6f78" font-size="16" font-weight="700">OWNED ACTION</text>
+    <rect x="860" y="195" width="270" height="64" rx="6" fill="#123f44"/><text x="882" y="234" fill="#ffffff" font-size="18">Sell to agency</text>
+    <rect x="860" y="273" width="270" height="64" rx="6" fill="#123f44"/><text x="882" y="312" fill="#ffffff" font-size="18">Prime / channel route</text>
+    <rect x="860" y="351" width="270" height="64" rx="6" fill="#123f44"/><text x="882" y="390" fill="#ffffff" font-size="18">Funded buyer research</text>
+    <rect x="860" y="429" width="270" height="64" rx="6" fill="#123f44"/><text x="882" y="468" fill="#ffffff" font-size="18">Monitor or reject</text>
+    <rect x="70" y="550" width="1060" height="66" rx="6" fill="#ffffff" stroke="#c8d9d9"/>
+    <text x="95" y="590" fill="#17383c" font-size="18" font-weight="700">Every retained row:</text><text x="270" y="590" fill="#40585c" font-size="18">source + target + revenue motion + contact path + owner + next action</text>
+  </g>
+</svg>
