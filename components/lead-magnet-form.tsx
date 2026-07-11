@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import type { LeadMagnetSlug } from "@/lib/leadMagnets";
+import { trackProductEvent } from "@/lib/productAnalytics";
 
 type AccessResponse =
   | { ok: true; accessPath: string }
@@ -55,6 +56,10 @@ export function LeadMagnetForm({
         throw new Error(!result.ok ? result.error?.message : undefined);
       }
 
+      trackProductEvent("email_captured", {
+        surface: "lead_magnet",
+        marketing_consent: form.get("marketingConsent") === "on"
+      });
       setAccessPath(result.accessPath);
       setStatus("success");
       setMessage("Your guide is ready. Download it now and keep it for your next opportunity review.");

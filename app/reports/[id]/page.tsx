@@ -5,6 +5,8 @@ import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/st
 import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types";
 import { accessSuffix, hasAdminAccess, reportAccessHref } from "@/lib/access";
 import { hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
+import { getStripeServerConfig } from "@/lib/payments/config";
+import { ReportAnalytics } from "@/components/page-analytics";
 import { signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal } from "@/lib/contactTargeting";
 import { isSamGovConfigured } from "@/lib/connectors/samGov";
@@ -106,6 +108,22 @@ function fullReportRequestHref(scan: ScanRecord, signal?: StoredOpportunitySigna
     .join("\n");
 
   return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function reportCheckoutIsConfigured(): boolean {
+  try {
+    getStripeServerConfig();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function fullReportUpgradeHref(scan: ScanRecord, signal?: StoredOpportunitySignal): string {
+  if (reportCheckoutIsConfigured()) {
+    return `/pricing?source=report_gate&scanId=${encodeURIComponent(scan.id)}`;
+  }
+  return fullReportRequestHref(scan, signal);
 }
 
 function actionabilityDisplayLabel(value: string): string {
@@ -755,8 +773,8 @@ function LockedOpportunityCard({
         <p>{classification.source_status}</p>
         <p>{classificationLabel(classification.contact_strategy)} in full report</p>
       </div>
-      <a href={fullReportRequestHref(scan, signal)} className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
-        Request Full Pipeline
+      <a href={fullReportUpgradeHref(scan, signal)} className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+        {reportCheckoutIsConfigured() ? "Buy Full Report" : "Request Full Pipeline"}
       </a>
     </article>
   );
@@ -790,10 +808,10 @@ function UnlockCTA({ scan }: { scan: ScanRecord }) {
           </div>
         </div>
         <div className="rounded-lg border border-cyan-100 bg-white p-4 text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-muted">Beta access</p>
-          <p className="mt-1 text-2xl font-semibold text-ink">Full pipeline</p>
-          <a href={fullReportRequestHref(scan)} className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
-            Request Full Report
+          <p className="text-sm font-semibold uppercase tracking-wide text-muted">Full report</p>
+          <p className="mt-1 text-2xl font-semibold text-ink">$49 one-time</p>
+          <a href={fullReportUpgradeHref(scan)} className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+            {reportCheckoutIsConfigured() ? "Buy Full Report" : "Request Full Report"}
           </a>
         </div>
       </div>
@@ -1114,6 +1132,13 @@ export default async function ReportPage({
 
   return (
     <main className="min-h-screen bg-field px-6 py-8">
+      <ReportAnalytics
+        scanId={scan.id}
+        tier={isPaid ? "full" : "free"}
+        signalCount={reportSignals.length}
+        createdAt={scan.created_at}
+        completedAt={scan.completed_at}
+      />
       <div className="mx-auto grid max-w-7xl gap-6">
         <ReportHeader
           scan={scan}
