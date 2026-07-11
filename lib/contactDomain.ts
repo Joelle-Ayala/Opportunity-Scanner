@@ -1,4 +1,5 @@
 import { StoredOpportunitySignal } from "./types";
+import { resolvePrimaryTargetForSignal } from "./organizationResolution";
 
 export function cleanDomain(value: string): string {
   const trimmed = value.trim();
@@ -19,6 +20,11 @@ export function isUsefulContactDomain(domain: string): boolean {
 }
 
 export function domainFromSignal(signal: StoredOpportunitySignal): string {
+  const resolvedDomain = resolvePrimaryTargetForSignal(signal)?.verifiedDomain;
+  if (resolvedDomain) {
+    return resolvedDomain;
+  }
+
   const raw = signal.raw_json ?? {};
   const nestedRaw = typeof raw.raw_json === "object" && raw.raw_json ? (raw.raw_json as Record<string, unknown>) : {};
   const candidates = [

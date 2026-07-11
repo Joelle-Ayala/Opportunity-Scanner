@@ -1,4 +1,5 @@
 import { classifyOpportunity } from "./opportunityClassification";
+import { resolvePrimaryTargetForSignal } from "./organizationResolution";
 import { CompanyProfile, NormalizedOpportunityAction, OpportunitySignal, StoredOpportunitySignal } from "./types";
 
 function targetOrganization(signal: OpportunitySignal): string {
@@ -70,6 +71,7 @@ export function withNormalizedOpportunityAction(
   const normalizedAction = normalizeOpportunityAction(signal, profile);
   return {
     ...signal,
+    target_resolution: signal.target_resolution ?? resolvePrimaryTargetForSignal(signal) ?? undefined,
     normalized_action: normalizedAction,
     ...normalizedAction
   };

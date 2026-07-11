@@ -1,3 +1,5 @@
+import type { OrganizationTargetResolution } from "./organizationResolution";
+
 export type CustomerType =
   | "B2B"
   | "B2C"
@@ -217,6 +219,7 @@ export type OpportunitySignal = {
   query_used: string;
   raw_json: Record<string, unknown>;
   normalized_action?: NormalizedOpportunityAction;
+  target_resolution?: OrganizationTargetResolution;
   estimated_opportunity_type?: NormalizedOpportunityAction["estimated_opportunity_type"];
   buyer_partner_type?: NormalizedOpportunityAction["buyer_partner_type"];
   revenue_motion?: string;

@@ -1,4 +1,4 @@
-import { contactDiscoverySummary } from "./contactTargeting";
+import { contactDiscoverySummary, primaryContactTarget } from "./contactTargeting";
 import { enrichContactsWithClay } from "./connectors/clay";
 import { ContactEnrichmentResult, enrichContactsWithSnov } from "./connectors/snov";
 import {
@@ -6,6 +6,7 @@ import {
   saveOpportunityEnrichmentRequest
 } from "./storage";
 import { OpportunityEnrichmentRequestRecord, StoredOpportunitySignal } from "./types";
+import { enrichmentEligibilityForTarget, resolvePrimaryTargetForSignal } from "./organizationResolution";
 
 function hasReusableContactEnrichment(requests: OpportunityEnrichmentRequestRecord[]): boolean {
   return requests.some((request) => {
@@ -115,6 +116,29 @@ export async function ensureContactEnrichment(input: {
         status: "completed",
         contacts: [],
         message: "Source-native contact is already available. Prefer the source-listed contact before third-party enrichment."
+      }
+    });
+  }
+
+  const contactTarget = primaryContactTarget(input.signal);
+  const eligibility = enrichmentEligibilityForTarget(
+    input.signal.target_resolution ?? resolvePrimaryTargetForSignal(input.signal),
+    contactTarget.roles
+  );
+  if (!eligibility.clayEligible || !eligibility.snovEligible) {
+    return saveOpportunityEnrichmentRequest({
+      scanId: input.scanId,
+      opportunityId: input.signal.id,
+      enrichmentType: "find_contacts",
+      status: "completed",
+      resultJson: {
+        provider: "evidence-resolution",
+        status: eligibility.verifiedDomain ? "needs_target" : "needs_domain",
+        organization: contactTarget.organization,
+        domain: eligibility.verifiedDomain,
+        target_roles: eligibility.targetRoles,
+        contacts: [],
+        message: eligibility.reason
       }
     });
   }
