@@ -4,7 +4,7 @@ Subtitle: A practical guide to VA procurement, Medicare supplier signals, funded
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 10, 2026. Time-sensitive Medicare enrollment rules must be rechecked before publication and on every update.
+As-of date: July 11, 2026. Time-sensitive Medicare enrollment and competitive-bidding information must be rechecked before publication and on every update.
 
 ## Offer and audience
 
@@ -19,6 +19,8 @@ Healthcare public-sector opportunity is not one market. It includes agency procu
 National health spending provides context for the scale and policy importance of healthcare, but it is not the addressable market for a DME or medical-supply company. CMS projects national health expenditure growth and publishes Medicare data, fee schedules, supplier guidance, and policy changes. VA publishes medical equipment and supply schedule information. HRSA publishes current and historical grant and health-center data. SAM.gov and USAspending provide procurement and federal award evidence.
 
 The highest-value work is separating these lanes before outreach. A reimbursement rule may require Monitor Policy or supplier-readiness work. A VA schedule may support a contracting pathway. A HRSA recipient may support funded-buyer or partner research. A prior award may reveal an incumbent, distributor, or agency pattern without proving current demand.
+
+The correct output is a focused action table in which every row identifies offer fit, official evidence and period, target, route, constraint, and next validation task. A compliance requirement can be strategically important without being a sales lead.
 
 ## State of the market and opportunity signals
 
@@ -62,6 +64,14 @@ Business implication: A funded health center or recipient may be a buyer, partne
 
 Recommended action: Verify program purpose, project period, recipient role, and likely purchasing authority before creating outreach.
 
+### Trend 6: Round 2028 competitive bidding is a readiness signal, not yet a contract award
+
+CMS states that the program is in a temporary gap after Round 2021 contracts expired on December 31, 2023. Round 2028 covers Class II continuous glucose monitors and insulin pumps, urological supplies, ostomy supplies, hydrophilic urinary catheters, and off-the-shelf back, knee, and upper-extremity braces. Published registration and bidding dates remain targets; CMS says the round will begin no later than January 1, 2028.
+
+Business implication: Affected suppliers have a readiness lane around enrollment records, licensing, category/location accreditation, and partner strategy. The announcement does not mean registration is open or a contract is available.
+
+Recommended action: Assign an owner to monitor the official CMS and Competitive Bidding Implementation Contractor pages. Inventory category and location accreditation now, but verify actual registration and bid-window dates before representing the opportunity as active.
+
 ## Six healthcare opportunity lanes
 
 | Lane | Evidence | Typical revenue motion | First validation |
@@ -73,31 +83,74 @@ Recommended action: Verify program purpose, project period, recipient role, and 
 | Direct grants and assistance | Grants.gov and agency program notices | Direct Apply; Partner with Recipient | Eligibility, status, deadline, allowable use |
 | Policy and emerging demand | Federal Register, CMS rules, agency guidance | Monitor Policy; Research Only | Effective date, final versus proposed rule, business impact |
 
+## Healthcare source and action map
+
+Healthcare research becomes safer when each source is assigned a narrow job.
+
+| Source record | Verify | Contact path | Do not infer |
+|---|---|---|---|
+| CMS enrollment/accreditation | Applicable supplier type, NPI, location, category, exemption | NPE contractor, approved accreditor, qualified advisor | Compliance guidance is a buyer lead |
+| CMS fee schedule/public-use data | Year, geography, HCPCS, population, suppression, payment definition | Reimbursement lead or payer-policy route | Claims or allowed amounts equal current demand |
+| CMS competitive bidding | Final versus target date, covered category/location, enrollment record | CBIC education/help; NPE contractor | Preparation guidance is an open bid |
+| VA FSS schedule/catalog | Exact item, category, holder, terms, purchasing priority | FSS help, holder, distributor, contracting office | Schedule coverage is an active order |
+| SAM.gov notice/award | Type, amendment, due date, codes, set-aside, vehicle | Notice instructions and contracting contact | Award or sources sought is a bid |
+| HRSA grant/health center | Purpose, project period, operator, purchasing role | Recipient procurement or program operations | Grant amount is available for the product |
+| Grants.gov opportunity | Posted status, eligibility, deadline, cost share | Listed grants contact | Topic fit establishes eligibility |
+
+The table deliberately separates buyer-facing routes from readiness routes. A company can have a high-priority compliance task and no supported outreach target; that result is more useful than forcing the record into a sales sequence.
+
 ## The healthcare opportunity workflow
 
 ### Step 1: Build a product and readiness profile
 
 Record products, HCPCS or product categories when known, clinical and non-clinical use cases, customers, delivery geography, licenses, certifications, accreditation, reimbursement status, manufacturing or distributor relationships, and implementation capacity. Unknown fields should become validation tasks, not assumptions.
 
+Use one row per offer. Capture exact item and setting; verified HCPCS, FSC, NAICS, or schedule category; commercial role; geography and service model; enrollment, accreditation, licensing, and vehicle readiness; and unresolved evidence gaps. Do not assign an HCPCS code from marketing language alone.
+
 ### Step 2: Translate into public-sector lanes
 
 Map each offer to the six lanes above. A mobility product may map to VA patient mobility schedules, rehabilitation programs, DMEPOS policy, funded providers, and distributor partners. A healthcare software product may map to health-center recipients, agency modernization, prime implementers, and program operations without being a DMEPOS supplier.
+
+Select no more than two primary lanes for the first 30 days. Ask what event would create revenue: an agency order, a provider purchase, a partnership, or compliant furnishing and reimbursement. If the event cannot be stated plainly, the lane is exploratory.
 
 ### Step 3: Search the source that matches the question
 
 Use VA schedule and procurement pages for category and vehicle research; SAM.gov for active federal notices; USAspending for award and recipient patterns; CMS for reimbursement, supplier, fee schedule, and claims context; HRSA for recipients, active grants, and health-center sites; Grants.gov for open assistance; Federal Register for policy changes.
 
+Preserve each record's native unit and period. Claims, services, suppliers, allowed amounts, obligations, outlays, awards, and sites are not interchangeable and should not be added into an opportunity-size estimate.
+
 ### Step 4: Verify status and constraint
 
 Check notice type, deadline, amendment, project period, data year, proposed versus final rule, enrollment restriction, and the definition behind every metric. Recheck the 2026 DMEPOS moratorium immediately before publishing or advising action.
+
+For the moratorium, verify whether the action is an initial enrollment or non-exempt change in majority ownership and whether a listed company type applies. For Round 2028, distinguish preparation guidance from an announced registration or bid window.
 
 ### Step 5: Choose target and revenue motion
 
 Name the agency, provider, recipient, prime, distributor, manufacturer, program office, or policy owner. Then select one motion. Do not turn a CMS data record into a sales lead unless a separate buyer path exists.
 
+Separate the **clinical user**, **economic buyer**, **procurement route**, and **compliance owner**. Outreach follows the economic and access roles; discovery incorporates the clinical user.
+
 ### Step 6: Build a compliant contact path and next action
 
 Prefer procurement contacts, schedule support, program offices, official vendor registration, recipient leadership, prime or distributor business-development roles, and documented source contacts. The next action should validate category fit, active need, purchasing authority, or partner role.
+
+Match the opening to the lane. Follow notice instructions for agency procurement; give a VA holder or distributor exact category fit and delivery capability; ask a funded provider how related purchasing is handled without implying grant money is available; and route Medicare readiness questions to the official contractor, accreditor, or qualified advisor. Source contacts may be intended for procedural questions, not promotion.
+
+## Healthcare qualification gates
+
+Score fit High, Medium, or Low, then apply these gates before a row reaches workflow:
+
+| Gate | Pass condition | Downgrade or reject when |
+|---|---|---|
+| Product gate | Exact product/service and use case match the record | Match depends on generic terms such as medical, equipment, or rural |
+| Period gate | Notice, rule, award, project, or dataset period is recorded and useful | Deadline passed, data lag is material, or status is unknown |
+| Authority gate | Buyer, recipient, contract holder, or compliance owner can be named | Only a clinical user or unrelated directory entry is known |
+| Route gate | A bid, order, billing, distributor, partner, or monitoring path is supported | The record shows context but no legitimate action route |
+| Readiness gate | Known enrollment, accreditation, licensing, vehicle, geography, and capacity constraints are manageable | A hard requirement is unmet or not yet understood |
+| Evidence gate | Official source supports the plain-language claim and caveat | The interpretation exceeds the source definition |
+
+Mark **Pursue**, **Validate**, **Monitor**, or **Reject**. Record why: wrong product/entity, expired, ineligible, geography, vehicle or compliance gap, no purchasing path, duplicate, or stale data. Every monitor row needs a trigger and recheck date.
 
 ## Worked illustrative example
 
@@ -115,13 +168,15 @@ Next action: Map exact product codes and schedule requirements, then identify th
 
 ## 30-day action plan
 
-Week 1: Complete product/readiness profile and select two priority lanes.
+| Period | Work | Deliverable |
+|---|---|---|---|
+| Days 1-5 | Build offer-level readiness rows; verify codes and gaps; choose two lanes | Readiness inventory |
+| Days 6-10 | Check moratorium, VA route, Round 2028 relevance, and official sources | Constraint memo and 15-25 authenticated records |
+| Days 11-17 | Apply gates and rejection codes; shortlist up to 10 signals | Five rows selected for validation |
+| Days 18-24 | Map user, buyer, access route, compliance owner, and contact path; resolve the largest unknown | Decision-ready action rows |
+| Days 25-30 | Prepare approved outreach or readiness tasks; schedule status rechecks; review lessons | Owned actions and next-month scan brief |
 
-Week 2: Build a source-backed list of 10 agencies, recipients, primes, distributors, or providers. Label each record active, historical, policy, route, or research only.
-
-Week 3: Qualify the top five by category fit, geography, current status, purchasing path, and compliance constraints.
-
-Week 4: Create owned next actions for the strongest rows and place the rest in monitor or rejected states. Recheck any time-sensitive CMS or solicitation status.
+Track exact offer match, official source, period, target, route, constraint, next action, owner, and recheck date. Commercial outcomes include qualified conversation, partner review, bid/no-bid decision, readiness work, or disqualification.
 
 ## Limits and warnings
 
@@ -146,6 +201,8 @@ Week 4: Create owned next actions for the strongest rows and place the rest in m
 - Assign a target, contact path, and one validation task.
 - Screen out records that rely on broad healthcare keywords only.
 - Recheck live official sources before acting.
+- Confirm the dataset or award period before comparing organizations.
+- Give every monitor item a trigger and recheck date.
 
 ## Evidence and source ledger
 
@@ -162,6 +219,10 @@ Week 4: Create owned next actions for the strongest rows and place the rest in m
 | HRSA active and awarded grant datasets | HRSA, `https://data.hrsa.gov/data/download?titleFilter=Grants` | 2026-07-10 | FY2026 is preliminary; active grant definition uses project end date. |
 | HRSA FY2025 grants dashboard | HRSA, `https://data.hrsa.gov/topics/grants/grants-dashboard` | 2026-07-10 | Program total, not product demand or company opportunity. |
 | HRSA health center and site data | HRSA, `https://data.hrsa.gov/topics/health-centers` | 2026-07-10 | Funded-provider context; validate purchasing role and program fit. |
+| Round 2028 DMEPOS competitive-bidding categories and target schedule | CMS, `https://www.cms.gov/newsroom/fact-sheets/durable-medical-equipment-prosthetics-orthotics-supplies-competitive-bidding-program-updates` | 2026-07-11 | CMS labels dates as targets; verify registration and bid-window status before acting. |
+| Competitive-bidding temporary gap and Round 2028 status | CMS/CBIC, `https://dmeposcompetitivebid.cms.gov/` | 2026-07-11 | Program-status page, not a contract award or proof that bidding is open. |
+| Competitive-bidding accreditation and licensing readiness | CMS, `https://www.cms.gov/medicare/payment/fee-schedules/dmepos-competitive-bidding/quality-standards-accreditation-licensing` | 2026-07-11 | Requirements are location and product-category sensitive; verify current guidance. |
+| VA FSS product and contract research tool | VA OPAL, `https://www.va.gov/opal/nac/fss/etoolsVA.asp` | 2026-07-11 | Catalog and contract evidence do not prove current agency demand. |
 
 ## Visual and table specifications
 
@@ -169,6 +230,8 @@ Week 4: Create owned next actions for the strongest rows and place the rest in m
 2. Current-constraint callout. State the CMS-reported February 27, 2026 moratorium start, six-month term, possible extension, affected-category caveat, source URL, and as-of date. Do not show a countdown because status can change.
 3. Healthcare context card. Show CMS NHE growth and HRSA FY2025 grant total as separate context metrics with separate definitions. Never add them together or label them DME opportunity size.
 4. Source-to-action example. Use a clearly illustrative product and generic organizations; no fake award identifiers, contacts, or customer outcomes.
+5. Buyer-versus-readiness decision tree. Start with "Does the record show an active purchase or application?" Branch to agency/recipient/channel qualification when yes and compliance, policy, or historical-market validation when no. End states: Pursue, Validate, Monitor, Reject. Label the framework illustrative.
+6. Thirty-day healthcare action board. Four horizontal swimlanes: product readiness, source verification, buyer/channel validation, and workflow. Show required fields and decision gates, but use no invented conversion benchmark. Include a visible recheck marker for the moratorium and Round 2028 dates.
 
 ## Gated landing-page copy
 

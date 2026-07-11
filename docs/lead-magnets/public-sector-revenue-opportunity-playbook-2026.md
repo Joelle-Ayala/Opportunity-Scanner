@@ -4,7 +4,7 @@ Subtitle: A source-backed guide to finding agencies, funded buyers, recipients, 
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 10, 2026.
+As-of date: July 11, 2026.
 
 ## Offer and audience
 
@@ -18,7 +18,9 @@ Public-sector opportunity research is often reduced to searching for an open con
 
 The market is meaningful, but broad totals are not a company's addressable opportunity. The Small Business Administration reported that in fiscal year 2025 nearly 28 percent of prime federal contract dollars, about $179 billion, went to small businesses. Including prime contracts and subcontracts, SBA reported nearly $273 billion awarded to small businesses. Those figures describe federal contracting performance, not all government spending and not the opportunity available to any one company.
 
-The practical advantage comes from narrowing the evidence. A good opportunity row preserves the source, identifies the most plausible target, chooses the right revenue motion, recommends a credible contact path, and assigns a next action that reduces uncertainty.
+A useful opportunity row preserves the source, names the target and revenue motion, recommends a credible contact path, and assigns an action that reduces uncertainty.
+
+The operating unit is a decision-ready signal: one official record, one interpretation, one target, one revenue motion, and one owned next action. If an element is missing, the record remains research rather than pipeline.
 
 ## State of the channel
 
@@ -54,35 +56,66 @@ Business implication: More records can create more noise unless source type, tim
 
 Recommended action: Require every surfaced signal to pass the qualification test below before it enters a CRM or workflow.
 
+## Source and action map
+
+Start with the business question, then select the source. Searching every portal for the same phrase usually creates duplicate noise.
+
+| Business question | Primary official source | What to capture | Best first action | Do not infer |
+|---|---|---|---|---|
+| What might an agency buy next? | Agency procurement forecast; SAM.gov pre-solicitation or sources-sought notice | Agency, office, category, estimated timing, notice type, response instruction | Validate fit; respond to market research when appropriate; watch for solicitation | Forecasted work will occur, or that a response is a bid |
+| What can we bid now? | SAM.gov solicitation and amendments | Notice ID, due date and time zone, set-aside, NAICS, place of performance, contact, amendment status | Run a bid/no-bid review and confirm registration readiness | The original notice remains current after amendments |
+| Who has bought adjacent work? | USAspending contract awards; SAM.gov award notices | Awarding office, recipient, award type, description, action date, period of performance | Research incumbent, vehicle, recompete timing, and subcontract route | A historical award is open or will recur unchanged |
+| Who received program money? | USAspending assistance awards; agency recipient data | Recipient, program, award type, amount definition, project period, geography | Validate funded activity and identify buyer or partner roles | Recipient has uncommitted funds or current purchase intent |
+| Can we apply for assistance? | Grants.gov posted opportunity and agency instructions | Eligibility, funding instrument, deadline, cost share, allowable activities, attachments | Complete an eligibility and capacity screen before writing | A for-profit company is eligible because the topic fits |
+| What rule may change demand? | Federal Register and agency rulemaking page | Proposed/final status, comment or effective date, affected entities, docket | Assign policy owner; assess operational impact; comment when relevant | A proposal is final or an announcement creates a purchase |
+| Who can help us enter? | SBA subcontracting guidance, agency small-business office, prime award data | Prime, vehicle, category, subcontracting or supplier route | Prepare a specific partner hypothesis and capability proof | A prime needs another generic vendor introduction |
+
+For state and local work, use the jurisdiction's official procurement, grants, budget, and legislative sources. Federal portals do not provide a complete picture of state and local opportunities, and portal labels are not automatically comparable across jurisdictions.
+
 ## The seven-step opportunity method
 
 ### Step 1: Translate the company, not just its keywords
 
 Start with the company's products, services, customers, outcomes, delivery model, geography, and constraints. Translate commercial language into public-sector mission problems, procurement categories, program terminology, and likely buyer types. A music network might map to creative workforce, city events, arts education, tourism, and parks programming. A DME supplier might map to VA procurement, rehabilitation, prosthetics, funded providers, reimbursement, and channel partners.
 
-Output: a short company profile plus five to ten source-search concepts.
+Output: a short company profile, five to ten source-search concepts, and a "not a fit" list that prevents generic words from overwhelming the scan.
 
 ### Step 2: Search by source purpose
 
 Use SAM.gov for federal procurement notices and stage. Use USAspending for federal award and recipient evidence. Use Grants.gov for federal assistance opportunities and status. Use Federal Register for rules, notices, and policy demand. Use agency forecasts and official state or local portals for earlier demand and non-federal activity.
 
-Output: records grouped by source and what each source can prove.
+Use a broad discovery pass to learn agency language, then a verification pass to capture the official record's identifier, status, dates, organization, amendments, and direct URL.
+
+Output: records grouped by what each source can prove, with duplicates linked rather than counted separately.
 
 ### Step 3: Separate live opportunity from market evidence
 
 Assign one status: active opportunity, historical market evidence, policy signal, source route, or research only. Verify dates, notice type, amendments, eligibility, and whether the record is still current.
 
-Output: a defensible source-status label and time-sensitivity level.
+Use the status that drives behavior:
+
+- **Active opportunity:** a currently actionable solicitation or posted assistance notice, subject to eligibility and deadline checks.
+- **Early demand signal:** a forecast, sources-sought notice, request for information, or pre-solicitation record.
+- **Historical market evidence:** an award, prior solicitation, archived grant, or past recipient record.
+- **Policy signal:** a proposed rule, final rule, notice, guidance change, or program announcement.
+- **Route evidence:** a schedule, vendor portal, contract vehicle, small-business office, or official partner pathway.
+- **Research only:** relevant context without a supported target or action.
+
+Output: a defensible source-status label, time-sensitivity level, and one-sentence limitation.
 
 ### Step 4: Name the target
 
 Identify who controls money, purchasing, implementation, or access. The target may be an agency, procurement office, program office, funded buyer, award recipient, prime vendor, distributor, grantee, channel partner, or policy owner.
 
-Output: one primary target organization and buyer/partner type.
+Separate three roles when possible: the **economic buyer** controls budget, the **program owner** defines the need, and the **access point** controls the purchasing or partnership route. They may sit in different organizations.
+
+Output: one primary target organization and buyer/partner type, plus the program owner or access point when distinct.
 
 ### Step 5: Choose the revenue motion
 
 Use the motion that matches the evidence: Direct Apply, Sell to Agency, Sell to Funded Buyer, Sell to Award Recipient, Partner with Recipient, Channel / Distributor Motion, Monitor Policy, or Research Only.
+
+Use **Direct Apply** only with supported eligibility, recipient motions only with a plausible funded need, and **Channel / Distributor Motion** when an existing vehicle or contract holder makes indirect access more credible.
 
 Output: one primary motion plus a short reason alternatives were rejected.
 
@@ -90,13 +123,38 @@ Output: one primary motion plus a short reason alternatives were rejected.
 
 Start with source-native contacts, procurement offices, program offices, vendor registration, recipient leadership, prime contractors, or official portals. Personal email enrichment is optional and should not replace a better official route.
 
-Output: a contact strategy, recommended roles, and a manual research instruction when a named person is not yet supported.
+Use this contact-path ladder, stopping at the first route that fits the record:
+
+1. Follow the response or application instructions in the official notice.
+2. Use the named contracting, grants-management, or program contact for a relevant procedural question.
+3. Use the agency vendor portal, forecast contact, small-business office, industry liaison, or program office.
+4. For recipient-led motions, use the recipient's procurement page, program leadership, operations lead, or partnership route.
+5. For channels, identify the contract holder, distributor category owner, supplier-diversity team, or subcontract manager and lead with a specific gap hypothesis.
+6. Use person-level enrichment only after the organization, role, and reason for contact are supported.
+
+The opening message should cite the source and ask a bounded question. "We saw your award" is weak. "Your published project description includes regional employer training; we support provider coordination and want to confirm whether implementation partners are selected locally" gives the recipient something concrete to answer.
+
+Output: a primary route, fallback route, recommended role, outreach premise, and manual research instruction when a named person is not yet supported.
 
 ### Step 7: Assign the next best action
 
 The action should reduce the largest uncertainty. Examples include validating an amendment, checking eligibility, registering in a vendor portal, researching the incumbent prime, confirming a recipient's program scope, or assigning a CRM task with the source attached.
 
+Match the task to the largest uncertainty: timing, scope fit, access route, or readiness. "Contact agency" is incomplete; specify the role, question, due date, and expected answer.
+
 Output: one owned task with evidence, due date, and follow-up state.
+
+## Fifteen-minute triage protocol
+
+Use this before deeper research. It keeps attractive but unusable records from consuming the week.
+
+**Minutes 0-3: authenticate.** Confirm official domain, identifier, record type, updated date, amendments, and instructions.
+
+**Minutes 4-7: test fit.** Find the exact scope language that maps to the offer; downgrade broad keyword matches.
+
+**Minutes 8-10: test access.** Check timing, eligibility or set-aside, geography, vehicle, registration, and the largest readiness gap.
+
+**Minutes 11-15: decide.** Name target, motion, and contact route, then mark **pursue**, **validate**, **monitor**, or **reject** with a reason code.
 
 ## Qualification scorecard
 
@@ -113,6 +171,17 @@ Score each dimension High, Medium, or Low rather than inventing false precision:
 | Next action | Can one task reduce uncertainty now? | The only action is vague additional research. |
 
 High Actionability requires strong fit, credible evidence, a named target, and a concrete next action. Medium Actionability needs validation. Low Actionability remains market context or is screened out.
+
+Add four hard gates after the scorecard:
+
+| Gate | Pass condition | If it fails |
+|---|---|---|
+| Truth gate | The source supports the row's plain-language claim | Correct the claim or reject the row |
+| Access gate | A legitimate application, procurement, partner, or monitoring route exists | Keep as market evidence, not pipeline |
+| Capacity gate | The company can plausibly deliver within scope, geography, timing, and compliance constraints | Seek a partner or decline |
+| Economics gate | The likely effort and route justify further diligence | Set a research cap or reject |
+
+The economics gate uses known effort drivers such as proposal burden, registrations, inventory, cost share, partner margin, and delivery capacity rather than an invented win probability.
 
 ## Worked illustrative example
 
@@ -132,13 +201,17 @@ Next action: Confirm the active project period and implementation model, then pr
 
 ## 30-day operating plan
 
-Week 1: Profile the company, define search concepts, and run the first source scan.
+| Period | Work | Deliverable | Review question |
+|---|---|---|---|
+| Days 1-3 | Build company translation, exclusions, readiness inventory, and two priority motions | One-page opportunity profile | Are we searching for things we can actually sell or deliver? |
+| Days 4-7 | Search one demand source, one award source, one assistance source, and one policy/forecast source | 20-30 authenticated records with source type and dates | Did we preserve what each record proves? |
+| Days 8-12 | Run fifteen-minute triage; deduplicate related records; apply rejection codes | Shortlist of 10-15 signals | Which search terms created noise? |
+| Days 13-17 | Complete target, motion, contact path, limitation, and readiness gap for each shortlist row | Five decision-ready opportunity rows | Can a new teammate understand why each row matters? |
+| Days 18-22 | Execute bounded validation: questions, portal checks, incumbent research, or recipient-scope confirmation | Evidence attached to each validation task | Did the answer change the motion or actionability? |
+| Days 23-26 | Move qualified rows to CRM or workflow; prepare source-led outreach or bid/apply decisions | Owners, due dates, follow-up states | Is every task specific enough to close? |
+| Days 27-30 | Review outcomes and query performance; archive stale records; schedule rechecks | Mini retrospective and next scan brief | What should be searched, stopped, or monitored next month? |
 
-Week 2: Review the top 10 to 20 signals, reject weak fits, and assign target, motion, and contact path.
-
-Week 3: Move the strongest five rows into workflow with source links, owners, and next actions.
-
-Week 4: Record outcomes: validated, contacted, monitoring, rejected, or waiting. Use those results to refine queries and qualification rules.
+Measure evidence completeness, rejection reasons, and validation outcomes before drawing conclusions from early revenue metrics.
 
 ## Limits and responsible use
 
@@ -162,6 +235,8 @@ Week 4: Record outcomes: validated, contacted, monitoring, rejected, or waiting.
 - Preserve the source in the workflow.
 - Record rejection reasons as well as pursued rows.
 - Recheck live records before outreach, application, or bid activity.
+- State what the source does not prove.
+- Close or refresh records whose dates or status have changed.
 
 ## Evidence and source ledger
 
@@ -174,12 +249,17 @@ Week 4: Record outcomes: validated, contacted, monitoring, rejected, or waiting.
 | Recipient definition and award research | USAspending, `https://www.usaspending.gov/featured-content/data-definitions/what-is-a-recipient` | 2026-07-10 | Recipient does not automatically mean buyer. |
 | Grant opportunity statuses | Grants.gov, `https://grants.gov/help/search-grants/search-grants-tab` | 2026-07-10 | A forecast is not guaranteed to become an announcement. |
 | Agency procurement forecast directory | Acquisition.gov, `https://www.acquisition.gov/procurement-forecasts` | 2026-07-10 | Planning signal, not a solicitation or award. |
+| Award definition and distinction from payment | USAspending, `https://www.usaspending.gov/featured-content/data-definitions/what-is-an-award` | 2026-07-11 | Awards include multiple assistance and contract types; inspect the record. |
+| Forecast limitation | Grants.gov, `https://grants.gov/help/search-grants/forecast-tab` | 2026-07-11 | Grants.gov states a forecast is planned and is not guaranteed to become an FOA. |
+| Federal rules, proposed rules, and notices | Federal Register, `https://www.federalregister.gov/reader-aids/using-federalregister-gov` | 2026-07-11 | Verify document type, dates, agency, and whether a rule is proposed or final. |
 
 ## Visual and table specifications
 
 1. Federal small-business contracting context card. Show FY2025 prime small-business contracts ($179B) and prime plus subcontracts (nearly $273B) as two separately labeled reported figures. Do not add or infer categories. Source: SBA FY2025 release. Alt text must state both figures and that they describe federal small-business contracting.
 2. Source-to-action flow. Illustrative framework: company profile -> official record -> status -> target -> revenue motion -> contact path -> next action. Label it illustrative, not measured data.
 3. Source comparison table. Columns: source, what it can show, what it cannot prove, typical action. Use only definitions from official source documentation.
+4. Opportunity qualification funnel. Show authenticated records -> triaged signals -> validated targets -> workflow-ready actions. Use blank count fields or clearly labeled illustrative counts; do not imply a benchmark conversion rate. Include rejection-reason callouts to show that screening is a useful output.
+5. Contact-path ladder. A decision graphic moving from source-native instructions to official offices, recipient roles, channel roles, and finally optional person-level enrichment. Each rung should include one example and a "use when" label. The visual must not suggest that personal email is required for actionability.
 
 ## Gated landing-page copy
 
