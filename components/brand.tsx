@@ -119,41 +119,50 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
 }
 
 export function SiteFooter() {
-  const links = [
+  const productLinks = [
     ["Public-Sector Revenue", "/public-sector-revenue"],
     ["Solutions", "/solutions"],
     ["Sample Reports", "/examples"],
     ["Source Coverage", "/source-coverage"],
-    ["Funded Buyers", "/solutions/funded-buyer-intelligence"],
-    ["Sales Workflow", "/solutions/public-sector-sales-workflow"],
-    ["Contact Paths", "/solutions/contact-paths-and-enrichment"],
-    ["Healthcare", "/industries/healthcare-dme-medical-supply"],
-    ["Education & Workforce", "/industries/education-workforce-training"],
-    ["Arts & Creative Economy", "/industries/arts-creative-economy-live-events"],
-    ["Software & B2B Services", "/industries/software-b2b-services-ai"],
-    ["Infrastructure", "/industries/construction-infrastructure-engineering"],
-    ["Clean Energy", "/industries/clean-energy-facilities-sustainability"],
-    ["Manufacturing", "/industries/manufacturing-supply-chain-logistics"],
-    ["Nonprofits", "/industries/nonprofits-community-services-human-services"],
     ["Resources", "/resources"],
     ["Free Guides", "/guides"],
-    ["Privacy", "/privacy"],
     ["Pricing", "/pricing"]
+  ];
+  const trustLinks = [
+    ["About", "/about"],
+    ["Terms", "/terms"],
+    ["Privacy", "/privacy"]
   ];
 
   return (
     <footer className="border-t border-line bg-ink">
-      <div className="mx-auto grid max-w-7xl gap-6 px-6 py-8 text-sm text-muted lg:grid-cols-[1fr_1.4fr]">
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 text-sm text-muted lg:grid-cols-[1.15fr_1fr_.7fr]">
         <div>
           <span className="font-semibold text-white">Opportunity Scanner by Opportunity Systems</span>
           <p className="mt-2 max-w-md text-slate-300">Public-sector money-flow and buying-channel intelligence for companies exploring a new revenue path.</p>
+          <a className="mt-4 inline-block font-semibold text-slate-200 hover:text-white" href="mailto:support@opportunityscanner.ai">
+            support@opportunityscanner.ai
+          </a>
         </div>
-        <nav className="flex flex-wrap gap-x-5 gap-y-3">
-          {links.map(([label, href]) => (
-            <a key={href} href={href} className="text-slate-300 hover:text-white">
-              {label}
-            </a>
-          ))}
+        <nav aria-label="Product and resources">
+          <p className="font-semibold text-white">Explore</p>
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-3">
+            {productLinks.map(([label, href]) => (
+              <a key={href} href={href} className="text-slate-300 hover:text-white">
+                {label}
+              </a>
+            ))}
+          </div>
+        </nav>
+        <nav aria-label="Company and legal">
+          <p className="font-semibold text-white">Company &amp; trust</p>
+          <div className="mt-3 grid gap-3">
+            {trustLinks.map(([label, href]) => (
+              <a key={href} href={href} className="text-slate-300 hover:text-white">
+                {label}
+              </a>
+            ))}
+          </div>
         </nav>
       </div>
     </footer>
