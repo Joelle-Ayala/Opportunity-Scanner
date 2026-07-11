@@ -46,12 +46,12 @@ function HeroSignalVisual() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
         <div className="relative flex min-h-[260px] flex-col justify-end p-5 text-white">
-          <Badge tone="green">Example customer moment</Badge>
+          <Badge tone="green">From signal to next step</Badge>
           <h2 className="mt-3 text-xl font-semibold leading-7">
             A founder sees public-sector demand they were not tracking.
           </h2>
           <p className="mt-2 max-w-md text-sm leading-6 text-slate-200">
-            The scan should feel like a revenue team opening a new channel, not reading a static AI report.
+            Open a new revenue channel with sourced targets, a clear pursuit path, and a practical next action.
           </p>
         </div>
       </div>
@@ -75,10 +75,10 @@ function CustomerVisualSection() {
   return (
     <section className="border-y border-line bg-white">
       <div className="mx-auto max-w-7xl px-6 py-12">
-        <SectionIntro title="Built for operators who need another path to revenue, not another database to search." eyebrow="What buyers should picture">
+        <SectionIntro title="Find a new path to revenue without searching another database." eyebrow="How teams use it">
           <p>
-            The page should make a prospect imagine their own team finding buyer targets, funded
-            partners, public programs, and next steps they did not know to look for.
+            Find buyer targets, funded partners, public programs, and practical next steps your
+            team may not know to search for today.
           </p>
         </SectionIntro>
         <div className="mt-6 grid gap-5 lg:grid-cols-3">
@@ -332,9 +332,8 @@ export default function HomePage({
       <section className="mx-auto max-w-7xl px-6 py-12">
         <SectionIntro title="Three ways teams use Opportunity Scanner" eyebrow="Solutions">
           <p>
-            The product is designed for companies that do not yet know public-sector revenue is a
-            practical channel. Start with a scan, then route the best rows into sales, partnerships,
-            research, or workflow.
+            Start with a scan to see where public-sector revenue may fit, then route the strongest
+            opportunities into sales, partnerships, research, or your existing workflow.
           </p>
         </SectionIntro>
         <div className="mt-6 grid gap-5 lg:grid-cols-3">

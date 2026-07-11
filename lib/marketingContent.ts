@@ -1475,39 +1475,39 @@ const baseResourceArticles: ResourceArticle[] = [
   },
   {
     slug: "use-sample-opportunity-reports-in-outbound",
-    title: "How to Use Sample Opportunity Reports in Outbound",
+    title: "How to Use Sample Opportunity Reports to Plan Public-Sector Outreach",
     description:
-      "A practical outbound motion: show a prospect an industry example, run a free mini-scan, then invite them to unlock the full opportunity table.",
+      "Use industry sample reports to evaluate public-sector fit, understand opportunity evidence, and plan more relevant outreach.",
     category: "Public-Sector Sales",
     readTime: "2 min read",
     primaryKeyword: "sample opportunity reports",
     funnelStage: "Decision",
     intro:
-      "Most companies need to see public-sector opportunity before they believe it applies to them. A sample report solves that problem by making the idea concrete: here is a fictional company in your industry, here are real public-sector source examples, here are possible revenue motions, and here is what the next action could look like.",
+      "A sample opportunity report shows how public records can become buyer targets, partner paths, revenue motions, and owned next steps. Use the closest industry example to understand the method, then test your own company before acting on any opportunity.",
     sections: [
       {
-        heading: "Lead with an industry example, not a generic pitch",
+        heading: "Start with the closest industry and business model",
         body: [
-          "If a prospect sells into healthcare, construction, education, clean energy, software, manufacturing, arts, or community services, send an example from that industry first.",
-          "The point is not to pretend the sample is their report. The point is to show the pattern: public records can become buyer targets, partner targets, contact paths, and outreach actions."
+          "Choose a sample that resembles what your company sells and how it reaches customers. The most useful example will show familiar buyers, funding patterns, delivery constraints, and partner routes.",
+          "Treat fictional company details and suggested actions as illustrations. The linked public records show the evidence pattern, but only a company-specific scan can test your actual offers, geography, and capacity."
         ]
       },
       {
-        heading: "Then offer a free mini-scan",
+        heading: "Read each row from evidence to action",
         body: [
-          "A strong outbound sequence can invite the prospect to run a free scan from their website. The free version should show a few real signals and the total signal count, while making the full action layer clear.",
-          "That creates a natural paid unlock: all sourced rows, contact paths, enrichment where appropriate, CRM-ready notes, first-touch angles, source links, and workflow export."
+          "Check the official source, record status, target organization, fit explanation, revenue motion, contact path, and next action together. A historical award, open solicitation, forecast, and grant notice each support different decisions.",
+          "Use the report to decide whether to sell to an agency, approach a funded buyer, partner with a recipient, apply directly, monitor a developing program, or stop pursuing a weak match."
         ]
       },
       {
-        heading: "Make the handoff actionable",
+        heading: "Turn the pattern into relevant outreach",
         body: [
-          "The outbound asset should give the recipient something they can use immediately: who the target might be, why the public source matters, which revenue motion fits, and what the next best action should be.",
-          "For higher-value prospects, the same structure can become a custom mini-scan that includes a few real company-specific signals and a clear invitation to unlock the complete report."
+          "Build outreach around the public need and the target's role, not a generic product pitch. Ask for the right routing, vendor process, program owner, or partnership path instead of assuming every opportunity begins with a personal email.",
+          "Before contacting anyone, reopen the official source and confirm status, deadlines, eligibility, and response instructions. Then assign the row to an owner with one clear next step."
         ]
       }
     ],
-    cta: "Browse the sample reports, then run a scan for a real company to turn the example into an opportunity table."
+    cta: "Browse an industry sample, then scan your company to build an opportunity table around your actual offers."
   },
   {
     slug: "healthcare-public-sector-opportunities",
@@ -1683,46 +1683,46 @@ const baseResourceArticles: ResourceArticle[] = [
   },
   {
     slug: "industry-pages-paid-report-conversion",
-    title: "How to Turn Industry Pages into Paid Report Conversion Paths",
+    title: "How to Use Industry Opportunity Guides and a Paid Report",
     description:
-      "A practical content and outbound playbook for using industry pages, sample reports, and mini-scans to convert prospects into paid Opportunity Scanner reports.",
+      "Use industry opportunity guides to map public-sector demand, test your company with a free scan, and decide whether a full action report is worthwhile.",
     category: "Public-Sector Sales",
     readTime: "3 min read",
     primaryKeyword: "industry pages paid report conversion",
     funnelStage: "Decision",
     intro:
-      "Industry pages should do more than rank for search terms. For Opportunity Scanner, each industry page should help a prospect understand the public-sector demand pattern, see a concrete sample report, run a free scan, and understand why the paid action layer is worth unlocking.",
+      "Public-sector demand looks different in healthcare, education, creative services, software, construction, energy, manufacturing, and community services. An industry guide helps you recognize the relevant money flows, buyers, recipients, and pursuit paths. A scan then tests those patterns against your company, while the full report organizes qualified signals into work your team can execute.",
     sections: [
       {
-        heading: "Use the industry page to make the invisible channel visible",
+        heading: "Map how public money moves in your industry",
         body: [
-          "Most prospects do not wake up searching for public-sector opportunity intelligence. They need to see how public money connects to their market: healthcare, education, arts, software, construction, clean energy, manufacturing, or community services.",
-          "The page should explain the signal types, revenue motions, contact paths, and example rows in language that fits that industry."
+          "Start with the opportunity lanes that match your market. Healthcare may involve agency procurement, funded providers, reimbursement, or distributors. Education may involve districts, workforce boards, grants, staffing, and vendor portals. Creative companies may find city events, arts funding, tourism, and recipient partnerships.",
+          "Use the guide to identify likely signal types and targets, then follow the official sources to understand what each record proves. A procurement notice, historical award, grant, and forecast are useful for different reasons."
         ]
       },
       {
-        heading: "Pair every industry page with a sample report",
+        heading: "Compare the guide with a sample report",
         body: [
-          "A sample report turns the concept into something concrete. It shows fictional-company context, real public-source examples, opportunity rows, source links, revenue motions, contact paths, and next best actions.",
-          "That makes outbound easier too: send the sample first, then invite the prospect to run a free scan for their own company."
+          "An industry sample shows how source evidence becomes a target, revenue motion, contact path, and next action. Choose the sample closest to your business model and pay attention to both qualified and rejected rows.",
+          "Samples demonstrate the method; they do not prove that the same opportunities fit your company. Check source dates and status, then use a company-specific scan to test your offer, geography, eligibility, and capacity."
         ]
       },
       {
-        heading: "Make the free-to-paid unlock obvious",
+        heading: "Use the free scan to test the strongest lanes",
         body: [
-          "The free scan should show real value: a few sourced signals, total signal count, target lanes, and source summaries. It should also make the paid value obvious: all rows, contact paths, enrichment where appropriate, outreach drafts, CRM-ready notes, and workflow export.",
-          "The paid report is not paying for more words. It is paying for the action layer."
+          "A free scan gives you a small set of sourced signals and a view of the strongest opportunity lanes. Review whether the targets are credible, the source records are current, and the recommended motions match how your company can sell or partner.",
+          "A small result can still be useful. It may show that a narrower offer, different geography, recipient strategy, or monitoring plan is more realistic than pursuing a direct contract or grant."
         ]
       },
       {
-        heading: "Turn content into outbound assets",
+        heading: "Decide whether the full action table saves meaningful work",
         body: [
-          "Each industry page should create reusable social, newsletter, and outbound angles without exposing that production planning inside the article itself. The content should be useful even if someone never buys immediately.",
-          "That is the compounding loop: industry education creates trust, sample reports create belief, mini-scans create relevance, and paid reports create action."
+          "The full report adds all qualified rows, complete source details, buyer and partner targets, contact strategies, next best actions, CRM-ready notes, outreach angles, and workflow-ready data. The value is the research and routing work already organized for execution.",
+          "Before purchasing, ask whether your team needs the additional rows and action fields, can assign owners, and has capacity to follow through. A report is most useful when credible opportunities can move into a real sales, partnerships, or research workflow."
         ]
       }
     ],
-    cta: "Use the industry pages and sample reports to invite prospects into a free scan, then unlock the full opportunity table."
+    cta: "Explore your industry, review a sample report, and run a free scan before deciding whether you need the full action table."
   }
 ];
 
@@ -1805,7 +1805,7 @@ const resourceFeaturedImages: Record<string, { image: string; alt: string }> = {
   },
   "industry-pages-paid-report-conversion": {
     image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80",
-    alt: "Go-to-market team planning industry pages and conversion paths"
+    alt: "Business team reviewing an industry opportunity report"
   }
 };
 

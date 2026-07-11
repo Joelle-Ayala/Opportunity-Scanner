@@ -22,23 +22,21 @@ export default function ExamplesPage() {
 
       <MarketingHero
         eyebrow="Sample reports"
-        title="Show prospects what a public-sector opportunity scan can look like in their industry."
+        title="See what a public-sector opportunity scan can reveal in your industry."
         secondaryLabel="Run a scan"
         secondaryHref="/#scan"
       >
         <p>
-          These examples use fictional companies with real public-sector source examples. They are
-          designed for buyers who need to see how public records become revenue motions, contact
-          paths, next actions, and outreach angles.
+          These examples pair fictional companies with real public-sector source records so you can
+          see how evidence becomes revenue motions, contact paths, next actions, and outreach angles.
         </p>
       </MarketingHero>
 
       <section className="mx-auto max-w-7xl px-6 py-12">
-        <SectionIntro title="Industry sample reports" eyebrow="Outbound tools">
+        <SectionIntro title="Industry sample reports" eyebrow="Explore examples">
           <p>
-            Use these pages in outbound when a prospect needs a concrete example before running a
-            free scan. Each report shows sourced opportunity rows and how a paid scan would unlock
-            the deeper action layer.
+            Choose the example closest to your business to review sourced opportunity rows, likely
+            buyer and partner paths, and the additional action details included in a full report.
           </p>
         </SectionIntro>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
