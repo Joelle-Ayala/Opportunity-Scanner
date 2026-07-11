@@ -1,3 +1,5 @@
+import { resourceArticleRefreshes } from "./resourceArticleRefreshes";
+
 export type ResourceArticle = {
   slug: string;
   title: string;
@@ -2007,7 +2009,11 @@ function keyTakeawaysForArticle(article: ResourceArticle) {
   ];
 }
 
-export const resourceArticles: ResourceArticle[] = baseResourceArticles.map((article) => {
+export const resourceArticles: ResourceArticle[] = baseResourceArticles.map((baseArticle) => {
+  const article = {
+    ...baseArticle,
+    ...(resourceArticleRefreshes[baseArticle.slug] || {})
+  } as ResourceArticle;
   const visual = resourceFeaturedImages[article.slug] || resourceFeaturedImages["government-spending-growth-channel"];
 
   return {
