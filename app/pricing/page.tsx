@@ -1,30 +1,84 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { CTASection, SectionIntro } from "@/components/marketing";
 
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Start with a free Opportunity Scanner report, then unlock the full action layer with all signals, contact paths, outreach drafts, and workflow export."
+    "Choose a one-time opportunity report or ongoing public-sector opportunity monitoring for your company profiles."
 };
 
-const freeItems = [
-  "2-3 sourced opportunity signals",
-  "Total signals found",
-  "Target lanes and source summaries",
-  "Preview of public-sector fit",
-  "Recommended next steps"
-];
+const plans = [
+  {
+    name: "Report",
+    price: "$49",
+    cadence: "one-time",
+    summary: "A complete opportunity report for one company profile.",
+    badge: "Best first step",
+    tone: "white",
+    features: [
+      "1 full company opportunity report",
+      "All qualified signals and source links",
+      "Revenue motion and next best action",
+      "Contact paths, CRM notes, and outreach angles",
+      "CSV, Markdown, and workflow-ready exports"
+    ]
+  },
+  {
+    name: "Monitor",
+    price: "$99",
+    cadence: "per month",
+    annual: "$990/year when billed annually",
+    summary: "Keep one company profile current with a focused weekly scan.",
+    badge: "2 months free annually",
+    tone: "mist",
+    features: [
+      "Up to 1 company profile scan per week",
+      "Weekly signal refresh and prioritization",
+      "Full action layer for every included scan",
+      "10 contact-enrichment credits per month",
+      "Exports and workflow send"
+    ]
+  },
+  {
+    name: "Growth",
+    price: "$249",
+    cadence: "per month",
+    annual: "$2,490/year when billed annually",
+    summary: "Build a daily opportunity pipeline across multiple profiles.",
+    badge: "For active pursuit",
+    tone: "ink",
+    features: [
+      "Up to 3 company profile scans per day",
+      "Daily signal discovery and prioritization",
+      "Full action layer for every included scan",
+      "30 contact-enrichment credits per month",
+      "Exports and workflow send"
+    ]
+  }
+] as const;
 
-const paidItems = [
-  "Full prioritized opportunity table",
-  "All source links and source records",
-  "Revenue motion for each opportunity",
-  "Next best action for each row",
-  "Contact paths and source-native contacts",
-  "Capped contact enrichment where appropriate",
-  "CRM-ready notes and outreach drafts",
-  "CSV, Markdown, and workflow-ready exports"
+const faqs = [
+  {
+    question: "What is an enrichment credit?",
+    answer:
+      "One credit covers one attempt to enrich a contact path with person-level business contact data. An attempt may not return a verified contact, so every opportunity still includes a source-native route such as a program office, procurement portal, funded recipient, or partner target. Credits reset each billing month and do not roll over."
+  },
+  {
+    question: "How do annual subscriptions work?",
+    answer:
+      "Annual Monitor is $990 and annual Growth is $2,490. Each is billed once per year at the cost of 10 monthly payments, giving you 12 months of access for the price of 10."
+  },
+  {
+    question: "What counts toward a scan limit?",
+    answer:
+      "A scan is one run for one company profile. Monitor includes up to one profile scan each week. Growth includes up to three profile scans each day, whether those runs refresh existing profiles or evaluate new ones."
+  },
+  {
+    question: "Can I buy a paid plan today?",
+    answer:
+      "The free scan is available now. Self-serve paid checkout will open with the revenue-rails rollout; starting with a free scan gives you the right profile and results to upgrade when checkout launches."
+  }
 ];
 
 export default function PricingPage() {
@@ -32,109 +86,153 @@ export default function PricingPage() {
     <main className="min-h-screen bg-field">
       <SiteHeader
         rightSlot={
-          <a href="/#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+          <a
+            href="/#scan"
+            className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
+          >
             Run Free Scan
           </a>
         }
       />
 
-      <MarketingHero
-        eyebrow="Pricing"
-        title="Start with a free scan. Unlock the action layer when you are ready to pursue."
-        secondaryLabel="See how it works"
-        secondaryHref="/how-it-works"
-      >
-        <p>
-          The free report shows real public-sector fit. The full report turns that fit into a
-          workflow-ready opportunity table with source evidence, contact paths, outreach context,
-          and next actions.
-        </p>
-      </MarketingHero>
-
-      <ReportPreview />
-
-      <section className="mx-auto grid max-w-7xl gap-5 px-6 py-12 lg:grid-cols-2">
-        <article className="rounded-lg border border-line bg-white p-6 shadow-panel">
-          <div className="flex items-center justify-between gap-4">
+      <section className="border-b border-line bg-white">
+        <div className="mx-auto max-w-7xl px-4 pb-5 pt-7 sm:px-6 lg:pb-7 lg:pt-9">
+          <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-accent">Free</p>
-              <h2 className="mt-2 text-2xl font-semibold text-ink">Opportunity preview</h2>
+              <Badge tone="blue">Simple pricing</Badge>
+              <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-ink sm:text-4xl">
+                Start with one report. Add monitoring when the channel proves itself.
+              </h1>
             </div>
-            <p className="text-3xl font-semibold text-ink">$0</p>
-          </div>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
-            See whether public-sector money signals are relevant before you commit budget or build a
-            public-sector sales motion.
-          </p>
-          <ul className="mt-5 grid gap-3 text-sm text-slate-700">
-            {freeItems.map((item) => (
-              <li key={item} className="rounded-md border border-line bg-field px-4 py-3">
-                {item}
-              </li>
-            ))}
-          </ul>
-          <a href="/#scan" className="mt-6 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
-            Run Free Scan
-          </a>
-        </article>
-
-        <article className="rounded-lg border-2 border-accent bg-white p-6 shadow-panel">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-accent">Full report</p>
-              <h2 className="mt-2 text-2xl font-semibold text-ink">Action-ready pipeline</h2>
-            </div>
-            <p className="text-right text-sm font-semibold uppercase tracking-wide text-accent">
-              Beta access
+            <p className="max-w-md text-sm leading-6 text-slate-600 lg:text-right">
+              Every path begins with a free scan. Paid plans unlock the complete action layer and
+              repeat scans on a clear schedule.
             </p>
           </div>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
-            Unlock all qualified signals plus the pursuit layer: who to pursue, why now, what to do
-            next, and how to move the row into outreach or CRM. During beta, full report access is
-            request-based while checkout is being finalized.
-          </p>
-          <ul className="mt-5 grid gap-3 text-sm text-slate-700">
-            {paidItems.map((item) => (
-              <li key={item} className="rounded-md border border-line bg-mist px-4 py-3">
-                {item}
-              </li>
-            ))}
-          </ul>
-          <a href="/#scan" className="mt-6 inline-flex rounded-md bg-ink px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800">
-            Start With Free Scan
-          </a>
-        </article>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-7" aria-labelledby="plans-heading">
+        <h2 id="plans-heading" className="sr-only">
+          Opportunity Scanner plans
+        </h2>
+        <div className="grid gap-4 lg:grid-cols-3">
+          {plans.map((plan) => {
+            const featured = plan.tone === "ink";
+            const monitor = plan.tone === "mist";
+
+            return (
+              <article
+                key={plan.name}
+                className={`flex min-w-0 flex-col rounded-lg border p-5 shadow-sm ${
+                  featured
+                    ? "border-ink bg-ink text-white"
+                    : monitor
+                      ? "border-accent bg-mist text-ink"
+                      : "border-line bg-white text-ink"
+                }`}
+              >
+                <div className="flex min-h-7 items-start justify-between gap-3">
+                  <h3 className="text-lg font-semibold">{plan.name}</h3>
+                  <span
+                    className={`rounded-md border px-2 py-1 text-xs font-semibold ${
+                      featured
+                        ? "border-white/20 bg-white/10 text-white"
+                        : "border-line bg-white text-accent"
+                    }`}
+                  >
+                    {plan.badge}
+                  </span>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-end gap-x-2 gap-y-1">
+                  <p className="text-4xl font-semibold leading-none">{plan.price}</p>
+                  <p className={`pb-1 text-sm ${featured ? "text-slate-300" : "text-muted"}`}>
+                    {plan.cadence}
+                  </p>
+                </div>
+                {"annual" in plan ? (
+                  <p className={`mt-2 text-xs font-semibold ${featured ? "text-slate-200" : "text-accent"}`}>
+                    {plan.annual}
+                  </p>
+                ) : (
+                  <p className="mt-2 text-xs font-semibold text-muted">No subscription required</p>
+                )}
+
+                <p className={`mt-4 text-sm leading-6 ${featured ? "text-slate-300" : "text-slate-600"}`}>
+                  {plan.summary}
+                </p>
+
+                <ul className={`mt-4 grid gap-2 border-t pt-4 text-sm ${featured ? "border-white/15 text-slate-200" : "border-line text-slate-700"}`}>
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2">
+                      <span
+                        aria-hidden="true"
+                        className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${featured ? "bg-emerald-300" : "bg-signal"}`}
+                      />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="/#scan"
+                  className={`mt-5 inline-flex w-full justify-center rounded-md px-4 py-3 text-sm font-semibold shadow-sm ${
+                    featured
+                      ? "bg-white text-ink hover:bg-mist"
+                      : "bg-accent text-white hover:bg-[#0A6871]"
+                  }`}
+                >
+                  Start With a Free Scan
+                </a>
+              </article>
+            );
+          })}
+        </div>
+        <p className="mt-4 text-center text-xs leading-5 text-muted">
+          Paid self-serve checkout is coming in the revenue-rails rollout. The free scan is available now.
+        </p>
       </section>
 
       <section className="border-y border-line bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-12">
-          <SectionIntro title="Contacts are part of the paid action layer" eyebrow="Important">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-12">
+          <SectionIntro eyebrow="Compare the value" title="The action layer is included in every paid option">
             <p>
-              Paid reports include source-native contact paths and capped contact enrichment where
-              appropriate. When a direct contact is not available, the report recommends the best
-              next step, such as a procurement office, program office, funded recipient, vendor
-              registration path, partner target, or manual research task.
+              Paid results turn sourced signals into a pursuit list: what matters, who or what to
+              approach, why now, and the next step that moves the opportunity forward.
             </p>
           </SectionIntro>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {[
-              ["No guaranteed emails", "Some opportunities should route through official source contacts, offices, portals, or partner targets."],
-              ["Focused enrichment", "Contact enrichment is capped so the report prioritizes relevant, actionable people and paths."],
-              ["Workflow-ready outputs", "Rows are structured for CRM notes, outreach drafts, CSV exports, and webhook-based workflows."]
+              ["Sourced opportunity table", "Qualified grants, contracts, funded buyers, award recipients, policy signals, and money-flow records with source links."],
+              ["Pursuit guidance", "A revenue motion, actionability label, next best action, contact path, CRM-ready note, and outreach angle for each signal."],
+              ["Practical contact routes", "Source-native contacts come first. Enrichment is used selectively when a person-level contact would improve the next step."]
             ].map(([title, copy]) => (
-              <div key={title} className="rounded-lg border border-line bg-field p-5">
-                <Badge tone="green">{title}</Badge>
-                <p className="mt-4 text-sm leading-6 text-slate-600">{copy}</p>
-              </div>
+              <article key={title} className="border-t-2 border-accent pt-4">
+                <h3 className="text-base font-semibold text-ink">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <CTASection title="Find out whether the channel is worth pursuing.">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-12">
+        <SectionIntro eyebrow="FAQ" title="Limits and billing, without fine-print surprises" />
+        <div className="mt-6 grid gap-x-8 gap-y-6 md:grid-cols-2">
+          {faqs.map((faq) => (
+            <article key={faq.question} className="border-t border-line pt-4">
+              <h3 className="text-base font-semibold text-ink">{faq.question}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{faq.answer}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <CTASection title="Find the public-sector paths worth pursuing.">
         <p>
-          The free scan gives you a credible starting point. The full report gives your team the
-          action layer when you are ready to move.
+          Run a free scan to see real signals for your company, then choose the level of action and
+          monitoring your team needs.
         </p>
       </CTASection>
 
