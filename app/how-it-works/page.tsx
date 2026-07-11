@@ -2,10 +2,23 @@ import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingCard, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
 
+const title = "How It Works | Opportunity Scanner";
+const description =
+  "See how Opportunity Scanner turns a company website into sourced public-sector opportunity signals, contact paths, and next best actions.";
+
 export const metadata: Metadata = {
   title: "How It Works",
-  description:
-    "See how Opportunity Scanner turns a company website into sourced public-sector opportunity signals, contact paths, and next best actions."
+  description,
+  alternates: { canonical: "/how-it-works" },
+  openGraph: {
+    title,
+    description,
+    url: "/how-it-works",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 const steps = [

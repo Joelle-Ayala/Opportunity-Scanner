@@ -1,11 +1,22 @@
 import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "@/components/brand";
-import { siteUrl } from "@/lib/marketingContent";
+
+const title = "Privacy Notice | Opportunity Scanner";
+const description = "How Opportunity Scanner handles scan and guide-request information.";
 
 export const metadata: Metadata = {
   title: "Privacy Notice",
-  description: "How Opportunity Scanner handles scan and guide-request information.",
-  alternates: { canonical: `${siteUrl}/privacy` }
+  description,
+  alternates: { canonical: "/privacy" },
+  openGraph: {
+    title,
+    description,
+    url: "/privacy",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 export default function PrivacyPage() {

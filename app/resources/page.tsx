@@ -4,10 +4,23 @@ import { CTASection, MarketingHero, SectionIntro } from "@/components/marketing"
 import { leadMagnets } from "@/lib/leadMagnets";
 import { resourceArticles, upcomingResourceIdeas } from "@/lib/marketingContent";
 
+const title = "Resources | Opportunity Scanner";
+const description =
+  "Guides for companies exploring government spending, grants, funded buyers, procurement, policy signals, and public-sector sales channels.";
+
 export const metadata: Metadata = {
   title: "Resources",
-  description:
-    "Guides for companies exploring government spending, grants, funded buyers, procurement, policy signals, and public-sector sales channels."
+  description,
+  alternates: { canonical: "/resources" },
+  openGraph: {
+    title,
+    description,
+    url: "/resources",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 const categories = [

@@ -21,9 +21,6 @@ export const metadata: Metadata = {
     "business development"
   ],
   applicationName: "Opportunity Scanner",
-  alternates: {
-    canonical: "https://www.opportunityscanner.ai"
-  },
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     shortcut: "/icon.svg",
@@ -33,14 +30,13 @@ export const metadata: Metadata = {
     title: "Opportunity Scanner",
     description:
       "Turn your company website into sourced public-sector opportunity signals, buyer targets, contact paths, and next actions.",
-    url: "https://www.opportunityscanner.ai",
     siteName: "Opportunity Scanner",
     type: "website",
     images: [
       {
-        url: "/opportunity-scanner-social-banner.svg",
-        width: 1500,
-        height: 500,
+        url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png",
+        width: 1200,
+        height: 630,
         alt: "Opportunity Scanner public-sector revenue intelligence"
       }
     ]
@@ -50,7 +46,7 @@ export const metadata: Metadata = {
     title: "Opportunity Scanner",
     description:
       "Public-sector revenue intelligence from your company website.",
-    images: ["/opportunity-scanner-social-banner.svg"]
+    images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"]
   }
 };
 

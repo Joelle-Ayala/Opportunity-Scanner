@@ -1,7 +1,37 @@
+import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { ReportPreview, RevenueOutcomeGrid, SectionIntro } from "@/components/marketing";
 import { ScanSubmitButton } from "@/components/scan-submit-button";
 import { industryPages, solutionPages } from "@/lib/marketingContent";
+
+const title = "Opportunity Scanner | Public-Sector Opportunity Intelligence";
+const description =
+  "Find public-sector revenue opportunities hiding in plain sight. Scan your company website for sourced public-sector signals, buyer targets, contact paths, and next actions.";
+
+export const metadata: Metadata = {
+  title: { absolute: title },
+  description,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title,
+    description,
+    url: "/",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{
+      url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png",
+      width: 1200,
+      height: 630,
+      alt: "Opportunity Scanner public-sector revenue intelligence"
+    }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"]
+  }
+};
 
 const customerTypes = ["B2B", "B2C", "Government", "Healthcare", "Education", "Nonprofit", "Other"];
 const focusOptions = [

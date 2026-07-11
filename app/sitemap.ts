@@ -4,7 +4,6 @@ import { industryPages, resourceArticles, siteUrl, solutionPages } from "@/lib/m
 import { sampleReports } from "@/lib/sampleReports";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
   const routes = [
     "",
     "/how-it-works",
@@ -22,37 +21,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...routes.map((route) => ({
       url: `${siteUrl}${route}`,
-      lastModified: now,
+      ...(route === "/privacy" ? { lastModified: "2026-07-10" } : {}),
       changeFrequency: "weekly" as const,
       priority: route === "" ? 1 : 0.8
     })),
     ...resourceArticles.map((article) => ({
       url: `${siteUrl}/resources/${article.slug}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.7
     })),
     ...leadMagnets.map((guide) => ({
       url: `${siteUrl}/guides/${guide.slug}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8
     })),
     ...industryPages.map((industry) => ({
       url: `${siteUrl}/industries/${industry.slug}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.75
     })),
     ...sampleReports.map((report) => ({
       url: `${siteUrl}/examples/${report.exampleSlug}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.75
     })),
     ...solutionPages.map((solution) => ({
       url: `${siteUrl}/solutions/${solution.slug}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.75
     }))

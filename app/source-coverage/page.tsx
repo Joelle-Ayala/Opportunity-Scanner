@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { SectionIntro } from "@/components/marketing";
-import { siteUrl } from "@/lib/marketingContent";
+
+const title = "Source Coverage | Opportunity Scanner";
+const description =
+  "The public-sector source categories Opportunity Scanner uses to find funding, procurement, funded buyer, policy, workforce, reimbursement, and money-flow signals.";
 
 export const metadata: Metadata = {
   title: "Source Coverage",
-  description:
-    "The public-sector source categories Opportunity Scanner uses to find funding, procurement, funded buyer, policy, workforce, reimbursement, and money-flow signals.",
-  alternates: {
-    canonical: `${siteUrl}/source-coverage`
-  }
+  description,
+  alternates: { canonical: "/source-coverage" },
+  openGraph: {
+    title,
+    description,
+    url: "/source-coverage",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 const sources = [

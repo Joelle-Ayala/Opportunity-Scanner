@@ -3,10 +3,23 @@ import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
 import { industryPages } from "@/lib/marketingContent";
 
+const title = "Industries | Opportunity Scanner";
+const description =
+  "Explore public-sector opportunity signals for healthcare, education, workforce, arts, creative economy, software, AI, and B2B services.";
+
 export const metadata: Metadata = {
   title: "Industries",
-  description:
-    "Explore public-sector opportunity signals for healthcare, education, workforce, arts, creative economy, software, AI, and B2B services."
+  description,
+  alternates: { canonical: "/industries" },
+  openGraph: {
+    title,
+    description,
+    url: "/industries",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 export default function IndustriesPage() {

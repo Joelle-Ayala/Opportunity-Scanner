@@ -1,12 +1,23 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { leadMagnets } from "@/lib/leadMagnets";
-import { siteUrl } from "@/lib/marketingContent";
+
+const title = "Public-Sector Revenue Guides | Opportunity Scanner";
+const description = "Free, source-backed field guides for turning public-sector records into practical revenue actions.";
 
 export const metadata: Metadata = {
   title: "Public-Sector Revenue Guides",
-  description: "Free, source-backed field guides for turning public-sector records into practical revenue actions.",
-  alternates: { canonical: `${siteUrl}/guides` }
+  description,
+  alternates: { canonical: "/guides" },
+  openGraph: {
+    title,
+    description,
+    url: "/guides",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 export default function GuidesPage() {

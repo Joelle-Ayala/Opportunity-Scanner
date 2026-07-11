@@ -2,10 +2,23 @@ import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingCard, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
 
+const title = "Public-Sector Revenue | Opportunity Scanner";
+const description =
+  "Government spending, grants, funded buyers, policy signals, and workforce programs can become a new revenue channel for businesses.";
+
 export const metadata: Metadata = {
   title: "Public-Sector Revenue",
-  description:
-    "Government spending, grants, funded buyers, policy signals, and workforce programs can become a new revenue channel for businesses."
+  description,
+  alternates: { canonical: "/public-sector-revenue" },
+  openGraph: {
+    title,
+    description,
+    url: "/public-sector-revenue",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 const signalTypes = [

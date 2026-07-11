@@ -3,10 +3,23 @@ import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, ReportPreview, RevenueOutcomeGrid, SectionIntro } from "@/components/marketing";
 import { solutionPages } from "@/lib/marketingContent";
 
+const title = "Solutions | Opportunity Scanner";
+const description =
+  "Explore Opportunity Scanner solutions for funded buyer intelligence, public-sector sales workflows, and contact paths with enrichment.";
+
 export const metadata: Metadata = {
   title: "Solutions",
-  description:
-    "Explore Opportunity Scanner solutions for funded buyer intelligence, public-sector sales workflows, and contact paths with enrichment."
+  description,
+  alternates: { canonical: "/solutions" },
+  openGraph: {
+    title,
+    description,
+    url: "/solutions",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 export default function SolutionsPage() {
