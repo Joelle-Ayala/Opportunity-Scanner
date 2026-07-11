@@ -53,6 +53,9 @@ type SamOpportunity = {
 const samEndpoint = "https://api.sam.gov/opportunities/v2/search";
 const activeProcurementTypes = ["o", "k", "r", "s", "p"];
 const awardProcurementTypes = ["a"];
+export const SAM_MAX_SEARCH_TERMS = 4;
+export const SAM_MAX_AWARD_TERMS = 2;
+export const SAM_MAX_REQUESTS = SAM_MAX_SEARCH_TERMS + SAM_MAX_AWARD_TERMS;
 const genericSamTerms = new Set([
   "apply",
   "best",
@@ -80,6 +83,7 @@ const highIntentSamWords = [
   "concert",
   "contract",
   "dme",
+  "durable medical equipment",
   "education workforce",
   "entertainment",
   "event",
@@ -92,8 +96,8 @@ const highIntentSamWords = [
   "performer",
   "prosthetic",
   "recruitment",
+  "rehabilitation",
   "school staffing",
-  "services",
   "solicitation",
   "teacher",
   "vendor",
@@ -122,6 +126,38 @@ function normalizeTerm(term: string): string {
   return term.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
+const redundantTermWords = new Set([
+  "and",
+  "for",
+  "government",
+  "procurement",
+  "public",
+  "service",
+  "services",
+  "the"
+]);
+
+function meaningfulTermWords(term: string): Set<string> {
+  return new Set(
+    normalizeTerm(term)
+      .split(/[^a-z0-9]+/)
+      .map((word) => (word.length > 4 && word.endsWith("s") ? word.slice(0, -1) : word))
+      .filter((word) => word.length >= 3 && !redundantTermWords.has(word))
+  );
+}
+
+function termsAreRedundant(a: string, b: string): boolean {
+  const aWords = meaningfulTermWords(a);
+  const bWords = meaningfulTermWords(b);
+  if (aWords.size === 0 || bWords.size === 0) {
+    return false;
+  }
+
+  const overlap = Array.from(aWords).filter((word) => bWords.has(word)).length;
+  const smallerSize = Math.min(aWords.size, bWords.size);
+  return overlap >= 2 && overlap / smallerSize >= 0.75;
+}
+
 function isUsefulSamTerm(term: string): boolean {
   const normalized = normalizeTerm(term);
   if (normalized.length < 5 || genericSamTerms.has(normalized)) {
@@ -133,30 +169,68 @@ function isUsefulSamTerm(term: string): boolean {
   return wordCount >= 2 || hasHighIntentWord;
 }
 
-function collectSamSearchTerms(profile: CompanyProfile, limit = 16): string[] {
-  const terms = new Set<string>();
+export function collectSamSearchTerms(
+  profile: CompanyProfile,
+  limit = SAM_MAX_SEARCH_TERMS
+): string[] {
+  const terms = new Map<string, string>();
+
+  const addTerm = (term: string) => {
+    const normalized = normalizeTerm(term);
+    if (isUsefulSamTerm(term) && !terms.has(normalized)) {
+      terms.set(normalized, term.trim());
+    }
+  };
 
   for (const lane of profile.opportunity_lanes ?? []) {
     for (const term of profile.lane_search_terms?.[lane] ?? []) {
-      if (isUsefulSamTerm(term)) {
-        terms.add(term);
-      }
+      addTerm(term);
     }
   }
 
   for (const term of profile.public_sector_search_terms ?? []) {
-    if (isUsefulSamTerm(term)) {
-      terms.add(term);
-    }
+    addTerm(term);
   }
 
-  const sorted = Array.from(terms).sort((a, b) => {
+  const sorted = Array.from(terms.values()).sort((a, b) => {
     const aScore = highIntentSamWords.filter((word) => normalizeTerm(a).includes(word)).length;
     const bScore = highIntentSamWords.filter((word) => normalizeTerm(b).includes(word)).length;
     return bScore - aScore || a.length - b.length;
   });
 
-  return sorted.slice(0, limit);
+  const selected: string[] = [];
+  for (const term of sorted) {
+    if (!selected.some((existing) => termsAreRedundant(term, existing))) {
+      selected.push(term);
+    }
+    if (selected.length >= limit) {
+      break;
+    }
+  }
+
+  return selected;
+}
+
+export type SamQueryPlanEntry = {
+  term: string;
+  ptypes: string[];
+  semantics: "active_notice" | "award_notice";
+};
+
+export function buildSamQueryPlan(profile: CompanyProfile): SamQueryPlanEntry[] {
+  const terms = collectSamSearchTerms(profile);
+  return [
+    ...terms.map((term) => ({
+      term,
+      ptypes: activeProcurementTypes,
+      semantics: "active_notice" as const
+    })),
+    ...terms.slice(0, SAM_MAX_AWARD_TERMS).map((term) => ({
+      term,
+      ptypes: awardProcurementTypes,
+      semantics: "award_notice" as const
+    }))
+  ];
 }
 
 function opportunityUrl(item: SamOpportunity): string {
@@ -197,6 +271,15 @@ function primaryContact(item: SamOpportunity): string {
     .join(" | ");
 }
 
+function isInactiveNotice(item: SamOpportunity): boolean {
+  if (item.active?.toLowerCase() === "no") {
+    return true;
+  }
+
+  const deadline = item.responseDeadLine ? Date.parse(item.responseDeadLine) : Number.NaN;
+  return Number.isFinite(deadline) && deadline < Date.now();
+}
+
 function procurementSourceType(item: SamOpportunity): OpportunitySignal["source_type"] {
   const type = `${item.type ?? ""} ${item.baseType ?? ""}`.toLowerCase();
   if (type.includes("award")) {
@@ -205,16 +288,22 @@ function procurementSourceType(item: SamOpportunity): OpportunitySignal["source_
   if (type.includes("sources sought") || type.includes("special notice")) {
     return "procurement_category";
   }
+  if (isInactiveNotice(item)) {
+    return "procurement_category";
+  }
   return "active_contract";
 }
 
 function revenuePathwayFor(item: SamOpportunity): OpportunitySignal["revenue_pathway"] {
   const type = `${item.type ?? ""} ${item.baseType ?? ""}`.toLowerCase();
-  if (type.includes("sources sought") || type.includes("special notice")) {
-    return "sell_to_agency";
-  }
   if (type.includes("award")) {
     return "sell_to_grantee";
+  }
+  if (isInactiveNotice(item)) {
+    return "sell_to_agency";
+  }
+  if (type.includes("sources sought") || type.includes("special notice")) {
+    return "sell_to_agency";
   }
   return "procurement_bid";
 }
@@ -226,8 +315,7 @@ function titleFor(item: SamOpportunity, lane: string): string {
 }
 
 async function searchSam(
-  term: string,
-  ptypes: string[],
+  query: SamQueryPlanEntry,
   context: ConnectorExecutionContext
 ): Promise<SamOpportunity[]> {
   const apiKey = process.env.SAM_API_KEY;
@@ -235,36 +323,36 @@ async function searchSam(
     return [];
   }
 
-  const results: SamOpportunity[] = [];
-
-  for (const ptype of ptypes) {
-    if (connectorShouldStop(context)) break;
-    const params = new URLSearchParams({
-      api_key: apiKey,
-      postedFrom: formatSamDate(oneYearAgo()),
-      postedTo: formatSamDate(new Date()),
-      title: term,
-      limit: "5",
-      offset: "0",
-      ptype
-    });
-
-    try {
-      const data = await fetchConnectorJson<{ opportunitiesData?: SamOpportunity[] }>(
-        context,
-        "SAM.gov",
-        `${samEndpoint}?${params}`,
-        {},
-        term
-      );
-      results.push(...(data.opportunitiesData ?? []));
-    } catch {
-      // Keep other notice types available and let runtime diagnostics decide
-      // whether this was a partial or total connector failure.
-    }
+  if (connectorShouldStop(context)) {
+    return [];
   }
 
-  return results;
+  const params = new URLSearchParams({
+    api_key: apiKey,
+    postedFrom: formatSamDate(oneYearAgo()),
+    postedTo: formatSamDate(new Date()),
+    title: query.term,
+    limit: "5",
+    offset: "0"
+  });
+  for (const ptype of query.ptypes) {
+    params.append("ptype", ptype);
+  }
+
+  try {
+    const data = await fetchConnectorJson<{ opportunitiesData?: SamOpportunity[] }>(
+      context,
+      "SAM.gov",
+      `${samEndpoint}?${params}`,
+      {},
+      query.term
+    );
+    return data.opportunitiesData ?? [];
+  } catch {
+    // Keep other query groups available and let runtime diagnostics decide
+    // whether this was a partial or total connector failure.
+    return [];
+  }
 }
 
 export async function searchSamGov(
@@ -275,19 +363,17 @@ export async function searchSamGov(
     return [];
   }
 
-  const terms = collectSamSearchTerms(profile, 18);
+  const queryPlan = buildSamQueryPlan(profile);
+  const terms = Array.from(new Set(queryPlan.map((query) => query.term)));
   const signals: OpportunitySignal[] = [];
   const seen = new Set<string>();
 
-  for (const term of terms) {
+  for (const query of queryPlan) {
     if (connectorShouldStop(context)) break;
-    const opportunities = [
-      ...(await searchSam(term, activeProcurementTypes, context)),
-      ...(await searchSam(term, awardProcurementTypes, context))
-    ];
+    const opportunities = await searchSam(query, context);
 
     for (const item of opportunities) {
-      const id = item.noticeId || item.solicitationNumber || `${term}-${item.title}`;
+      const id = item.noticeId || item.solicitationNumber || `${query.term}-${item.title}`;
       if (!id || seen.has(id)) {
         continue;
       }
@@ -307,13 +393,13 @@ export async function searchSamGov(
       ]
         .filter(Boolean)
         .join(" | ");
-      const text = evidenceText(term, summary, agency);
+      const text = evidenceText(query.term, summary, agency);
 
       if (!hasStrongEvidence(text) || hasNegativeEvidence(text) || hasProfileNegativeEvidence(profile, text)) {
         continue;
       }
 
-      const relevanceScore = evidenceScore(text, term);
+      const relevanceScore = evidenceScore(text, query.term);
       if (relevanceScore < 58) {
         continue;
       }
@@ -321,6 +407,7 @@ export async function searchSamGov(
       const lane = inferSignalLane(text, "Active public procurement opportunity");
       const sourceType = procurementSourceType(item);
       const isActive = item.active === "Yes";
+      const isInactive = sourceType !== "funded_buyer" && isInactiveNotice(item);
       const responseDeadline = item.responseDeadLine || "";
       const isBidLike = sourceType === "active_contract" || sourceType === "procurement_category";
 
@@ -335,7 +422,9 @@ export async function searchSamGov(
         external_evidence_summary:
           summary || "SAM.gov opportunity matched this public-sector search strategy.",
         why_it_matters:
-          isBidLike
+          isInactive
+            ? "This SAM.gov notice is inactive or past its response deadline, so it is buyer and market evidence rather than an open bid."
+            : isBidLike
             ? "SAM.gov is an active procurement source, so this may represent a near-term bid or buying-office pathway."
             : "SAM.gov activity can reveal current procurement demand, award patterns, sources sought notices, or market research.",
         who_benefits: profile.company_name,
@@ -343,29 +432,39 @@ export async function searchSamGov(
         revenue_pathway: revenuePathwayFor(item),
         relevance_score: relevanceScore,
         novelty_score: clampScore(72 + (sourceType === "active_contract" ? 10 : 0)),
-        confidence_score: clampScore(62 + (isActive ? 10 : 0) + (responseDeadline ? 8 : 0) + (contact ? 4 : 0)),
+        confidence_score: clampScore(
+          62 + (isActive && !isInactive && sourceType !== "funded_buyer" ? 10 : 0) +
+            (responseDeadline ? 8 : 0) +
+            (contact ? 4 : 0)
+        ),
         reasoning: [
-          `Matched search term: ${term}`,
+          `Matched search term: ${query.term}`,
           `Inferred lane: ${lane}`,
           `SAM.gov notice type: ${item.type || item.baseType || "Opportunity"}`,
           `SAM.gov active flag: ${item.active || "Unknown"}`,
           "Treat active solicitations and sources-sought notices as buyer/procurement pathways."
         ],
         recommended_action:
-          isBidLike
+          isInactive
+            ? `Use the closed SAM.gov notice to research the buying office and monitor for a follow-on opportunity under the "${lane}" pathway.`
+            : isBidLike
             ? `Review the SAM.gov notice and validate whether the company can bid directly, partner, or contact the buying office under the "${lane}" pathway.`
             : `Use this SAM.gov notice to identify the buying office, funded buyer, or similar active procurement pattern under the "${lane}" pathway.`,
-        actionability: isActive && isBidLike && relevanceScore >= 70 ? "yes" : "maybe",
+        actionability: !isInactive && isActive && isBidLike && relevanceScore >= 70 ? "yes" : "maybe",
         actionability_reason:
-          isActive && isBidLike && relevanceScore >= 70
+          isInactive
+            ? "The notice is inactive or past deadline and should be treated as buyer history, not an open procurement."
+            : isActive && isBidLike && relevanceScore >= 70
             ? "Active or recent SAM.gov procurement activity in an adjacent category."
             : "SAM.gov procurement activity may indicate buyer demand, but fit and eligibility need validation.",
         best_next_step:
-          contact
+          isInactive
+            ? "Review the closed notice for the buying office, incumbent, and follow-on procurement clues; do not treat it as open for bids."
+            : contact
             ? `Open the SAM.gov notice, review deadline/eligibility, then validate the listed contact: ${contact}.`
             : "Open the SAM.gov notice, review deadline/eligibility, and identify the contracting officer or program office.",
         human_review_required: true,
-        query_used: term,
+        query_used: query.term,
         raw_json: { ...item, sam_query_terms: terms } as Record<string, unknown>
       });
 
