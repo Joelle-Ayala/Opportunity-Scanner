@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { ensureContactEnrichment } from "@/lib/contactEnrichment";
 import { getScan, getStoredOpportunitySignal, saveOpportunityEnrichmentRequest } from "@/lib/storage";
 import { OpportunityEnrichmentType } from "@/lib/types";
-import { hasFullReportAccess } from "@/lib/access";
+import { hasServerReportAccess } from "@/lib/payments/access";
 
 export const runtime = "nodejs";
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   }
 
   const access = String(form.get("access") || "") || undefined;
-  if (!hasFullReportAccess(access, scan)) {
+  if (!(await hasServerReportAccess(access, scan))) {
     return NextResponse.json({ error: "Full report access is required to enrich opportunities." }, { status: 403 });
   }
 

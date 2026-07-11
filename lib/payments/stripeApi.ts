@@ -8,11 +8,25 @@ type StripeRequestOptions = {
   idempotencyKey?: string;
 };
 
-type StripeCheckoutSession = {
+export type StripeCheckoutSession = {
   id: string;
+  created?: number;
+  livemode?: boolean;
   url?: string | null;
   status?: string;
+  mode?: string;
+  payment_status?: string;
+  amount_total?: number | null;
+  currency?: string | null;
   customer?: string | { id?: string } | null;
+  payment_intent?:
+    | string
+    | {
+        id?: string;
+        latest_charge?: string | { id?: string; refunded?: boolean; amount_refunded?: number } | null;
+      }
+    | null;
+  metadata?: Record<string, string> | null;
 };
 
 async function stripeRequest<T>(secretKey: string, path: string, options: StripeRequestOptions = {}): Promise<T> {
@@ -81,7 +95,10 @@ export async function createCheckoutSession(input: {
 }
 
 export function retrieveCheckoutSession(secretKey: string, sessionId: string): Promise<StripeCheckoutSession> {
-  return stripeRequest<StripeCheckoutSession>(secretKey, `/checkout/sessions/${encodeURIComponent(sessionId)}`);
+  return stripeRequest<StripeCheckoutSession>(
+    secretKey,
+    `/checkout/sessions/${encodeURIComponent(sessionId)}?expand%5B%5D=payment_intent.latest_charge`
+  );
 }
 
 export function createBillingPortalSession(secretKey: string, customerId: string, returnUrl: string) {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hasFullReportAccess } from "@/lib/access";
+import { hasServerReportAccess } from "@/lib/payments/access";
 import { getCompanyProfile, getScan, getStoredOpportunitySignal } from "@/lib/storage";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { buildWorkflowPayload, type WorkflowPayload } from "@/lib/workflowPayload";
@@ -141,7 +141,7 @@ export async function POST(request: Request) {
   if (!scan) {
     return jsonError(404, "SCAN_NOT_FOUND", "Scan not found.");
   }
-  if (!hasFullReportAccess(access, scan)) {
+  if (!(await hasServerReportAccess(access, scan))) {
     return jsonError(403, "FULL_REPORT_ACCESS_REQUIRED", "Full report access is required to send workflow payloads.");
   }
 

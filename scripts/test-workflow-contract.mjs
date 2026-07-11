@@ -45,7 +45,7 @@ for (const typeMarker of [
 const injectableSource = `
 const {
   NextResponse,
-  hasFullReportAccess,
+  hasServerReportAccess,
   getCompanyProfile,
   getScan,
   getStoredOpportunitySignal,
@@ -64,7 +64,7 @@ globalThis.__workflowRouteTestMocks = {
       return Response.json(body, init);
     }
   },
-  hasFullReportAccess(access, scan) {
+  async hasServerReportAccess(access, scan) {
     activeState.calls.access.push({ access, scan });
     return activeState.hasAccess;
   },

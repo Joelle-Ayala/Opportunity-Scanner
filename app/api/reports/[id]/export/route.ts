@@ -5,7 +5,7 @@ import { primaryContactTarget } from "@/lib/contactTargeting";
 import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
-import { hasFullReportAccess } from "@/lib/access";
+import { hasServerReportAccess } from "@/lib/payments/access";
 
 export const runtime = "nodejs";
 
@@ -42,7 +42,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 
   const access = new URL(request.url).searchParams.get("access") ?? undefined;
-  if (!hasFullReportAccess(access, scan)) {
+  if (!(await hasServerReportAccess(access, scan))) {
     return NextResponse.json({ error: "Full report access is required to export this scan." }, { status: 403 });
   }
 

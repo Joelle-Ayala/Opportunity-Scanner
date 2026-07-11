@@ -1,9 +1,10 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Badge, CompanyLogo, LockedBadge, OpportunityScannerLogo } from "@/components/brand";
 import { SendToWorkflowModal } from "@/components/workflow";
 import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/storage";
 import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types";
-import { accessSuffix, hasAdminAccess, hasFullReportAccess } from "@/lib/access";
+import { accessSuffix, hasAdminAccess, reportAccessHref } from "@/lib/access";
+import { hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
 import { signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal } from "@/lib/contactTargeting";
 import { isSamGovConfigured } from "@/lib/connectors/samGov";
@@ -1076,10 +1077,24 @@ export default async function ReportPage({
   searchParams
 }: {
   params: { id: string };
-  searchParams?: { access?: string; unlock?: string };
+  searchParams?: { access?: string; unlock?: string; checkout?: string; session_id?: string };
 }) {
   const scan = await getScan(params.id);
   if (!scan) notFound();
+
+  const isAdminView = hasAdminAccess(searchParams?.access, scan);
+  const storedAccess = await hasServerReportAccess(searchParams?.access, scan);
+  if (storedAccess && searchParams?.session_id) {
+    redirect(reportAccessHref(`/reports/${scan.id}`, searchParams.access));
+  }
+  const checkoutHandoffFulfilled =
+    !storedAccess && searchParams?.checkout === "success"
+      ? await verifyReportCheckoutHandoff(scan.id, searchParams.session_id)
+      : false;
+  if (checkoutHandoffFulfilled) {
+    redirect(reportAccessHref(`/reports/${scan.id}`, searchParams?.access));
+  }
+  const isPaid = storedAccess;
 
   const profileRecord = await getCompanyProfile(scan.id);
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
@@ -1093,8 +1108,6 @@ export default async function ReportPage({
     );
   const fallbackSignals = signals.slice(0, 6);
   const reportSignals = moveForwardSignals.length > 0 ? moveForwardSignals : fallbackSignals;
-  const isAdminView = hasAdminAccess(searchParams?.access, scan);
-  const isPaid = hasFullReportAccess(searchParams?.access, scan);
   const visibleCount = isPaid ? reportSignals.length : visibleSignalCount(reportSignals.length);
   const displayedSignals = reportSignals.slice(0, visibleCount);
   const lockedSignals = reportSignals.slice(visibleCount);

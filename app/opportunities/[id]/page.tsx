@@ -11,7 +11,7 @@ import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { OpportunityEnrichmentType, StoredOpportunitySignal } from "@/lib/types";
-import { hasFullReportAccess } from "@/lib/access";
+import { hasServerReportAccess } from "@/lib/payments/access";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -184,7 +184,7 @@ export default async function OpportunityPage({
   const profileRecord = await getCompanyProfile(scan.id);
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
   const classification = opportunityActionFor(signal, profile);
-  if (!hasFullReportAccess(searchParams.access, scan)) {
+  if (!(await hasServerReportAccess(searchParams.access, scan))) {
     return <LockedOpportunityPreview scanId={scan.id} signal={signal} profile={profile} access={searchParams.access} />;
   }
 
