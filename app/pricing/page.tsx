@@ -2,10 +2,23 @@ import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, SectionIntro } from "@/components/marketing";
 
+const title = "Pricing | Opportunity Scanner";
+const description =
+  "Choose a one-time opportunity report or ongoing public-sector opportunity monitoring for your company profiles.";
+
 export const metadata: Metadata = {
   title: "Pricing",
-  description:
-    "Choose a one-time opportunity report or ongoing public-sector opportunity monitoring for your company profiles."
+  description,
+  alternates: { canonical: "/pricing" },
+  openGraph: {
+    title,
+    description,
+    url: "/pricing",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 const plans = [

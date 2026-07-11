@@ -6,6 +6,7 @@ import { sampleReports } from "@/lib/sampleReports";
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "",
+    "/about",
     "/how-it-works",
     "/industries",
     "/pricing",
@@ -15,7 +16,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/examples",
     "/public-sector-revenue",
     "/solutions",
-    "/source-coverage"
+    "/source-coverage",
+    "/terms"
   ];
 
   return [

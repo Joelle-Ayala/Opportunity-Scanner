@@ -3,10 +3,23 @@ import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { MarketingHero, SectionIntro } from "@/components/marketing";
 import { sampleReports } from "@/lib/sampleReports";
 
+const title = "Sample Opportunity Reports | Opportunity Scanner";
+const description =
+  "Sample Opportunity Scanner reports by industry, using fictional companies and real public-sector source examples.";
+
 export const metadata: Metadata = {
   title: "Sample Opportunity Reports",
-  description:
-    "Sample Opportunity Scanner reports by industry, using fictional companies and real public-sector source examples."
+  description,
+  alternates: { canonical: "/examples" },
+  openGraph: {
+    title,
+    description,
+    url: "/examples",
+    siteName: "Opportunity Scanner",
+    type: "website",
+    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
 };
 
 export default function ExamplesPage() {
