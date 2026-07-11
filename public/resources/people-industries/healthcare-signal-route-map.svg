@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Healthcare signal-to-revenue-motion map</title>
+  <desc id="desc">Five official healthcare source lanes connect through qualification to distinct revenue motions and next actions.</desc>
+  <rect width="1200" height="675" fill="#f6f8f7"/>
+  <text x="64" y="70" font-family="Arial, sans-serif" font-size="31" font-weight="700" fill="#17221d">Healthcare signal-to-revenue-motion map</text>
+  <text x="64" y="104" font-family="Arial, sans-serif" font-size="16" fill="#526158">Illustrative framework: the source determines the route</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="64" y="145" width="245" height="62" rx="6" fill="#ffffff" stroke="#b5c2bb"/><text x="84" y="182" font-size="17" font-weight="700" fill="#17221d">Procurement notice</text>
+    <rect x="64" y="221" width="245" height="62" rx="6" fill="#ffffff" stroke="#b5c2bb"/><text x="84" y="258" font-size="17" font-weight="700" fill="#17221d">Funded provider</text>
+    <rect x="64" y="297" width="245" height="62" rx="6" fill="#ffffff" stroke="#b5c2bb"/><text x="84" y="334" font-size="17" font-weight="700" fill="#17221d">VA vehicle / channel</text>
+    <rect x="64" y="373" width="245" height="62" rx="6" fill="#ffffff" stroke="#b5c2bb"/><text x="84" y="410" font-size="17" font-weight="700" fill="#17221d">CMS market evidence</text>
+    <rect x="64" y="449" width="245" height="62" rx="6" fill="#ffffff" stroke="#b5c2bb"/><text x="84" y="486" font-size="17" font-weight="700" fill="#17221d">Policy / reimbursement</text>
+    <path d="M325 176 H412 M325 252 H412 M325 328 H412 M325 404 H412 M325 480 H412" stroke="#6d7d74" stroke-width="2"/>
+    <path d="M402 168 L418 176 L402 184 M402 244 L418 252 L402 260 M402 320 L418 328 L402 336 M402 396 L418 404 L402 412 M402 472 L418 480 L402 488" fill="none" stroke="#6d7d74" stroke-width="2"/>
+    <rect x="420" y="207" width="300" height="238" rx="8" fill="#173f35"/>
+    <text x="452" y="250" font-size="21" font-weight="700" fill="#ffffff">Qualification gate</text>
+    <text x="452" y="286" font-size="16" fill="#d9eee6">Product and care-setting fit</text>
+    <text x="452" y="318" font-size="16" fill="#d9eee6">Status, timing and geography</text>
+    <text x="452" y="350" font-size="16" fill="#d9eee6">Eligibility or vehicle access</text>
+    <text x="452" y="382" font-size="16" fill="#d9eee6">Verified target and source</text>
+    <text x="452" y="414" font-size="16" fill="#d9eee6">Authorized contact path</text>
+    <path d="M735 326 H817" stroke="#6d7d74" stroke-width="2"/><path d="M807 318 L823 326 L807 334" fill="none" stroke="#6d7d74" stroke-width="2"/>
+    <rect x="825" y="145" width="311" height="366" rx="8" fill="#ffffff" stroke="#9aac9f"/>
+    <text x="855" y="187" font-size="21" font-weight="700" fill="#17221d">Qualified route</text>
+    <text x="855" y="228" font-size="16" font-weight="700" fill="#1f6a55">Sell to Agency</text><text x="855" y="251" font-size="14" fill="#526158">Official notice and contracting path</text>
+    <text x="855" y="291" font-size="16" font-weight="700" fill="#1f6a55">Sell / Partner with Recipient</text><text x="855" y="314" font-size="14" fill="#526158">Verified award purpose and buyer need</text>
+    <text x="855" y="354" font-size="16" font-weight="700" fill="#1f6a55">Channel / Distributor</text><text x="855" y="377" font-size="14" fill="#526158">Prime, schedule or distribution structure</text>
+    <text x="855" y="417" font-size="16" font-weight="700" fill="#1f6a55">Research Only</text><text x="855" y="440" font-size="14" fill="#526158">Historical or descriptive market evidence</text>
+    <text x="855" y="480" font-size="16" font-weight="700" fill="#1f6a55">Monitor Policy</text><text x="855" y="503" font-size="14" fill="#526158">No immediate buying route yet</text>
+    <rect x="64" y="562" width="1072" height="58" rx="6" fill="#e6eee9"/>
+    <text x="88" y="597" font-size="16" fill="#27372f">Every retained row ends with one source, target, motion, contact path, owner and next action.</text>
+  </g>
+</svg>

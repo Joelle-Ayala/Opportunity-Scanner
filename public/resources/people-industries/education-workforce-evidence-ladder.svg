@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Education and workforce evidence ladder</title>
+  <desc id="desc">A five-stage ladder moves from descriptive market data to verified evidence, a target, a revenue motion, and an owned action.</desc>
+  <rect width="1200" height="675" fill="#f5f7f9"/>
+  <text x="64" y="70" font-family="Arial, sans-serif" font-size="31" font-weight="700" fill="#18202a">Education and workforce evidence ladder</text>
+  <text x="64" y="104" font-family="Arial, sans-serif" font-size="16" fill="#566271">Illustrative framework: need is not purchasing intent</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="64" y="452" width="200" height="112" rx="7" fill="#ffffff" stroke="#a9b5c2"/>
+    <text x="84" y="488" font-size="18" font-weight="700" fill="#18202a">1. Market context</text><text x="84" y="519" font-size="14" fill="#566271">NCES, BLS, plans</text><text x="84" y="544" font-size="14" fill="#566271">Research Only</text>
+    <rect x="282" y="376" width="200" height="188" rx="7" fill="#ffffff" stroke="#a9b5c2"/>
+    <text x="302" y="412" font-size="18" font-weight="700" fill="#18202a">2. Program evidence</text><text x="302" y="443" font-size="14" fill="#566271">Forecast, grant, budget</text><text x="302" y="468" font-size="14" fill="#566271">Status and eligibility</text>
+    <rect x="500" y="300" width="200" height="264" rx="7" fill="#ffffff" stroke="#a9b5c2"/>
+    <text x="520" y="336" font-size="18" font-weight="700" fill="#18202a">3. Verified target</text><text x="520" y="367" font-size="14" fill="#566271">District, board, agency</text><text x="520" y="392" font-size="14" fill="#566271">Recipient or provider</text><text x="520" y="417" font-size="14" fill="#566271">Official entity and role</text>
+    <rect x="718" y="224" width="200" height="340" rx="7" fill="#ffffff" stroke="#a9b5c2"/>
+    <text x="738" y="260" font-size="18" font-weight="700" fill="#18202a">4. Revenue motion</text><text x="738" y="291" font-size="14" fill="#566271">Apply, sell, partner</text><text x="738" y="316" font-size="14" fill="#566271">channel or monitor</text><text x="738" y="341" font-size="14" fill="#566271">Route matches evidence</text>
+    <rect x="936" y="148" width="200" height="416" rx="7" fill="#234e70"/>
+    <text x="956" y="184" font-size="18" font-weight="700" fill="#ffffff">5. Owned action</text><text x="956" y="215" font-size="14" fill="#d9e9f4">Official contact path</text><text x="956" y="240" font-size="14" fill="#d9e9f4">One next step</text><text x="956" y="265" font-size="14" fill="#d9e9f4">Owner and due date</text><text x="956" y="290" font-size="14" fill="#d9e9f4">Clear disqualifier</text>
+    <path d="M264 504 H274 M482 428 H492 M700 352 H710 M918 276 H928" stroke="#657789" stroke-width="3"/>
+    <path d="M267 496 L278 504 L267 512 M485 420 L496 428 L485 436 M703 344 L714 352 L703 360 M921 268 L932 276 L921 284" fill="none" stroke="#657789" stroke-width="2"/>
+    <rect x="64" y="596" width="1072" height="44" rx="6" fill="#e2e8ee"/><text x="88" y="624" font-size="15" fill="#344150">Advance only when each rung adds evidence. Reject the row when fit, eligibility, timing or route fails.</text>
+  </g>
+</svg>

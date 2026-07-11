@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Creative funding and buying paths</title>
+  <desc id="desc">A matrix separates grant, procurement, funded recipient, and planning signals by target, revenue motion, and contact route.</desc>
+  <rect width="1200" height="675" fill="#f8f7f4"/>
+  <text x="64" y="70" font-family="Arial, sans-serif" font-size="31" font-weight="700" fill="#211d1a">Creative funding and buying paths</text>
+  <text x="64" y="104" font-family="Arial, sans-serif" font-size="16" fill="#655d56">Illustrative framework: funder, applicant, recipient and buyer may be different</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="64" y="145" width="1072" height="61" fill="#273e46"/>
+    <text x="84" y="182" font-size="16" font-weight="700" fill="#ffffff">Source record</text><text x="342" y="182" font-size="16" font-weight="700" fill="#ffffff">Verified target</text><text x="616" y="182" font-size="16" font-weight="700" fill="#ffffff">Revenue motion</text><text x="894" y="182" font-size="16" font-weight="700" fill="#ffffff">First route</text>
+    <g fill="#ffffff" stroke="#c9c2b9">
+      <rect x="64" y="206" width="1072" height="86"/><rect x="64" y="292" width="1072" height="86"/><rect x="64" y="378" width="1072" height="86"/><rect x="64" y="464" width="1072" height="86"/>
+    </g>
+    <g font-size="16" fill="#211d1a">
+      <text x="84" y="240" font-weight="700">Grant notice</text><text x="84" y="267" font-size="14" fill="#655d56">Eligibility controls</text>
+      <text x="342" y="240">Eligible organization</text><text x="342" y="267" font-size="14" fill="#655d56">Not automatically a business</text>
+      <text x="616" y="240">Direct Apply</text><text x="616" y="267" font-size="14" fill="#655d56">Only after eligibility check</text>
+      <text x="894" y="240">Application instructions</text><text x="894" y="267" font-size="14" fill="#655d56">Program contact</text>
+      <text x="84" y="326" font-weight="700">Public solicitation</text><text x="84" y="353" font-size="14" fill="#655d56">City, parks, school, tourism</text>
+      <text x="342" y="326">Public buying entity</text><text x="342" y="353" font-size="14" fill="#655d56">Named office or authority</text>
+      <text x="616" y="326">Sell to Agency</text><text x="616" y="353" font-size="14" fill="#655d56">Fit and timing required</text>
+      <text x="894" y="326">Procurement portal</text><text x="894" y="353" font-size="14" fill="#655d56">Named contracting contact</text>
+      <text x="84" y="412" font-weight="700">Official award</text><text x="84" y="439" font-size="14" fill="#655d56">Historical money movement</text>
+      <text x="342" y="412">Verified recipient</text><text x="342" y="439" font-size="14" fill="#655d56">Need still must be proven</text>
+      <text x="616" y="412">Sell / Partner Research</text><text x="616" y="439" font-size="14" fill="#655d56">No assumed subcontract</text>
+      <text x="894" y="412">Program or vendor route</text><text x="894" y="439" font-size="14" fill="#655d56">After scope review</text>
+      <text x="84" y="498" font-weight="700">Plan or calendar</text><text x="84" y="525" font-size="14" fill="#655d56">Early demand evidence</text>
+      <text x="342" y="498">Responsible public body</text><text x="342" y="525" font-size="14" fill="#655d56">Budget may be unconfirmed</text>
+      <text x="616" y="498">Monitor / Research</text><text x="616" y="525" font-size="14" fill="#655d56">Wait for actionable evidence</text>
+      <text x="894" y="498">Official updates</text><text x="894" y="525" font-size="14" fill="#655d56">Future procurement or program</text>
+    </g>
+    <rect x="64" y="580" width="1072" height="48" rx="6" fill="#ece8e1"/><text x="88" y="610" font-size="15" fill="#403a35">No row advances without a source link, public objective, owner, next action and disqualifier.</text>
+  </g>
+</svg>
