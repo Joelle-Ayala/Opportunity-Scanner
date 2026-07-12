@@ -4,6 +4,7 @@ import { isMatchingPaidReportSession, resolveStoredReportAccess } from "./access
 import { getStripeServerConfig } from "./config";
 import { fulfillVerifiedReportCheckout, hasActiveStripeReportGrant } from "./persistence";
 import { retrieveCheckoutSession, type StripeCheckoutSession } from "./stripeApi";
+import { hasActiveCustomerMonitoringEntitlement } from "./customerEntitlement";
 
 type ReportAccessScan = Pick<ScanRecord, "id" | "report_access">;
 
@@ -25,6 +26,20 @@ export async function hasServerReportAccess(
   dependencies: Pick<ReportPaymentAccessDependencies, "hasActiveGrant"> = defaultDependencies
 ): Promise<boolean> {
   return resolveStoredReportAccess(hasFullReportAccess(access, scan), scan.id, dependencies.hasActiveGrant);
+}
+
+export async function hasCustomerServerReportAccess(
+  access: string | undefined,
+  scan: ReportAccessScan,
+  authUserId?: string | null
+): Promise<boolean> {
+  if (await hasServerReportAccess(access, scan)) return true;
+  if (!authUserId) return false;
+  try {
+    return await hasActiveCustomerMonitoringEntitlement(authUserId, scan.id);
+  } catch {
+    return false;
+  }
 }
 
 export async function verifyReportCheckoutHandoff(

@@ -5,7 +5,7 @@ import { SendToWorkflowModal } from "@/components/workflow";
 import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/storage";
 import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types";
 import { accessSuffix, hasAdminAccess, reportAccessHref } from "@/lib/access";
-import { hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
+import { hasCustomerServerReportAccess, hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
 import { getStripeServerConfig } from "@/lib/payments/config";
 import { ReportAnalytics } from "@/components/page-analytics";
 import { signalLane } from "@/lib/actionability";
@@ -1131,8 +1131,6 @@ export default async function ReportPage({
   if (checkoutHandoffFulfilled) {
     redirect(reportAccessHref(`/reports/${scan.id}`, searchParams?.access));
   }
-  const isPaid = storedAccess;
-
   let comparisonHref: string | null = null;
   let customerSession: Awaited<ReturnType<typeof resolveCustomerSession>> = null;
   try {
@@ -1145,6 +1143,11 @@ export default async function ReportPage({
     const pair = await loadOwnedMonitoringComparisonPair(customerSession.user.id, scan.id).catch(() => null);
     if (pair) comparisonHref = `/dashboard/compare/${scan.id}`;
   }
+  const isPaid = storedAccess || await hasCustomerServerReportAccess(
+    searchParams?.access,
+    scan,
+    customerSession?.user.id
+  );
 
   const profileRecord = await getCompanyProfile(scan.id);
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;

@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import {
   getCompanyProfile,
@@ -11,7 +12,7 @@ import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { OpportunityEnrichmentType, StoredOpportunitySignal } from "@/lib/types";
-import { hasServerReportAccess } from "@/lib/payments/access";
+import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -184,7 +185,16 @@ export default async function OpportunityPage({
   const profileRecord = await getCompanyProfile(scan.id);
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
   const classification = opportunityActionFor(signal, profile);
-  if (!(await hasServerReportAccess(searchParams.access, scan))) {
+  const requestHeaders = headers();
+  const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "localhost";
+  const protocol = requestHeaders.get("x-forwarded-proto") || (host.startsWith("localhost") ? "http" : "https");
+  const requestUrl = new URL(
+    `/opportunities/${params.id}?scanId=${encodeURIComponent(scan.id)}${
+      searchParams.access ? `&access=${encodeURIComponent(searchParams.access)}` : ""
+    }`,
+    `${protocol}://${host}`
+  ).toString();
+  if (!(await hasRequestReportAccess(requestUrl, searchParams.access, scan))) {
     return <LockedOpportunityPreview scanId={scan.id} signal={signal} profile={profile} access={searchParams.access} />;
   }
 

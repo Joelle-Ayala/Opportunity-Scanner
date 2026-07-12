@@ -137,7 +137,7 @@ test("routes are Node-only wrappers and the Stripe API contract owns redirects a
   assert.match(stripeApi, /Idempotency-Key/);
   assert.doesNotMatch(stripeApi, /process\.env/);
   assert.match(handlers, /\/reports\/\$\{input\.scanId\}\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
-  assert.match(handlers, /\/pricing\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
+  assert.match(handlers, /\/dashboard\/onboarding\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
   assert.match(handlers, /verifyStripeSignature\(payload/);
   assert.match(handlers, /reportScanExists/);
 });

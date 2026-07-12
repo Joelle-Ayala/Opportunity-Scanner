@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hasServerReportAccess } from "@/lib/payments/access";
+import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
 import { ensureContactEnrichmentForSignals } from "@/lib/contactEnrichment";
 import {
   buildOutreachPackage,
@@ -37,7 +37,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
   const url = new URL(request.url);
   const access = url.searchParams.get("access") ?? undefined;
-  if (!(await hasServerReportAccess(access, scan))) {
+  if (!(await hasRequestReportAccess(request.url, access, scan))) {
     return NextResponse.json({ error: "Full report access is required to export the outreach package." }, { status: 403 });
   }
 

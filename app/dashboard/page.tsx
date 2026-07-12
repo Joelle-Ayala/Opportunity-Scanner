@@ -56,13 +56,19 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
   const subscription = summary.billing.subscriptions.find((item) => ["active", "trialing"].includes(item.status));
   const planName = subscription?.product === "growth" ? "Growth" : subscription?.product === "monitor" ? "Monitor" : "Report access";
   const profileLimit = subscription?.product === "growth" ? 3 : subscription?.product === "monitor" ? 1 : 0;
+  const monitoredScanIds = new Set([
+    ...runs.map((run) => run.scanId),
+    ...searches.flatMap((search) => search.monitoredProfile
+      ? [search.monitoredProfile.sourceScanId, search.monitoredProfile.latestScanId].filter((id): id is string => Boolean(id))
+      : [])
+  ]);
   const reportRows: DashboardReportRow[] = reports.map((report) => ({
     id: report.scanId,
     companyName: report.companyName || new URL(report.companyUrl).hostname.replace(/^www\./, ""),
     companyUrl: report.companyUrl,
     createdLabel: dateLabel(report.completedAt || report.createdAt),
     status: reportStatus(report.status),
-    reportType: report.hasActiveGrant || report.reportAccess === "paid" ? "Full report" : "Free report",
+    reportType: report.hasActiveGrant || report.reportAccess === "paid" || (subscription && monitoredScanIds.has(report.scanId)) ? "Full report" : "Free report",
     href: `/reports/${report.scanId}`
   }));
   const searchRows: MonitoredSearchRow[] = searches.map((search) => ({

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { ensureContactEnrichment } from "@/lib/contactEnrichment";
 import { getScan, getStoredOpportunitySignal, saveOpportunityEnrichmentRequest } from "@/lib/storage";
 import { OpportunityEnrichmentType } from "@/lib/types";
-import { hasServerReportAccess } from "@/lib/payments/access";
+import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
 
 export const runtime = "nodejs";
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   }
 
   const access = String(form.get("access") || "") || undefined;
-  if (!(await hasServerReportAccess(access, scan))) {
+  if (!(await hasRequestReportAccess(request.url, access, scan))) {
     return NextResponse.json({ error: "Full report access is required to enrich opportunities." }, { status: 403 });
   }
 
@@ -56,8 +56,9 @@ export async function POST(request: Request) {
     });
   }
 
-  return NextResponse.redirect(
-    new URL(`/opportunities/${opportunityId}?scanId=${scanId}&enrichment=requested`, request.url),
-    303
-  );
+  const redirectUrl = new URL(`/opportunities/${opportunityId}`, request.url);
+  redirectUrl.searchParams.set("scanId", scanId);
+  redirectUrl.searchParams.set("enrichment", "requested");
+  if (access) redirectUrl.searchParams.set("access", access);
+  return NextResponse.redirect(redirectUrl, 303);
 }

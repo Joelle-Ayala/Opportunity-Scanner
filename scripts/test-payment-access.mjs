@@ -87,11 +87,11 @@ test("accepts only a paid $49 Report session for the exact scan and server Price
   }
 });
 
-test("checkout sends Report buyers to their report while subscriptions return to pricing", async () => {
+test("checkout sends Report buyers to their report while subscriptions enter monitoring onboarding", async () => {
   const handlers = await readFile(new URL("../lib/payments/handlers.ts", import.meta.url), "utf8");
   assert.match(handlers, /\/reports\/\$\{input\.scanId\}\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
   assert.match(handlers, /input\.plan === "report"/);
-  assert.match(handlers, /\/pricing\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
+  assert.match(handlers, /\/dashboard\/onboarding\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
 });
 
 test("paid pages and APIs await the same server-side scan access guard", async () => {
@@ -105,8 +105,10 @@ test("paid pages and APIs await the same server-side scan access guard", async (
   ];
   for (const path of paths) {
     const source = await readFile(new URL(path, import.meta.url), "utf8");
-    assert.match(source, /hasServerReportAccess/);
-    assert.match(source, /await hasServerReportAccess/);
+    const guard = path.includes("app/reports/[id]/page.tsx")
+      ? /await hasCustomerServerReportAccess/
+      : /await hasRequestReportAccess/;
+    assert.match(source, guard);
   }
 });
 
