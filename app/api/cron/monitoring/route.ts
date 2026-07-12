@@ -1,9 +1,14 @@
 import { timingSafeEqual } from "node:crypto";
 import { findNewMonitoringSignals } from "@/lib/monitoring/core";
+import { getMonitoringEmailConfig, sendMonitoringAlertEmail } from "@/lib/monitoring/delivery";
 import {
+  claimPendingMonitoringAlerts,
   claimDueMonitoredProfiles,
+  claimMonitoredProfileById,
   completeMonitoringRun,
   failMonitoringRun,
+  markMonitoringAlertSent,
+  releaseMonitoringAlert,
   startMonitoringRun,
   type MonitoringRunRecord
 } from "@/lib/monitoring/storage";
@@ -52,9 +57,16 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ ok: false, error: "Unauthorized." }, { status: 401 });
   }
 
+  const emailConfig = getMonitoringEmailConfig();
+  let alertsDelivered = 0;
+  let alertsFailed = 0;
+
   let profiles;
   try {
-    profiles = await claimDueMonitoredProfiles(1);
+    const requestedProfileId = new URL(request.url).searchParams.get("profileId");
+    profiles = requestedProfileId && /^[0-9a-f-]{36}$/i.test(requestedProfileId)
+      ? await claimMonitoredProfileById(requestedProfileId)
+      : await claimDueMonitoredProfiles(1);
   } catch {
     return Response.json(
       { ok: false, error: "Monitoring storage is unavailable." },
@@ -99,11 +111,30 @@ export async function GET(request: Request): Promise<Response> {
     }
   }
 
+  if (emailConfig) {
+    const alerts = await claimPendingMonitoringAlerts(5).catch(() => []);
+    for (const alert of alerts) {
+      try {
+        const providerMessageId = await sendMonitoringAlertEmail(emailConfig, alert);
+        await markMonitoringAlertSent(alert.alert_id, providerMessageId);
+        alertsDelivered += 1;
+      } catch (cause) {
+        await releaseMonitoringAlert(alert, cause).catch(() => undefined);
+        alertsFailed += 1;
+      }
+    }
+  }
+
   return Response.json({
     ok: true,
     claimed: profiles.length,
     completed: results.filter((result) => result.status === "completed").length,
     failed: results.filter((result) => result.status === "failed").length,
+    delivery: {
+      configured: Boolean(emailConfig),
+      delivered: alertsDelivered,
+      failed: alertsFailed
+    },
     results
   });
 }

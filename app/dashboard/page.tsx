@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CustomerDashboard, type DashboardReportRow, type MonitoredSearchRow } from "@/components/dashboard";
+import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
 import {
   ensureCustomerAccount,
@@ -24,7 +25,19 @@ function reportStatus(status: string): DashboardReportRow["status"] {
   return "scanning";
 }
 
-export default async function DashboardPage({ searchParams }: { searchParams?: { checkout?: string } }) {
+type DashboardSearchParams = {
+  checkout?: string;
+  searchNotice?: string;
+  searchError?: string;
+};
+
+function configurationValue(configuration: Record<string, unknown> | undefined, key: string): string {
+  const value = configuration?.[key];
+  if (Array.isArray(value)) return value.map(String).join(", ");
+  return typeof value === "string" ? value : "";
+}
+
+export default async function DashboardPage({ searchParams }: { searchParams?: DashboardSearchParams }) {
   let session;
   try {
     session = await resolveCustomerSession(getCustomerAuthConfig(), cookies());
@@ -57,18 +70,31 @@ export default async function DashboardPage({ searchParams }: { searchParams?: {
     name: search.name,
     querySummary: String(search.currentVersion?.configuration.opportunityFocus || search.currentVersion?.configuration.companyUrl || "Public-sector opportunity monitoring"),
     cadence: search.monitoredProfile?.cadence === "daily" ? "Daily" : "Weekly",
-    status: search.monitoredProfile?.status === "paused" || search.status === "paused" ? "paused" : search.monitoredProfile ? "active" : "attention",
+    status: search.status === "archived" ? "archived" : search.monitoredProfile?.status === "paused" || search.status === "paused" ? "paused" : search.monitoredProfile ? "active" : "attention",
     lastRunLabel: search.monitoredProfile?.lastRunAt ? `Last run ${dateLabel(search.monitoredProfile.lastRunAt)}` : undefined,
-    nextRunLabel: search.monitoredProfile?.nextRunAt ? `Next run ${dateLabel(search.monitoredProfile.nextRunAt)}` : undefined
+    nextRunLabel: search.monitoredProfile?.nextRunAt ? `Next run ${dateLabel(search.monitoredProfile.nextRunAt)}` : undefined,
+    currentVersion: search.currentVersion?.version,
+    criteria: {
+      companyUrl: configurationValue(search.currentVersion?.configuration, "companyUrl"),
+      industry: configurationValue(search.currentVersion?.configuration, "industry"),
+      targetStates: configurationValue(search.currentVersion?.configuration, "targetStates"),
+      customerType: configurationValue(search.currentVersion?.configuration, "customerType"),
+      opportunityFocus: configurationValue(search.currentVersion?.configuration, "opportunityFocus"),
+      includeTerms: configurationValue(search.currentVersion?.configuration, "includeTerms"),
+      excludeTerms: configurationValue(search.currentVersion?.configuration, "excludeTerms")
+    }
   }));
   const renewal = subscription?.currentPeriodEnd ? `Renews ${dateLabel(subscription.currentPeriodEnd)}` : undefined;
 
   return (
     <main className="min-h-screen bg-field">
       {searchParams?.checkout === "success" ? <div className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">Your plan is active. Choose or create a report to begin monitoring.</div> : null}
+      {searchParams?.searchNotice ? <div role="status" aria-live="polite" className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">{searchParams.searchNotice}</div> : null}
+      {searchParams?.searchError ? <div role="alert" className="border-b border-red-200 bg-red-50 px-5 py-3 text-center text-sm font-semibold text-red-800">{searchParams.searchError}</div> : null}
       <CustomerDashboard
         title="Opportunity workspace"
         description="Reports, saved searches, monitoring changes, and billing in one place."
+        initialTab={searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : "overview"}
         primaryAction={<a href="/dashboard/new" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run new report</a>}
         accountSlot={<form action="/api/auth/sign-out" method="post"><button className="text-sm font-semibold text-steel hover:text-accent">Sign out</button></form>}
         overview={{
@@ -93,7 +119,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: {
         }}
         reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Run updated</a> }}
         savedSearches={{ searches: searchRows, emptyAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Add monitoring</a> }}
-        billing={{ planName, planPriceLabel: subscription ? "Active" : "No subscription", planIntervalLabel: subscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: <a href="/pricing" className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink">Manage plan</a>, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Compare plans</a> }}
+        billing={{ planName, planPriceLabel: subscription ? "Active" : "No subscription", planIntervalLabel: subscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: subscription ? <BillingPortalButton /> : <a href="/pricing" className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink">View plans</a>, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Compare plans</a> }}
       />
     </main>
   );

@@ -4,7 +4,17 @@ import type { ReactNode } from "react";
 import { DashboardEmptyState } from "./empty-state";
 import { DashboardStatusBadge } from "./status-badge";
 
-export type MonitoredSearchStatus = "active" | "paused" | "attention";
+export type MonitoredSearchStatus = "active" | "paused" | "attention" | "archived";
+
+export interface SavedSearchCriteria {
+  companyUrl: string;
+  industry: string;
+  targetStates: string;
+  customerType: string;
+  opportunityFocus: string;
+  includeTerms: string;
+  excludeTerms: string;
+}
 
 export interface MonitoredSearchRow {
   id: string;
@@ -15,6 +25,8 @@ export interface MonitoredSearchRow {
   lastRunLabel?: string;
   nextRunLabel?: string;
   newSignalCount?: number;
+  currentVersion?: number;
+  criteria: SavedSearchCriteria;
 }
 
 export interface SavedSearchListProps {
@@ -31,8 +43,11 @@ export interface SavedSearchListProps {
 const statusDisplay = {
   active: { label: "Monitoring", tone: "success" as const },
   paused: { label: "Paused", tone: "neutral" as const },
-  attention: { label: "Check setup", tone: "warning" as const }
+  attention: { label: "Check setup", tone: "warning" as const },
+  archived: { label: "Archived", tone: "neutral" as const }
 };
+
+const inputClassName = "rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 export function SavedSearchList({
   searches,
@@ -91,6 +106,22 @@ export function SavedSearchList({
                 </div>
                 <div><DashboardStatusBadge tone={status.tone}>{status.label}</DashboardStatusBadge></div>
                 <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                  {search.status === "active" ? (
+                    <form action={`/api/dashboard/searches/${search.id}`} method="post">
+                      <input type="hidden" name="action" value="run" />
+                      <button className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
+                        Run now
+                      </button>
+                    </form>
+                  ) : null}
+                  {search.status === "active" || search.status === "paused" ? (
+                    <form action={`/api/dashboard/searches/${search.id}`} method="post">
+                      <input type="hidden" name="action" value={search.status === "paused" ? "resume" : "pause"} />
+                      <button className="rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:border-accent hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+                        {search.status === "paused" ? "Resume" : "Pause"}
+                      </button>
+                    </form>
+                  ) : null}
                   {onToggleStatus ? (
                     <button type="button" onClick={() => onToggleStatus(search)} className="rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:border-accent hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent">
                       {search.status === "paused" ? "Resume" : "Pause"}
@@ -104,6 +135,70 @@ export function SavedSearchList({
                   ) : null}
                   {renderMenu ? renderMenu(search) : null}
                 </div>
+                {search.status !== "archived" ? (
+                  <div className="md:col-span-4">
+                    <details className="group border-t border-line pt-3">
+                      <summary className="w-fit cursor-pointer text-sm font-semibold text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+                        Edit search
+                      </summary>
+                      <form action={`/api/dashboard/searches/${search.id}`} method="post" className="mt-4 grid gap-4 rounded-md bg-field p-4 sm:grid-cols-2">
+                        <input type="hidden" name="action" value="edit" />
+                        <label className="grid gap-1.5">
+                          <span className="text-sm font-semibold text-ink">Search name</span>
+                          <input required maxLength={120} name="name" defaultValue={search.name} className={inputClassName} />
+                        </label>
+                        <label className="grid gap-1.5">
+                          <span className="text-sm font-semibold text-ink">Company website</span>
+                          <input required type="url" maxLength={2048} name="companyUrl" defaultValue={search.criteria.companyUrl} className={inputClassName} />
+                        </label>
+                        <label className="grid gap-1.5">
+                          <span className="text-sm font-semibold text-ink">Industry</span>
+                          <input maxLength={160} name="industry" defaultValue={search.criteria.industry} className={inputClassName} />
+                        </label>
+                        <label className="grid gap-1.5">
+                          <span className="text-sm font-semibold text-ink">Target geography</span>
+                          <input maxLength={500} name="targetStates" defaultValue={search.criteria.targetStates} placeholder="National, MD, CA" className={inputClassName} />
+                        </label>
+                        <label className="grid gap-1.5">
+                          <span className="text-sm font-semibold text-ink">Customer type</span>
+                          <input maxLength={120} name="customerType" defaultValue={search.criteria.customerType} className={inputClassName} />
+                        </label>
+                        <label className="grid gap-1.5 sm:col-span-2">
+                          <span className="text-sm font-semibold text-ink">Opportunity focus</span>
+                          <textarea rows={3} maxLength={2000} name="opportunityFocus" defaultValue={search.criteria.opportunityFocus} className={inputClassName} />
+                        </label>
+                        <label className="grid gap-1.5">
+                          <span className="text-sm font-semibold text-ink">Include terms</span>
+                          <input maxLength={1000} name="includeTerms" defaultValue={search.criteria.includeTerms} className={inputClassName} />
+                        </label>
+                        <label className="grid gap-1.5">
+                          <span className="text-sm font-semibold text-ink">Exclude terms</span>
+                          <input maxLength={1000} name="excludeTerms" defaultValue={search.criteria.excludeTerms} className={inputClassName} />
+                        </label>
+                        <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
+                          <button className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
+                            Save new version
+                          </button>
+                          {search.currentVersion ? <span className="text-xs text-muted">Current version: {search.currentVersion}</span> : null}
+                        </div>
+                      </form>
+                    </details>
+                    <details className="mt-3 border-t border-line pt-3">
+                      <summary className="w-fit cursor-pointer text-sm font-semibold text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600">
+                        Archive search
+                      </summary>
+                      <div className="mt-3 flex flex-wrap items-center gap-3">
+                        <p className="text-sm text-muted">Archive this search and stop its monitoring schedule?</p>
+                        <form action={`/api/dashboard/searches/${search.id}`} method="post">
+                          <input type="hidden" name="action" value="archive" />
+                          <button className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600">
+                            Confirm archive
+                          </button>
+                        </form>
+                      </div>
+                    </details>
+                  </div>
+                ) : null}
               </article>
             );
           })}

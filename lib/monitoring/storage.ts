@@ -1,6 +1,10 @@
 import { supabaseInsert, supabaseRpc, supabaseUpdate } from "../supabaseRest";
 import type { StoredOpportunitySignal } from "../types";
-import { nextMonitoringRunAt, type MonitoringCadence } from "./core";
+import {
+  monitoringOpportunityKey,
+  nextMonitoringRunAt,
+  type MonitoringCadence
+} from "./core";
 
 export type MonitoredProfileRecord = {
   id: string;
@@ -27,9 +31,26 @@ export type MonitoringRunRecord = {
   completed_at?: string | null;
 };
 
+export type ClaimedMonitoringAlert = {
+  alert_id: string;
+  monitoring_run_id: string;
+  scan_id: string;
+  recipient_email: string;
+  opportunity_title: string;
+  agency_or_funder?: string | null;
+  deadline?: string | null;
+  attempt_count: number;
+};
+
 export async function claimDueMonitoredProfiles(limit = 1): Promise<MonitoredProfileRecord[]> {
   return supabaseRpc<MonitoredProfileRecord[]>("claim_due_monitored_profiles", {
     p_limit: limit
+  });
+}
+
+export async function claimMonitoredProfileById(profileId: string): Promise<MonitoredProfileRecord[]> {
+  return supabaseRpc<MonitoredProfileRecord[]>("claim_monitored_profile_by_id", {
+    p_profile_id: profileId
   });
 }
 
@@ -53,12 +74,14 @@ export async function completeMonitoringRun(input: {
 }): Promise<void> {
   const completedAt = input.completedAt ?? new Date();
 
-  for (const signal of input.newSignals) {
-    await supabaseInsert("monitoring_alerts", {
-      monitoring_run_id: input.run.id,
-      opportunity_id: signal.id,
-      alert_kind: "new_opportunity",
-      delivery_status: "pending"
+  if (input.newSignals.length > 0) {
+    await supabaseRpc<number>("record_monitoring_alerts", {
+      p_monitoring_run_id: input.run.id,
+      p_monitored_profile_id: input.profile.id,
+      p_alerts: input.newSignals.map((signal) => ({
+        opportunity_id: signal.id,
+        dedupe_key: monitoringOpportunityKey(signal)
+      }))
     });
   }
 
@@ -75,6 +98,46 @@ export async function completeMonitoringRun(input: {
     next_run_at: nextMonitoringRunAt(input.profile.cadence, completedAt).toISOString(),
     lease_expires_at: null,
     updated_at: completedAt.toISOString()
+  });
+}
+
+export async function claimPendingMonitoringAlerts(limit = 5): Promise<ClaimedMonitoringAlert[]> {
+  return supabaseRpc<ClaimedMonitoringAlert[]>("claim_pending_monitoring_alerts", {
+    p_limit: limit
+  });
+}
+
+export async function markMonitoringAlertSent(
+  alertId: string,
+  providerMessageId: string,
+  deliveredAt = new Date()
+): Promise<void> {
+  await supabaseUpdate("monitoring_alerts", alertId, {
+    delivery_status: "sent",
+    delivered_at: deliveredAt.toISOString(),
+    provider_message_id: providerMessageId,
+    delivery_lease_expires_at: null,
+    next_attempt_at: null,
+    last_error: null
+  });
+}
+
+export async function releaseMonitoringAlert(
+  alert: ClaimedMonitoringAlert,
+  cause: unknown,
+  failedAt = new Date()
+): Promise<void> {
+  const terminal = alert.attempt_count >= 5;
+  const retryDelayMinutes = Math.min(15 * 2 ** Math.max(0, alert.attempt_count - 1), 24 * 60);
+  const message = cause instanceof Error ? cause.message : "Alert delivery failed.";
+
+  await supabaseUpdate("monitoring_alerts", alert.alert_id, {
+    delivery_status: terminal ? "failed" : "pending",
+    delivery_lease_expires_at: null,
+    next_attempt_at: terminal
+      ? null
+      : new Date(failedAt.getTime() + retryDelayMinutes * 60_000).toISOString(),
+    last_error: message.trim().slice(0, 500) || "Alert delivery failed."
   });
 }
 

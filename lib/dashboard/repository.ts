@@ -200,6 +200,116 @@ export async function createMonitoredSearchFromScan(authUserId: string, scanId: 
   return search.id;
 }
 
+async function requireOwnedSavedSearch(
+  authUserId: string,
+  savedSearchId: string
+): Promise<{ account: CustomerAccountRecord; search: SavedSearchRow; version: SavedSearchVersionRow | null; profile: MonitoredProfileRow | null }> {
+  if (!UUID_PATTERN.test(savedSearchId)) throw new Error("A valid saved search ID is required.");
+  const account = await requireAccount(authUserId);
+  const search = await dashboardSelectOne<SavedSearchRow>("customer_saved_searches", {
+    select: "id,name,status,current_version_id,created_at,updated_at",
+    id: `eq.${savedSearchId}`,
+    customer_account_id: `eq.${account.id}`
+  });
+  if (!search) throw new Error("Saved search was not found.");
+  const version = search.current_version_id
+    ? await dashboardSelectOne<SavedSearchVersionRow>("customer_saved_search_versions", {
+        select: "id,saved_search_id,version,configuration,created_at",
+        id: `eq.${search.current_version_id}`,
+        saved_search_id: `eq.${search.id}`
+      })
+    : null;
+  const profileLinks = version
+    ? await dashboardSelect<MonitoredVersionRow>(
+        "customer_monitored_profile_saved_search_versions",
+        { select: "monitored_profile_id,saved_search_version_id", saved_search_version_id: `eq.${version.id}` }
+      )
+    : [];
+  const profileId = profileLinks[0]?.monitored_profile_id;
+  const profile = profileId
+    ? await dashboardSelectOne<MonitoredProfileRow>("monitored_profiles", {
+        select: "id,source_scan_id,latest_scan_id,cadence,status,next_run_at,last_run_at",
+        id: `eq.${profileId}`
+      })
+    : null;
+  return { account, search, version, profile };
+}
+
+export async function updateSavedSearch(
+  authUserId: string,
+  savedSearchId: string,
+  input: { name?: string; configuration: SavedSearchConfiguration }
+): Promise<string> {
+  const owned = await requireOwnedSavedSearch(authUserId, savedSearchId);
+  if (!owned.version) throw new Error("Saved search has no current version.");
+  const name = input.name?.trim();
+  if (name && name.length > 120) throw new Error("Saved search name is too long.");
+  const allowedKeys = [
+    "companyUrl", "industry", "headquartersState", "targetStates", "customerType",
+    "opportunityFocus", "includeTerms", "excludeTerms", "prioritySignals"
+  ];
+  const configuration: SavedSearchConfiguration = {};
+  for (const key of allowedKeys) {
+    const value = input.configuration[key];
+    if (typeof value === "string") configuration[key] = value.trim().slice(0, 2000);
+    else if (key === "prioritySignals" && Array.isArray(value)) {
+      configuration[key] = value.filter((item): item is string => typeof item === "string").slice(0, 20);
+    }
+  }
+  const version = await dashboardInsert<{ id: string }>("customer_saved_search_versions", {
+    saved_search_id: owned.search.id,
+    version: owned.version.version + 1,
+    configuration: { ...owned.version.configuration, ...configuration },
+    created_by_auth_user_id: authUserId
+  });
+  if (!version) throw new Error("Saved search version could not be created.");
+  await dashboardUpdate("customer_saved_searches", { id: `eq.${owned.search.id}` }, {
+    current_version_id: version.id,
+    ...(name ? { name } : {}),
+    updated_at: new Date().toISOString()
+  });
+  if (owned.profile) {
+    await dashboardUpdate(
+      "customer_monitored_profile_saved_search_versions",
+      { monitored_profile_id: `eq.${owned.profile.id}` },
+      { saved_search_version_id: version.id }
+    );
+  }
+  return version.id;
+}
+
+export async function setSavedSearchStatus(
+  authUserId: string,
+  savedSearchId: string,
+  status: "active" | "paused" | "archived"
+): Promise<void> {
+  const owned = await requireOwnedSavedSearch(authUserId, savedSearchId);
+  await dashboardUpdate("customer_saved_searches", { id: `eq.${owned.search.id}` }, {
+    status,
+    updated_at: new Date().toISOString()
+  });
+  if (owned.profile) {
+    await dashboardUpdate("monitored_profiles", { id: `eq.${owned.profile.id}` }, {
+      status: status === "archived" ? "canceled" : status,
+      lease_expires_at: null,
+      updated_at: new Date().toISOString()
+    });
+  }
+}
+
+export async function requestSavedSearchRunNow(authUserId: string, savedSearchId: string): Promise<string> {
+  const owned = await requireOwnedSavedSearch(authUserId, savedSearchId);
+  if (!owned.profile || owned.profile.status !== "active") {
+    throw new Error("Resume this saved search before running it.");
+  }
+  await dashboardUpdate("monitored_profiles", { id: `eq.${owned.profile.id}` }, {
+    next_run_at: new Date().toISOString(),
+    lease_expires_at: null,
+    updated_at: new Date().toISOString()
+  });
+  return owned.profile.id;
+}
+
 async function requireAccount(authUserId: string): Promise<CustomerAccountRecord> {
   if (!UUID_PATTERN.test(authUserId)) throw new Error("A valid authenticated user ID is required.");
   const account = await dashboardSelectOne<CustomerAccountRecord>("customer_accounts", {

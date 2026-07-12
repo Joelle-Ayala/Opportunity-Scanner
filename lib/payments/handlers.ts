@@ -54,7 +54,7 @@ export async function handleCheckout(request: Request): Promise<Response> {
       successUrl:
         input.plan === "report"
           ? `${config.appUrl}/reports/${input.scanId}?checkout=success&session_id={CHECKOUT_SESSION_ID}`
-          : `${config.appUrl}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+          : `${config.appUrl}/dashboard/onboarding?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${config.appUrl}/pricing?checkout=cancelled`
     });
     if (!session.url || !session.url.startsWith("https://checkout.stripe.com/")) {
@@ -66,7 +66,28 @@ export async function handleCheckout(request: Request): Promise<Response> {
   }
 }
 
-export async function handleBillingPortal(request: Request): Promise<Response> {
+export async function handleBillingPortal(
+  request: Request,
+  options: { ownedCustomerId: string | null } | null = null
+): Promise<Response> {
+  if (options) {
+    const customerId = options.ownedCustomerId;
+    if (!customerId || !/^cus_[A-Za-z0-9]+$/.test(customerId) || customerId.length > 255) {
+      return error(403, "BILLING_PORTAL_FORBIDDEN", "No billing account is connected to this customer.");
+    }
+
+    try {
+      const config = getStripeServerConfig();
+      const portal = await createBillingPortalSession(config.secretKey, customerId, `${config.appUrl}/dashboard`);
+      if (!portal.url || !portal.url.startsWith("https://billing.stripe.com/")) {
+        throw new Error("Stripe did not return a secure portal URL.");
+      }
+      return json({ ok: true, portalUrl: portal.url }, 201);
+    } catch {
+      return error(503, "BILLING_PORTAL_UNAVAILABLE", "The billing portal is temporarily unavailable.");
+    }
+  }
+
   let body: unknown;
   try {
     body = await boundedJson(request);
