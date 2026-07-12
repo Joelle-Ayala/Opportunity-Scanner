@@ -66,9 +66,9 @@ export default async function MonitoringOnboardingPage() {
                 <form key={report.scanId} action="/api/dashboard/searches" method="post" className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
                   <input type="hidden" name="scanId" value={report.scanId} />
                   <input type="hidden" name="next" value="/dashboard?setup=complete" />
-                  <div>
-                    <p className="font-semibold text-ink">{companyName(report)}</p>
-                    <p className="mt-1 text-xs text-muted">{report.companyUrl}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="break-words font-semibold text-ink">{companyName(report)}</p>
+                    <p className="mt-1 break-all text-xs text-muted">{report.companyUrl}</p>
                   </div>
                   <button className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Monitor this search</button>
                 </form>

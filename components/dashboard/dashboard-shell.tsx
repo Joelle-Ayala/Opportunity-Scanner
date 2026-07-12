@@ -7,6 +7,7 @@ export type DashboardTabId = "overview" | "reports" | "saved-searches" | "billin
 export interface DashboardTab {
   id: DashboardTabId;
   label: string;
+  shortLabel?: string;
   count?: number;
 }
 
@@ -24,7 +25,7 @@ export interface DashboardShellProps {
 const defaultTabs: DashboardTab[] = [
   { id: "overview", label: "Overview" },
   { id: "reports", label: "Reports" },
-  { id: "saved-searches", label: "Saved Searches" },
+  { id: "saved-searches", label: "Saved Searches", shortLabel: "Searches" },
   { id: "billing", label: "Billing" }
 ];
 
@@ -78,7 +79,7 @@ export function DashboardShell({
         </div>
 
         <nav className="mt-6 overflow-x-auto border-b border-line" aria-label="Dashboard sections">
-          <div className="flex min-w-max gap-6" role="tablist" aria-orientation="horizontal">
+          <div className="flex min-w-max gap-3 sm:gap-6" role="tablist" aria-orientation="horizontal">
             {tabs.map((tab, tabIndex) => {
               const selected = activeTab === tab.id;
               return (
@@ -92,13 +93,13 @@ export function DashboardShell({
                   onClick={() => onTabChange(tab.id)}
                   onKeyDown={(event) => handleTabKeyDown(event, tabIndex)}
                   tabIndex={selected ? 0 : -1}
-                  className={`flex min-h-11 items-center gap-2 border-b-2 px-0.5 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                  className={`flex min-h-11 items-center gap-1.5 border-b-2 px-0.5 text-xs font-semibold sm:gap-2 sm:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
                     selected
                       ? "border-accent text-accent"
                       : "border-transparent text-slate-600 hover:border-slate-300 hover:text-ink"
                   }`}
                 >
-                  {tab.label}
+                  {tab.shortLabel ? <><span className="sm:hidden">{tab.shortLabel}</span><span className="hidden sm:inline">{tab.label}</span></> : tab.label}
                   {typeof tab.count === "number" ? (
                     <span className="rounded-md bg-white px-1.5 py-0.5 text-xs text-slate-600">{tab.count}</span>
                   ) : null}

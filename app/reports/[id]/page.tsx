@@ -183,7 +183,7 @@ function ReportHeader({
   const packageBase = `/api/reports/${scan.id}/outreach-package${accessQuery}`;
 
   return (
-    <header className="rounded-lg border border-line bg-white p-6">
+    <header className="rounded-lg border border-line bg-white p-4 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-5">
         <OpportunityScannerLogo />
         <div className="flex flex-wrap gap-2">
@@ -232,11 +232,11 @@ function ReportHeader({
           )}
         </div>
       </div>
-      <div className="mt-8 flex flex-wrap items-center gap-4">
+      <div className="mt-8 flex min-w-0 flex-wrap items-center gap-4">
         <CompanyLogo name={companyName} logoUrl={companyLogoUrl(scan.company_url)} />
-        <div>
-          <h1 className="text-3xl font-semibold text-ink">{companyName}</h1>
-          <p className="mt-1 text-sm text-muted">{scan.company_url}</p>
+        <div className="min-w-0">
+          <h1 className="break-words text-2xl font-semibold text-ink sm:text-3xl">{companyName}</h1>
+          <p className="mt-1 break-all text-sm text-muted">{scan.company_url}</p>
         </div>
       </div>
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -720,7 +720,7 @@ function OpportunitySignalCard({
 }) {
   const classification = opportunityActionFor(signal, profile);
   return (
-    <article className="rounded-lg border border-line bg-white p-5">
+    <article className="rounded-lg border border-line bg-white p-4 sm:p-5">
       <div className="flex flex-wrap gap-2">
         <Badge tone={badgeTone(classification.actionability_label)}>
           {actionabilityDisplayLabel(classification.actionability_label)}
@@ -758,6 +758,20 @@ function OpportunitySignalCard({
         <a href={`/opportunities/${signal.id}?scanId=${scanId}${accessSuffix(access)}`} className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink">
           View action path
         </a>
+      </div>
+      <div className="mt-3 grid gap-2 [&>*]:w-full [&_button]:w-full [&_form]:w-full">
+        <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} access={access} />
+        <SendToWorkflowModal
+          payload={buildWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
+          locked={!isPaid}
+          access={access}
+        />
+        <FindContactsButton
+          scanId={scanId}
+          opportunityId={signal.id}
+          locked={!isPaid || !["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+          access={access}
+        />
       </div>
     </article>
   );
@@ -811,7 +825,7 @@ function UnlockCTA({ scan }: { scan: ScanRecord }) {
     "PDF/export"
   ];
   return (
-    <section className="rounded-lg border border-cyan-100 bg-mist p-6 shadow-sm">
+    <section className="rounded-lg border border-cyan-100 bg-mist p-4 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div>
           <h2 className="text-2xl font-semibold text-ink">Unlock the full opportunity pipeline</h2>
@@ -826,7 +840,7 @@ function UnlockCTA({ scan }: { scan: ScanRecord }) {
             ))}
           </div>
         </div>
-        <div className="rounded-lg border border-cyan-100 bg-white p-4 text-center">
+        <div className="w-full rounded-lg border border-cyan-100 bg-white p-4 text-center sm:w-auto">
           <p className="text-sm font-semibold uppercase tracking-wide text-muted">Full report</p>
           <p className="mt-1 text-2xl font-semibold text-ink">$49 one-time</p>
           <a href={fullReportUpgradeHref(scan)} className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
@@ -1166,7 +1180,7 @@ export default async function ReportPage({
   const lockedSignals = reportSignals.slice(visibleCount);
 
   return (
-    <main className="min-h-screen bg-field px-6 py-8">
+    <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
       <ReportAnalytics
         scanId={scan.id}
         tier={isPaid ? "full" : "free"}
@@ -1210,13 +1224,33 @@ export default async function ReportPage({
         <ExecutiveSummaryCard signals={reportSignals} profile={profile} />
 
         {displayedSignals.length > 0 ? (
-          <OpportunityActionTable
-            scanId={scan.id}
-            signals={displayedSignals}
-            isPaid={isPaid}
-            profile={profile}
-            access={searchParams?.access}
-          />
+          <>
+            <OpportunityActionTable
+              scanId={scan.id}
+              signals={displayedSignals}
+              isPaid={isPaid}
+              profile={profile}
+              access={searchParams?.access}
+            />
+            <section className="grid gap-4 md:hidden">
+              <div>
+                <h2 className="text-lg font-semibold text-ink">Opportunity Pipeline</h2>
+                <p className="mt-2 text-sm text-muted">Review each signal, take the next action, or send it into your workflow.</p>
+              </div>
+              <div className="grid gap-4">
+                {displayedSignals.map((signal) => (
+                  <OpportunitySignalCard
+                    key={signal.id}
+                    scanId={scan.id}
+                    signal={signal}
+                    isPaid={isPaid}
+                    profile={profile}
+                    access={searchParams?.access}
+                  />
+                ))}
+              </div>
+            </section>
+          </>
         ) : (
           <section className="rounded-lg border border-amber-200 bg-amber-50 p-5">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-amber-800">
@@ -1241,27 +1275,6 @@ export default async function ReportPage({
           reportSignals={reportSignals}
           profile={profile}
         />
-
-        {displayedSignals.length > 0 ? (
-            <section className="grid gap-4 md:hidden">
-              <div>
-                <h2 className="text-lg font-semibold text-ink">Mobile Pipeline Rows</h2>
-                <p className="mt-2 text-sm text-muted">Concise opportunity cards for reviewing the action path on smaller screens.</p>
-              </div>
-              <div className="grid gap-4">
-                {displayedSignals.map((signal) => (
-                  <OpportunitySignalCard
-                    key={signal.id}
-                    scanId={scan.id}
-                    signal={signal}
-                    isPaid={isPaid}
-                    profile={profile}
-                    access={searchParams?.access}
-                  />
-                ))}
-              </div>
-            </section>
-        ) : null}
 
         {!isPaid && lockedSignals.length > 0 ? (
           <section className="grid gap-4">

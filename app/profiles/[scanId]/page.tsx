@@ -46,7 +46,7 @@ function enrichmentUseCase(sourceId: string): string {
 
 function AdminRequired() {
   return (
-    <main className="min-h-screen bg-field px-6 py-8">
+    <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
       <section className="mx-auto max-w-xl rounded-lg border border-line bg-white p-6">
         <h1 className="text-2xl font-semibold text-ink">Admin access required</h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -104,7 +104,7 @@ export default async function ProfilePage({
   return (
     <main className="min-h-screen bg-field px-6 py-8">
       <div className="mx-auto grid max-w-7xl gap-6">
-        <header className="rounded-lg border border-line bg-white p-6">
+        <header className="rounded-lg border border-line bg-white p-4 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-5">
             <OpportunityScannerLogo />
             <div className="flex flex-wrap gap-2">
@@ -116,11 +116,11 @@ export default async function ProfilePage({
               </a>
             </div>
           </div>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-8 flex min-w-0 flex-wrap items-center gap-4">
             <CompanyLogo name={companyName} logoUrl={companyLogoUrl(scan.company_url)} />
-            <div>
-              <h1 className="text-3xl font-semibold text-ink">{companyName} Opportunity Profile</h1>
-              <p className="mt-1 text-sm text-muted">{scan.company_url}</p>
+            <div className="min-w-0">
+              <h1 className="break-words text-2xl font-semibold text-ink sm:text-3xl">{companyName} Opportunity Profile</h1>
+              <p className="mt-1 break-all text-sm text-muted">{scan.company_url}</p>
             </div>
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-4">

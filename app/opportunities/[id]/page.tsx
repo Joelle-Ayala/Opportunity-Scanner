@@ -112,12 +112,12 @@ function LockedOpportunityPreview({
 }) {
   const classification = opportunityActionFor(signal, profile);
   return (
-    <main className="min-h-screen bg-field px-6 py-8">
+    <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-4xl">
         <a href={`/reports/${scanId}${access ? `?access=${encodeURIComponent(access)}` : ""}`} className="text-sm font-medium text-accent">
           Back to report
         </a>
-        <section className="mt-5 rounded-lg border border-line bg-white p-6">
+        <section className="mt-5 rounded-lg border border-line bg-white p-4 sm:p-6">
           <p className="text-sm font-semibold uppercase tracking-wide text-accent">
             Opportunity Preview
           </p>
@@ -206,7 +206,7 @@ export default async function OpportunityPage({
   const endDate = classification.source_deadline || signal.deadline || signalDate(signal, "End Date");
 
   return (
-    <main className="min-h-screen px-6 py-8">
+    <main className="min-h-screen px-4 py-5 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-wrap gap-3 text-sm font-medium">
           <a href={`/reports/${scan.id}${searchParams.access ? `?access=${encodeURIComponent(searchParams.access)}` : ""}`} className="text-accent">
@@ -223,16 +223,16 @@ export default async function OpportunityPage({
           </section>
         ) : null}
 
-        <header className="mt-5 rounded-lg border border-line bg-white p-6">
+        <header className="mt-5 rounded-lg border border-line bg-white p-4 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-3xl">
+            <div className="min-w-0 max-w-3xl">
               <p className="text-sm font-semibold uppercase tracking-wide text-accent">
                 Opportunity Workspace
               </p>
-              <h1 className="mt-2 text-3xl font-semibold leading-tight text-ink">
+              <h1 className="mt-2 break-words text-2xl font-semibold leading-tight text-ink sm:text-3xl">
                 {opportunityHeadline(signal)}
               </h1>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
+              <p className="mt-3 break-words text-sm leading-6 text-slate-600">
                 For {profile?.company_name || scan.company_name || scan.company_url}. This page turns one
                 signal into a sales, partner, or research work item.
               </p>
@@ -354,7 +354,7 @@ export default async function OpportunityPage({
                     {target.email ? (
                       <p>
                         <span className="font-semibold text-ink">Email:</span>{" "}
-                        <a href={`mailto:${target.email}`} className="text-accent">{target.email}</a>
+                        <a href={`mailto:${target.email}`} className="break-all text-accent">{target.email}</a>
                       </p>
                     ) : null}
                     {target.phone ? <p><span className="font-semibold text-ink">Phone:</span> {target.phone}</p> : null}
@@ -527,7 +527,7 @@ export default async function OpportunityPage({
                           <div key={`${email}-${index}`} className="rounded-md border border-line bg-white px-3 py-2">
                             <p className="font-semibold text-ink">{name || email}</p>
                             {title ? <p className="text-slate-600">{title}</p> : null}
-                            {email ? <a href={`mailto:${email}`} className="text-accent">{email}</a> : null}
+                            {email ? <a href={`mailto:${email}`} className="break-all text-accent">{email}</a> : null}
                             {confidence ? <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{confidence} confidence</p> : null}
                           </div>
                         );

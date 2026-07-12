@@ -16,17 +16,22 @@ export function ArticleCharts({ charts }: { charts: ResourceArticle["chartAssets
 
           return (
             <figure key={`${chart.title}-${image.src}`} className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
-              <img
-                src={image.src}
-                width={image.width}
-                height={image.height}
-                alt={chart.altText}
-                loading="lazy"
-                className="h-auto w-full"
-              />
+              <div className="overflow-x-auto overscroll-contain">
+                <img
+                  src={image.src}
+                  width={image.width}
+                  height={image.height}
+                  alt={chart.altText}
+                  loading="lazy"
+                  className="h-auto min-w-[44rem] sm:min-w-0 sm:w-full"
+                />
+              </div>
               <figcaption className="border-t border-line p-5">
                 <p className="font-semibold text-ink">{chart.title}</p>
                 <p className="mt-2 text-sm leading-6 text-slate-700">{chart.takeaway}</p>
+                <a href={image.src} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-semibold text-accent hover:underline">
+                  Open visual full size
+                </a>
                 <p className="mt-2 text-xs leading-5 text-slate-500">
                   {image.caption ? `${image.caption} ` : null}
                   Source:{" "}

@@ -73,7 +73,7 @@ export function FullSampleReport({ report }: { report: IndustrySampleReport }) {
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
       <div className="overflow-hidden rounded-lg border border-line bg-white shadow-panel">
-        <div className="border-b border-line bg-ink px-6 py-6 text-white">
+        <div className="border-b border-line bg-ink px-4 py-5 text-white sm:px-6 sm:py-6">
           <div className="flex flex-wrap items-start justify-between gap-5">
             <div>
               <div className="flex flex-wrap gap-2">
@@ -83,7 +83,7 @@ export function FullSampleReport({ report }: { report: IndustrySampleReport }) {
               <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight">{report.title}</h1>
               <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-300">{report.clientDescription}</p>
             </div>
-            <div className="min-w-[16rem] rounded-lg border border-white/15 bg-white/10 p-4 text-sm">
+            <div className="w-full min-w-0 rounded-lg border border-white/15 bg-white/10 p-4 text-sm sm:w-auto sm:min-w-[16rem]">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">Estimated pipeline</p>
               <p className="mt-2 text-2xl font-semibold text-white">{report.estimatedPipeline}</p>
               <p className="mt-3 text-slate-300">{report.totalSignals} sourced signals found</p>

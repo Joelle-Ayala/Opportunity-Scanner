@@ -7,7 +7,8 @@ const navGroups = [
       ["Overview", "/"],
       ["How It Works", "/how-it-works"],
       ["Public-Sector Revenue", "/public-sector-revenue"],
-      ["Pricing", "/pricing"]
+      ["Pricing", "/pricing"],
+      ["Customer Dashboard", "/dashboard"]
     ]
   },
   {
@@ -26,7 +27,11 @@ const navGroups = [
       ["Healthcare & DME", "/industries/healthcare-dme-medical-supply"],
       ["Education & Workforce", "/industries/education-workforce-training"],
       ["Arts & Live Events", "/industries/arts-creative-economy-live-events"],
-      ["Software & B2B Services", "/industries/software-b2b-services-ai"]
+      ["Software & B2B Services", "/industries/software-b2b-services-ai"],
+      ["Construction & Infrastructure", "/industries/construction-infrastructure-engineering"],
+      ["Clean Energy & Facilities", "/industries/clean-energy-facilities-sustainability"],
+      ["Manufacturing & Logistics", "/industries/manufacturing-supply-chain-logistics"],
+      ["Nonprofits & Human Services", "/industries/nonprofits-community-services-human-services"]
     ]
   },
   {
@@ -97,7 +102,11 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
             <summary className="list-none rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold leading-none text-ink shadow-sm hover:border-accent [&::-webkit-details-marker]:hidden">
               Menu
             </summary>
-            <nav className="absolute right-0 top-11 grid max-h-[75vh] w-[min(88vw,340px)] gap-2 overflow-y-auto rounded-lg border border-line bg-white p-3 text-sm font-semibold text-steel shadow-lift">
+            <nav
+              aria-label="Mobile navigation"
+              className="absolute right-0 top-11 grid max-h-[calc(100dvh-5rem)] w-[min(88vw,340px)] gap-2 overflow-y-auto overscroll-contain rounded-lg border border-line bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-sm font-semibold text-steel shadow-lift"
+            >
+              {rightSlot ? <div className="grid gap-2 rounded-md border border-line bg-white p-2 [&>*]:w-full [&>*]:justify-center">{rightSlot}</div> : null}
               {navGroups.map((group) => (
                 <div key={group.label} className="rounded-md border border-line bg-field p-2">
                   <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-muted">{group.label}</p>
