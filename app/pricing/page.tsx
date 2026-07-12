@@ -3,6 +3,7 @@ import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CheckoutButton } from "@/components/checkout-button";
 import { CTASection, SectionIntro } from "@/components/marketing";
 import { PricingAnalytics } from "@/components/page-analytics";
+import { PricingCheckoutNotice } from "@/components/pricing-checkout-notice";
 import { getStripeServerConfig } from "@/lib/payments/config";
 
 export const dynamic = "force-dynamic";
@@ -155,6 +156,7 @@ export default function PricingPage({
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-7" aria-labelledby="plans-heading">
+        <PricingCheckoutNotice checkout={searchParams?.checkout} />
         <h2 id="plans-heading" className="sr-only">
           Opportunity Scanner plans
         </h2>
