@@ -5,6 +5,7 @@ import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/compon
 import { LeadMagnetPromo } from "@/components/lead-magnet-promo";
 import { RelatedContentSection } from "@/components/resources/related-content-section";
 import { getSolutionPage, solutionPages, siteUrl } from "@/lib/marketingContent";
+import { buildSolutionPageMetadata } from "@/lib/solutionPageMetadata";
 
 type PageProps = {
   params: { slug: string };
@@ -20,13 +21,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
     return {};
   }
 
-  return {
-    title: solution.name,
-    description: solution.description,
-    alternates: {
-      canonical: `${siteUrl}/solutions/${solution.slug}`
-    }
-  };
+  return buildSolutionPageMetadata(solution, siteUrl);
 }
 
 export default function SolutionDetailPage({ params }: PageProps) {
