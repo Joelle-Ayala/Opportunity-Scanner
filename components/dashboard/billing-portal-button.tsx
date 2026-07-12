@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import type { FormEvent } from "react";
 import { secureStripeBillingPortalUrl } from "@/components/billing-management-state";
+import { trackProductEvent } from "@/lib/productAnalytics";
 
 type BillingPortalResponse = {
   ok?: boolean;
@@ -36,6 +37,7 @@ export function BillingPortalButton({ className = "" }: { className?: string }) 
             : "Billing settings could not be opened. Please try again."
         );
       }
+      trackProductEvent("billing_portal_opened", { source: "dashboard" });
       window.location.assign(portalUrl);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Billing settings could not be opened. Please try again.");

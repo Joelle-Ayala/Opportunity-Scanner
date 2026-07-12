@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useMemo, useState, type KeyboardEvent } from "react";
+import { trackProductEvent } from "@/lib/productAnalytics";
 
 export type ReportComparisonStatus = "new" | "changed" | "expired" | "removed" | "unchanged";
 
@@ -211,6 +212,9 @@ export function ReportComparisonView({
     () => opportunities.filter((opportunity) => opportunity.status === activeFilter),
     [activeFilter, opportunities]
   );
+  useEffect(() => {
+    trackProductEvent("comparison_viewed", { initial_filter: initialFilter });
+  }, [initialFilter]);
   const activeDisplay = statusDisplay[activeFilter];
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, status: ReportComparisonStatus) => {
     const currentIndex = statusOrder.indexOf(status);

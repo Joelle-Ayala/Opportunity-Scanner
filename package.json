@@ -20,6 +20,7 @@
     "test:customer-entitlement": "node --experimental-strip-types scripts/test-customer-entitlement-contract.mjs",
     "test:monitoring": "node --experimental-strip-types scripts/test-monitoring-contract.mjs",
     "test:comparison": "node --experimental-strip-types scripts/test-report-comparison.mjs",
+    "test:paid-customer-journey": "node --experimental-strip-types scripts/test-paid-customer-journey.mjs",
     "test:solution-metadata": "node scripts/test-solution-page-metadata.mjs",
     "validate:lead-magnet-quality": "node scripts/validate-lead-magnet-quality.mjs",
     "test:organization-resolution": "node --experimental-strip-types scripts/test-organization-resolution.mjs",

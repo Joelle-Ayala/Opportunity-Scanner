@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CustomerDashboard, type DashboardReportRow, type MonitoredSearchRow } from "@/components/dashboard";
 import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
+import { DashboardAnalytics } from "@/components/page-analytics";
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
 import {
   ensureCustomerAccount,
@@ -29,6 +30,7 @@ type DashboardSearchParams = {
   checkout?: string;
   searchNotice?: string;
   searchError?: string;
+  setup?: string;
 };
 
 function configurationValue(configuration: Record<string, unknown> | undefined, key: string): string {
@@ -54,6 +56,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     loadDashboardMonitoringRuns(session.user.id, { limit: 20 })
   ]);
   const subscription = summary.billing.subscriptions.find((item) => ["active", "trialing"].includes(item.status));
+  const subscriptionPlan = subscription?.product === "growth" ? "growth" : subscription?.product === "monitor" ? "monitor" : "none";
   const planName = subscription?.product === "growth" ? "Growth" : subscription?.product === "monitor" ? "Monitor" : "Report access";
   const profileLimit = subscription?.product === "growth" ? 3 : subscription?.product === "monitor" ? 1 : 0;
   const monitoredScanIds = new Set([
@@ -112,6 +115,11 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
 
   return (
     <main className="min-h-screen bg-field">
+      <DashboardAnalytics
+        subscriptionPlan={subscriptionPlan}
+        hasActiveMonitoring={summary.activeMonitorCount > 0}
+        onboardingCompleted={searchParams?.setup === "complete"}
+      />
       {searchParams?.checkout === "success" ? <div className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">Your plan is active. Choose or create a report to begin monitoring.</div> : null}
       {searchParams?.searchNotice ? <div role="status" aria-live="polite" className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">{searchParams.searchNotice}</div> : null}
       {searchParams?.searchError ? <div role="alert" className="border-b border-red-200 bg-red-50 px-5 py-3 text-center text-sm font-semibold text-red-800">{searchParams.searchError}</div> : null}

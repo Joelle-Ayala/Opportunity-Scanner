@@ -5,6 +5,10 @@ export type ScanDurationBucket = "under_30_seconds" | "30-89_seconds" | "90_seco
 export type ReportTier = "free" | "full";
 export type PurchasePlan = "full_report" | "subscription";
 export type BillingPeriod = "one_time" | "monthly" | "annual";
+export type SubscriptionPlan = "none" | "monitor" | "growth";
+export type MonitoringOnboardingState = "eligible_report" | "report_required" | "limit_reached";
+export type SavedSearchStatus = "active" | "paused" | "archived";
+export type ComparisonFilter = "new" | "changed" | "expired" | "removed" | "unchanged";
 
 export type ProductAnalyticsEventMap = {
   scan_started: {
@@ -34,6 +38,32 @@ export type ProductAnalyticsEventMap = {
     plan: PurchasePlan;
     billing_period: BillingPeriod;
   };
+  dashboard_viewed: {
+    subscription_plan: SubscriptionPlan;
+    has_active_monitoring: boolean;
+  };
+  monitoring_onboarding_viewed: {
+    subscription_plan: Exclude<SubscriptionPlan, "none">;
+    state: MonitoringOnboardingState;
+  };
+  monitoring_onboarding_completed: {
+    subscription_plan: Exclude<SubscriptionPlan, "none">;
+  };
+  saved_search_changed: {
+    change_type: "criteria";
+  };
+  saved_search_status_changed: {
+    status: SavedSearchStatus;
+  };
+  saved_search_run_requested: {
+    source: "dashboard";
+  };
+  comparison_viewed: {
+    initial_filter: ComparisonFilter;
+  };
+  billing_portal_opened: {
+    source: "dashboard";
+  };
 };
 
 export type ProductAnalyticsEventName = keyof ProductAnalyticsEventMap;
@@ -51,7 +81,15 @@ const EVENT_NAMES = new Set<ProductAnalyticsEventName>([
   "email_captured",
   "pricing_viewed",
   "checkout_started",
-  "purchase_completed"
+  "purchase_completed",
+  "dashboard_viewed",
+  "monitoring_onboarding_viewed",
+  "monitoring_onboarding_completed",
+  "saved_search_changed",
+  "saved_search_status_changed",
+  "saved_search_run_requested",
+  "comparison_viewed",
+  "billing_portal_opened"
 ]);
 
 const SIGNAL_COUNT_BUCKETS = ["0", "1-3", "4-10", "11+"] as const;
@@ -59,6 +97,11 @@ const SCAN_DURATION_BUCKETS = ["under_30_seconds", "30-89_seconds", "90_seconds_
 const REPORT_TIERS = ["free", "full"] as const;
 const PURCHASE_PLANS = ["full_report", "subscription"] as const;
 const BILLING_PERIODS = ["one_time", "monthly", "annual"] as const;
+const SUBSCRIPTION_PLANS = ["none", "monitor", "growth"] as const;
+const PAID_SUBSCRIPTION_PLANS = ["monitor", "growth"] as const;
+const MONITORING_ONBOARDING_STATES = ["eligible_report", "report_required", "limit_reached"] as const;
+const SAVED_SEARCH_STATUSES = ["active", "paused", "archived"] as const;
+const COMPARISON_FILTERS = ["new", "changed", "expired", "removed", "unchanged"] as const;
 
 export function signalCountBucket(count: number): SignalCountBucket {
   if (count <= 0) return "0";
@@ -154,6 +197,52 @@ export function sanitizeProductAnalyticsEvent(
               billing_period: properties.billing_period
             }
           }
+        : null;
+    case "dashboard_viewed":
+      return isOneOf(properties.subscription_plan, SUBSCRIPTION_PLANS)
+        && typeof properties.has_active_monitoring === "boolean"
+        ? {
+            name,
+            properties: {
+              subscription_plan: properties.subscription_plan,
+              has_active_monitoring: properties.has_active_monitoring
+            }
+          }
+        : null;
+    case "monitoring_onboarding_viewed":
+      return isOneOf(properties.subscription_plan, PAID_SUBSCRIPTION_PLANS)
+        && isOneOf(properties.state, MONITORING_ONBOARDING_STATES)
+        ? {
+            name,
+            properties: {
+              subscription_plan: properties.subscription_plan,
+              state: properties.state
+            }
+          }
+        : null;
+    case "monitoring_onboarding_completed":
+      return isOneOf(properties.subscription_plan, PAID_SUBSCRIPTION_PLANS)
+        ? { name, properties: { subscription_plan: properties.subscription_plan } }
+        : null;
+    case "saved_search_changed":
+      return properties.change_type === "criteria"
+        ? { name, properties: { change_type: "criteria" } }
+        : null;
+    case "saved_search_status_changed":
+      return isOneOf(properties.status, SAVED_SEARCH_STATUSES)
+        ? { name, properties: { status: properties.status } }
+        : null;
+    case "saved_search_run_requested":
+      return properties.source === "dashboard"
+        ? { name, properties: { source: "dashboard" } }
+        : null;
+    case "comparison_viewed":
+      return isOneOf(properties.initial_filter, COMPARISON_FILTERS)
+        ? { name, properties: { initial_filter: properties.initial_filter } }
+        : null;
+    case "billing_portal_opened":
+      return properties.source === "dashboard"
+        ? { name, properties: { source: "dashboard" } }
         : null;
   }
 }

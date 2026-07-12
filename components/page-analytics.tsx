@@ -5,13 +5,54 @@ import {
   scanDurationBucket,
   signalCountBucket,
   trackProductEvent,
-  type ReportTier
+  type MonitoringOnboardingState,
+  type ReportTier,
+  type SubscriptionPlan
 } from "@/lib/productAnalytics";
 
 export function PricingAnalytics({ source }: { source: "navigation" | "report_gate" | "checkout_return" | "unknown" }) {
   useEffect(() => {
     trackProductEvent("pricing_viewed", { source });
   }, [source]);
+
+  return null;
+}
+
+export function DashboardAnalytics({
+  subscriptionPlan,
+  hasActiveMonitoring,
+  onboardingCompleted = false
+}: {
+  subscriptionPlan: SubscriptionPlan;
+  hasActiveMonitoring: boolean;
+  onboardingCompleted?: boolean;
+}) {
+  useEffect(() => {
+    trackProductEvent("dashboard_viewed", {
+      subscription_plan: subscriptionPlan,
+      has_active_monitoring: hasActiveMonitoring
+    });
+    if (onboardingCompleted && subscriptionPlan !== "none") {
+      trackProductEvent("monitoring_onboarding_completed", { subscription_plan: subscriptionPlan });
+    }
+  }, [hasActiveMonitoring, onboardingCompleted, subscriptionPlan]);
+
+  return null;
+}
+
+export function MonitoringOnboardingAnalytics({
+  subscriptionPlan,
+  state
+}: {
+  subscriptionPlan: Exclude<SubscriptionPlan, "none">;
+  state: MonitoringOnboardingState;
+}) {
+  useEffect(() => {
+    trackProductEvent("monitoring_onboarding_viewed", {
+      subscription_plan: subscriptionPlan,
+      state
+    });
+  }, [state, subscriptionPlan]);
 
   return null;
 }

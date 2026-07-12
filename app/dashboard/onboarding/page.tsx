@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/brand";
+import { MonitoringOnboardingAnalytics } from "@/components/page-analytics";
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
 import {
   ensureCustomerAccount,
@@ -32,9 +33,15 @@ export default async function MonitoringOnboardingPage() {
   const activeCount = searches.filter((search) => search.monitoredProfile?.status === "active").length;
   const monitoredScanIds = new Set(searches.flatMap((search) => search.monitoredProfile ? [search.monitoredProfile.sourceScanId] : []));
   const eligibleReports = reports.filter((report) => report.status === "completed" && !monitoredScanIds.has(report.scanId));
+  const onboardingState = activeCount >= limit
+    ? "limit_reached"
+    : eligibleReports.length > 0
+      ? "eligible_report"
+      : "report_required";
 
   return (
     <main className="min-h-screen bg-field">
+      <MonitoringOnboardingAnalytics subscriptionPlan={subscription.product} state={onboardingState} />
       <SiteHeader rightSlot={<a href="/dashboard" className="text-sm font-semibold text-steel hover:text-accent">Dashboard</a>} />
       <section className="mx-auto max-w-4xl px-5 py-10 sm:px-6">
         <p className="text-xs font-semibold uppercase text-accent">Monitoring setup</p>
