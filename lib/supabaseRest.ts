@@ -116,3 +116,30 @@ export async function supabaseSelectMany<T>(table: string, query: string): Promi
 
   return (await response.json()) as T[];
 }
+
+export async function supabaseRpc<T>(
+  functionName: string,
+  payload: Record<string, unknown>
+): Promise<T> {
+  const config = getSupabaseConfig();
+  if (!config) {
+    throw new Error("Supabase is not configured.");
+  }
+
+  const response = await fetch(`${config.url}/rest/v1/rpc/${functionName}`, {
+    method: "POST",
+    headers: {
+      apikey: config.key,
+      Authorization: `Bearer ${config.key}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error(`Supabase RPC failed: ${await response.text()}`);
+  }
+
+  return (await response.json()) as T;
+}

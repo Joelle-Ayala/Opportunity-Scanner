@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
+import { BillingManagement } from "@/components/billing-management";
 import { CheckoutButton } from "@/components/checkout-button";
 import { CTASection, SectionIntro } from "@/components/marketing";
 import { PricingAnalytics } from "@/components/page-analytics";
@@ -112,7 +113,7 @@ const faqs = [
 export default function PricingPage({
   searchParams
 }: {
-  searchParams?: { checkout?: string; source?: string; scanId?: string };
+  searchParams?: { checkout?: string; session_id?: string; source?: string; scanId?: string };
 }) {
   const checkoutEnabled = checkoutIsConfigured();
   const reportScanId = searchParams?.source === "report_gate" ? searchParams.scanId : undefined;
@@ -157,6 +158,10 @@ export default function PricingPage({
 
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-7" aria-labelledby="plans-heading">
         <PricingCheckoutNotice checkout={searchParams?.checkout} />
+        <BillingManagement
+          checkout={searchParams?.checkout}
+          checkoutSessionId={searchParams?.session_id}
+        />
         <h2 id="plans-heading" className="sr-only">
           Opportunity Scanner plans
         </h2>

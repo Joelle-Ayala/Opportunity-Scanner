@@ -1,16 +1,6 @@
 import { redirect } from "next/navigation";
-import {
-  createScan,
-  listProfileFeedbackForCompanyUrl,
-  saveCompanyProfile,
-  saveConnectorRunStatuses,
-  saveOpportunitySignals,
-  updateScan
-} from "@/lib/storage";
-import { discoverExternalSignalsWithStatus } from "@/lib/connectors/discover";
-import { generateCompanyProfile } from "@/lib/profile";
-import { applyProfileFeedbackToProfile } from "@/lib/profileRefinement";
-import { scrapeCompanyWebsite } from "@/lib/scraper";
+import { executeScanPipeline } from "@/lib/scanPipeline";
+import { createScan, updateScan } from "@/lib/storage";
 import { CustomerType, ReportType, ScanInput } from "@/lib/types";
 import { normalizeCompanyUrl } from "@/lib/url";
 
@@ -59,28 +49,7 @@ export async function POST(request: Request) {
   const scan = await createScan(input);
 
   try {
-    await updateScan(scan.id, { status: "scraping" });
-    const scraped = await scrapeCompanyWebsite(companyUrl);
-
-    await updateScan(scan.id, { status: "profiling" });
-    const inferredProfile = await generateCompanyProfile(input, scraped.rawText);
-    const priorFeedback = await listProfileFeedbackForCompanyUrl(companyUrl);
-    const profile =
-      priorFeedback.length > 0
-        ? applyProfileFeedbackToProfile(inferredProfile, priorFeedback)
-        : inferredProfile;
-    await updateScan(scan.id, { selected_playbooks: profile.selected_playbooks });
-    await saveCompanyProfile(scan.id, profile, scraped.rawText, scraped.pages);
-
-    await updateScan(scan.id, { status: "discovering" });
-    const discovery = await discoverExternalSignalsWithStatus(profile);
-    await saveConnectorRunStatuses(scan.id, discovery.runs);
-    await saveOpportunitySignals(scan.id, discovery.signals, profile);
-
-    await updateScan(scan.id, {
-      status: "completed",
-      completed_at: new Date().toISOString()
-    });
+    await executeScanPipeline(scan.id, input);
   } catch (error) {
     await updateScan(scan.id, {
       status: "failed",
