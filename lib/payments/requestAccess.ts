@@ -8,6 +8,14 @@ export async function hasRequestReportAccess(
   access: string | undefined,
   scan: Pick<ScanRecord, "id" | "report_access">
 ): Promise<boolean> {
+  return (await resolveRequestReportAccess(requestUrl, access, scan)).hasAccess;
+}
+
+export async function resolveRequestReportAccess(
+  requestUrl: string,
+  access: string | undefined,
+  scan: Pick<ScanRecord, "id" | "report_access">
+): Promise<{ hasAccess: boolean; authUserId: string | null }> {
   let authUserId: string | null = null;
   try {
     const session = await resolveCustomerSession(getCustomerAuthConfig(requestUrl), cookies());
@@ -15,5 +23,8 @@ export async function hasRequestReportAccess(
   } catch {
     authUserId = null;
   }
-  return hasCustomerServerReportAccess(access, scan, authUserId);
+  return {
+    hasAccess: await hasCustomerServerReportAccess(access, scan, authUserId),
+    authUserId
+  };
 }

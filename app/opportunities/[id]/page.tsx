@@ -222,6 +222,16 @@ export default async function OpportunityPage({
             Enrichment request saved. This is now in the work queue for this opportunity.
           </section>
         ) : null}
+        {searchParams.enrichment === "credit_limit" ? (
+          <section role="alert" className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            No contact-enrichment credits remain this billing month. Your source-native contact path and next action are still available below.
+          </section>
+        ) : null}
+        {searchParams.enrichment === "growth_required" ? (
+          <section role="alert" className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            Person-level contact enrichment requires a signed-in Growth plan. This opportunity still includes its official contact path and next action.
+          </section>
+        ) : null}
 
         <header className="mt-5 rounded-lg border border-line bg-white p-4 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">

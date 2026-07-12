@@ -91,7 +91,7 @@ test("all paid report surfaces use the request-authenticated entitlement guard",
     const paidSurface = await source(path);
     assert.match(
       paidSurface,
-      /await (?:hasRequestReportAccess|hasCustomerServerReportAccess)\(/,
+      /await (?:hasRequestReportAccess|resolveRequestReportAccess|hasCustomerServerReportAccess)\(/,
       `${path} must authorize through the authenticated customer entitlement guard`
     );
   }

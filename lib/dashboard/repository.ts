@@ -1,4 +1,5 @@
 import { dashboardInsert, dashboardSelect, dashboardSelectOne, dashboardUpdate, inFilter, pageParameters } from "./rest";
+import { loadEnrichmentCreditBalance } from "../enrichmentCredits";
 import type {
   CustomerAccountRecord,
   DashboardBillingState,
@@ -629,11 +630,12 @@ export async function loadDashboardBillingState(authUserId: string): Promise<Das
 
 export async function loadDashboardSummary(authUserId: string): Promise<DashboardSummary> {
   const account = await requireAccount(authUserId);
-  const [reports, savedSearches, runs, billing] = await Promise.all([
+  const [reports, savedSearches, runs, billing, enrichmentCredits] = await Promise.all([
     loadDashboardReports(authUserId, { limit: 5 }),
     loadDashboardSavedSearches(authUserId),
     loadDashboardMonitoringRuns(authUserId, { limit: 100 }),
-    loadDashboardBillingState(authUserId)
+    loadDashboardBillingState(authUserId),
+    loadEnrichmentCreditBalance(authUserId)
   ]);
   const scanIds = await ownedScanIds(account.id);
   const allScans = scanIds.length
@@ -657,6 +659,7 @@ export async function loadDashboardSummary(authUserId: string): Promise<Dashboar
     ).length,
     newOpportunityCount: runs.reduce((total, run) => total + run.newOpportunityCount, 0),
     billing,
+    enrichmentCredits,
     recentReports: reports
   };
 }

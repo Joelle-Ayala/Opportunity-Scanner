@@ -8,6 +8,7 @@ import { accessSuffix, hasAdminAccess, reportAccessHref } from "@/lib/access";
 import { hasCustomerServerReportAccess, hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
 import { getStripeServerConfig } from "@/lib/payments/config";
 import { ReportAnalytics } from "@/components/page-analytics";
+import { ReportMonitorCheckout } from "@/components/report-monitor-checkout";
 import { signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal } from "@/lib/contactTargeting";
 import { isSamGovConfigured } from "@/lib/connectors/samGov";
@@ -16,7 +17,7 @@ import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { sourceCatalog } from "@/lib/sourceRegistry";
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
-import { ensureCustomerAccount, loadOwnedMonitoringComparisonPair } from "@/lib/dashboard/repository";
+import { ensureCustomerAccount, loadDashboardSummary, loadOwnedMonitoringComparisonPair } from "@/lib/dashboard/repository";
 import {
   buildWorkflowPayload,
   opportunityHeadline,
@@ -193,12 +194,6 @@ function ReportHeader({
           <a href={`/dashboard/new?from=${encodeURIComponent(scan.id)}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
             Run Updated Report
           </a>
-          <form action="/api/dashboard/searches" method="post">
-            <input type="hidden" name="scanId" value={scan.id} />
-            <button className="rounded-md border border-accent px-3 py-2 text-sm font-semibold text-accent hover:bg-mist">
-              Monitor Search
-            </button>
-          </form>
           {comparisonHref ? (
             <a href={comparisonHref} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
               Compare Changes
@@ -1146,6 +1141,7 @@ export default async function ReportPage({
     redirect(reportAccessHref(`/reports/${scan.id}`, searchParams?.access));
   }
   let comparisonHref: string | null = null;
+  let hasActiveMonitoringPlan = false;
   let customerSession: Awaited<ReturnType<typeof resolveCustomerSession>> = null;
   try {
     customerSession = await resolveCustomerSession(getCustomerAuthConfig(), cookies());
@@ -1154,8 +1150,18 @@ export default async function ReportPage({
   }
   if (customerSession?.user.email) {
     await ensureCustomerAccount(customerSession.user.id, customerSession.user.email).catch(() => null);
-    const pair = await loadOwnedMonitoringComparisonPair(customerSession.user.id, scan.id).catch(() => null);
+    const [pair, dashboardSummary] = await Promise.all([
+      loadOwnedMonitoringComparisonPair(customerSession.user.id, scan.id).catch(() => null),
+      loadDashboardSummary(customerSession.user.id).catch(() => null)
+    ]);
     if (pair) comparisonHref = `/dashboard/compare/${scan.id}`;
+    hasActiveMonitoringPlan = Boolean(
+      dashboardSummary?.billing.subscriptions.some(
+        (subscription) =>
+          Boolean(subscription.product && ["monitor", "growth"].includes(subscription.product)) &&
+          ["active", "trialing"].includes(subscription.status)
+      )
+    );
   }
   const isPaid = storedAccess || await hasCustomerServerReportAccess(
     searchParams?.access,
@@ -1178,6 +1184,12 @@ export default async function ReportPage({
   const visibleCount = isPaid ? reportSignals.length : visibleSignalCount(reportSignals.length);
   const displayedSignals = reportSignals.slice(0, visibleCount);
   const lockedSignals = reportSignals.slice(visibleCount);
+  const showReportMonitorUpsell =
+    isPaid &&
+    !isAdminView &&
+    !hasActiveMonitoringPlan &&
+    reportCheckoutIsConfigured();
+  const reportCompanyName = profile?.company_name || scan.company_name || hostname(scan.company_url);
 
   return (
     <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
@@ -1222,6 +1234,13 @@ export default async function ReportPage({
         ) : null}
 
         <ExecutiveSummaryCard signals={reportSignals} profile={profile} />
+
+        {showReportMonitorUpsell ? (
+          <ReportMonitorCheckout
+            companyName={reportCompanyName}
+            defaultEmail={customerSession?.user.email}
+          />
+        ) : null}
 
         {displayedSignals.length > 0 ? (
           <>

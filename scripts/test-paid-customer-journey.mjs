@@ -243,7 +243,9 @@ test("subscription checkout hands the customer to sign-in-protected monitoring o
 
   assert.match(handlers, /dashboard\/onboarding\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
   assert.match(onboarding, /dashboard\/onboarding\?checkout=success/);
-  assert.match(reportPage, /action="\/api\/dashboard\/searches"/);
+  assert.match(reportPage, /showReportMonitorUpsell/);
+  assert.match(reportPage, /<ReportMonitorCheckout/);
+  assert.doesNotMatch(reportPage, /action="\/api\/dashboard\/searches"/);
   assert.match(dashboard, /\/dashboard\/compare\/\$\{run\.scanId\}/);
   assert.match(dashboard, /<BillingPortalButton \/>/);
 });

@@ -88,9 +88,11 @@ test("cron monitoring is secret-protected and writes durable run outcomes", asyn
 
 test("Hobby-compatible Vercel cron runs monitoring once per day", async () => {
   const config = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
-  assert.deepEqual(config.crons, [
+  assert.deepEqual(
+    config.crons.find((job) => job.path === "/api/cron/monitoring"),
     { path: "/api/cron/monitoring", schedule: "17 12 * * *" }
-  ]);
+  );
+  assert.ok(config.crons.length <= 2, "Vercel Hobby supports at most two cron jobs");
 });
 
 test("alert delivery migration deduplicates, leases, and resolves Stripe email server-side", async () => {

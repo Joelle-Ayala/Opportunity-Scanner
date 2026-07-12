@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { BillingSummary, type BillingSummaryProps } from "./billing-summary";
+import { AlertPreferences, type AlertPreferencesProps } from "./alert-preferences";
 import { DashboardOverview, type DashboardOverviewProps } from "./dashboard-overview";
 import { DashboardShell, type DashboardTab, type DashboardTabId } from "./dashboard-shell";
 import { ReportList, type ReportListProps } from "./report-list";
@@ -12,6 +13,7 @@ export interface CustomerDashboardProps {
   overview: DashboardOverviewProps;
   reports: ReportListProps;
   savedSearches: SavedSearchListProps;
+  alerts: AlertPreferencesProps;
   billing: BillingSummaryProps;
   title?: string;
   description?: string;
@@ -26,6 +28,7 @@ export function CustomerDashboard({
   overview,
   reports,
   savedSearches,
+  alerts,
   billing,
   title,
   description,
@@ -47,6 +50,7 @@ export function CustomerDashboard({
     { id: "overview", label: "Overview" },
     { id: "reports", label: "Reports", count: reports.reports.length },
     { id: "saved-searches", label: "Saved Searches", count: savedSearches.searches.length },
+    { id: "alerts", label: "Alerts" },
     { id: "billing", label: "Billing" }
   ];
 
@@ -63,6 +67,7 @@ export function CustomerDashboard({
       {activeTab === "overview" ? <DashboardOverview {...overview} /> : null}
       {activeTab === "reports" ? <ReportList {...reports} /> : null}
       {activeTab === "saved-searches" ? <SavedSearchList {...savedSearches} /> : null}
+      {activeTab === "alerts" ? <AlertPreferences {...alerts} /> : null}
       {activeTab === "billing" ? <BillingSummary {...billing} /> : null}
     </DashboardShell>
   );

@@ -1,4 +1,5 @@
 export * from "./billing-summary";
+export * from "./alert-preferences";
 export * from "./customer-dashboard";
 export * from "./dashboard-overview";
 export * from "./dashboard-shell";

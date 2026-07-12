@@ -19,13 +19,19 @@
     "test:billing-management": "node --experimental-strip-types scripts/test-billing-management.mjs",
     "test:customer-entitlement": "node --experimental-strip-types scripts/test-customer-entitlement-contract.mjs",
     "test:monitoring": "node --experimental-strip-types scripts/test-monitoring-contract.mjs",
+    "test:deadline-alerts": "node --experimental-strip-types scripts/test-deadline-alerts.mjs",
+    "test:nurture": "node --experimental-strip-types scripts/test-scan-nurture.mjs",
+    "test:report-monitor-upsell": "node scripts/test-report-monitor-upsell.mjs",
+    "test:webhook-docs": "node scripts/test-webhook-docs.mjs",
     "test:comparison": "node --experimental-strip-types scripts/test-report-comparison.mjs",
     "test:paid-customer-journey": "node --experimental-strip-types scripts/test-paid-customer-journey.mjs",
     "test:responsive-ui": "node scripts/test-responsive-ui.mjs",
     "test:solution-metadata": "node scripts/test-solution-page-metadata.mjs",
     "validate:lead-magnet-quality": "node scripts/validate-lead-magnet-quality.mjs",
     "test:organization-resolution": "node --experimental-strip-types scripts/test-organization-resolution.mjs",
-    "test:product-analytics": "node --experimental-strip-types scripts/test-product-analytics.mjs"
+    "test:enrichment-credits": "node --experimental-strip-types scripts/test-enrichment-credits.mjs",
+    "test:product-analytics": "node --experimental-strip-types scripts/test-product-analytics.mjs",
+    "test:scan-rate-limit": "node --experimental-strip-types scripts/test-scan-rate-limit.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

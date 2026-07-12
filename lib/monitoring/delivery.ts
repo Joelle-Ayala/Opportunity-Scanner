@@ -1,4 +1,5 @@
 import type { ClaimedMonitoringAlert } from "./storage";
+import { createAlertUnsubscribeToken } from "../deadlineAlerts/token.ts";
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -7,6 +8,7 @@ export type MonitoringEmailConfig = {
   apiKey: string;
   fromEmail: string;
   appUrl: string;
+  unsubscribeSecret?: string;
 };
 
 type ResendResponse = {
@@ -29,7 +31,13 @@ export function getMonitoringEmailConfig(
       return null;
     }
     url.pathname = url.pathname.replace(/\/$/, "");
-    return { apiKey, fromEmail, appUrl: url.toString().replace(/\/$/, "") };
+    const unsubscribeSecret = env.ALERT_UNSUBSCRIBE_SECRET?.trim();
+    return {
+      apiKey,
+      fromEmail,
+      appUrl: url.toString().replace(/\/$/, ""),
+      ...(unsubscribeSecret && unsubscribeSecret.length >= 32 ? { unsubscribeSecret } : {})
+    };
   } catch {
     return null;
   }
@@ -61,6 +69,16 @@ export async function sendMonitoringAlertEmail(
     .join("\n");
   const safeTitle = escapeHtml(alert.opportunity_title);
   const safeDetails = escapeHtml(details).replaceAll("\n", "<br>");
+  const preferencesUrl = `${config.appUrl}/dashboard?tab=alerts`;
+  const unsubscribeToken = config.unsubscribeSecret
+    ? createAlertUnsubscribeToken(alert.customer_account_id, config.unsubscribeSecret)
+    : null;
+  const unsubscribeUrl = unsubscribeToken
+    ? `${config.appUrl}/alerts/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`
+    : preferencesUrl;
+  const oneClickUnsubscribeUrl = unsubscribeToken
+    ? `${config.appUrl}/api/deadline-alerts/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`
+    : null;
 
   const response = await fetchImpl(RESEND_ENDPOINT, {
     method: "POST",
@@ -79,9 +97,17 @@ export async function sendMonitoringAlertEmail(
         alert.opportunity_title,
         details,
         "",
-        `View the updated report: ${reportUrl}`
+        `View the updated report: ${reportUrl}`,
+        `Manage alert preferences: ${preferencesUrl}`,
+        `Unsubscribe from Opportunity Scanner alerts: ${unsubscribeUrl}`
       ].filter(Boolean).join("\n"),
-      html: `<p>Opportunity Scanner found a new public-sector opportunity.</p><p><strong>${safeTitle}</strong>${safeDetails ? `<br>${safeDetails}` : ""}</p><p><a href="${escapeHtml(reportUrl)}">View the updated report</a></p>`
+      html: `<p>Opportunity Scanner found a new public-sector opportunity.</p><p><strong>${safeTitle}</strong>${safeDetails ? `<br>${safeDetails}` : ""}</p><p><a href="${escapeHtml(reportUrl)}">View the updated report</a></p><p style="border-top:1px solid #d8dee8;padding-top:18px;font-size:12px;color:#667085"><a href="${escapeHtml(preferencesUrl)}">Manage alert preferences</a> or <a href="${escapeHtml(unsubscribeUrl)}">unsubscribe from alerts</a>.</p>`,
+      ...(oneClickUnsubscribeUrl ? {
+        headers: {
+          "List-Unsubscribe": `<${oneClickUnsubscribeUrl}>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
+        }
+      } : {})
     })
   });
 

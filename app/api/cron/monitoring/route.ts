@@ -1,4 +1,11 @@
 import { timingSafeEqual } from "node:crypto";
+import { getDeadlineEmailConfig, sendDeadlineAlertEmail } from "@/lib/deadlineAlerts/delivery";
+import {
+  claimPendingDeadlineAlerts,
+  enqueueDueDeadlineAlerts,
+  markDeadlineAlertSent,
+  releaseDeadlineAlert
+} from "@/lib/deadlineAlerts/storage";
 import { findNewMonitoringSignals } from "@/lib/monitoring/core";
 import { getMonitoringEmailConfig, sendMonitoringAlertEmail } from "@/lib/monitoring/delivery";
 import {
@@ -58,8 +65,12 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   const emailConfig = getMonitoringEmailConfig();
+  const deadlineEmailConfig = getDeadlineEmailConfig();
   let alertsDelivered = 0;
   let alertsFailed = 0;
+  let deadlineAlertsEnqueued = 0;
+  let deadlineAlertsDelivered = 0;
+  let deadlineAlertsFailed = 0;
 
   let profiles;
   try {
@@ -111,6 +122,12 @@ export async function GET(request: Request): Promise<Response> {
     }
   }
 
+  try {
+    deadlineAlertsEnqueued = await enqueueDueDeadlineAlerts(100);
+  } catch {
+    deadlineAlertsFailed += 1;
+  }
+
   if (emailConfig) {
     const alerts = await claimPendingMonitoringAlerts(5).catch(() => []);
     for (const alert of alerts) {
@@ -125,6 +142,20 @@ export async function GET(request: Request): Promise<Response> {
     }
   }
 
+  if (deadlineEmailConfig) {
+    const deadlineAlerts = await claimPendingDeadlineAlerts(5).catch(() => []);
+    for (const alert of deadlineAlerts) {
+      try {
+        const providerMessageId = await sendDeadlineAlertEmail(deadlineEmailConfig, alert);
+        await markDeadlineAlertSent(alert.alert_id, providerMessageId);
+        deadlineAlertsDelivered += 1;
+      } catch (cause) {
+        await releaseDeadlineAlert(alert, cause).catch(() => undefined);
+        deadlineAlertsFailed += 1;
+      }
+    }
+  }
+
   return Response.json({
     ok: true,
     claimed: profiles.length,
@@ -133,7 +164,13 @@ export async function GET(request: Request): Promise<Response> {
     delivery: {
       configured: Boolean(emailConfig),
       delivered: alertsDelivered,
-      failed: alertsFailed
+      failed: alertsFailed,
+      deadlines: {
+        configured: Boolean(deadlineEmailConfig),
+        enqueued: deadlineAlertsEnqueued,
+        delivered: deadlineAlertsDelivered,
+        failed: deadlineAlertsFailed
+      }
     },
     results
   });

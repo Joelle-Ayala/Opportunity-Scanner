@@ -34,6 +34,7 @@ export type MonitoringRunRecord = {
 export type ClaimedMonitoringAlert = {
   alert_id: string;
   monitoring_run_id: string;
+  customer_account_id: string;
   scan_id: string;
   recipient_email: string;
   opportunity_title: string;

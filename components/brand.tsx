@@ -41,6 +41,7 @@ const navGroups = [
       ["Free Guides", "/guides"],
       ["Sample Reports", "/examples"],
       ["Source Coverage", "/source-coverage"],
+      ["Webhook Documentation", "/docs/webhooks"],
       ["Government Spending Channel", "/resources/government-spending-growth-channel"],
       ["Can My Business Sell?", "/resources/can-my-business-sell-to-government"]
     ]
@@ -133,6 +134,7 @@ export function SiteFooter() {
     ["Solutions", "/solutions"],
     ["Sample Reports", "/examples"],
     ["Source Coverage", "/source-coverage"],
+    ["Webhook Documentation", "/docs/webhooks"],
     ["Resources", "/resources"],
     ["Free Guides", "/guides"],
     ["Pricing", "/pricing"]

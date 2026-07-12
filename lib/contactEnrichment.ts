@@ -29,6 +29,14 @@ function hasSourceNativeContact(signal: StoredOpportunitySignal): boolean {
   return contactDiscoverySummary(signal).verifiedContacts > 0;
 }
 
+function hasConfiguredContactProvider(): boolean {
+  return Boolean(
+    process.env.CLAY_CONTACT_WORKFLOW_URL ||
+      process.env.CLAY_CONTACT_ENRICHMENT_WEBHOOK_URL ||
+      (process.env.SNOV_CLIENT_ID && process.env.SNOV_CLIENT_SECRET)
+  );
+}
+
 function contactLimit(): number {
   const configured = Number(process.env.OPPORTUNITY_SCANNER_CONTACTS_PER_OPPORTUNITY ?? 5);
   if (!Number.isFinite(configured)) {
@@ -99,6 +107,7 @@ function combineContactResults(
 export async function ensureContactEnrichment(input: {
   scanId: string;
   signal: StoredOpportunitySignal;
+  reserveProviderCredit?: () => Promise<void>;
 }): Promise<OpportunityEnrichmentRequestRecord | null> {
   const existing = await listOpportunityEnrichmentRequests(input.scanId, input.signal.id);
   if (hasReusableContactEnrichment(existing)) {
@@ -143,6 +152,13 @@ export async function ensureContactEnrichment(input: {
     });
   }
 
+  if (hasConfiguredContactProvider()) {
+    if (!input.reserveProviderCredit) {
+      throw new Error("Paid contact enrichment requires a server-side credit reservation.");
+    }
+    await input.reserveProviderCredit();
+  }
+
   const clayResult = await enrichContactsWithClay(input.signal);
   const shouldUseSnov =
     clayResult.contacts.length < contactLimit() &&
@@ -168,11 +184,18 @@ export async function ensureContactEnrichmentForSignals(input: {
   scanId: string;
   signals: StoredOpportunitySignal[];
   limit?: number;
+  reserveProviderCredit?: (signal: StoredOpportunitySignal) => Promise<void>;
 }): Promise<void> {
   const limit = input.limit ?? 5;
   const selected = input.signals.slice(0, Math.max(0, limit));
 
   for (const signal of selected) {
-    await ensureContactEnrichment({ scanId: input.scanId, signal });
+    await ensureContactEnrichment({
+      scanId: input.scanId,
+      signal,
+      reserveProviderCredit: input.reserveProviderCredit
+        ? () => input.reserveProviderCredit!(signal)
+        : undefined
+    });
   }
 }

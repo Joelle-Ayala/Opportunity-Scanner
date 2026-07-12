@@ -48,44 +48,43 @@ const visualMoments = [
   {
     title: "Founder sees a new channel",
     copy: "The scan turns a normal company website into public-sector search logic, then shows where money and demand already exist.",
-    image:
-      "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=80"
+    image: "/product-proof/report-overview.png",
+    alt: "Opportunity Scanner report overview with sourced opportunity summary"
   },
   {
     title: "Sales team gets a target list",
     copy: "Instead of a raw research memo, each signal becomes a buyer, partner, agency, recipient, or contact path to work.",
-    image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80"
+    image: "/product-proof/report-pipeline.png",
+    alt: "Opportunity Scanner action table with targets, revenue motions, and next steps"
   },
   {
     title: "Ops can route the next step",
     copy: "Rows can move into outreach, CRM, Zapier, Make, n8n, Airtable, Slack, or a founder's research workflow.",
-    image:
-      "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80"
+    image: "/product-proof/report-actions.png",
+    alt: "Opportunity Scanner sample report with target, contact path, and next best action"
   }
 ];
 
 function HeroSignalVisual() {
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-ink shadow-panel">
-      <div className="relative min-h-[260px]">
+    <div className="overflow-hidden rounded-lg border border-line bg-white shadow-panel">
+      <div className="relative aspect-[16/9] bg-field">
         <img
-          src="https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1200&q=80"
-          alt="Business team reviewing revenue opportunities on a laptop"
-          className="absolute inset-0 h-full w-full object-cover opacity-75"
+          src="/product-proof/report-overview.png"
+          alt="Opportunity Scanner report showing sourced pipeline rows and an executive summary"
+          className="absolute inset-0 h-full w-full object-cover object-top"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
-        <div className="relative flex min-h-[260px] flex-col justify-end p-5 text-white">
-          <Badge tone="green">From signal to next step</Badge>
-          <h2 className="mt-3 text-xl font-semibold leading-7">
-            A founder sees public-sector demand they were not tracking.
-          </h2>
-          <p className="mt-2 max-w-md text-sm leading-6 text-slate-200">
-            Open a new revenue channel with sourced targets, a clear pursuit path, and a practical next action.
-          </p>
-        </div>
       </div>
-      <div className="grid gap-3 border-t border-white/10 bg-ink p-4 text-sm text-white">
+      <div className="border-t border-line bg-ink p-5 text-white">
+        <Badge tone="green">From signal to next step</Badge>
+        <h2 className="mt-3 text-xl font-semibold leading-7">
+          See public-sector demand you were not tracking.
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-slate-200">
+          Get sourced targets, a pursuit path, and a practical next action.
+        </p>
+      </div>
+      <div className="grid gap-3 border-t border-white/10 bg-ink px-4 pb-4 text-sm text-white">
         {[
           ["Signal", "Funded buyer / active program"],
           ["Revenue motion", "Sell to Agency or Partner"],
@@ -114,7 +113,7 @@ function CustomerVisualSection() {
         <div className="mt-6 grid gap-5 lg:grid-cols-3">
           {visualMoments.map((moment) => (
             <article key={moment.title} className="overflow-hidden rounded-lg border border-line bg-field shadow-sm">
-              <img src={moment.image} alt="" className="h-48 w-full object-cover" loading="lazy" />
+              <img src={moment.image} alt={moment.alt} className="h-48 w-full object-cover object-top" loading="lazy" />
               <div className="p-5">
                 <h3 className="text-lg font-semibold text-ink">{moment.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{moment.copy}</p>

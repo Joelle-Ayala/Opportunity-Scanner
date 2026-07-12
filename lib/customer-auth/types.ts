@@ -7,6 +7,7 @@ export type SupabaseCustomerUser = {
   created_at?: string;
   updated_at?: string;
   last_sign_in_at?: string;
+  email_confirmed_at?: string | null;
   user_metadata?: Record<string, unknown>;
   app_metadata?: Record<string, unknown>;
 };

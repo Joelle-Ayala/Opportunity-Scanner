@@ -85,6 +85,14 @@ export type DashboardSummary = {
   activeMonitorCount: number;
   newOpportunityCount: number;
   billing: DashboardBillingState;
+  enrichmentCredits: {
+    entitled: boolean;
+    limit: number;
+    used: number;
+    remaining: number;
+    periodStart?: string;
+    periodEnd?: string;
+  };
   recentReports: DashboardReport[];
 };
 

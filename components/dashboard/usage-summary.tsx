@@ -1,9 +1,12 @@
+import type { ReactNode } from "react";
+
 export interface DashboardUsageMetric {
   id: string;
   label: string;
   used: number;
   limit: number | null;
   unit?: string;
+  remaining?: number;
 }
 
 export interface UsageSummaryProps {
@@ -16,6 +19,9 @@ export interface UsageSummaryProps {
 
 function metricValue(metric: DashboardUsageMetric): string {
   const suffix = metric.unit ? ` ${metric.unit}` : "";
+  if (metric.remaining !== undefined && metric.limit !== null) {
+    return `${metric.remaining.toLocaleString()} remaining of ${metric.limit.toLocaleString()}${suffix}`;
+  }
   return metric.limit === null
     ? `${metric.used.toLocaleString()}${suffix}`
     : `${metric.used.toLocaleString()} of ${metric.limit.toLocaleString()}${suffix}`;
@@ -43,7 +49,9 @@ export function UsageSummary({
       </div>
       <div className="grid divide-y divide-line sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-3">
         {metrics.map((metric) => {
-          const percentage = metric.limit && metric.limit > 0 ? Math.min(100, Math.round((metric.used / metric.limit) * 100)) : null;
+          const percentage = metric.limit && metric.limit > 0
+            ? Math.min(100, Math.round(((metric.remaining ?? metric.used) / metric.limit) * 100))
+            : null;
           return (
             <div key={metric.id} className="p-5">
               <div className="flex items-baseline justify-between gap-3">
@@ -65,4 +73,3 @@ export function UsageSummary({
     </section>
   );
 }
-import type { ReactNode } from "react";

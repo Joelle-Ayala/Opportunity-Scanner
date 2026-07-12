@@ -2,7 +2,7 @@
 
 import type { KeyboardEvent, ReactNode } from "react";
 
-export type DashboardTabId = "overview" | "reports" | "saved-searches" | "billing";
+export type DashboardTabId = "overview" | "reports" | "saved-searches" | "alerts" | "billing";
 
 export interface DashboardTab {
   id: DashboardTabId;
@@ -26,6 +26,7 @@ const defaultTabs: DashboardTab[] = [
   { id: "overview", label: "Overview" },
   { id: "reports", label: "Reports" },
   { id: "saved-searches", label: "Saved Searches", shortLabel: "Searches" },
+  { id: "alerts", label: "Alerts" },
   { id: "billing", label: "Billing" }
 ];
 
