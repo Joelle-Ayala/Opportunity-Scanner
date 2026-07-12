@@ -182,9 +182,18 @@ function ReportHeader({
       <div className="flex flex-wrap items-start justify-between gap-5">
         <OpportunityScannerLogo />
         <div className="flex flex-wrap gap-2">
-          <a href="/" className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink">
-            Run New Scan
+          <a href="/dashboard" className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
+            Dashboard
           </a>
+          <a href={`/dashboard/new?from=${encodeURIComponent(scan.id)}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
+            Run Updated Report
+          </a>
+          <form action="/api/dashboard/searches" method="post">
+            <input type="hidden" name="scanId" value={scan.id} />
+            <button className="rounded-md border border-accent px-3 py-2 text-sm font-semibold text-accent hover:bg-mist">
+              Monitor Search
+            </button>
+          </form>
           {isPaid ? (
             <>
               <a

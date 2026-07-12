@@ -54,7 +54,7 @@ export async function handleCheckout(request: Request): Promise<Response> {
       successUrl:
         input.plan === "report"
           ? `${config.appUrl}/reports/${input.scanId}?checkout=success&session_id={CHECKOUT_SESSION_ID}`
-          : `${config.appUrl}/pricing?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+          : `${config.appUrl}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${config.appUrl}/pricing?checkout=cancelled`
     });
     if (!session.url || !session.url.startsWith("https://checkout.stripe.com/")) {
