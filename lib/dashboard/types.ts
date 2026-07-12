@@ -92,3 +92,9 @@ export type DashboardPageOptions = {
   limit?: number;
   offset?: number;
 };
+
+export type OwnedMonitoringComparisonPair = {
+  monitoredProfileId: string;
+  currentScanId: string;
+  previousScanId: string;
+};

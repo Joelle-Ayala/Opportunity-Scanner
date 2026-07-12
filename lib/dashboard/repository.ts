@@ -7,6 +7,7 @@ import type {
   DashboardReport,
   DashboardSavedSearch,
   DashboardSummary,
+  OwnedMonitoringComparisonPair,
   SavedSearchConfiguration
 } from "./types";
 
@@ -529,6 +530,52 @@ export async function loadDashboardMonitoringRuns(
     startedAt: row.started_at,
     completedAt: row.completed_at
   }));
+}
+
+export async function loadOwnedMonitoringComparisonPair(
+  authUserId: string,
+  currentScanId: string
+): Promise<OwnedMonitoringComparisonPair | null> {
+  if (!UUID_PATTERN.test(currentScanId)) return null;
+  const account = await requireAccount(authUserId);
+  const ownership = await dashboardSelect<MonitoredOwnershipRow>(
+    "customer_monitored_profile_ownership",
+    { select: "monitored_profile_id", customer_account_id: `eq.${account.id}` }
+  );
+  const profileIds = ownership.map((row) => row.monitored_profile_id);
+  if (profileIds.length === 0) return null;
+  const currentRun = await dashboardSelectOne<MonitoringRunRow>("monitoring_runs", {
+    select: "id,monitored_profile_id,scan_id,status,new_opportunity_count,error_message,started_at,completed_at",
+    scan_id: `eq.${currentScanId}`,
+    monitored_profile_id: inFilter(profileIds),
+    status: "eq.completed"
+  });
+  if (!currentRun) return null;
+  const runs = await dashboardSelect<MonitoringRunRow>("monitoring_runs", {
+    select: "id,monitored_profile_id,scan_id,status,new_opportunity_count,error_message,started_at,completed_at",
+    monitored_profile_id: `eq.${currentRun.monitored_profile_id}`,
+    status: "eq.completed",
+    order: "started_at.desc"
+  });
+  const currentIndex = runs.findIndex((run) => run.scan_id === currentScanId);
+  const previousRun = currentIndex >= 0 ? runs.slice(currentIndex + 1)[0] : null;
+  if (previousRun) {
+    return {
+      monitoredProfileId: currentRun.monitored_profile_id,
+      currentScanId,
+      previousScanId: previousRun.scan_id
+    };
+  }
+  const profile = await dashboardSelectOne<MonitoredProfileRow>("monitored_profiles", {
+    select: "id,source_scan_id,latest_scan_id,cadence,status,next_run_at,last_run_at",
+    id: `eq.${currentRun.monitored_profile_id}`
+  });
+  if (!profile || profile.source_scan_id === currentScanId) return null;
+  return {
+    monitoredProfileId: currentRun.monitored_profile_id,
+    currentScanId,
+    previousScanId: profile.source_scan_id
+  };
 }
 
 export async function loadDashboardBillingState(authUserId: string): Promise<DashboardBillingState> {

@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { Badge, CompanyLogo, LockedBadge, OpportunityScannerLogo } from "@/components/brand";
 import { SendToWorkflowModal } from "@/components/workflow";
 import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/storage";
@@ -14,6 +15,8 @@ import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { sourceCatalog } from "@/lib/sourceRegistry";
+import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
+import { ensureCustomerAccount, loadOwnedMonitoringComparisonPair } from "@/lib/dashboard/repository";
 import {
   buildWorkflowPayload,
   opportunityHeadline,
@@ -163,7 +166,8 @@ function ReportHeader({
   visibleSignals,
   lockedSignals,
   isPaid,
-  access
+  access,
+  comparisonHref
 }: {
   scan: ScanRecord;
   profile?: CompanyProfile;
@@ -172,6 +176,7 @@ function ReportHeader({
   lockedSignals: number;
   isPaid: boolean;
   access?: string;
+  comparisonHref?: string | null;
 }) {
   const companyName = profile?.company_name || scan.company_name || hostname(scan.company_url);
   const accessQuery = access ? `?access=${encodeURIComponent(access)}` : "";
@@ -194,6 +199,11 @@ function ReportHeader({
               Monitor Search
             </button>
           </form>
+          {comparisonHref ? (
+            <a href={comparisonHref} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
+              Compare Changes
+            </a>
+          ) : null}
           {isPaid ? (
             <>
               <a
@@ -1123,6 +1133,19 @@ export default async function ReportPage({
   }
   const isPaid = storedAccess;
 
+  let comparisonHref: string | null = null;
+  let customerSession: Awaited<ReturnType<typeof resolveCustomerSession>> = null;
+  try {
+    customerSession = await resolveCustomerSession(getCustomerAuthConfig(), cookies());
+  } catch {
+    customerSession = null;
+  }
+  if (customerSession?.user.email) {
+    await ensureCustomerAccount(customerSession.user.id, customerSession.user.email).catch(() => null);
+    const pair = await loadOwnedMonitoringComparisonPair(customerSession.user.id, scan.id).catch(() => null);
+    if (pair) comparisonHref = `/dashboard/compare/${scan.id}`;
+  }
+
   const profileRecord = await getCompanyProfile(scan.id);
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
   const signals = await listScanOpportunitySignals(scan.id);
@@ -1157,6 +1180,7 @@ export default async function ReportPage({
           lockedSignals={lockedSignals.length}
           isPaid={isPaid}
           access={searchParams?.access}
+          comparisonHref={comparisonHref}
         />
 
         {searchParams?.unlock === "placeholder" ? (

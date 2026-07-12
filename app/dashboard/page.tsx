@@ -85,6 +85,24 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     }
   }));
   const renewal = subscription?.currentPeriodEnd ? `Renews ${dateLabel(subscription.currentPeriodEnd)}` : undefined;
+  const sourceScanByProfile = new Map(
+    searches.flatMap((search) => search.monitoredProfile
+      ? [[search.monitoredProfile.id, search.monitoredProfile.sourceScanId] as const]
+      : [])
+  );
+  const completedRunsByProfile = new Map<string, typeof runs>();
+  for (const run of runs.filter((item) => item.status === "completed")) {
+    const existing = completedRunsByProfile.get(run.monitoredProfileId) || [];
+    existing.push(run);
+    completedRunsByProfile.set(run.monitoredProfileId, existing);
+  }
+  const comparableScanIds = new Set<string>();
+  for (const [profileId, profileRuns] of completedRunsByProfile) {
+    profileRuns.forEach((run, index) => {
+      const previousScanId = profileRuns[index + 1]?.scanId || sourceScanByProfile.get(profileId);
+      if (previousScanId && previousScanId !== run.scanId) comparableScanIds.add(run.scanId);
+    });
+  }
 
   return (
     <main className="min-h-screen bg-field">
@@ -114,10 +132,10 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           ],
           usageAction: <a href="/pricing" className="text-sm font-semibold text-accent">View plans</a>,
           recentReports: reportRows.slice(0, 5),
-          monitoringChanges: runs.map((run) => ({ id: run.id, title: run.status === "failed" ? "Monitoring run needs attention" : `${run.newOpportunityCount} new opportunities found`, summary: run.errorMessage || "Your saved search was checked against the latest public records.", occurredLabel: dateLabel(run.completedAt || run.startedAt), kind: run.status === "failed" ? "system" as const : "new" as const, href: `/reports/${run.scanId}` })),
+          monitoringChanges: runs.map((run) => ({ id: run.id, title: run.status === "failed" ? "Monitoring run needs attention" : `${run.newOpportunityCount} new opportunities found`, summary: run.errorMessage || "Your saved search was checked against the latest public records.", occurredLabel: dateLabel(run.completedAt || run.startedAt), kind: run.status === "failed" ? "system" as const : "new" as const, href: comparableScanIds.has(run.scanId) ? `/dashboard/compare/${run.scanId}` : `/reports/${run.scanId}` })),
           reportEmptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>
         }}
-        reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Run updated</a> }}
+        reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <><a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Run updated</a>{comparableScanIds.has(report.id) ? <a href={`/dashboard/compare/${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Compare</a> : null}</> }}
         savedSearches={{ searches: searchRows, emptyAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Add monitoring</a> }}
         billing={{ planName, planPriceLabel: subscription ? "Active" : "No subscription", planIntervalLabel: subscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: subscription ? <BillingPortalButton /> : <a href="/pricing" className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink">View plans</a>, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Compare plans</a> }}
       />
