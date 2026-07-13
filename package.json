@@ -16,6 +16,7 @@
     "test:connector-runtime": "node scripts/test-connector-runtime.mjs",
     "test:public-connectors": "node scripts/test-public-connector-regressions.mjs",
     "test:lead-magnets": "node scripts/test-lead-magnet-contract.mjs",
+    "test:marketing-playbook": "node --experimental-strip-types scripts/test-marketing-playbook.mts",
     "test:billing-management": "node --experimental-strip-types scripts/test-billing-management.mjs",
     "test:customer-entitlement": "node --experimental-strip-types scripts/test-customer-entitlement-contract.mjs",
     "test:monitoring": "node --experimental-strip-types scripts/test-monitoring-contract.mjs",

@@ -1,4 +1,4 @@
-import { CompanyProfile, ScanInput, SelectedPlaybook } from "./types";
+import type { CompanyProfile, ScanInput, SelectedPlaybook } from "./types";
 
 export type OpportunityPlaybook = {
   playbook_id: string;
@@ -410,6 +410,167 @@ export const opportunityPlaybooks: OpportunityPlaybook[] = [
       "Translate the company into public-sector demand around teacher recruitment, educator workforce, arts education staffing, school enrichment, HR/recruiting technology, workforce boards, school district procurement, and California Prop 28 only when the source is specifically California/Prop 28-related."
   },
   {
+    playbook_id: "marketing_advertising_content_web_services",
+    name: "Marketing / Advertising / Content / Web Services",
+    description:
+      "Find public-sector demand for marketing, advertising, public outreach, media buying, content, website, accessibility, and funded-program communications services.",
+    implementation_status: "implemented",
+    trigger_industries: [
+      "marketing-advertising-content-web-services",
+      "marketing and advertising services",
+      "marketing agency",
+      "advertising agency",
+      "digital marketing agency",
+      "marketing communications agency",
+      "public relations agency",
+      "content marketing agency",
+      "web design agency"
+    ],
+    trigger_keywords: [
+      "government communications",
+      "public sector marketing",
+      "public outreach campaign",
+      "public information campaign",
+      "behavior change campaign",
+      "multilingual outreach services",
+      "media buying services",
+      "media planning and buying",
+      "digital advertising services",
+      "paid media management",
+      "advertising campaign management",
+      "search engine marketing services",
+      "social media management services",
+      "content marketing services",
+      "copywriting services",
+      "public relations services",
+      "brand strategy services",
+      "website redesign",
+      "web design services",
+      "website development services",
+      "website accessibility services",
+      "section 508 remediation",
+      "full-service advertising agency",
+      "integrated marketing agency",
+      "creative marketing agency"
+    ],
+    relevant_customer_types: ["B2B", "Government", "Nonprofit"],
+    opportunity_lanes: [
+      "Government marketing, communications, and public outreach procurement",
+      "Public information and behavior-change campaigns",
+      "Digital advertising, media planning, and media buying",
+      "Government website redesign, accessibility, and content services",
+      "Funded-program outreach, enrollment, and stakeholder communications",
+      "Tourism and economic-development destination marketing"
+    ],
+    lane_search_terms: {
+      "Government marketing, communications, and public outreach procurement": [
+        "government marketing services",
+        "communications strategy services",
+        "public relations services",
+        "public outreach campaign",
+        "community engagement communications",
+        "multilingual outreach services"
+      ],
+      "Public information and behavior-change campaigns": [
+        "public information campaign",
+        "behavior change communications",
+        "public awareness campaign",
+        "health communications campaign",
+        "emergency communications campaign"
+      ],
+      "Digital advertising, media planning, and media buying": [
+        "digital advertising services",
+        "media planning services",
+        "media buying services",
+        "paid media campaign",
+        "social media management services",
+        "search engine marketing services"
+      ],
+      "Government website redesign, accessibility, and content services": [
+        "government website redesign",
+        "website development services",
+        "web content strategy",
+        "website accessibility remediation",
+        "Section 508 website compliance",
+        "government web content services"
+      ],
+      "Funded-program outreach, enrollment, and stakeholder communications": [
+        "program outreach services",
+        "enrollment campaign services",
+        "grant-funded communications",
+        "stakeholder engagement campaign",
+        "benefits outreach campaign",
+        "multilingual program communications"
+      ],
+      "Tourism and economic-development destination marketing": [
+        "destination marketing services",
+        "tourism marketing campaign",
+        "economic development marketing",
+        "place branding services",
+        "visitor marketing services"
+      ]
+    },
+    source_categories_to_activate: ["company_website", "usaspending.gov", "federal_register"],
+    planned_source_categories: [
+      "sam.gov",
+      "grants.gov",
+      "gsa",
+      "state_procurement",
+      "city_county_procurement",
+      "tourism_boards"
+    ],
+    public_sector_search_terms: [
+      "government marketing services",
+      "communications strategy services",
+      "public relations services",
+      "public outreach campaign",
+      "public information campaign",
+      "behavior change communications",
+      "public awareness campaign",
+      "multilingual outreach services",
+      "digital advertising services",
+      "media planning services",
+      "media buying services",
+      "social media management services",
+      "search engine marketing services",
+      "government website redesign",
+      "website development services",
+      "website accessibility remediation",
+      "Section 508 website compliance",
+      "government web content services",
+      "program outreach services",
+      "enrollment campaign services",
+      "grant-funded communications",
+      "stakeholder engagement campaign",
+      "destination marketing services",
+      "tourism marketing campaign",
+      "economic development marketing"
+    ],
+    likely_revenue_motions: [
+      "sell_to_agency",
+      "sell_to_funded_buyer",
+      "partner_with_recipient",
+      "bid_on_procurement",
+      "channel_or_program_partner",
+      "monitor_policy"
+    ],
+    suggested_contact_roles: [
+      "Communications Director",
+      "Public Information Officer",
+      "Marketing and Communications Director",
+      "Public Outreach Program Manager",
+      "Digital Services Manager",
+      "Web Content Manager",
+      "ADA / Section 508 Coordinator",
+      "Tourism Marketing Director",
+      "Procurement Specialist",
+      "Contracting Officer",
+      "Prime Contractor Partner Manager"
+    ],
+    report_guidance:
+      "Translate the company into specific public-sector service demand for campaigns, outreach, media buying, content, and accessible websites; distinguish active solicitations from historical awards or policy signals, and identify the buying department, required deliverables, vendor-registration path, incumbent or prime-partner route, and next action."
+  },
+  {
     playbook_id: "manufacturing_economic_development_export",
     name: "Manufacturing / Economic Development / Export",
     description: "Planned vertical for manufacturing, economic development, export, supply chain, and industrial programs.",
@@ -492,6 +653,15 @@ function isOffVerticalLane(lane: string, selectedIds: Set<string>): boolean {
   }
   if (!selectedIds.has("healthcare_rehab_dme")) {
     if (/medical|healthcare|clinical|rehab|dme|prosthetic|orthotic|medicare|medicaid|veteran/.test(normalized)) {
+      return true;
+    }
+  }
+  if (!selectedIds.has("marketing_advertising_content_web_services")) {
+    if (
+      /advertising|marketing communications|media buying|website redesign|website accessibility|public outreach|public information campaign|behavior-change campaign|destination marketing/.test(
+        normalized
+      )
+    ) {
       return true;
     }
   }

@@ -62,7 +62,7 @@ export default function ResourcesPage() {
       <section className="border-b border-line bg-white">
         <div className="mx-auto max-w-7xl px-6 py-10">
           <SectionIntro title="Free field guides" eyebrow="Downloadable research">
-            <p>Use the flagship method or start with the healthcare and DME industry report.</p>
+            <p>Use the flagship method or start with the industry report closest to your market.</p>
           </SectionIntro>
           <div className="mt-6 grid gap-4 lg:grid-cols-2">
             {leadMagnets.map((guide) => (

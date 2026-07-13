@@ -23,6 +23,7 @@ Opportunity Scanner is a B2B SaaS product by Opportunity Systems. It is not a ge
 - [Healthcare / DME / Medical Supply](https://www.opportunityscanner.ai/industries/healthcare-dme-medical-supply): Public-sector revenue paths for healthcare, rehab, DME, and medical supply companies.
 - [Education / Workforce / Training](https://www.opportunityscanner.ai/industries/education-workforce-training): District, workforce board, agency, and training opportunity signals.
 - [Arts / Creative Economy / Live Events](https://www.opportunityscanner.ai/industries/arts-creative-economy-live-events): Public funding, procurement, and buyer signals for creative economy and live event revenue.
+- [Marketing / Advertising / Content / Web Services](https://www.opportunityscanner.ai/industries/marketing-advertising-content-web-services): Public-sector demand for communications, outreach, advertising, content, media, website, and digital experience services.
 - [Software / B2B Services / AI](https://www.opportunityscanner.ai/industries/software-b2b-services-ai): Public-sector demand for software, AI, automation, consulting, and B2B services.
 - [Construction / Infrastructure / Engineering](https://www.opportunityscanner.ai/industries/construction-infrastructure-engineering): Public-sector demand for construction, infrastructure, engineering, and specialty trades.
 - [Clean Energy / Facilities / Sustainability](https://www.opportunityscanner.ai/industries/clean-energy-facilities-sustainability): Energy, facilities, climate, and sustainability opportunity signals.
@@ -34,6 +35,7 @@ Opportunity Scanner is a B2B SaaS product by Opportunity Systems. It is not a ge
 - [Healthcare DME Opportunity Scan](https://www.opportunityscanner.ai/examples/healthcare-dme-opportunity-scan): Sample report using fictional company context and real public-source examples.
 - [Education Workforce Opportunity Scan](https://www.opportunityscanner.ai/examples/education-workforce-opportunity-scan): Sample report using fictional company context and real public-source examples.
 - [Creative Economy Live Events Opportunity Scan](https://www.opportunityscanner.ai/examples/creative-economy-live-events-opportunity-scan): Sample report using fictional company context and real public-source examples.
+- [Marketing Advertising Digital Services Opportunity Scan](https://www.opportunityscanner.ai/examples/marketing-advertising-digital-services-opportunity-scan): Sample report for communications, outreach, advertising, content, website, and digital service firms.
 - [Software AI B2B Services Opportunity Scan](https://www.opportunityscanner.ai/examples/software-ai-b2b-services-opportunity-scan): Sample report using fictional company context and real public-source examples.
 
 ## Resources
@@ -47,6 +49,9 @@ Opportunity Scanner is a B2B SaaS product by Opportunity Systems. It is not a ge
 - [Creative Economy Funding Opportunities](https://www.opportunityscanner.ai/resources/creative-economy-funding-opportunities)
 - [Education and Workforce Opportunity Signals](https://www.opportunityscanner.ai/resources/education-workforce-opportunity-signals)
 - [Software and AI Public-Sector Demand](https://www.opportunityscanner.ai/resources/software-ai-public-sector-demand)
+- [Marketing and Advertising Public-Sector Opportunities](https://www.opportunityscanner.ai/resources/marketing-advertising-public-sector-opportunities)
+- [Government Communications and Public Outreach Contracts](https://www.opportunityscanner.ai/resources/government-communications-public-outreach-contracts)
+- [Website, Content, and Digital Services Government Buyers](https://www.opportunityscanner.ai/resources/website-content-digital-services-government-buyers)
 
 ## Interpretation Notes
 

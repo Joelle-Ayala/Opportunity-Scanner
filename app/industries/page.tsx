@@ -5,7 +5,7 @@ import { industryPages } from "@/lib/marketingContent";
 
 const title = "Industries | Opportunity Scanner";
 const description =
-  "Explore public-sector opportunity signals for healthcare, education, workforce, arts, creative economy, software, AI, and B2B services.";
+  "Explore public-sector opportunity signals across healthcare, education, marketing, advertising, web services, software, construction, energy, manufacturing, and community services.";
 
 export const metadata: Metadata = {
   title: "Industries",

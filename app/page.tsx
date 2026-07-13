@@ -273,7 +273,7 @@ export default function HomePage({
                         <span className="text-sm font-medium text-ink">Industry</span>
                         <input
                           name="industry"
-                          placeholder="Healthcare, education, SaaS..."
+                          placeholder="Healthcare, education, marketing..."
                           className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
                         />
                       </label>

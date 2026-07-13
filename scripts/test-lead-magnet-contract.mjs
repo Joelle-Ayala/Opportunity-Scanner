@@ -15,7 +15,8 @@ const INDUSTRY_SLUGS = [
   "infrastructure-construction-public-sector-opportunity-report-2026",
   "clean-energy-facilities-public-sector-opportunity-report-2026",
   "manufacturing-supply-chain-public-sector-opportunity-report-2026",
-  "nonprofit-community-services-public-sector-opportunity-report-2026"
+  "nonprofit-community-services-public-sector-opportunity-report-2026",
+  "marketing-advertising-digital-services-public-sector-opportunity-report-2026"
 ];
 
 function requestWith(body, headers = {}) {

@@ -583,6 +583,163 @@ export const sampleReports: IndustrySampleReport[] = [
     ],
     outboundUse:
       "Use this example for nonprofits, human services providers, case-management tools, workforce services, and community operators."
+  },
+  {
+    industrySlug: "marketing-advertising-content-web-services",
+    exampleSlug: "marketing-advertising-digital-services-opportunity-scan",
+    title: "Sample Opportunity Scan: Marketing, Advertising, Content, and Web Services",
+    fictionalClient: "CivicReach Studio",
+    clientDescription:
+      "Fictional integrated agency offering public outreach strategy, advertising and media buying, multilingual content, design, video production, website delivery, analytics, and accessibility coordination. The example does not assume that every marketing firm offers or qualifies for every service.",
+    summary:
+      "The scan separates two time-sensitive procurement examples from an expired market-research notice, historical award evidence, a funded-recipient lane, and broader digital-experience market intelligence. The practical routes include direct agency pursuit, recipient research, prime/subcontractor outreach, and monitor-only work; none of the records is treated as proof that CivicReach will win or that every communications firm fits.",
+    estimatedPipeline: "$150K-$1.3M in illustrative pursuit lanes; not a forecast, market total, or promise of available budget",
+    totalSignals: 24,
+    paidUnlock:
+      "Unlock all source records and status checks, agency and recipient targets, prime research, fit and disqualifier notes, source-native contacts, outreach angles, and workflow-ready actions.",
+    sourceMix: [
+      "SAM.gov Contract Opportunities",
+      "USAspending.gov",
+      "GSA Multiple Award Schedule",
+      "Digital.gov and Section508.gov",
+      "U.S. DOT SS4A"
+    ],
+    rows: [
+      {
+        priority: 1,
+        title: "Active procurement: small-business event-center advertising requirement",
+        target: "Minnesota Air National Guard contracting office",
+        signalType: "Active procurement as of July 13, 2026",
+        sourceName: "SAM.gov - Event Center Advertising, Notice W50S7F26Q0029",
+        sourceUrl: "https://sam.gov/opp/6f942eead030467093edbadfef115e38/view",
+        evidence:
+          "The July 8, 2026 combined synopsis/solicitation was marked active at retrieval, set aside for small business, classified under indoor and outdoor display advertising, and listed a July 17, 2026 response deadline. The attachments and latest amendments control the requirement.",
+        revenueMotion: "Sell to Agency",
+        revenuePotential: "$20K-$150K illustrative pursuit band; verify scope and pricing from the notice",
+        actionability: "High Actionability",
+        contactPath:
+          "Use the source-native contracting contacts and SAM.gov question/submission instructions; do not replace the official route with personal-email enrichment.",
+        nextAction:
+          "Recheck status and amendments, download the RFQ and statement of objectives, confirm small-business and geography fit, and make a bid/no-bid decision before the listed deadline.",
+        outreachAngle:
+          "No cold pitch. Respond only through the authorized procurement path with proof of comparable placement execution and the exact delivery approach requested."
+      },
+      {
+        priority: 2,
+        title: "Active procurement: marketing promotional items",
+        target: "Texas Army National Guard buyer",
+        signalType: "Active procurement as of July 13, 2026",
+        sourceName: "SAM.gov - TXARNG Marketing Promotional Items, Notice W912L126QA011",
+        sourceUrl: "https://sam.gov/opp/73e0211d8a7a4cc182f7e46b0c127b30/view",
+        evidence:
+          "The notice was marked active at retrieval, set aside for small business, and showed an updated July 24, 2026 offer deadline. Its promotional-product scope, classification, attachments, response history, and latest status must be reviewed before pursuit.",
+        revenueMotion: "Sell to Agency",
+        revenuePotential: "$50K-$350K illustrative campaign band; verify the actual schedule and pricing requirements",
+        actionability: "High Actionability",
+        contactPath: "Follow the contracting office's official response instructions and use only the notice contacts for procurement questions.",
+        nextAction:
+          "Confirm the current response status, inspect the solicitation and attachments, and reject the row if CivicReach cannot self-perform or credibly manage the required promotional-product scope.",
+        outreachAngle:
+          "Lead with directly relevant promotional-product delivery and fulfillment evidence; a general creative portfolio is not enough for this procurement."
+      },
+      {
+        priority: 3,
+        title: "Market intelligence: Army enterprise marketing demand after sources-sought close",
+        target: "Army Enterprise Marketing Office and qualified incumbent or future prime contractors",
+        signalType: "Expired sources sought / market intelligence only",
+        sourceName: "SAM.gov - Army Marketing and Advertising Services Sources Sought",
+        sourceUrl: "https://sam.gov/opp/e7f32a8682f24e0ba642380f44e9c977/view",
+        evidence:
+          "The March 2026 notice stated that it was market research for potential future Army marketing and advertising requirements supporting personnel acquisition and retention. Its March 31 response date has passed, and it was not a solicitation.",
+        revenueMotion: "Research Only",
+        revenuePotential: "No active pipeline value; future acquisition and partner research",
+        actionability: "Medium Actionability",
+        contactPath:
+          "Monitor the notice history and related SAM.gov activity; separately research officially identified incumbents or primes before any partner outreach.",
+        nextAction:
+          "Capture the capability themes, create a future-notice monitor, and map which requirements CivicReach could self-perform versus support as a specialist subcontractor.",
+        outreachAngle:
+          "For a verified prime, offer one specific capability gap such as multilingual outreach, regional media, accessible content, or digital campaign analytics without implying that work is currently available."
+      },
+      {
+        priority: 4,
+        title: "Historical awards: agency and prime map for advertising and communications work",
+        target: "Past buying agencies, award recipients, and relevant prime contractors",
+        signalType: "Historical contract awards / money already moved",
+        sourceName: "USAspending.gov - Analyst's Guide to Federal Spending Data",
+        sourceUrl: "https://www.usaspending.gov/federal-spending-guide",
+        evidence:
+          "USAspending provides prime award and subaward records and distinguishes award spending from broader federal account spending. Relevant NAICS, product/service codes, agency, recipient, period of performance, and award descriptions can be used to build a historical buyer and prime map.",
+        revenueMotion: "Sell to Award Recipient",
+        revenuePotential: "$75K-$500K illustrative subcontracting lane after current-need validation",
+        actionability: "Medium Actionability",
+        contactPath:
+          "Verify the recipient and award in USAspending, then use the prime's official supplier, small-business liaison, or teaming route before role enrichment.",
+        nextAction:
+          "Build a three-year map of relevant awards, separate current periods of performance from closed awards, and investigate only primes with a credible capability gap.",
+        outreachAngle:
+          "Reference the verified award and offer a narrow delivery capability; do not describe historical obligations as available subcontract budget."
+      },
+      {
+        priority: 5,
+        title: "Funded recipients: roadway-safety grantees with stakeholder-engagement work",
+        target: "Verified SS4A recipient cities, counties, metropolitan planning organizations, and Tribes",
+        signalType: "Funded buyer / recipient research",
+        sourceName: "U.S. DOT - SS4A Planning and Demonstration Activities",
+        sourceUrl: "https://www.transportation.gov/grants/ss4a/planning-and-demonstration-activities",
+        evidence:
+          "DOT identifies stakeholder engagement and collaboration, public meetings, surveys, public comments, progress reporting, and public final products among eligible or expected planning activities. DOT separately states that private consultants may support eligible recipients under applicable procurement standards.",
+        revenueMotion: "Sell to Funded Buyer",
+        revenuePotential: "$30K-$250K illustrative recipient-support lane after local procurement validation",
+        actionability: "Medium Actionability",
+        contactPath:
+          "Start with the official award list and recipient project page, then locate the recipient's procurement portal, transportation or safety program owner, or selected consultant team.",
+        nextAction:
+          "Identify recipients whose funded scope explicitly includes engagement, reporting, accessible public content, or a public-facing digital deliverable and check for a current local buying route.",
+        outreachAngle:
+          "Connect outreach, content, and accessible digital delivery to the recipient's published safety-planning objective; do not assume every SS4A recipient needs an outside agency."
+      },
+      {
+        priority: 6,
+        title: "Market intelligence: recognized federal categories for advertising, PR, video, and web services",
+        target: "Agency acquisition teams and existing GSA Schedule contractors",
+        signalType: "Contract vehicle and service-category intelligence",
+        sourceName: "U.S. General Services Administration - Multiple Award Schedule",
+        sourceUrl: "https://www.gsa.gov/buy-through-us/purchasing-programs/multiple-award-schedule",
+        evidence:
+          "GSA lists distinct Marketing and Public Relations service categories for advertising, public relations, marketing research, video and film production, graphic design, and web-based marketing. Those definitions help translate a commercial portfolio into public buying language.",
+        revenueMotion: "Research Only",
+        revenuePotential: "No immediate pipeline value; vehicle, teaming, and category-fit research",
+        actionability: "Low Actionability",
+        contactPath:
+          "Research whether an agency uses the vehicle and whether a current Schedule holder has a verified partner need; do not assume CivicReach can sell through MAS without an award or authorized team.",
+        nextAction:
+          "Map CivicReach's substantiated capabilities to the relevant service descriptions, then decide whether direct contracting readiness, a schedule strategy, or subcontracting research is warranted.",
+        outreachAngle:
+          "Use precise service language and proof of delivery instead of claiming to be a full-service fit for every marketing and public-relations category."
+      },
+      {
+        priority: 7,
+        title: "Market intelligence: digital-first and accessibility requirements shape web demand",
+        target: "Agency digital experience teams, Section 508 programs, acquisition offices, and digital-service primes",
+        signalType: "Policy and operating-environment intelligence",
+        sourceName: "Digital.gov - Requirements for delivering a digital-first public experience",
+        sourceUrl: "https://digital.gov/resources/delivering-digital-first-public-experience/",
+        evidence:
+          "Digital.gov explains that federal digital experiences are expected to address accessibility, consistent design, understandable and discoverable content, security, user-centered delivery, and mobile-first performance. Section508.gov states that accessibility requirements apply when federal agencies develop, procure, maintain, or use ICT.",
+        revenueMotion: "Research Only",
+        revenuePotential: "$50K-$400K illustrative web/content lane only after a buyer or prime requirement appears",
+        actionability: "Medium Actionability",
+        contactPath:
+          "Monitor agency procurement and forecast pages, digital-experience offices, and prime delivery teams; use official acquisition routes when a requirement appears.",
+        nextAction:
+          "Create a qualification matrix for content strategy, UX research, design systems, analytics, development, security coordination, and accessibility evidence, then monitor for requirements matching the capabilities CivicReach can prove.",
+        outreachAngle:
+          "Position around an evidenced service problem such as accessible content, mobile task completion, search discovery, or analytics, not a cosmetic redesign."
+      }
+    ],
+    outboundUse:
+      "Use this fictional example for integrated agencies, PR and communications firms, media buyers, creative and video studios, content teams, and web/digital-service providers. Narrow specialists should retain only the rows they can credibly perform or support through an authorized partner route."
   }
 ];
 

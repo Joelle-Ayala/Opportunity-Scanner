@@ -589,6 +589,50 @@ export const industryPages: IndustryPage[] = [
       "grants-contracts-funded-buyers",
       "government-buyer-contact-paths"
     ]
+  },
+  {
+    slug: "marketing-advertising-content-web-services",
+    name: "Marketing / Advertising / Content / Web Services",
+    headline: "Find public-sector demand for marketing, advertising, content, outreach, and web services.",
+    description:
+      "Public agencies and funded organizations buy communications strategy, public outreach, advertising and media placement, creative and video production, content, website modernization, digital experience, and accessibility support. The right route depends on the firm's capabilities, contract status, buyer, and delivery model.",
+    outcome:
+      "Separate active procurements from historical awards, funded-buyer and recipient research, and market intelligence, then route qualified work to an agency, funded organization, prime contractor, or monitoring workflow.",
+    signals: [
+      "Public information, education, and community outreach procurements",
+      "Advertising, media buying, recruitment, and campaign requirements",
+      "Content strategy, writing, design, video, and accessible production",
+      "Website modernization, digital experience, analytics, and Section 508 needs",
+      "Historical awards, funded recipients, primes, and subcontracting paths"
+    ],
+    revenueMotions: [
+      "Sell to Agency",
+      "Sell to Funded Buyer",
+      "Sell to Award Recipient",
+      "Partner with Recipient",
+      "Research Only"
+    ],
+    exampleRows: [
+      {
+        target: "Agency communications, recruiting, program, or procurement office",
+        signal: "Current notice for outreach, advertising, media placement, content, video, or digital campaign delivery",
+        revenueMotion: "Sell to Agency",
+        nextAction: "Confirm notice status, scope, set-aside, submission instructions, and source-native contact before deciding to pursue."
+      },
+      {
+        target: "Funded public entity, nonprofit recipient, or incumbent prime",
+        signal: "Award or grant evidence tied to stakeholder engagement, public information, digital services, or program implementation",
+        revenueMotion: "Sell to Funded Buyer",
+        nextAction: "Verify the funded purpose and procurement or subcontracting route before sending source-backed outreach."
+      }
+    ],
+    searchIntent:
+      "government marketing contracts, public outreach contracts, government advertising contracts, government website and content services",
+    relatedResourceSlugs: [
+      "marketing-advertising-public-sector-opportunities",
+      "government-communications-public-outreach-contracts",
+      "website-content-digital-services-government-buyers"
+    ]
   }
 ];
 
@@ -1682,6 +1726,177 @@ const baseResourceArticles: ResourceArticle[] = [
     cta: "Run a scan to see whether your software, AI, automation, or B2B service company maps to public-sector demand."
   },
   {
+    slug: "marketing-advertising-public-sector-opportunities",
+    title: "Marketing and Advertising Public-Sector Opportunities: A Source-Backed Market Map",
+    description:
+      "A practical guide to agency communications, public outreach, advertising, media buying, content, video, web, funded-buyer, and subcontracting opportunity lanes.",
+    category: "Industry Guides",
+    readTime: "9 min read",
+    primaryKeyword: "marketing advertising public sector opportunities",
+    funnelStage: "Awareness",
+    publishedAt: "2026-07-13",
+    lastReviewedAt: "2026-07-13",
+    intro: "Public-sector marketing demand appears in several different record types, and each one supports a different commercial claim.",
+    sections: [],
+    proofLedger: [
+      {
+        claim: "GSA's Multiple Award Schedule includes advertising, public relations, marketing research, video production, and web-based marketing service descriptions.",
+        source: "U.S. General Services Administration - Multiple Award Schedule",
+        url: "https://www.gsa.gov/buy-through-us/purchasing-programs/multiple-award-schedule",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Service-category map",
+        caveat: "A listed service category proves a recognized federal buying route, not current demand or vendor eligibility."
+      },
+      {
+        claim: "SAM.gov publishes federal contract opportunities and identifies notice type, status, dates, set-aside, classification, attachments, and source-native contacts.",
+        source: "SAM.gov - Contract Opportunities",
+        url: "https://sam.gov/opportunities",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Active procurement lane",
+        caveat: "Every notice must be checked individually; sources sought and expired notices are not active solicitations."
+      },
+      {
+        claim: "USAspending distinguishes federal award spending from broader account spending and provides prime award and subaward data for historical market research.",
+        source: "USAspending - Analyst's Guide to Federal Spending Data",
+        url: "https://www.usaspending.gov/federal-spending-guide",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Historical awards and recipient research",
+        caveat: "An obligation or award is historical evidence and does not prove current budget or buying intent."
+      },
+      {
+        claim: "SBA identifies prime-contracting and subcontracting routes, including its directory of primes with subcontracting plans and SUBNet.",
+        source: "U.S. Small Business Administration - Prime and subcontracting",
+        url: "https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Agency and subcontracting motions",
+        caveat: "A directory or prime award identifies a research path, not an available subcontract."
+      },
+      {
+        claim: "The Census Bureau's 2030 operational plan identifies communications, partnerships, and engagement as a formal operational area using research, multiple media channels, and local outreach.",
+        source: "U.S. Census Bureau - 2030 Census Operational Plan",
+        url: "https://www2.census.gov/programs-surveys/decennial/2030/program-management/planning/operational-plan/2030-census-operational-plan.pdf",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Forward-looking market intelligence",
+        caveat: "An operational plan indicates anticipated mission demand, not an open procurement."
+      }
+    ],
+    cta: "Run a scan to map your marketing, advertising, content, or web offer to qualified public-sector opportunity lanes."
+  },
+  {
+    slug: "government-communications-public-outreach-contracts",
+    title: "Government Communications and Public Outreach Contracts: How to Qualify the Work",
+    description:
+      "How communications firms qualify public information, outreach, advertising, media buying, research, creative, video, and subcontracting opportunities without confusing market research with open work.",
+    category: "Industry Guides",
+    readTime: "9 min read",
+    primaryKeyword: "government communications public outreach contracts",
+    funnelStage: "Consideration",
+    publishedAt: "2026-07-13",
+    lastReviewedAt: "2026-07-13",
+    intro: "Government communications work ranges from a narrow media placement to a multilingual public-information campaign, but the source record controls what a firm can responsibly claim and do next.",
+    sections: [],
+    proofLedger: [
+      {
+        claim: "A July 8, 2026 SAM.gov combined synopsis/solicitation sought event-center advertising, was set aside for small business, and listed a July 17, 2026 response deadline.",
+        source: "SAM.gov - Event Center Advertising, Notice W50S7F26Q0029",
+        url: "https://sam.gov/opp/6f942eead030467093edbadfef115e38/view",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Active procurement example",
+        caveat: "This is a time-sensitive illustration. Readers must recheck current status and all attachments before acting."
+      },
+      {
+        claim: "A March 2026 Army marketing and advertising sources-sought notice described market research for potential future requirements and was not a solicitation.",
+        source: "SAM.gov - Army Marketing and Advertising Services, Notice e7f32a8682f24e0ba642380f44e9c977",
+        url: "https://sam.gov/opp/e7f32a8682f24e0ba642380f44e9c977/view",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Market-intelligence example",
+        caveat: "The response date has passed and the notice must not be represented as active procurement."
+      },
+      {
+        claim: "GSA describes advertising services as work that can promote agency missions, explain complex issues, disseminate information, and support recruitment campaigns.",
+        source: "GSA eLibrary - Advertising Services, SIN 541810",
+        url: "https://www.gsaelibrary.gsa.gov/ElibMain/home.do/pdf/pdf/sinDetails.do?executeQuery=YES&filter=&flag=&scheduleNumber=MAS&specialItemNumber=541810",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Scope translation",
+        caveat: "The SIN description is a category definition, not a forecast or active order."
+      },
+      {
+        claim: "GSA's public relations service description includes message strategy, media materials, press activity, and media monitoring.",
+        source: "U.S. General Services Administration - Multiple Award Schedule",
+        url: "https://www.gsa.gov/buy-through-us/purchasing-programs/multiple-award-schedule",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Communications capability map",
+        caveat: "Firms should claim only the capabilities and past performance they can substantiate."
+      },
+      {
+        claim: "DOT states that SS4A planning grants can fund stakeholder engagement and collaboration and that private consultants may support eligible recipients under applicable procurement rules.",
+        source: "U.S. Department of Transportation - SS4A planning activities and applicant eligibility",
+        url: "https://www.transportation.gov/grants/ss4a/planning-and-demonstration-activities",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Funded-recipient route",
+        caveat: "A grant recipient is not automatically buying communications services; local scope and procurement evidence are still required."
+      }
+    ],
+    cta: "Run a scan to separate bid-ready communications work from recipient research, historical evidence, and monitor-only signals."
+  },
+  {
+    slug: "website-content-digital-services-government-buyers",
+    title: "Website, Content, and Digital Services: How to Find Government Buyers",
+    description:
+      "A source-backed guide to website modernization, content design, accessibility, analytics, video, and digital-experience buyer paths across agencies, funded recipients, and prime contractors.",
+    category: "Industry Guides",
+    readTime: "9 min read",
+    primaryKeyword: "government website content digital services buyers",
+    funnelStage: "Consideration",
+    publishedAt: "2026-07-13",
+    lastReviewedAt: "2026-07-13",
+    intro: "Government website work is not only visual design. Public digital experiences combine authoritative content, accessibility, service completion, mobile performance, analytics, security, and acquisition requirements.",
+    sections: [],
+    proofLedger: [
+      {
+        claim: "21st Century IDEA and OMB M-23-22 establish a federal framework for modernizing websites, digitizing services and forms, and improving customer experience.",
+        source: "Digital.gov - Requirements for delivering a digital-first public experience",
+        url: "https://digital.gov/resources/delivering-digital-first-public-experience/",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Digital-experience demand framework",
+        caveat: "Policy requirements indicate durable needs, not an active procurement at every agency."
+      },
+      {
+        claim: "Digital.gov lists accessibility, consistent design, understandable content, search discoverability, security, user-centered design, dynamic experience, and mobile-first delivery among website and digital-service requirements.",
+        source: "Digital.gov - Requirements for delivering a digital-first public experience",
+        url: "https://digital.gov/resources/delivering-digital-first-public-experience/",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Capability and qualification map",
+        caveat: "A vendor must still validate the specific requirement, system boundary, and acquisition route."
+      },
+      {
+        claim: "Section 508 applies when federal agencies develop, procure, maintain, or use information and communication technology and is incorporated into federal acquisition requirements.",
+        source: "Section508.gov - IT Accessibility Laws and Policies",
+        url: "https://www.section508.gov/manage/laws-and-policies/",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Accessibility qualification",
+        caveat: "This article does not provide legal interpretation or certify conformance."
+      },
+      {
+        claim: "GSA's Web Based Marketing service description includes website design and maintenance, search, email and interactive marketing, web advertising, webcasting, Section 508 work, captioning, and online media management.",
+        source: "GSA eLibrary - Web Based Marketing, SIN 541511",
+        url: "https://www.gsaelibrary.gsa.gov/ElibMain/home.do/pdf/sinDetails.do?executeQuery=YES&filter=NO&scheduleNumber=MAS&specialItemNumber=541511",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Official service-category map",
+        caveat: "A category listing does not prove an ordering agency has current work or that every web firm fits the full scope."
+      },
+      {
+        claim: "GSA's Digital Analytics Program measures traffic and engagement across thousands of participating federal websites and applications in a shared federal account.",
+        source: "Digital.gov - Understanding the Digital Analytics Program",
+        url: "https://digital.gov/guides/dap/",
+        retrievalDate: "2026-07-13",
+        articlePlacement: "Analytics and optimization market intelligence",
+        caveat: "DAP participation and traffic indicate an operating environment, not outsourced budget or buyer intent."
+      }
+    ],
+    cta: "Run a scan to find qualified website, content, accessibility, analytics, and digital-service buyer paths."
+  },
+  {
     slug: "industry-pages-paid-report-conversion",
     title: "How to Use Industry Opportunity Guides and a Paid Report",
     description:
@@ -1691,7 +1906,7 @@ const baseResourceArticles: ResourceArticle[] = [
     primaryKeyword: "industry pages paid report conversion",
     funnelStage: "Decision",
     intro:
-      "Public-sector demand looks different in healthcare, education, creative services, software, construction, energy, manufacturing, and community services. An industry guide helps you recognize the relevant money flows, buyers, recipients, and pursuit paths. A scan then tests those patterns against your company, while the full report organizes qualified signals into work your team can execute.",
+      "Public-sector demand looks different in healthcare, education, creative services, marketing and digital services, software, construction, energy, manufacturing, and community services. An industry guide helps you recognize the relevant money flows, buyers, recipients, and pursuit paths. A scan then tests those patterns against your company, while the full report organizes qualified signals into work your team can execute.",
     sections: [
       {
         heading: "Map how public money moves in your industry",
@@ -1727,6 +1942,18 @@ const baseResourceArticles: ResourceArticle[] = [
 ];
 
 const resourceFeaturedImages: Record<string, { image: string; alt: string }> = {
+  "marketing-advertising-public-sector-opportunities": {
+    image: "/resources/marketing-services/marketing-opportunity-market-map.jpg",
+    alt: "Agency strategy team reviewing public-sector opportunity records and campaign plans"
+  },
+  "government-communications-public-outreach-contracts": {
+    image: "/resources/marketing-services/government-communications-outreach.jpg",
+    alt: "Communications team planning an accessible, community-centered public outreach campaign"
+  },
+  "website-content-digital-services-government-buyers": {
+    image: "/resources/marketing-services/website-content-digital-services.jpg",
+    alt: "Digital services team reviewing an accessible public website across desktop and mobile"
+  },
   "government-spending-growth-channel": {
     image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80",
     alt: "Business owner reviewing public-sector revenue data and financial documents"

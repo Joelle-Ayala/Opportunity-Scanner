@@ -131,6 +131,19 @@ export const LEAD_MAGNET_CATALOG = {
     evidenceSummary: "The report uses current Grants.gov, SAM.gov, award, agency, and local implementation sources and keeps grants, contracts, cooperative agreements, and subawards distinct.",
     buttonLabel: "Get the nonprofit report",
     updatedAt: "July 2026"
+  },
+  "marketing-advertising-digital-services-public-sector-opportunity-report-2026": {
+    accessPath: "/lead-magnets/marketing-advertising-digital-services-public-sector-opportunity-report-2026.pdf",
+    title: "The 2026 Marketing, Advertising, Content, Website & Digital Services Public-Sector Opportunity Report",
+    shortTitle: "Marketing and Digital Services Opportunity Report",
+    category: "Industry report",
+    description: "A source-backed guide to communications procurement, public-information campaigns, accessible digital services, funded recipients, prime partners, and buyer routes.",
+    promise: "Turn public communications and digital-demand signals into qualified buyers, routes, contact paths, and practical next actions.",
+    includes: ["Eight opportunity lanes", "2026 digital-accessibility timeline", "Buyer and contact-path matrix", "30-day pursuit plan"],
+    industrySlug: "marketing-advertising-content-web-services",
+    evidenceSummary: "The report uses current DOJ, OMB, GSA, SAM.gov, USAspending, Grants.gov, SBA, and acquisition sources while separating requirements, forecasts, awards, recipients, and open procurements.",
+    buttonLabel: "Get the marketing and digital report",
+    updatedAt: "July 2026"
   }
 } as const;
 

@@ -292,7 +292,7 @@ export const workflowArticleRefreshes = {
   "industry-pages-paid-report-conversion": {
     description: "Use industry opportunity guides to map public-sector demand, test your company with a free scan, and decide whether a full action report is worthwhile.",
     readTime: "6 min read",
-    intro: "Public-sector demand follows different paths in healthcare, education, creative services, software, construction, energy, manufacturing, and community services. An industry opportunity guide helps you recognize the relevant agencies, funded organizations, procurement routes, and money flows. A scan tests those patterns against your company, and a full report organizes qualified signals into work your team can execute.",
+    intro: "Public-sector demand follows different paths in healthcare, education, creative services, marketing and digital services, software, construction, energy, manufacturing, and community services. An industry opportunity guide helps you recognize the relevant agencies, funded organizations, procurement routes, and money flows. A scan tests those patterns against your company, and a full report organizes qualified signals into work your team can execute.",
     keyTakeaways: ["Use the industry guide to identify likely buyers, recipients, sources, and revenue motions.", "Test those patterns against your own offer, geography, eligibility, and capacity.", "Choose a full report when the additional evidence and action fields will save your team meaningful research and routing work."],
     sections: [
       { heading: "Map the public-money routes in your industry", body: [

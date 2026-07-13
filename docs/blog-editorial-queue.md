@@ -2,13 +2,13 @@
 
 ## Purpose
 
-This internal queue merges the founder's 36-topic list with the 20 live resources in lib/marketingContent.ts. It removes duplicate search intent, preserves every live URL, and adds the local-business credibility topic requested for launch planning.
+This internal queue merges the founder's 36-topic list with the 23 live resources in lib/marketingContent.ts. It removes duplicate search intent, preserves every live URL, and adds the local-business credibility topic requested for launch planning.
 
-The result is 57 canonical resources after adding the minimum industry and solution clusters:
+The result is 60 canonical resources after adding the minimum industry and solution clusters:
 
-- 16 existing articles that already cover the intended topic.
+- 19 existing articles that already cover the intended topic, including the completed marketing-services cluster.
 - 4 refreshes where a live article should absorb or sharpen a founder topic rather than create a competing URL.
-- 37 net-new articles, including the local-business credibility article and 14 deduplicated cluster additions.
+- 37 net-new articles still queued, including the local-business credibility article and 14 deduplicated cluster additions.
 
 ## Status and sequencing rules
 
@@ -82,6 +82,7 @@ Founder numbers refer to the numbered list in the founder brief. A dash means th
 | Creative Economy Funding: Arts Grants, City Events, Tourism, and Parks Opportunities | creative-economy-funding-opportunities | 26 | Existing | Next | Use as the Jammcard-aligned vertical. Refresh its source package before active promotion. |
 | Education and Workforce Opportunity Signals for EdTech, Training, and Staffing Companies | education-workforce-opportunity-signals | 27 | Existing | Next | Use as the SchoolGig-aligned vertical. Preserve districts, boards, agencies, providers, and funded-recipient routes. |
 | Software and AI Public-Sector Demand: How to Spot Agency and Funded Buyer Signals | software-ai-public-sector-demand | — | Existing | Next | Keep the source-backed jobs-to-be-done framing and avoid generic AI demand claims. |
+| Marketing and Advertising Public-Sector Opportunities: A Source-Backed Market Map | marketing-advertising-public-sector-opportunities | — | Existing | Next | Anchor the ninth industry and keep active procurement, historical awards, funded recipients, and market intelligence in separate action lanes. |
 | How DME and Medical Supply Companies Can Find Government Buyers and Channel Partners | dme-medical-supply-government-buyers-channel-partners | 25 | Net-new | Expansion | Build a narrow healthcare cluster article around VA, DME-adjacent categories, distributors, funded providers, and procurement paths. |
 | How Training Companies Can Find Workforce Development Funding Signals | training-companies-workforce-funding-signals | 28 | Net-new | Expansion | Focus on workforce boards, training providers, apprenticeship programs, grants, and funded employer/provider targets. |
 | How Local Services Businesses Can Find Government-Mandated or Publicly Funded Demand | local-services-publicly-funded-demand | 30 | Net-new | Expansion | Cover compliance, facilities, outreach, maintenance, events, human services, and local procurement without labeling the category as easy money. |
@@ -142,6 +143,16 @@ Parent page: `/industries/software-b2b-services-ai`
 | Software and AI Public-Sector Demand: How to Spot Agency and Funded Buyer Signals (`software-ai-public-sector-demand`) | software AI public-sector demand | Awareness | Shows how Opportunity Scanner translates commercial product language into agency missions, funded programs, primes, and workflow problems. | Federal IT Dashboard; SAM.gov; USAspending; agency modernization, cybersecurity, data, and service-delivery pages. | Parent industry page; public-sector sales workflow solution; software sample report. | Scan a software or B2B-services company. | Existing; package refresh required |
 | How to Translate Software Features Into Public-Sector Use Cases (`translate-software-into-public-sector-use-cases`) | sell software to government; public-sector software use cases | Consideration | Demonstrates the website-to-search translation layer: product features become mission problems, public terminology, source queries, and explainable fit evidence. | Agency strategic plans, budget justifications, Digital.gov, CISA/NIST where relevant, and procurement category documentation. | Parent industry page; website-reveals-opportunities article; public-sector-opportunity-signal article. | Scan a software website to test public-sector fit. | Net-new; cluster addition |
 | How Software Companies Find Prime Contractors and Funded Implementation Partners (`software-prime-contractor-funded-partner-opportunities`) | government prime contractor partners for software | Decision | Converts award records into prime, integrator, recipient, and partner targets with channel-specific outreach angles rather than assuming a direct agency sale. | USAspending prime/subaward data; SBA subcontracting resources; agency award pages; SAM.gov interested-vendor and notice context. | Parent industry page; funded-buyer solution; contact-path solution; funded-buyers article. | Find software primes and funded implementation partners. | Net-new; cluster addition |
+
+### Marketing / Advertising / Content / Web Services
+
+Parent page: `/industries/marketing-advertising-content-web-services`
+
+| Working title and slug | Primary query / intent | Funnel stage | Product-specific value angle | Evidence / source plan | Internal links | CTA | Status |
+|---|---|---|---|---|---|---|---|
+| Marketing and Advertising Public-Sector Opportunities: A Source-Backed Market Map (`marketing-advertising-public-sector-opportunities`) | marketing advertising public-sector opportunities | Awareness | Separates active notices, historical awards, funded recipients, GSA service-category intelligence, and prime routes before assigning action. | SAM.gov; USAspending; GSA MAS marketing and public-relations service descriptions; SBA prime/subcontracting guidance; Census planning sources. | Parent industry page; funded-buyer solution; sample marketing report. | Scan a marketing, advertising, content, or web-services firm. | Existing; source-backed package complete July 13, 2026 |
+| Government Communications and Public Outreach Contracts: How to Qualify the Work (`government-communications-public-outreach-contracts`) | government communications contracts; public outreach contracts | Consideration | Qualifies the full campaign delivery chain across audience research, strategy, creative, media, multilingual outreach, accessible production, measurement, and reporting. | Current and expired SAM.gov notices; GSA advertising, public-relations, and video categories; DOT SS4A recipient and engagement guidance; USAspending and SBA for prime research. | Parent industry page; marketing-services pillar; contact-path solution; funded-buyer solution. | Qualify communications and outreach pursuits by status and route. | Existing; source-backed package complete July 13, 2026 |
+| Website, Content, and Digital Services: How to Find Government Buyers (`website-content-digital-services-government-buyers`) | government website contracts; government content and digital services buyers | Consideration | Connects website modernization, content, UX, accessibility, analytics, video, and operations to direct agency, prime, recipient, and monitor-only paths. | Digital.gov digital-first guidance and DAP; Section508.gov; GSA web-based marketing and video categories; Census procurement planning. | Parent industry page; marketing-services pillar; public-sector workflow solution; contact-path solution. | Find qualified web, content, accessibility, and digital-service routes. | Existing; source-backed package complete July 13, 2026 |
 
 ### Construction / Infrastructure / Engineering
 
@@ -223,7 +234,7 @@ Parent page: `/solutions/contact-paths-and-enrichment`
 - Founder topics 2 and 20 share one refreshed founder-focused pillar because their search intent is substantially the same.
 - Founder topics 9 and 35 share the existing contact-path article because both answer who to contact and what route to use.
 - The existing SAM.gov earlier-signal article remains separate from founder topic 12: one is a positioning article, the other is a source tutorial.
-- Existing verticals for infrastructure, clean energy, nonprofits, and software/AI remain in the queue even though the founder list did not repeat them.
+- Existing verticals for infrastructure, clean energy, nonprofits, software/AI, and marketing services remain in the queue even though the founder list did not repeat them.
 - Existing product-led articles for fit checks, sample-report outbound, and industry-page conversion remain as support content.
 
 ## Recommended launch order

@@ -20,6 +20,17 @@ const publicSectorTermMap: Record<string, string[]> = {
   music: ["creative economy", "arts workforce", "cultural programming", "music education"],
   creative: ["creative economy", "artist services", "cultural programming", "creative workforce"],
   entertainment: ["live entertainment", "event production", "cultural venues", "performing arts"],
+  "marketing-advertising-content-web-services": [
+    "government marketing services",
+    "public outreach campaigns",
+    "media buying services",
+    "government website redesign"
+  ],
+  "marketing agency": ["government marketing services", "public outreach campaigns", "media buying services"],
+  "advertising agency": ["advertising services", "media planning services", "public awareness campaigns"],
+  "public relations agency": ["public relations services", "public information campaigns", "stakeholder communications"],
+  "web design agency": ["government website redesign", "website accessibility remediation", "web content services"],
+  "content marketing agency": ["content strategy services", "public outreach content", "program communications"],
   workforce: ["workforce development", "training services", "labor market programs"],
   software: ["IT services", "software licensing", "data systems", "cloud services"],
   data: ["analytics", "performance measurement", "evidence-building"],
@@ -127,6 +138,80 @@ const opportunityLaneRules: Array<{
       "live entertainment",
       "event production services",
       "arts grants"
+    ]
+  },
+  {
+    lane: "Government marketing, communications, and public outreach procurement",
+    triggers:
+      /marketing agency|advertising agency|marketing communications agency|public relations agency|government communications|public sector marketing|public outreach campaign|multilingual outreach services/,
+    terms: [
+      "government marketing services",
+      "communications strategy services",
+      "public relations services",
+      "public outreach campaign",
+      "community engagement communications",
+      "multilingual outreach services"
+    ]
+  },
+  {
+    lane: "Public information and behavior-change campaigns",
+    triggers: /public information campaign|behavior change campaign|public awareness campaign|health communications campaign/,
+    terms: [
+      "public information campaign",
+      "behavior change communications",
+      "public awareness campaign",
+      "health communications campaign",
+      "emergency communications campaign"
+    ]
+  },
+  {
+    lane: "Digital advertising, media planning, and media buying",
+    triggers:
+      /digital marketing agency|digital advertising services|media buying services|media planning and buying|paid media management|advertising campaign management|search engine marketing services/,
+    terms: [
+      "digital advertising services",
+      "media planning services",
+      "media buying services",
+      "paid media campaign",
+      "social media management services",
+      "search engine marketing services"
+    ]
+  },
+  {
+    lane: "Government website redesign, accessibility, and content services",
+    triggers:
+      /web design agency|website redesign|web design services|website development services|website accessibility services|section 508 remediation/,
+    terms: [
+      "government website redesign",
+      "website development services",
+      "web content strategy",
+      "website accessibility remediation",
+      "Section 508 website compliance",
+      "government web content services"
+    ]
+  },
+  {
+    lane: "Funded-program outreach, enrollment, and stakeholder communications",
+    triggers:
+      /content marketing agency|content marketing services|program outreach services|enrollment campaign services|grant-funded communications|stakeholder engagement campaign/,
+    terms: [
+      "program outreach services",
+      "enrollment campaign services",
+      "grant-funded communications",
+      "stakeholder engagement campaign",
+      "benefits outreach campaign",
+      "multilingual program communications"
+    ]
+  },
+  {
+    lane: "Tourism and economic-development destination marketing",
+    triggers: /destination marketing services|tourism marketing campaign|economic development marketing|place branding services/,
+    terms: [
+      "destination marketing services",
+      "tourism marketing campaign",
+      "economic development marketing",
+      "place branding services",
+      "visitor marketing services"
     ]
   },
   {

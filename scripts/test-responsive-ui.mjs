@@ -19,7 +19,7 @@ const industryEnd = marketingContent.indexOf("const baseResourceArticles", indus
 const industryBlock = marketingContent.slice(industryStart, industryEnd);
 const industrySlugs = [...industryBlock.matchAll(/slug: "([^"]+)"/g)].map((match) => match[1]);
 
-assert.equal(industrySlugs.length, 8, "expected the eight published industry pages");
+assert.equal(industrySlugs.length, 9, "expected the nine published industry pages");
 for (const slug of industrySlugs) {
   assert.match(brand, new RegExp(`/industries/${slug}`), `navigation is missing industry: ${slug}`);
 }

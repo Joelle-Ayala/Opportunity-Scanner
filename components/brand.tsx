@@ -27,6 +27,7 @@ const navGroups = [
       ["Healthcare & DME", "/industries/healthcare-dme-medical-supply"],
       ["Education & Workforce", "/industries/education-workforce-training"],
       ["Arts & Live Events", "/industries/arts-creative-economy-live-events"],
+      ["Marketing & Web Services", "/industries/marketing-advertising-content-web-services"],
       ["Software & B2B Services", "/industries/software-b2b-services-ai"],
       ["Construction & Infrastructure", "/industries/construction-infrastructure-engineering"],
       ["Clean Energy & Facilities", "/industries/clean-energy-facilities-sustainability"],

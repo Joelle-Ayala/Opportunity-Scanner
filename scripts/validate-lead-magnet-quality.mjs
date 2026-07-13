@@ -13,7 +13,7 @@ import {
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PDF_DIR = join(ROOT, "public", "lead-magnets");
 const SOURCE_DIR = join(ROOT, "docs", "lead-magnets");
-const EXPECTED_PDF_COUNT = 9;
+const EXPECTED_PDF_COUNT = 10;
 const MIN_PAGES = 8;
 const MAX_PAGES = 16;
 const MIN_PDF_BYTES = 20_000;
@@ -133,13 +133,13 @@ function check(name, run) {
   checks.push({ name, run });
 }
 
-check("catalog has one flagship and one entry for each of eight industries", async () => {
+check("catalog has one flagship and one entry for each of nine industries", async () => {
   const entries = Object.entries(LEAD_MAGNET_CATALOG);
   assert.equal(entries.length, EXPECTED_PDF_COUNT);
   assert.equal(entries.filter(([, item]) => item.industrySlug === null).length, 1);
   const industrySlugs = entries.map(([, item]) => item.industrySlug).filter(Boolean);
-  assert.equal(industrySlugs.length, 8);
-  assert.equal(new Set(industrySlugs).size, 8);
+  assert.equal(industrySlugs.length, 9);
+  assert.equal(new Set(industrySlugs).size, 9);
 });
 
 check("catalog, public PDFs, and source documents have exact one-to-one coverage", async () => {
