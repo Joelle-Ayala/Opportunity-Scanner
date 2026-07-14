@@ -1,60 +1,17 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import ts from "typescript";
+import { HTTPS_OUTBOUND_PROTOCOLS, parseOutboundUrl } from "../lib/url.ts";
 
 const routeUrl = new URL("../app/api/workflow/send/route.ts", import.meta.url);
 const routeSource = await readFile(routeUrl, "utf8");
-const sourceWithoutImports = routeSource.replace(/^import[^\n]*\n/gm, "");
-const executableRouteSource = sourceWithoutImports
-  .replace(/type ValidationResult =[\s\S]*?;\ntype ValidationError = [^\n]+;\n/, "")
-  .replace(
-    "function jsonError(status: number, code: string, message: string)",
-    "function jsonError(status, code, message)"
-  )
-  .replace(
-    "function isObject(value: unknown): value is Record<string, unknown>",
-    "function isObject(value)"
-  )
-  .replace(
-    "function stringValue(payload: unknown, key: string): string",
-    "function stringValue(payload, key)"
-  )
-  .replace("function isAllowedWebhookUrl(value: string): boolean", "function isAllowedWebhookUrl(value)")
-  .replace("function validateRequestBody(body: unknown): ValidationResult", "function validateRequestBody(body)")
-  .replace(
-    "function validateWorkflowPayload(payload: WorkflowPayload): ValidationError | null",
-    "function validateWorkflowPayload(payload)"
-  )
-  .replace("export const runtime", "const runtime")
-  .replace("export async function POST(request: Request)", "async function POST(request)");
-
-for (const typeMarker of [
-  ": unknown",
-  ": string",
-  ": boolean",
-  ": Request",
-  ": ValidationResult",
-  ": WorkflowPayload"
-]) {
-  assert.equal(
-    executableRouteSource.includes(typeMarker),
-    false,
-    `Workflow route harness needs an update for TypeScript marker ${typeMarker}`
-  );
-}
-
-const injectableSource = `
-const {
-  NextResponse,
-  hasRequestReportAccess,
-  getCompanyProfile,
-  getScan,
-  getStoredOpportunitySignal,
-  ensureProfileRefinementFields,
-  buildWorkflowPayload
-} = globalThis.__workflowRouteTestMocks;
-${executableRouteSource}
-module.exports = { POST };
-`;
+const executableRouteSource = ts.transpileModule(routeSource, {
+  compilerOptions: {
+    esModuleInterop: true,
+    module: ts.ModuleKind.CommonJS,
+    target: ts.ScriptTarget.ES2022
+  }
+}).outputText;
 
 let activeState;
 const originalFetch = globalThis.fetch;
@@ -91,7 +48,37 @@ globalThis.__workflowRouteTestMocks = {
 };
 
 const moduleUnderTest = { exports: {} };
-new Function("module", "exports", injectableSource)(moduleUnderTest, moduleUnderTest.exports);
+const workflowRequire = (specifier) => {
+  const modules = {
+    "next/server": { NextResponse: globalThis.__workflowRouteTestMocks.NextResponse },
+    "@/lib/payments/requestAccess": {
+      hasRequestReportAccess: globalThis.__workflowRouteTestMocks.hasRequestReportAccess
+    },
+    "@/lib/storage": {
+      getCompanyProfile: globalThis.__workflowRouteTestMocks.getCompanyProfile,
+      getScan: globalThis.__workflowRouteTestMocks.getScan,
+      getStoredOpportunitySignal: globalThis.__workflowRouteTestMocks.getStoredOpportunitySignal
+    },
+    "@/lib/profileRefinement": {
+      ensureProfileRefinementFields: globalThis.__workflowRouteTestMocks.ensureProfileRefinementFields
+    },
+    "@/lib/workflowPayload": {
+      buildWorkflowPayload: globalThis.__workflowRouteTestMocks.buildWorkflowPayload
+    },
+    "@/lib/url": {
+      HTTPS_OUTBOUND_PROTOCOLS,
+      parseOutboundUrl,
+      fetchSafeOutboundUrl: (url, options) => globalThis.fetch(url, options)
+    }
+  };
+  if (!(specifier in modules)) throw new Error(`Unexpected workflow dependency: ${specifier}`);
+  return modules[specifier];
+};
+new Function("require", "module", "exports", executableRouteSource)(
+  workflowRequire,
+  moduleUnderTest,
+  moduleUnderTest.exports
+);
 const { POST } = moduleUnderTest.exports;
 assert.equal(typeof POST, "function", "Workflow route must export POST");
 

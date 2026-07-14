@@ -93,6 +93,136 @@ function reportStatusLabel(status: ScanRecord["status"]): string {
   return labels[status] ?? "In progress";
 }
 
+const IN_PROGRESS_SCAN_COPY: Record<
+  Exclude<ScanRecord["status"], "completed" | "failed">,
+  { heading: string; detail: string }
+> = {
+  queued: {
+    heading: "Your scan is queued",
+    detail: "We have your company details and will begin reviewing the website shortly."
+  },
+  scraping: {
+    heading: "We are reading the company website",
+    detail: "We are gathering the business context needed to search the right public-sector sources."
+  },
+  profiling: {
+    heading: "We are building the opportunity profile",
+    detail: "We are translating the company, customer, and market context into a focused public-sector search."
+  },
+  discovering: {
+    heading: "We are checking public-sector sources",
+    detail: "We are reviewing source-backed signals and deciding which opportunities are useful enough to include."
+  }
+};
+
+function scanSupportHref(scan: ScanRecord): string {
+  const email = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const subject = "Help with an Opportunity Scanner scan";
+  const body = [
+    "Hi Opportunity Systems,",
+    "",
+    "I need help retrying an Opportunity Scanner scan.",
+    "",
+    `Company URL: ${scan.company_url}`,
+    `Scan ID: ${scan.id}`,
+    ""
+  ].join("\n");
+
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function ReportScanState({
+  scan,
+  isAdminView
+}: {
+  scan: ScanRecord;
+  isAdminView: boolean;
+}) {
+  if (scan.status === "completed") return null;
+
+  const companyName = scan.company_name || hostname(scan.company_url);
+  const progress = scan.status === "failed" ? null : IN_PROGRESS_SCAN_COPY[scan.status];
+
+  return (
+    <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
+      <div className="mx-auto grid max-w-3xl gap-6">
+        <header className="rounded-lg border border-line bg-white p-4 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-5">
+            <OpportunityScannerLogo />
+            <a
+              href="/dashboard"
+              className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent"
+            >
+              Dashboard
+            </a>
+          </div>
+          <div className="mt-8 flex min-w-0 flex-wrap items-center gap-4">
+            <CompanyLogo name={companyName} logoUrl={companyLogoUrl(scan.company_url)} />
+            <div className="min-w-0">
+              <h1 className="break-words text-2xl font-semibold text-ink sm:text-3xl">{companyName}</h1>
+              <p className="mt-1 break-all text-sm text-muted">{scan.company_url}</p>
+            </div>
+          </div>
+        </header>
+
+        {progress === null ? (
+          <section className="rounded-lg border border-red-200 bg-white p-5 sm:p-6" aria-labelledby="failed-scan-heading">
+            <Badge tone="amber">{reportStatusLabel(scan.status)}</Badge>
+            <h2 id="failed-scan-heading" className="mt-4 text-xl font-semibold text-ink">
+              This scan could not be completed
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-muted">
+              Start a fresh scan with the saved company context, or contact support if the website
+              continues to fail.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <a
+                href={`/dashboard/new?from=${encodeURIComponent(scan.id)}`}
+                className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
+              >
+                Retry scan
+              </a>
+              <a
+                href={scanSupportHref(scan)}
+                className="rounded-md border border-line px-4 py-3 text-sm font-semibold text-ink hover:text-accent"
+              >
+                Contact support
+              </a>
+            </div>
+            {isAdminView && scan.error_message ? (
+              <details className="mt-5 rounded-md border border-red-200 bg-red-50 p-3 text-red-700">
+                <summary className="cursor-pointer text-sm font-semibold">Admin failure detail</summary>
+                <p className="mt-2 text-xs leading-5">{scan.error_message}</p>
+              </details>
+            ) : null}
+          </section>
+        ) : (
+          <section
+            className="rounded-lg border border-cyan-100 bg-white p-5 sm:p-6"
+            aria-labelledby="in-progress-scan-heading"
+            aria-live="polite"
+          >
+            <Badge tone="blue">{reportStatusLabel(scan.status)}</Badge>
+            <h2 id="in-progress-scan-heading" className="mt-4 text-xl font-semibold text-ink">
+              {progress.heading}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-muted">{progress.detail}</p>
+            <p className="mt-3 text-sm leading-6 text-muted">
+              The opportunity report will appear here when the scan is complete.
+            </p>
+            <a
+              href={`/reports/${encodeURIComponent(scan.id)}`}
+              className="mt-5 inline-flex rounded-md border border-line px-4 py-3 text-sm font-semibold text-ink hover:text-accent"
+            >
+              Check status
+            </a>
+          </section>
+        )}
+      </div>
+    </main>
+  );
+}
+
 function fullReportRequestHref(scan: ScanRecord, signal?: StoredOpportunitySignal): string {
   const email = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
   const subject = "Full Opportunity Scanner report request";
@@ -1129,6 +1259,10 @@ export default async function ReportPage({
   if (!scan) notFound();
 
   const isAdminView = hasAdminAccess(searchParams?.access, scan);
+  if (scan.status !== "completed") {
+    return <ReportScanState scan={scan} isAdminView={isAdminView} />;
+  }
+
   const storedAccess = await hasServerReportAccess(searchParams?.access, scan);
   if (storedAccess && searchParams?.session_id) {
     redirect(reportAccessHref(`/reports/${scan.id}`, searchParams.access));
@@ -1220,19 +1354,6 @@ export default async function ReportPage({
             Full-report access is in beta. We will review the scan and follow up with the full
             opportunity pipeline, source links, contact paths, CRM notes, outreach angles, and
             workflow-ready export.
-          </section>
-        ) : null}
-
-        {scan.status === "failed" ? (
-          <section className="rounded-lg border border-red-200 bg-red-50 p-5 text-sm text-red-700">
-            We could not complete this scan. Please check the company URL and try again, or contact
-            us for help reviewing the website.
-            {isAdminView && scan.error_message ? (
-              <details className="mt-3 rounded-md border border-red-200 bg-white p-3">
-                <summary className="cursor-pointer font-semibold">Admin failure detail</summary>
-                <p className="mt-2 text-xs leading-5">{scan.error_message}</p>
-              </details>
-            ) : null}
           </section>
         ) : null}
 

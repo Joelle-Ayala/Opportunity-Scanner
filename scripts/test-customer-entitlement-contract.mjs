@@ -17,12 +17,15 @@ test("requires a valid authenticated owner and an exact scan UUID", async () => 
   assert.match(entitlement, /UUID_PATTERN\.test\(scanId\)/);
   assert.match(entitlement, /"customer_accounts"[\s\S]*auth_user_id: `eq\.\$\{authUserId\}`/);
   assert.match(entitlement, /hasActiveCustomerReportGrant/);
+  assert.match(
+    entitlement,
+    /"customer_scan_ownership"[\s\S]*customer_account_id: `eq\.\$\{account\.id\}`[\s\S]*scan_id: `eq\.\$\{scanId\}`[\s\S]*access_level: "eq\.full"/
+  );
   assert.match(entitlement, /customer_report_grant_ownership/);
   assert.match(
     entitlement,
     /"customer_monitored_profile_ownership"[\s\S]*customer_account_id: `eq\.\$\{account\.id\}`/
   );
-  assert.doesNotMatch(entitlement, /customer_scan_ownership/);
 });
 
 test("accepts only active or trialing Monitor and Growth subscriptions", async () => {

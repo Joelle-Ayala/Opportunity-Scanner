@@ -1,5 +1,10 @@
-import { ScrapedPage } from "./types";
-import { sameOriginUrl } from "./url";
+import type { ScrapedPage } from "./types.ts";
+import {
+  fetchSafeOutboundUrl,
+  HTTP_OUTBOUND_PROTOCOLS,
+  sameOriginUrl,
+  type SafeOutboundUrlOptions
+} from "./url.ts";
 
 const MAX_PAGES = 8;
 const MAX_CHARS = 40000;
@@ -61,16 +66,28 @@ function scoreLink(url: string): number {
   return preferredPathHints.reduce((score, hint) => score + (lower.includes(hint) ? 1 : 0), 0);
 }
 
-async function fetchPage(url: string): Promise<string> {
+export type ScraperOutboundOptions = Pick<
+  SafeOutboundUrlOptions,
+  "fetchImpl" | "lookup" | "maxRedirects"
+>;
+
+async function fetchPage(url: string, outboundOptions: ScraperOutboundOptions): Promise<string> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), PAGE_TIMEOUT_MS);
   try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        "User-Agent": "OpportunityScanner/0.1 (+https://example.com)"
+    const response = await fetchSafeOutboundUrl(
+      url,
+      {
+        signal: controller.signal,
+        headers: {
+          "User-Agent": "OpportunityScanner/0.1 (+https://example.com)"
+        }
+      },
+      {
+        ...outboundOptions,
+        allowedProtocols: HTTP_OUTBOUND_PROTOCOLS
       }
-    });
+    );
 
     const contentType = response.headers.get("content-type") ?? "";
     if (!response.ok || !contentType.includes("text/html")) {
@@ -83,7 +100,10 @@ async function fetchPage(url: string): Promise<string> {
   }
 }
 
-export async function scrapeCompanyWebsite(startUrl: string): Promise<{
+export async function scrapeCompanyWebsite(
+  startUrl: string,
+  outboundOptions: ScraperOutboundOptions = {}
+): Promise<{
   pages: ScrapedPage[];
   rawText: string;
 }> {
@@ -104,7 +124,7 @@ export async function scrapeCompanyWebsite(startUrl: string): Promise<{
     visited.add(url);
 
     try {
-      const html = await fetchPage(url);
+      const html = await fetchPage(url, outboundOptions);
       if (!html) {
         continue;
       }

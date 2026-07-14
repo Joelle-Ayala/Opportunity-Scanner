@@ -56,13 +56,6 @@ function createFakeSupabase() {
       if (status) rows = rows.filter((row) => row.status === status);
       return json(rows);
     }
-    if (path === "/rest/v1/scans" && method === "PATCH") {
-      const id = url.searchParams.get("id")?.replace(/^eq\./, "");
-      const access = url.searchParams.get("report_access")?.replace(/^eq\./, "");
-      const changed = state.scans.filter((row) => row.id === id && row.report_access === access);
-      for (const row of changed) row.report_access = body.report_access;
-      return json(changed);
-    }
     if (path === "/rest/v1/customer_accounts" && method === "GET") {
       let rows = state.accounts;
       const email = url.searchParams.get("email")?.replace(/^eq\./, "");
@@ -89,8 +82,18 @@ function createFakeSupabase() {
       return json(rows);
     }
     if (path === "/rest/v1/customer_scan_ownership" && method === "POST") {
-      if (!state.ownership.some((row) => row.scan_id === body.scan_id)) state.ownership.push(body);
-      return json([body]);
+      const ownership = { access_level: "free", ...body };
+      if (!state.ownership.some((row) => row.scan_id === body.scan_id)) state.ownership.push(ownership);
+      return json([ownership]);
+    }
+    if (path === "/rest/v1/customer_scan_ownership" && method === "PATCH") {
+      const accountId = url.searchParams.get("customer_account_id")?.replace(/^eq\./, "");
+      const scanId = url.searchParams.get("scan_id")?.replace(/^eq\./, "");
+      const changed = state.ownership.filter((row) =>
+        row.customer_account_id === accountId && row.scan_id === scanId
+      );
+      for (const row of changed) row.access_level = body.access_level;
+      return json(changed);
     }
     return json({ error: "unexpected request" }, 404);
   }
@@ -138,13 +141,13 @@ test("dry-run reads state without creating users, accounts, ownership, or access
   assert.equal(result.mode, "dry-run");
   assert.equal(result.authUser.state, "would_create");
   assert.deepEqual(result.scans.wouldAttachIds, [SCAN_ID]);
-  assert.deepEqual(result.scans.wouldUnlockIds, [SCAN_ID]);
+  assert.deepEqual(result.scans.wouldGrantFullAccessIds, [SCAN_ID]);
   assert.equal(result.nextLoginUrl, "https://scanner.example.test/auth/sign-in?next=%2Fdashboard");
   assert.doesNotMatch(JSON.stringify(result), new RegExp(`${EMAIL}|${env.SUPABASE_SERVICE_ROLE_KEY}`));
   assert.equal(fake.state.writes.length, 0);
 });
 
-test("apply provisions report access without writing any Stripe or monitoring state", async () => {
+test("apply provisions account-scoped report access without writing Stripe or monitoring state", async () => {
   const fake = createFakeSupabase();
   const result = await runProvisioning({
     argv: ["--apply", "--email", EMAIL, "--scan-id", SCAN_ID],
@@ -155,16 +158,16 @@ test("apply provisions report access without writing any Stripe or monitoring st
   assert.equal(result.authUser.id, AUTH_USER_ID);
   assert.equal(result.customerAccount.id, ACCOUNT_ID);
   assert.deepEqual(result.scans.attachedIds, [SCAN_ID]);
-  assert.deepEqual(result.scans.unlockedIds, [SCAN_ID]);
+  assert.deepEqual(result.scans.grantedFullAccessIds, [SCAN_ID]);
   assert.deepEqual(fake.state.authCreationBody, { email: EMAIL, email_confirm: false });
-  assert.equal(fake.state.scans[0].report_access, "unlocked");
+  assert.equal(fake.state.scans[0].report_access, "free");
   assert.equal(fake.state.ownership[0].customer_account_id, ACCOUNT_ID);
+  assert.equal(fake.state.ownership[0].access_level, "full");
   assert.ok(fake.state.writes.every(({ path }) =>
     [
       "/auth/v1/admin/users",
       "/rest/v1/customer_accounts",
-      "/rest/v1/customer_scan_ownership",
-      "/rest/v1/scans"
+      "/rest/v1/customer_scan_ownership"
     ].includes(path)
   ));
 
@@ -177,7 +180,7 @@ test("apply provisions report access without writing any Stripe or monitoring st
   assert.equal(repeated.authUser.state, "existing");
   assert.equal(repeated.customerAccount.state, "existing");
   assert.deepEqual(repeated.scans.attachedIds, []);
-  assert.deepEqual(repeated.scans.unlockedIds, []);
+  assert.deepEqual(repeated.scans.grantedFullAccessIds, []);
   assert.equal(fake.state.writes.length, 0);
 });
 
@@ -205,7 +208,8 @@ test("source contains no credential output or billing-table mutations", async ()
   const source = await readFile(new URL("./provision-demo-customer.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(source, /console\.(?:log|error)\([^\n]*(?:serviceRoleKey|SUPABASE_SERVICE_ROLE_KEY)/);
   assert.doesNotMatch(source, /(?:insert|update)\("(?:stripe_|monitored_profiles|enrichment_credit)/);
-  assert.match(source, /report_access: "unlocked"/);
+  assert.doesNotMatch(source, /report_access: "unlocked"/);
+  assert.match(source, /access_level: "full"/);
   assert.match(source, /monitoring requires truthful active billing/);
 });
 

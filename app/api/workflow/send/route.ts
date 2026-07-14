@@ -3,6 +3,11 @@ import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
 import { getCompanyProfile, getScan, getStoredOpportunitySignal } from "@/lib/storage";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { buildWorkflowPayload, type WorkflowPayload } from "@/lib/workflowPayload";
+import {
+  fetchSafeOutboundUrl,
+  HTTPS_OUTBOUND_PROTOCOLS,
+  parseOutboundUrl
+} from "@/lib/url";
 
 export const runtime = "nodejs";
 
@@ -29,8 +34,8 @@ function stringValue(payload: unknown, key: string): string {
 
 function isAllowedWebhookUrl(value: string): boolean {
   try {
-    const parsed = new URL(value);
-    return parsed.protocol === "https:" && !parsed.username && !parsed.password;
+    parseOutboundUrl(value, HTTPS_OUTBOUND_PROTOCOLS);
+    return true;
   } catch {
     return false;
   }
@@ -167,16 +172,20 @@ export async function POST(request: Request) {
   const timeout = setTimeout(() => controller.abort(), WEBHOOK_TIMEOUT_MS);
 
   try {
-    const response = await fetch(validation.webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: controller.signal,
-      body: JSON.stringify({
-        product: "Opportunity Scanner",
-        sent_at: new Date().toISOString(),
-        opportunity: payload
-      })
-    });
+    const response = await fetchSafeOutboundUrl(
+      validation.webhookUrl,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          product: "Opportunity Scanner",
+          sent_at: new Date().toISOString(),
+          opportunity: payload
+        })
+      },
+      { allowedProtocols: HTTPS_OUTBOUND_PROTOCOLS }
+    );
 
     if (!response.ok) {
       return jsonError(

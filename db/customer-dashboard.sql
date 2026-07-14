@@ -17,6 +17,7 @@ create table if not exists customer_scan_ownership (
   customer_account_id uuid not null references customer_accounts(id) on delete cascade,
   scan_id uuid not null unique references scans(id) on delete cascade,
   ownership_kind text not null default 'created' check (ownership_kind in ('created', 'claimed')),
+  access_level text not null default 'free' check (access_level in ('free', 'full')),
   created_at timestamptz not null default now(),
   primary key (customer_account_id, scan_id)
 );

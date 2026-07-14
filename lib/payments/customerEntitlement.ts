@@ -14,6 +14,13 @@ export async function hasActiveCustomerReportGrant(authUserId: string, scanId: s
     auth_user_id: `eq.${authUserId}`
   });
   if (!account) return false;
+  const accountGrant = await dashboardSelectOne<{ scan_id: string }>("customer_scan_ownership", {
+    select: "scan_id",
+    customer_account_id: `eq.${account.id}`,
+    scan_id: `eq.${scanId}`,
+    access_level: "eq.full"
+  });
+  if (accountGrant) return true;
   const ownership = await dashboardSelect<GrantOwnershipRow>("customer_report_grant_ownership", {
     select: "report_access_grant_id",
     customer_account_id: `eq.${account.id}`

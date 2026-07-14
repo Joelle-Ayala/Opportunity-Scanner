@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const FULL_REPORT_ACCESS = new Set(["unlocked", "admin"]);
 const MAX_SELECTED_SCANS = 100;
 
 class OperatorError extends Error {
@@ -287,8 +286,7 @@ function validateScan(row) {
     throw new OperatorError("A selected scan is not a completed report with a supported access state.");
   }
   return {
-    id: row.id.toLowerCase(),
-    reportAccess: row.report_access
+    id: row.id.toLowerCase()
   };
 }
 
@@ -328,7 +326,7 @@ async function resolveScans(client, scanIds, scanEmails) {
 
 async function loadOwnership(client, scans) {
   const rows = await client.select("customer_scan_ownership", {
-    select: "customer_account_id,scan_id",
+    select: "customer_account_id,scan_id,access_level",
     scan_id: `in.(${scans.map((scan) => scan.id).join(",")})`
   });
   if (!Array.isArray(rows)) throw new OperatorError("Supabase returned invalid scan ownership data.");
@@ -337,14 +335,17 @@ async function loadOwnership(client, scans) {
     if (!UUID_PATTERN.test(row?.scan_id || "") || !UUID_PATTERN.test(row?.customer_account_id || "")) {
       throw new OperatorError("Supabase returned invalid scan ownership data.");
     }
-    ownership.set(row.scan_id.toLowerCase(), row.customer_account_id.toLowerCase());
+    ownership.set(row.scan_id.toLowerCase(), {
+      accountId: row.customer_account_id.toLowerCase(),
+      accessLevel: row.access_level || "free"
+    });
   }
   return ownership;
 }
 
 function assertOwnershipAvailable(ownership, accountId) {
-  for (const ownerId of ownership.values()) {
-    if (!accountId || ownerId !== accountId) {
+  for (const owner of ownership.values()) {
+    if (!accountId || owner.accountId !== accountId) {
       throw new OperatorError("A selected scan is already owned by another customer account.");
     }
   }
@@ -357,7 +358,7 @@ async function attachScan(client, accountId, scanId) {
     ownership_kind: "claimed"
   }, { onConflict: "scan_id", resolution: "ignore-duplicates" });
   const row = oneRow(await client.select("customer_scan_ownership", {
-    select: "customer_account_id,scan_id",
+    select: "customer_account_id,scan_id,access_level",
     scan_id: `eq.${scanId}`,
     limit: 2
   }), "scan ownership");
@@ -366,19 +367,20 @@ async function attachScan(client, accountId, scanId) {
   }
 }
 
-async function unlockScan(client, scanId) {
-  const updated = await client.update("scans", {
-    id: `eq.${scanId}`,
-    report_access: "eq.free"
-  }, { report_access: "unlocked" });
-  if (Array.isArray(updated) && updated.some((row) => row.id?.toLowerCase() === scanId)) return;
-  const row = oneRow(await client.select("scans", {
-    select: "id,report_access,status",
-    id: `eq.${scanId}`,
+async function grantAccountReportAccess(client, accountId, scanId) {
+  const updated = await client.update("customer_scan_ownership", {
+    customer_account_id: `eq.${accountId}`,
+    scan_id: `eq.${scanId}`
+  }, { access_level: "full" });
+  if (Array.isArray(updated) && updated.some((row) => row.scan_id?.toLowerCase() === scanId)) return;
+  const row = oneRow(await client.select("customer_scan_ownership", {
+    select: "customer_account_id,scan_id,access_level",
+    customer_account_id: `eq.${accountId}`,
+    scan_id: `eq.${scanId}`,
     limit: 2
-  }), "scan");
-  if (!row || !FULL_REPORT_ACCESS.has(row.report_access)) {
-    throw new OperatorError("Report access could not be safely granted for a selected scan.");
+  }), "scan ownership");
+  if (!row || row.access_level !== "full") {
+    throw new OperatorError("Account-scoped report access could not be safely granted.");
   }
 }
 
@@ -406,7 +408,7 @@ export async function runProvisioning({
   assertOwnershipAvailable(ownership, account?.id || null);
 
   const plannedAttachments = scans.filter((scan) => !ownership.has(scan.id)).map((scan) => scan.id);
-  const plannedUnlocks = scans.filter((scan) => !FULL_REPORT_ACCESS.has(scan.reportAccess)).map((scan) => scan.id);
+  const plannedGrants = scans.filter((scan) => ownership.get(scan.id)?.accessLevel !== "full").map((scan) => scan.id);
   const authState = authUser ? "existing" : options.apply ? "created" : "would_create";
   const accountState = account ? "existing" : options.apply ? "created" : "would_create";
 
@@ -415,7 +417,7 @@ export async function runProvisioning({
     if (!account) account = await upsertAccount(client, authUser.id, options.customerEmail);
     assertOwnershipAvailable(ownership, account.id);
     for (const scanId of plannedAttachments) await attachScan(client, account.id, scanId);
-    for (const scanId of plannedUnlocks) await unlockScan(client, scanId);
+    for (const scanId of plannedGrants) await grantAccountReportAccess(client, account.id, scanId);
   }
 
   return {
@@ -426,10 +428,10 @@ export async function runProvisioning({
       selectedIds: scans.map((scan) => scan.id),
       alreadyAttachedIds: scans.filter((scan) => ownership.has(scan.id)).map((scan) => scan.id),
       [options.apply ? "attachedIds" : "wouldAttachIds"]: plannedAttachments,
-      alreadyFullAccessIds: scans.filter((scan) => FULL_REPORT_ACCESS.has(scan.reportAccess)).map((scan) => scan.id),
-      [options.apply ? "unlockedIds" : "wouldUnlockIds"]: plannedUnlocks
+      alreadyFullAccessIds: scans.filter((scan) => ownership.get(scan.id)?.accessLevel === "full").map((scan) => scan.id),
+      [options.apply ? "grantedFullAccessIds" : "wouldGrantFullAccessIds"]: plannedGrants
     },
-    accessScope: "report-level full access only",
+    accessScope: "account-scoped full access for selected reports only",
     billingState: "unchanged; no Stripe customer, charge, grant, subscription, or credit was created",
     monitoringSubscription: "not provisioned; monitoring requires truthful active billing",
     nextLoginUrl: loginUrl(options.appOrigin)
