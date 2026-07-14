@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import { getEventListeners } from "node:events";
 
 const {
+  DEFAULT_CONNECTOR_CLEANUP_GRACE_MS,
   fetchConnectorJson,
   runConnector,
   sanitizeConnectorError
@@ -110,12 +112,85 @@ try {
   const connectorTimeout = await runConnector(
     options({
       timeoutMs: 10,
-      execute: async () => new Promise(() => {})
+      execute: async (context) => {
+        await new Promise((resolve) => {
+          context.signal.addEventListener("abort", resolve, { once: true });
+        });
+        return [];
+      }
     })
   );
   assert.equal(connectorTimeout.run.status, "failing");
   assert.equal(connectorTimeout.run.outcome, "failed");
   assert.equal(connectorTimeout.run.error_code, "timeout");
+
+  const parentController = new AbortController();
+  let parentAbortObserved = false;
+  let parentWorkActive = false;
+  const parentBoundConnector = runConnector(
+    options({
+      signal: parentController.signal,
+      deadlineAtMs: Date.now() + 500,
+      timeoutMs: 500,
+      requestTimeoutMs: 500,
+      execute: async (context) => {
+        parentWorkActive = true;
+        await new Promise((resolve) => {
+          context.signal.addEventListener(
+            "abort",
+            () => {
+              parentAbortObserved = true;
+              parentWorkActive = false;
+              resolve();
+            },
+            { once: true }
+          );
+        });
+        return [];
+      }
+    })
+  );
+  assert.equal(getEventListeners(parentController.signal, "abort").length, 1);
+  parentController.abort();
+  const parentAborted = await parentBoundConnector;
+  assert.equal(parentAborted.run.status, "failing");
+  assert.equal(parentAborted.run.error_code, "timeout");
+  assert.equal(parentAbortObserved, true);
+  assert.equal(parentWorkActive, false);
+  assert.equal(getEventListeners(parentController.signal, "abort").length, 0);
+
+  let cappedRequestTimeout;
+  const shortDeadlineStartedAt = Date.now();
+  const shortDeadline = await runConnector(
+    options({
+      deadlineAtMs: shortDeadlineStartedAt + 25,
+      timeoutMs: 500,
+      requestTimeoutMs: 500,
+      execute: async (context) => {
+        cappedRequestTimeout = context.request_timeout_ms;
+        await new Promise((resolve) => {
+          context.signal.addEventListener("abort", resolve, { once: true });
+        });
+        return [];
+      }
+    })
+  );
+  assert.ok(cappedRequestTimeout <= 25, "request timeout must fit the remaining parent budget");
+  assert.ok(Date.now() - shortDeadlineStartedAt < 150, "connector must stop at the parent deadline");
+  assert.equal(shortDeadline.run.error_code, "timeout");
+
+  const uncooperativeStartedAt = Date.now();
+  const uncooperative = await runConnector(
+    options({
+      timeoutMs: 10,
+      cleanupGraceMs: 15,
+      execute: async () => new Promise(() => {})
+    })
+  );
+  const uncooperativeDurationMs = Date.now() - uncooperativeStartedAt;
+  assert.equal(uncooperative.run.error_code, "timeout");
+  assert.ok(uncooperativeDurationMs < 150, "cleanup grace must bound an ignored abort");
+  assert.ok(DEFAULT_CONNECTOR_CLEANUP_GRACE_MS < 1_000);
 
   let missingKeyExecuted = false;
   const missingKey = await runConnector(
@@ -136,7 +211,17 @@ try {
 
   const resilient = await Promise.all([
     runConnector(options({ execute: async () => [{ actionability: "maybe" }] })),
-    runConnector(options({ timeoutMs: 10, execute: async () => new Promise(() => {}) }))
+    runConnector(
+      options({
+        timeoutMs: 10,
+        execute: async (context) => {
+          await new Promise((resolve) => {
+            context.signal.addEventListener("abort", resolve, { once: true });
+          });
+          return [];
+        }
+      })
+    )
   ]);
   assert.equal(resilient[0].signals.length, 1);
   assert.equal(resilient[1].signals.length, 0);
@@ -151,6 +236,8 @@ try {
   console.log("PASS connector runtime: no matches remain distinct from failures");
   console.log("PASS connector runtime: partial failures preserve usable results");
   console.log("PASS connector runtime: request and connector timeouts are bounded");
+  console.log("PASS connector runtime: parent deadlines abort work and clean up listeners");
+  console.log("PASS connector runtime: uncooperative cleanup is bounded by a short grace");
   console.log("PASS connector runtime: missing credentials skip safely and errors are sanitized");
 } finally {
   globalThis.fetch = originalFetch;

@@ -539,97 +539,146 @@ function normalizeProfile(profile: CompanyProfile, input: ScanInput): CompanyPro
   }, input), input);
 }
 
-async function generateWithOpenAi(input: ScanInput, rawText: string): Promise<CompanyProfile | null> {
+export type ProfileGenerationOptions = {
+  signal?: AbortSignal;
+  deadlineAtMs?: number;
+  timeoutMs?: number;
+};
+
+const DEFAULT_PROFILE_REQUEST_TIMEOUT_MS = 15_000;
+
+async function generateWithOpenAi(
+  input: ScanInput,
+  rawText: string,
+  options: ProfileGenerationOptions
+): Promise<CompanyProfile | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return null;
   }
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content:
-            "Create a structured company profile for a policy opportunity scanner. Use the website only to classify the business and generate search language. Do not invent external opportunities."
-        },
-        {
-          role: "user",
-          content: JSON.stringify({
-            scan_input: input,
-            required_schema: {
-              company_name: "",
-              website: "",
-              summary: "",
-              products_services: [],
-              inferred_products_services: [],
-              target_customers: [],
-              inferred_target_customers: [],
-              industries: [],
-              geographies: [],
-              keywords: [],
-              inferred_public_sector_lanes: [],
-              inferred_buyer_partner_types: [],
-              inferred_revenue_motions: [],
-              public_sector_search_terms: [],
-              translated_public_sector_terms: [],
-              include_terms: [],
-              exclude_terms: [],
-              target_geographies: [],
-              priority_signals: [],
-              good_fit_examples: [],
-              bad_fit_examples: [],
-              confirmed_opportunity_lanes: [],
-              rejected_opportunity_lanes: [],
-              profile_confidence_score: 0,
-              profile_assumptions_summary: "",
-              negative_keywords: [],
-              possible_naics: [],
-              possible_psc: [],
-              possible_soc: [],
-              policy_sensitive_categories: [],
-              opportunity_lanes: [],
-              lane_search_terms: {},
-              opportunity_categories: opportunityCategories,
-              selected_playbooks: [],
-              activated_source_categories: [],
-              planned_source_categories: [],
-              likely_revenue_motions: [],
-              suggested_contact_roles: [],
-              report_guidance: []
-            },
-            website_text: rawText.slice(0, 30000)
-          })
-        }
-      ]
-    })
-  });
-
-  if (!response.ok) {
-    return null;
+  const deadlineRemaining =
+    options.deadlineAtMs === undefined
+      ? Number.POSITIVE_INFINITY
+      : Math.max(0, options.deadlineAtMs - Date.now());
+  if (deadlineRemaining <= 0 || options.signal?.aborted) {
+    throw new Error("Company profile generation deadline expired before the OpenAI request started.");
   }
 
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
-  if (!content) {
-    return null;
+  const timeoutMs = Math.max(
+    1,
+    Math.min(
+      DEFAULT_PROFILE_REQUEST_TIMEOUT_MS,
+      options.timeoutMs ?? DEFAULT_PROFILE_REQUEST_TIMEOUT_MS,
+      deadlineRemaining
+    )
+  );
+  const controller = new AbortController();
+  const abortFromParent = () => controller.abort();
+  if (options.signal?.aborted) {
+    controller.abort();
+  } else {
+    options.signal?.addEventListener("abort", abortFromParent, { once: true });
   }
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-  return JSON.parse(content) as CompanyProfile;
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              "Create a structured company profile for a policy opportunity scanner. Use the website only to classify the business and generate search language. Do not invent external opportunities."
+          },
+          {
+            role: "user",
+            content: JSON.stringify({
+              scan_input: input,
+              required_schema: {
+                company_name: "",
+                website: "",
+                summary: "",
+                products_services: [],
+                inferred_products_services: [],
+                target_customers: [],
+                inferred_target_customers: [],
+                industries: [],
+                geographies: [],
+                keywords: [],
+                inferred_public_sector_lanes: [],
+                inferred_buyer_partner_types: [],
+                inferred_revenue_motions: [],
+                public_sector_search_terms: [],
+                translated_public_sector_terms: [],
+                include_terms: [],
+                exclude_terms: [],
+                target_geographies: [],
+                priority_signals: [],
+                good_fit_examples: [],
+                bad_fit_examples: [],
+                confirmed_opportunity_lanes: [],
+                rejected_opportunity_lanes: [],
+                profile_confidence_score: 0,
+                profile_assumptions_summary: "",
+                negative_keywords: [],
+                possible_naics: [],
+                possible_psc: [],
+                possible_soc: [],
+                policy_sensitive_categories: [],
+                opportunity_lanes: [],
+                lane_search_terms: {},
+                opportunity_categories: opportunityCategories,
+                selected_playbooks: [],
+                activated_source_categories: [],
+                planned_source_categories: [],
+                likely_revenue_motions: [],
+                suggested_contact_roles: [],
+                report_guidance: []
+              },
+              website_text: rawText.slice(0, 30000)
+            })
+          }
+        ]
+      }),
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) {
+      return null;
+    }
+
+    return JSON.parse(content) as CompanyProfile;
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error(`Company profile generation timed out after ${timeoutMs}ms.`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+    options.signal?.removeEventListener("abort", abortFromParent);
+  }
 }
 
 export async function generateCompanyProfile(
   input: ScanInput,
-  rawText: string
+  rawText: string,
+  options: ProfileGenerationOptions = {}
 ): Promise<CompanyProfile> {
-  const aiProfile = await generateWithOpenAi(input, rawText);
+  const aiProfile = await generateWithOpenAi(input, rawText, options);
   if (aiProfile) {
     return normalizeProfile(aiProfile, input);
   }

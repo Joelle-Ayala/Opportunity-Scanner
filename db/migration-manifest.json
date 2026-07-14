@@ -1,0 +1,124 @@
+{
+  "manifestVersion": 1,
+  "ledgerFile": "db/schema-migrations.sql",
+  "historyPolicy": {
+    "mode": "merge-base-append-only",
+    "baseRefEnvironmentVariable": "MIGRATION_BASE_REF",
+    "historicalSql": "immutable",
+    "existingManifestEntries": "immutable-prefix"
+  },
+  "migrations": [
+    {
+      "version": "v0001",
+      "file": "db/schema.sql",
+      "description": "Base scan, profile, source, opportunity, report, feedback, enrichment-request, and lead-magnet tables.",
+      "prerequisites": [],
+      "sha256": "790001580a9cc77ca2dbae13dd13f6837edf211e8d7b68a83a98805813179bc7",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0002",
+      "file": "db/scan-attribution.sql",
+      "description": "UTM attribution fields and campaign index for scans.",
+      "prerequisites": ["v0001"],
+      "sha256": "c1c97e74f78af39bdd162555a58330718b34769f223abd58782cba5d1631fc12",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0003",
+      "file": "db/lead-magnet-industry-expansion.sql",
+      "description": "Expanded production lead-magnet industry slug contract.",
+      "prerequisites": ["v0001"],
+      "sha256": "31941362f085bd12d758ac0e74005ca8d1fc70c65d398a9554d76d4f1101e827",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0004",
+      "file": "db/scan-nurture.sql",
+      "description": "Consent-aware scan nurture subscribers, enrollments, delivery jobs, and service functions.",
+      "prerequisites": ["v0001"],
+      "sha256": "390c036450e427dd96855ac7a36d735de2cbed3a8c5d19e3e7f2fd9e77375a2a",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0005",
+      "file": "db/scan-rate-limits.sql",
+      "description": "Durable scan rate-limit claims and cleanup functions.",
+      "prerequisites": ["v0001"],
+      "sha256": "3659814d0d1240eca8e3cee320d404de1b92ecb9e2fabee7e91939b327ee3fcb",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0006",
+      "file": "db/stripe-billing-expansion.sql",
+      "description": "Stripe customers, subscriptions, report grants, webhook events, and billing processing.",
+      "prerequisites": ["v0001"],
+      "sha256": "371e6364580808c459653653ea50340560a320b626187c87f07bed36f15871ba",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0007",
+      "file": "db/monitoring.sql",
+      "description": "Paid monitored profiles, monitoring runs, alerts, and due-work claims.",
+      "prerequisites": ["v0001", "v0006"],
+      "sha256": "a52110b3a53fc7e20a86c0891e55d17d14eaf97ec61c9cbab1c3e5d00cac7481",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0008",
+      "file": "db/monitoring-alert-delivery.sql",
+      "description": "Monitoring alert deduplication, delivery leases, retries, and claim functions.",
+      "prerequisites": ["v0007"],
+      "sha256": "8ed550a564535201b06d394b49b83f0d55d324f4dd3f9fe42b6cba2bfc76e280",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0009",
+      "file": "db/customer-dashboard.sql",
+      "description": "Customer accounts, account-owned scans and monitoring, and versioned saved searches.",
+      "prerequisites": ["v0001", "v0006", "v0007"],
+      "sha256": "014988bdaeee150572c0c64856dcc9b77b96bff5e9ba4942944feb9a691fca85",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0010",
+      "file": "db/stripe-report-access-handoff.sql",
+      "description": "Verified report and subscription checkout handoff into billing and customer accounts.",
+      "prerequisites": ["v0006", "v0009"],
+      "sha256": "a2c3827f7e630ef474f23f1235598a9776d595203a2b011b73aee108a9f5b902",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0011",
+      "file": "db/enrichment-credits.sql",
+      "description": "Account-owned paid enrichment credit ledger and atomic reservation functions.",
+      "prerequisites": ["v0001", "v0006", "v0009"],
+      "sha256": "b48dd2dc38343a389834a155e80811d13e2ff7da94a55f52999867de4f12b9ea",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0012",
+      "file": "db/monitoring-report-ownership.sql",
+      "description": "Automatic account ownership for reports produced by monitoring runs.",
+      "prerequisites": ["v0007", "v0009"],
+      "sha256": "582c54510212afa751932c2435bb66e1e9f12ceb6e25b91aa468001f7ce60bfb",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0013",
+      "file": "db/customer-owned-report-access.sql",
+      "description": "Free or full access state for account-owned reports.",
+      "prerequisites": ["v0009"],
+      "sha256": "a5232d7f754e19c7f717913a7ed8ee8757b040fff51008139d9099fadc2edd0c",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0014",
+      "file": "db/deadline-alerts.sql",
+      "description": "Customer alert preferences plus account-gated opportunity and deadline delivery.",
+      "prerequisites": ["v0001", "v0006", "v0007", "v0008", "v0009"],
+      "sha256": "4e27fd6a8012800a906fb170297c9efc5121adc363c47d7ffed484bacaf9541d",
+      "requiredInProduction": true
+    }
+  ]
+}

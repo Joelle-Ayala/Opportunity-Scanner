@@ -20,7 +20,56 @@ npm install
 npm run dev
 ```
 
-Create the Supabase tables with `db/schema.sql`, then set the variables in `.env.local`.
+Set the variables in `.env.local`. For Supabase database setup, use the ordered migration process below rather than applying `db/schema.sql` alone.
+
+## Database Setup And Upgrades
+
+[`db/migration-manifest.json`](db/migration-manifest.json) is the production database source of truth. Its entries are append-only and contain a stable version, ordered prerequisites, and the SHA-256 checksum of every required SQL file. This includes billing, scan nurture, scan attribution, account ownership and report access, lead-magnet capture expansion, monitoring, and alert delivery.
+
+Run the credential-free parity check before any database change:
+
+```bash
+node scripts/test-migration-manifest.mjs
+```
+
+The check fails if a production SQL file is missing from the manifest, a dependency moves after its consumer, a historical migration changes without a new version, or the ledger contract is weakened. In pull requests and pushes to `main`, the launch workflow fetches full Git history and supplies the trusted base commit through `MIGRATION_BASE_REF`. The test then requires existing manifest entries to remain an exact prefix and requires every migration SQL file present at the merge base to remain byte-for-byte unchanged. Updating historical SQL and its checksum together therefore still fails.
+
+To run the same history comparison locally against the shared base branch:
+
+```bash
+git fetch origin main
+MIGRATION_BASE_REF=origin/main node scripts/test-migration-manifest.mjs
+```
+
+Without `MIGRATION_BASE_REF`, the test still runs current-tree parity, dependency, checksum, ledger-idempotency, and ledger-security checks, but it cannot prove Git history immutability. Never put a database URL, password, or service key in the manifest, ledger, workflow, or commands committed to the repository.
+
+### Clean Install
+
+1. Back up the target database and confirm that it is the intended Supabase project.
+2. Apply `db/schema-migrations.sql` first. It safely creates the operator-owned, append-only `public.schema_migrations` ledger and can be run more than once.
+3. Apply every manifest entry in listed order. Use one transaction per entry and stop on the first error.
+4. In the same transaction, call `public.record_schema_migration` with the entry's version, file, checksum, and manifest version. The call is idempotent, serializes concurrent operator writes, requires the immediately preceding version, and rejects metadata that disagrees with an existing version.
+5. Compare the ledger with the manifest before deploying application code.
+
+With a database URL supplied through the operator's environment, the transaction shape for one entry is:
+
+```bash
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 --single-transaction \
+  --file db/schema.sql \
+  --command "select public.record_schema_migration('v0001', 'db/schema.sql', '790001580a9cc77ca2dbae13dd13f6837edf211e8d7b68a83a98805813179bc7', 1);"
+```
+
+Repeat that shape for each manifest entry using its exact metadata. The URL remains in the environment and is never written into a repository file. In the Supabase SQL editor, use the same order: run the migration and its matching `record_schema_migration` call together as a transaction.
+
+### Upgrade
+
+1. Re-run `db/schema-migrations.sql` so the latest idempotent ledger contract exists.
+2. Read `public.schema_migrations` ordered by `version` and compare each recorded file and checksum with the manifest.
+3. Apply only unrecorded manifest entries, in order, after confirming all listed prerequisites are recorded.
+4. Record each successful entry in the same transaction as its SQL. Stop if a checksum or existing ledger record differs; do not edit or relabel an applied migration.
+5. Run `node scripts/test-migration-manifest.mjs`, then the normal launch checks.
+
+For a database created before the ledger existed, do not assume that every historical migration ran. Verify the expected tables, columns, functions, and deployment history for each manifest entry, then call `public.record_schema_migration` in order only for versions confirmed present. Apply any first missing version and all later required versions through the normal upgrade flow.
 
 ## Local Preview Without npm
 

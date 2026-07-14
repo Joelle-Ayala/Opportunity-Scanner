@@ -1,17 +1,27 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { executeScanPipeline } from "@/lib/scanPipeline";
+import {
+  executeScanPipeline,
+  persistScanFailure,
+  SCAN_EXECUTION_DEADLINE_MS,
+  SCAN_TERMINAL_WRITE_TIMEOUT_MS
+} from "@/lib/scanPipeline";
 import { claimScanRateLimit } from "@/lib/scanRateLimit";
 import type { ScanRateLimitResult } from "@/lib/scanRateLimit";
-import { createScan, updateScan } from "@/lib/storage";
+import { createScan } from "@/lib/storage";
+import {
+  supabaseInsert,
+  supabaseSelectOne,
+  withSupabaseRequestBudget
+} from "@/lib/supabaseRest";
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
-import { attachScanToCustomer, ensureCustomerAccount } from "@/lib/dashboard/repository";
 import { enqueueScanNurture } from "@/lib/nurture";
 import { CustomerType, ReportType, ScanInput } from "@/lib/types";
 import { normalizeCompanyUrl } from "@/lib/url";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+const CUSTOMER_OWNERSHIP_TIMEOUT_MS = 1_000;
 
 function optionalString(value: FormDataEntryValue | null): string | undefined {
   if (typeof value !== "string") {
@@ -31,6 +41,50 @@ function optionalStringArray(values: FormDataEntryValue[]): string[] {
 function optionalAttribution(value: FormDataEntryValue | null): string | undefined {
   const normalized = optionalString(value)?.replace(/[\u0000-\u001F\u007F]/g, "").slice(0, 160);
   return normalized || undefined;
+}
+
+async function attemptCustomerScanOwnership(
+  authUserId: string,
+  scanId: string,
+  deadlineAtMs: number
+): Promise<void> {
+  const timeoutMs = Math.min(
+    CUSTOMER_OWNERSHIP_TIMEOUT_MS,
+    Math.max(0, deadlineAtMs - Date.now())
+  );
+  if (timeoutMs <= 0) return;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(new DOMException("Customer ownership attempt timed out.", "TimeoutError")),
+    timeoutMs
+  );
+  try {
+    await withSupabaseRequestBudget({ signal: controller.signal, timeoutMs }, async () => {
+      const account = await supabaseSelectOne<{ id: string }>(
+        "customer_accounts",
+        `select=id&auth_user_id=eq.${encodeURIComponent(authUserId)}`
+      );
+      if (!account) return;
+
+      await supabaseInsert(
+        "customer_scan_ownership",
+        {
+          customer_account_id: account.id,
+          scan_id: scanId,
+          ownership_kind: "created"
+        },
+        { onConflict: "scan_id", ignoreDuplicates: true }
+      );
+    });
+  } catch (error) {
+    console.error("Unable to attach completed scan to customer account", {
+      scanId,
+      error: error instanceof Error ? error.message : "Unknown ownership error"
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function scanRejectedResponse(result: ScanRateLimitResult): Response {
@@ -61,6 +115,9 @@ function scanRejectedResponse(result: ScanRateLimitResult): Response {
 }
 
 export async function POST(request: Request) {
+  const requestStartedAtMs = Date.now();
+  const executionDeadlineAtMs = requestStartedAtMs + SCAN_EXECUTION_DEADLINE_MS;
+  const terminalDeadlineAtMs = executionDeadlineAtMs + SCAN_TERMINAL_WRITE_TIMEOUT_MS;
   const formData = await request.formData();
   const marketingConsent = formData.get("marketingConsent") === "on";
   const session = await resolveCustomerSession(getCustomerAuthConfig(request.url), cookies()).catch(() => null);
@@ -96,27 +153,34 @@ export async function POST(request: Request) {
 
   const scan = await createScan(input);
 
-  if (session?.user.email) {
-    await ensureCustomerAccount(session.user.id, session.user.email);
-    await attachScanToCustomer(session.user.id, scan.id);
-  }
-
   try {
-    await executeScanPipeline(scan.id, input);
+    await executeScanPipeline(scan.id, input, {
+      deadlineAtMs: executionDeadlineAtMs,
+      terminalDeadlineAtMs
+    });
+
+    if (session?.user.email) {
+      await attemptCustomerScanOwnership(session.user.id, scan.id, terminalDeadlineAtMs);
+    }
 
     if (input.email && marketingConsent) {
-      await enqueueScanNurture({
-        scanId: scan.id,
-        email: input.email,
-        companyName: input.companyName,
-        consentedAt: new Date().toISOString(),
-        consentSource: "homepage_scan"
-      }).catch((error) => {
-        console.error("Unable to enroll completed scan in nurture sequence", {
-          scanId: scan.id,
-          error: error instanceof Error ? error.message : "Unknown nurture enrollment error"
+      const nurtureTimeoutMs = Math.max(0, terminalDeadlineAtMs - Date.now());
+      if (nurtureTimeoutMs > 0) {
+        await withSupabaseRequestBudget({ timeoutMs: nurtureTimeoutMs }, () =>
+          enqueueScanNurture({
+            scanId: scan.id,
+            email: input.email!,
+            companyName: input.companyName,
+            consentedAt: new Date().toISOString(),
+            consentSource: "homepage_scan"
+          })
+        ).catch((error) => {
+          console.error("Unable to enroll completed scan in nurture sequence", {
+            scanId: scan.id,
+            error: error instanceof Error ? error.message : "Unknown nurture enrollment error"
+          });
         });
-      });
+      }
     }
   } catch (error) {
     console.error("Scan pipeline failed", {
@@ -124,10 +188,14 @@ export async function POST(request: Request) {
       companyUrl: input.companyUrl,
       error: error instanceof Error ? error.message : "Unknown scan error"
     });
-    await updateScan(scan.id, {
-      status: "failed",
-      error_message: error instanceof Error ? error.message : "Unknown scan error"
-    });
+    await persistScanFailure(scan.id, error, { deadlineAtMs: terminalDeadlineAtMs }).catch(
+      (terminalError) => {
+        console.error("Unable to persist scan failure after retry", {
+          scanId: scan.id,
+          error: terminalError instanceof Error ? terminalError.message : "Unknown persistence error"
+        });
+      }
+    );
   }
 
   redirect(`/reports/${scan.id}`);

@@ -60,7 +60,6 @@ assert.ok(stateViewStart >= 0 && stateViewEnd > stateViewStart, "Dedicated scan 
 const stateView = reportPage.slice(stateViewStart, stateViewEnd);
 
 for (const completedOnlySurface of [
-  "ReportAnalytics",
   "PurchaseCompletedAnalytics",
   "ReportHeader",
   "ExecutiveSummaryCard",
@@ -78,6 +77,12 @@ for (const completedOnlySurface of [
 ]) {
   assert.ok(!stateView.includes(completedOnlySurface), `${completedOnlySurface} must stay out of non-success states`);
 }
+
+assert.match(
+  stateView,
+  /<ReportAnalytics[\s\S]*?status=\{scan\.status\}/,
+  "Non-success states must report their authoritative status without mounting completed-report content"
+);
 
 assert.match(stateView, /scan\.status === "failed"/);
 assert.match(stateView, /href=\{`\/dashboard\/new\?from=\$\{encodeURIComponent\(scan\.id\)\}`\}/);

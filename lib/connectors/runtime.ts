@@ -40,6 +40,8 @@ type ConnectorRequestFailure = {
 export type ConnectorExecutionContext = {
   signal: AbortSignal;
   request_timeout_ms: number;
+  deadline_at_ms?: number;
+  now?: () => number;
   diagnostics: ConnectorDiagnostics;
 };
 
@@ -53,6 +55,10 @@ export type RunConnectorOptions = {
   queryPlan?: string[];
   timeoutMs?: number;
   requestTimeoutMs?: number;
+  signal?: AbortSignal;
+  deadlineAtMs?: number;
+  now?: () => number;
+  cleanupGraceMs?: number;
   nextTest: string;
   notes: string;
   execute: (context: ConnectorExecutionContext) => Promise<OpportunitySignal[]>;
@@ -65,6 +71,7 @@ export type ConnectorRunResult = {
 
 export const DEFAULT_CONNECTOR_TIMEOUT_MS = 35_000;
 export const DEFAULT_CONNECTOR_REQUEST_TIMEOUT_MS = 15_000;
+export const DEFAULT_CONNECTOR_CLEANUP_GRACE_MS = 250;
 
 class ConnectorRequestError extends Error {
   code: ConnectorErrorCode;
@@ -131,6 +138,36 @@ function elapsedMs(startedAtMs: number): number {
   return Math.max(0, Date.now() - startedAtMs);
 }
 
+function remainingDeadlineMs(deadlineAtMs: number | undefined, now: () => number): number {
+  return deadlineAtMs === undefined
+    ? Number.POSITIVE_INFINITY
+    : Math.max(0, deadlineAtMs - now());
+}
+
+function boundedTimeoutMs(configuredTimeoutMs: number, remainingMs: number): number {
+  return Math.max(0, Math.min(configuredTimeoutMs, remainingMs));
+}
+
+async function waitForExecutionCleanup(
+  executionPromise: Promise<OpportunitySignal[]>,
+  graceMs: number
+): Promise<void> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      executionPromise.then(
+        () => undefined,
+        () => undefined
+      ),
+      new Promise<void>((resolve) => {
+        timeout = setTimeout(resolve, Math.max(0, graceMs));
+      })
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
 function baseRun(
   options: RunConnectorOptions,
   startedAt: string,
@@ -169,6 +206,21 @@ export async function fetchConnectorJson<T>(
 ): Promise<T> {
   context.diagnostics.recordAttempt(queryUsed);
 
+  const now = context.now ?? Date.now;
+  const remainingMs = remainingDeadlineMs(context.deadline_at_ms, now);
+  if (context.signal.aborted || remainingMs <= 0) {
+    const message = `${sourceName} connector deadline expired.`;
+    context.diagnostics.recordFailure("timeout", message);
+    throw new ConnectorRequestError("timeout", message);
+  }
+
+  const requestTimeoutMs = boundedTimeoutMs(context.request_timeout_ms, remainingMs);
+  if (requestTimeoutMs <= 0) {
+    const message = `${sourceName} request deadline expired.`;
+    context.diagnostics.recordFailure("timeout", message);
+    throw new ConnectorRequestError("timeout", message);
+  }
+
   const controller = new AbortController();
   let requestTimedOut = false;
   const abortFromConnector = () => controller.abort();
@@ -178,10 +230,17 @@ export async function fetchConnectorJson<T>(
     context.signal.addEventListener("abort", abortFromConnector, { once: true });
   }
 
+  const abortFromRequest = () => controller.abort();
+  if (init.signal?.aborted) {
+    controller.abort();
+  } else {
+    init.signal?.addEventListener("abort", abortFromRequest, { once: true });
+  }
+
   const timeout = setTimeout(() => {
     requestTimedOut = true;
     controller.abort();
-  }, context.request_timeout_ms);
+  }, requestTimeoutMs);
 
   try {
     const response = await fetch(input, { ...init, signal: controller.signal });
@@ -207,15 +266,20 @@ export async function fetchConnectorJson<T>(
   } finally {
     clearTimeout(timeout);
     context.signal.removeEventListener("abort", abortFromConnector);
+    init.signal?.removeEventListener("abort", abortFromRequest);
   }
 }
 
 export function connectorShouldStop(context: ConnectorExecutionContext): boolean {
-  return context.signal.aborted;
+  return (
+    context.signal.aborted ||
+    remainingDeadlineMs(context.deadline_at_ms, context.now ?? Date.now) <= 0
+  );
 }
 
 export async function runConnector(options: RunConnectorOptions): Promise<ConnectorRunResult> {
-  const startedAtMs = Date.now();
+  const now = options.now ?? Date.now;
+  const startedAtMs = now();
   const startedAt = new Date(startedAtMs).toISOString();
 
   if (options.disabled) {
@@ -251,27 +315,70 @@ export async function runConnector(options: RunConnectorOptions): Promise<Connec
     };
   }
 
-  const controller = new AbortController();
   const diagnostics = new ConnectorDiagnostics();
-  let connectorTimedOut = false;
+  const configuredTimeoutMs = options.timeoutMs ?? DEFAULT_CONNECTOR_TIMEOUT_MS;
+  const timeoutMs = boundedTimeoutMs(
+    configuredTimeoutMs,
+    remainingDeadlineMs(options.deadlineAtMs, now)
+  );
+
+  if (options.signal?.aborted || timeoutMs <= 0) {
+    return {
+      signals: [],
+      run: baseRun(options, startedAt, startedAtMs, {
+        status: "failing",
+        outcome: "failed",
+        partial_failure_count: 1,
+        error_code: "timeout",
+        error_message: `${options.sourceName} connector deadline expired before execution.`
+      })
+    };
+  }
+
+  const controller = new AbortController();
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
-  const timeoutMs = options.timeoutMs ?? DEFAULT_CONNECTOR_TIMEOUT_MS;
+  let cancellationReason: "parent" | "timeout" | undefined;
+  let rejectCancellation: ((error: ConnectorRequestError) => void) | undefined;
+  const connectorDeadlineAtMs = Math.min(
+    options.deadlineAtMs ?? Number.POSITIVE_INFINITY,
+    startedAtMs + timeoutMs
+  );
   const context: ConnectorExecutionContext = {
     signal: controller.signal,
-    request_timeout_ms: options.requestTimeoutMs ?? DEFAULT_CONNECTOR_REQUEST_TIMEOUT_MS,
+    request_timeout_ms: Math.max(
+      1,
+      Math.min(options.requestTimeoutMs ?? DEFAULT_CONNECTOR_REQUEST_TIMEOUT_MS, timeoutMs)
+    ),
+    deadline_at_ms: connectorDeadlineAtMs,
+    now,
     diagnostics
   };
 
-  const timeoutPromise = new Promise<never>((_, reject) => {
+  const cancelConnector = (reason: "parent" | "timeout") => {
+    if (cancellationReason) return;
+    cancellationReason = reason;
+    rejectCancellation?.(
+      new ConnectorRequestError("timeout", `${options.sourceName} connector timed out.`)
+    );
+    controller.abort();
+  };
+  const cancellationPromise = new Promise<never>((_, reject) => {
+    rejectCancellation = reject;
     timeoutId = setTimeout(() => {
-      connectorTimedOut = true;
-      reject(new ConnectorRequestError("timeout", `${options.sourceName} connector timed out.`));
-      controller.abort();
+      cancelConnector("timeout");
     }, timeoutMs);
   });
+  const abortFromParent = () => cancelConnector("parent");
+  options.signal?.addEventListener("abort", abortFromParent, { once: true });
+  if (options.signal?.aborted) {
+    cancelConnector("parent");
+  }
+  const executionPromise = cancellationReason
+    ? Promise.resolve([] as OpportunitySignal[])
+    : options.execute(context);
 
   try {
-    const signals = await Promise.race([options.execute(context), timeoutPromise]);
+    const signals = await Promise.race([executionPromise, cancellationPromise]);
     const snapshot = diagnostics.snapshot();
     const allRequestsFailed = snapshot.request_count > 0 && snapshot.successful_request_count === 0;
     const lastFailure = snapshot.failures.at(-1);
@@ -312,7 +419,13 @@ export async function runConnector(options: RunConnectorOptions): Promise<Connec
       })
     };
   } catch (error) {
-    const detail = connectorTimedOut
+    if (cancellationReason) {
+      await waitForExecutionCleanup(
+        executionPromise,
+        options.cleanupGraceMs ?? DEFAULT_CONNECTOR_CLEANUP_GRACE_MS
+      );
+    }
+    const detail = cancellationReason
       ? { code: "timeout" as const, message: `${options.sourceName} connector timed out.` }
       : errorDetails(error);
     const snapshot = diagnostics.snapshot();
@@ -333,6 +446,7 @@ export async function runConnector(options: RunConnectorOptions): Promise<Connec
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
+    options.signal?.removeEventListener("abort", abortFromParent);
   }
 }
 

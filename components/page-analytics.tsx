@@ -11,6 +11,15 @@ import {
   type ReportTier,
   type SubscriptionPlan
 } from "@/lib/productAnalytics";
+import type { ScanRecord } from "@/lib/types";
+
+type ScanStatus = ScanRecord["status"];
+
+function scanOutcome(status: ScanStatus): "success" | "error" | null {
+  if (status === "completed") return "success";
+  if (status === "failed") return "error";
+  return null;
+}
 
 export function PurchaseCompletedAnalytics({
   plan,
@@ -80,12 +89,14 @@ export function MonitoringOnboardingAnalytics({
 
 export function ReportAnalytics({
   scanId,
+  status,
   tier,
   signalCount,
   createdAt,
   completedAt
 }: {
   scanId: string;
+  status?: ScanStatus;
   tier: ReportTier;
   signalCount: number;
   createdAt: string;
@@ -95,15 +106,21 @@ export function ReportAnalytics({
     const countBucket = signalCountBucket(signalCount);
     trackProductEvent("scan_viewed", { report_tier: tier, signal_count_bucket: countBucket });
 
-    const completionKey = `opportunity-scanner:scan-completed:${scanId}`;
-    if (window.sessionStorage.getItem(completionKey)) return;
+    // Prefer the stored status; completedAt remains a legacy caller fallback.
+    const outcome = scanOutcome(status ?? (completedAt ? "completed" : "queued"));
+    if (!outcome) return;
+
+    const outcomeKey = outcome === "success"
+      ? `opportunity-scanner:scan-completed:${scanId}`
+      : `opportunity-scanner:scan-failed:${scanId}`;
+    if (window.sessionStorage.getItem(outcomeKey)) return;
     trackProductEvent("scan_completed", {
-      outcome: "success",
+      outcome,
       signal_count_bucket: countBucket,
       duration_bucket: scanDurationBucket(createdAt, completedAt)
     });
-    window.sessionStorage.setItem(completionKey, "1");
-  }, [completedAt, createdAt, scanId, signalCount, tier]);
+    window.sessionStorage.setItem(outcomeKey, "1");
+  }, [completedAt, createdAt, scanId, signalCount, status, tier]);
 
   return null;
 }

@@ -62,7 +62,10 @@ test("customer scans and future scheduled scans share one pipeline", async () =>
     readFile(new URL("../app/api/scans/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/scanPipeline.ts", import.meta.url), "utf8")
   ]);
-  assert.match(route, /executeScanPipeline\(scan\.id, input\)/);
+  assert.match(
+    route,
+    /executeScanPipeline\(scan\.id, input, \{[\s\S]*?deadlineAtMs: executionDeadlineAtMs,[\s\S]*?terminalDeadlineAtMs/
+  );
   assert.match(pipeline, /discoverExternalSignalsWithStatus/);
   assert.match(pipeline, /saveOpportunitySignals/);
   assert.match(pipeline, /status: "completed"/);

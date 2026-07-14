@@ -71,9 +71,30 @@ export type ScraperOutboundOptions = Pick<
   "fetchImpl" | "lookup" | "maxRedirects"
 >;
 
-async function fetchPage(url: string, outboundOptions: ScraperOutboundOptions): Promise<string> {
+export type ScraperExecutionOptions = ScraperOutboundOptions & {
+  signal?: AbortSignal;
+  deadlineAtMs?: number;
+  pageTimeoutMs?: number;
+};
+
+function remainingTimeMs(deadlineAtMs: number | undefined): number {
+  return deadlineAtMs === undefined ? Number.POSITIVE_INFINITY : Math.max(0, deadlineAtMs - Date.now());
+}
+
+async function fetchPage(url: string, options: ScraperExecutionOptions): Promise<string> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), PAGE_TIMEOUT_MS);
+  const abortFromParent = () => controller.abort();
+  if (options.signal?.aborted) {
+    controller.abort();
+  } else {
+    options.signal?.addEventListener("abort", abortFromParent, { once: true });
+  }
+
+  const timeoutMs = Math.max(
+    1,
+    Math.min(PAGE_TIMEOUT_MS, options.pageTimeoutMs ?? PAGE_TIMEOUT_MS, remainingTimeMs(options.deadlineAtMs))
+  );
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetchSafeOutboundUrl(
       url,
@@ -84,7 +105,9 @@ async function fetchPage(url: string, outboundOptions: ScraperOutboundOptions): 
         }
       },
       {
-        ...outboundOptions,
+        fetchImpl: options.fetchImpl,
+        lookup: options.lookup,
+        maxRedirects: options.maxRedirects,
         allowedProtocols: HTTP_OUTBOUND_PROTOCOLS
       }
     );
@@ -97,12 +120,13 @@ async function fetchPage(url: string, outboundOptions: ScraperOutboundOptions): 
     return response.text();
   } finally {
     clearTimeout(timeout);
+    options.signal?.removeEventListener("abort", abortFromParent);
   }
 }
 
 export async function scrapeCompanyWebsite(
   startUrl: string,
-  outboundOptions: ScraperOutboundOptions = {}
+  options: ScraperExecutionOptions = {}
 ): Promise<{
   pages: ScrapedPage[];
   rawText: string;
@@ -117,6 +141,10 @@ export async function scrapeCompanyWebsite(
   let rawText = "";
 
   while (queue.length > 0 && pages.length < MAX_PAGES && rawText.length < MAX_CHARS) {
+    if (options.signal?.aborted || remainingTimeMs(options.deadlineAtMs) <= 0) {
+      break;
+    }
+
     const url = queue.shift();
     if (!url || visited.has(url)) {
       continue;
@@ -124,7 +152,7 @@ export async function scrapeCompanyWebsite(
     visited.add(url);
 
     try {
-      const html = await fetchPage(url, outboundOptions);
+      const html = await fetchPage(url, options);
       if (!html) {
         continue;
       }
@@ -150,6 +178,9 @@ export async function scrapeCompanyWebsite(
         }
       }
     } catch {
+      if (options.signal?.aborted || remainingTimeMs(options.deadlineAtMs) <= 0) {
+        break;
+      }
       continue;
     }
   }

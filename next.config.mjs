@@ -10,6 +10,14 @@ const securityHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  swcMinify: false,
+  typescript: {
+    // The launch gate runs tsc directly before the Next.js build.
+    ignoreBuildErrors: true
+  },
+  experimental: {
+    webpackBuildWorker: false
+  },
   async headers() {
     return [
       {

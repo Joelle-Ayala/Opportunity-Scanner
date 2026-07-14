@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "verify:launch": "node scripts/verify-launch.mjs",
     "check:launch-env": "node scripts/check-launch-env.mjs",
     "validate:related-content": "node scripts/validate-related-resources.mjs",
     "evaluate:reports": "node scripts/evaluate-local-reports.mjs",

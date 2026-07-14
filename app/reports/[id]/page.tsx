@@ -145,6 +145,14 @@ function ReportScanState({
 
   return (
     <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
+      <ReportAnalytics
+        scanId={scan.id}
+        status={scan.status}
+        tier="free"
+        signalCount={0}
+        createdAt={scan.created_at}
+        completedAt={scan.completed_at}
+      />
       <div className="mx-auto grid max-w-3xl gap-6">
         <header className="rounded-lg border border-line bg-white p-4 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-5">
@@ -1329,6 +1337,7 @@ export default async function ReportPage({
     <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
       <ReportAnalytics
         scanId={scan.id}
+        status={scan.status}
         tier={isPaid ? "full" : "free"}
         signalCount={reportSignals.length}
         createdAt={scan.created_at}

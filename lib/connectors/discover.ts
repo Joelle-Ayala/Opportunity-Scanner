@@ -25,9 +25,26 @@ export type ConnectorDiscoveryResult = {
   runs: ConnectorRunStatus[];
 };
 
+export type ConnectorDiscoveryBudget = {
+  signal?: AbortSignal;
+  deadlineAtMs?: number;
+  timeoutMs?: number;
+  now?: () => number;
+};
+
 export async function discoverExternalSignalsWithStatus(
-  profile: CompanyProfile
+  profile: CompanyProfile,
+  budget: ConnectorDiscoveryBudget = {}
 ): Promise<ConnectorDiscoveryResult> {
+  const now = budget.now ?? Date.now;
+  const timeoutDeadlineAtMs =
+    budget.timeoutMs === undefined
+      ? Number.POSITIVE_INFINITY
+      : now() + Math.max(0, budget.timeoutMs);
+  const deadlineAtMs = Math.min(
+    budget.deadlineAtMs ?? Number.POSITIVE_INFINITY,
+    timeoutDeadlineAtMs
+  );
   const queryPlan = collectSearchTerms(profile, 18);
   const shouldTryUsaSpending = shouldQuerySource(profile, "usaspending.gov");
   const shouldTryFederalRegister = shouldQuerySource(profile, "federal_register");
@@ -95,7 +112,16 @@ export async function discoverExternalSignalsWithStatus(
     }
   ];
 
-  const settled = await Promise.allSettled(definitions.map((definition) => runConnector(definition)));
+  const settled = await Promise.allSettled(
+    definitions.map((definition) =>
+      runConnector({
+        ...definition,
+        signal: budget.signal,
+        deadlineAtMs: Number.isFinite(deadlineAtMs) ? deadlineAtMs : undefined,
+        now
+      })
+    )
+  );
   const results = settled.map((result, index) =>
     result.status === "fulfilled" ? result.value : failedConnectorRun(definitions[index], result.reason)
   );
@@ -106,7 +132,10 @@ export async function discoverExternalSignalsWithStatus(
   };
 }
 
-export async function discoverExternalSignals(profile: CompanyProfile): Promise<OpportunitySignal[]> {
-  const result = await discoverExternalSignalsWithStatus(profile);
+export async function discoverExternalSignals(
+  profile: CompanyProfile,
+  budget: ConnectorDiscoveryBudget = {}
+): Promise<OpportunitySignal[]> {
+  const result = await discoverExternalSignalsWithStatus(profile, budget);
   return result.signals;
 }
