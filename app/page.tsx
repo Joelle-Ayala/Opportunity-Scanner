@@ -94,7 +94,14 @@ function CustomerVisualSection() {
 export default function HomePage({
   searchParams
 }: {
-  searchParams?: { error?: string };
+  searchParams?: {
+    error?: string;
+    utm_source?: string;
+    utm_medium?: string;
+    utm_campaign?: string;
+    utm_content?: string;
+    utm_term?: string;
+  };
 }) {
   const errorMessage =
     searchParams?.error === "invalid-url" ? "Enter a valid company website URL." : null;
@@ -137,6 +144,10 @@ export default function HomePage({
           <div className="lg:sticky lg:top-24 lg:col-start-2 lg:row-span-3 lg:row-start-1">
             <form id="scan" action="/api/scans" method="post" className="rounded-lg border border-slate-200 bg-white p-5 text-ink shadow-lift sm:p-6">
               <input type="hidden" name="reportType" value="quick" />
+              {(["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const).map((name) => {
+                const value = searchParams?.[name]?.trim().slice(0, 160);
+                return value ? <input key={name} type="hidden" name={name} value={value} /> : null;
+              })}
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-xl font-semibold text-ink">Run Free Opportunity Scan</h2>

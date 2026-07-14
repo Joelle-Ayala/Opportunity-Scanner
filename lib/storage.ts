@@ -116,6 +116,11 @@ export async function createScan(input: ScanInput): Promise<ScanRecord> {
     include_terms: input.includeTerms || null,
     exclude_terms: input.excludeTerms || null,
     priority_signals: input.prioritySignals || [],
+    utm_source: input.utmSource || null,
+    utm_medium: input.utmMedium || null,
+    utm_campaign: input.utmCampaign || null,
+    utm_content: input.utmContent || null,
+    utm_term: input.utmTerm || null,
     status: "queued",
     selected_playbooks: []
   };

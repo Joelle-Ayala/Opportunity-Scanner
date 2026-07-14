@@ -42,6 +42,11 @@ export type ScanInput = {
   includeTerms?: string;
   excludeTerms?: string;
   prioritySignals?: string[];
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+  utmTerm?: string;
 };
 
 export type ScanRecord = {
@@ -60,6 +65,11 @@ export type ScanRecord = {
   include_terms?: string | null;
   exclude_terms?: string | null;
   priority_signals?: string[] | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
   selected_playbooks?: SelectedPlaybook[] | null;
   error_message?: string | null;
   created_at: string;

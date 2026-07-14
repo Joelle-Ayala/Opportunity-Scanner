@@ -28,6 +28,11 @@ function optionalStringArray(values: FormDataEntryValue[]): string[] {
     .filter(Boolean);
 }
 
+function optionalAttribution(value: FormDataEntryValue | null): string | undefined {
+  const normalized = optionalString(value)?.replace(/[\u0000-\u001F\u007F]/g, "").slice(0, 160);
+  return normalized || undefined;
+}
+
 function scanRejectedResponse(result: ScanRateLimitResult): Response {
   const limited = result.reason === "limited";
   const retryAfter = Math.max(1, result.retryAfterSeconds);
@@ -78,7 +83,12 @@ export async function POST(request: Request) {
     opportunityFocus: optionalString(formData.get("opportunityFocus")),
     includeTerms: optionalString(formData.get("includeTerms")),
     excludeTerms: optionalString(formData.get("excludeTerms")),
-    prioritySignals: optionalStringArray(formData.getAll("prioritySignals"))
+    prioritySignals: optionalStringArray(formData.getAll("prioritySignals")),
+    utmSource: optionalAttribution(formData.get("utm_source")),
+    utmMedium: optionalAttribution(formData.get("utm_medium")),
+    utmCampaign: optionalAttribution(formData.get("utm_campaign")),
+    utmContent: optionalAttribution(formData.get("utm_content")),
+    utmTerm: optionalAttribution(formData.get("utm_term"))
   };
 
   const rateLimit = await claimScanRateLimit(request, input.email);

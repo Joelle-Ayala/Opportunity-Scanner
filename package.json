@@ -34,6 +34,7 @@
     "test:enrichment-credits": "node --experimental-strip-types scripts/test-enrichment-credits.mjs",
     "test:product-analytics": "node --experimental-strip-types scripts/test-product-analytics.mjs",
     "test:scan-rate-limit": "node --experimental-strip-types scripts/test-scan-rate-limit.mjs",
+    "test:scan-attribution": "node scripts/test-scan-attribution.mjs",
     "test:customer-experience": "node scripts/test-customer-experience-audit.mjs",
     "test:growth-hardening": "node scripts/test-growth-hardening.mjs",
     "test:truthful-enrichment": "node scripts/test-truthful-enrichment-ux.mjs"
