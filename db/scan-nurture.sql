@@ -105,7 +105,7 @@ begin
     ),
     case when v_subscriber.status = 'unsubscribed' then now() else null end
   )
-  on conflict (scan_id, subscriber_id) do update
+  on conflict on constraint scan_nurture_enrollments_scan_id_subscriber_id_key do update
     set recipient_name = coalesce(excluded.recipient_name, scan_nurture_enrollments.recipient_name),
         company_name = coalesce(excluded.company_name, scan_nurture_enrollments.company_name),
         canceled_at = case

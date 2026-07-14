@@ -86,6 +86,11 @@ test("migration provides transactional dedupe, leasing, retries, and durable sup
   assert.match(sql, /interval '2 hours'/);
   assert.match(sql, /'dead_letter'/);
   assert.match(sql, /status = 'suppressed'/);
+  assert.match(
+    sql,
+    /on conflict on constraint scan_nurture_enrollments_scan_id_subscriber_id_key do update/
+  );
+  assert.doesNotMatch(sql, /on conflict \(scan_id, subscriber_id\) do update/);
   assert.match(sql, /grant execute on function enqueue_scan_nurture/);
 });
 
