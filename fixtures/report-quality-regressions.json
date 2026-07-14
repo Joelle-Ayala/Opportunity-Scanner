@@ -1,0 +1,3024 @@
+{
+  "scans": [
+    {
+      "id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "status": "completed",
+      "company_name": "Jammcard",
+      "company_url": "https://jammcard.com/",
+      "industry": "Music, live events, creative economy",
+      "customer_type": "B2B",
+      "created_at": "2026-06-30T15:24:08.761Z",
+      "completed_at": "2026-06-30T15:24:32.058Z"
+    },
+    {
+      "id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "status": "completed",
+      "company_name": "SchoolGig",
+      "company_url": "https://schoolgig.us/",
+      "industry": "education workforce arts education teacher staffing",
+      "customer_type": "Education",
+      "created_at": "2026-06-30T20:54:05.980Z",
+      "completed_at": "2026-06-30T20:54:27.975Z"
+    },
+    {
+      "id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "status": "completed",
+      "company_name": "Reparel",
+      "company_url": "https://reparel.com/",
+      "industry": "medical recovery sleeves rehabilitation orthotics physical therapy supplies",
+      "customer_type": "Healthcare",
+      "created_at": "2026-06-26T15:28:17.371Z",
+      "completed_at": "2026-06-26T15:28:36.812Z"
+    }
+  ],
+  "company_profiles": [
+    {
+      "id": "0014bcef-caf7-43ec-a696-d0aa93f922cc",
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "created_at": "2026-06-26T15:28:27.227Z",
+      "profile_json": {
+        "company_name": "Reparel",
+        "summary": "URL: https://reparel.com/\nTITLE: Reparel – Clinically Proven Recovery Sleeves for Arthritis, Injury & Post-Op Healing\nReparel – Clinically Proven Recovery Sleeves for Arthritis, Injury & Post-Op Healing SHOP WHAT IS REPAREL? WHO WE ARE WHAT WE DO HOW REPAREL WORKS OUR TECHNOLOGY LEARNING CENTER FABRIC HOW THE SCIENCE WORKS INFLAMMATION IS NOT THE ENEMY FAQs PRODUCT FINDER CUSTOMER SUPPORT MY ACCOUNT 0 0 SHOP WHAT IS ",
+        "industries": [
+          "medical recovery sleeves rehabilitation orthotics physical therapy supplies"
+        ],
+        "keywords": [
+          "reparel",
+          "sleeve",
+          "product",
+          "what",
+          "knee",
+          "privacy",
+          "preferences",
+          "click",
+          "works",
+          "products",
+          "pain",
+          "cookies",
+          "enable",
+          "disable",
+          "cart",
+          "technology",
+          "inflammation",
+          "support"
+        ],
+        "public_sector_search_terms": [
+          "durable medical equipment",
+          "medical supplies",
+          "care delivery",
+          "reparel",
+          "sleeve",
+          "product",
+          "what",
+          "knee",
+          "privacy",
+          "preferences",
+          "click",
+          "procurement",
+          "federal funding",
+          "state programs",
+          "rehabilitation supplies",
+          "orthotic supplies",
+          "prosthetic supplies",
+          "physical therapy supplies",
+          "medical supply distributor",
+          "workers compensation medical supplies",
+          "veteran rehabilitation",
+          "VA prosthetics orthotics"
+        ],
+        "opportunity_lanes": [
+          "Healthcare, rehab, and clinical supply channels",
+          "Medical retail, distributor, and channel targets",
+          "VA, military, and veteran rehabilitation",
+          "Public safety injury prevention and recovery",
+          "Aging, disability, and community support programs",
+          "School, college, and athletics injury recovery",
+          "Employer wellness and occupational health",
+          "VA, prosthetics, and orthotics purchasing",
+          "Medical and rehabilitation supply procurement",
+          "Workers' compensation and occupational health",
+          "Aging, disability, and community care"
+        ],
+        "selected_playbooks": [
+          {
+            "playbook_id": "healthcare_rehab_dme",
+            "name": "Healthcare / Rehab / DME / Medical Supply",
+            "match_score": 100,
+            "matched_terms": [
+              "healthcare",
+              "medical",
+              "rehab",
+              "rehabilitation",
+              "durable medical equipment",
+              "physical therapy",
+              "medical supplies",
+              "veteran",
+              "va"
+            ],
+            "source_categories_to_activate": [
+              "company_website",
+              "usaspending.gov",
+              "federal_register"
+            ],
+            "planned_source_categories": [
+              "sam.gov",
+              "grants.gov",
+              "va procurement",
+              "state medicaid",
+              "state procurement"
+            ],
+            "likely_revenue_motions": [
+              "sell_to_agency",
+              "sell_to_funded_buyer",
+              "partner_with_recipient",
+              "bid_on_procurement",
+              "channel_or_program_partner",
+              "monitor_policy"
+            ],
+            "suggested_contact_roles": [
+              "Procurement Specialist",
+              "VA Prosthetics Representative",
+              "Rehab Services Director",
+              "Clinical Supply Manager",
+              "DME Category Manager"
+            ],
+            "report_guidance": "Translate the company into public-sector demand around rehab, DME, orthotic/prosthetic supplies, VA purchasing, clinical supply channels, distributor paths, and funded healthcare buyers."
+          }
+        ]
+      }
+    },
+    {
+      "id": "23e87a95-cdee-4312-9bfe-b8a979d8c6a3",
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "created_at": "2026-06-30T15:24:13.677Z",
+      "profile_json": {
+        "company_name": "Jammcard",
+        "summary": "URL: https://jammcard.com/\nTITLE: Jammcard | Hire The Best Music Professionals\nJammcard | Hire The Best Music Professionals --> More Jammcard Mentors Jammcard website About Us JammJam Samples Blog FAQ Terms of Service Apply for Membership Login The Music Professionals Network Enter Site ©Copyright Jammcard, Inc. 2020. All Rights Reserved.\n\nURL: https://jammcard.com/about\nTITLE: Jammcard | Hire The Best Music Professi",
+        "industries": [
+          "Music, live events, creative economy"
+        ],
+        "keywords": [
+          "live music services",
+          "event entertainment services",
+          "public concerts",
+          "summer concert series",
+          "musician services",
+          "performer services",
+          "artist booking",
+          "performing artist services",
+          "public event production",
+          "festival programming",
+          "downtown activation",
+          "public plaza programming",
+          "business improvement district events",
+          "tourism events",
+          "parks recreation concert",
+          "cultural affairs events",
+          "current",
+          "public",
+          "opportunities",
+          "paid",
+          "live",
+          "music",
+          "bookings",
+          "cities",
+          "counties",
+          "parks",
+          "jammcard",
+          "professionals",
+          "hire",
+          "best",
+          "https",
+          "title",
+          "mentors",
+          "website",
+          "jammjam",
+          "samples",
+          "blog",
+          "terms",
+          "service",
+          "apply",
+          "membership",
+          "login",
+          "profile"
+        ],
+        "public_sector_search_terms": [
+          "live music performance",
+          "music performance",
+          "live music services",
+          "musical performance services",
+          "musician services",
+          "concert programming",
+          "entertainment services",
+          "cultural programming",
+          "performing arts services",
+          "artist booking",
+          "performing artist services",
+          "event entertainment",
+          "public concerts",
+          "community events",
+          "arts education",
+          "teaching artists",
+          "creative workforce",
+          "music enrichment",
+          "festival programming",
+          "tourism events",
+          "placemaking arts",
+          "downtown activation",
+          "event entertainment services",
+          "summer concert series",
+          "performer services",
+          "public event production",
+          "public plaza programming",
+          "business improvement district events",
+          "parks recreation concert",
+          "cultural affairs events"
+        ],
+        "opportunity_lanes": [
+          "City, state, and public venue entertainment procurement",
+          "Creative workforce and music-industry talent networks",
+          "Cultural programming, live events, and public arts buyers",
+          "Public safety injury prevention and recovery",
+          "City and county live performance budgets",
+          "Parks and recreation concerts/events",
+          "Arts and culture grants",
+          "School and district arts programming",
+          "Creative workforce development",
+          "Tourism and placemaking",
+          "Downtown revitalization / BID programming",
+          "Public event production procurement",
+          "Library and community programming",
+          "State arts council funding"
+        ],
+        "selected_playbooks": [
+          {
+            "playbook_id": "music_arts_creative_economy",
+            "name": "Music / Arts / Creative Economy / Live Performance",
+            "match_score": 100,
+            "matched_terms": [
+              "music",
+              "arts",
+              "creative economy",
+              "event production",
+              "musician",
+              "artist",
+              "entertainment",
+              "booking",
+              "concert",
+              "cultural programming",
+              "festival"
+            ],
+            "source_categories_to_activate": [
+              "company_website",
+              "usaspending.gov",
+              "federal_register"
+            ],
+            "planned_source_categories": [
+              "sam.gov",
+              "grants.gov",
+              "national_endowment_for_the_arts",
+              "state_arts_councils",
+              "city_county_procurement",
+              "parks_and_recreation_departments",
+              "tourism_boards",
+              "state_education_departments",
+              "department_of_education",
+              "department_of_labor",
+              "workforce_boards",
+              "local_arts_commissions"
+            ],
+            "likely_revenue_motions": [
+              "sell_to_agency",
+              "sell_to_funded_buyer",
+              "partner_with_grantee",
+              "bid_on_procurement",
+              "channel_or_program_partner",
+              "monitor_policy"
+            ],
+            "suggested_contact_roles": [
+              "Cultural Affairs Manager",
+              "Arts Program Director",
+              "Parks and Recreation Director",
+              "Events Coordinator",
+              "Tourism Director",
+              "Downtown Partnership Director",
+              "School Arts Coordinator",
+              "Procurement Specialist",
+              "Grants Manager",
+              "Workforce Program Manager"
+            ],
+            "report_guidance": "Translate the company into public-sector demand around cultural programming, artist booking, public events, creative workforce, arts education, tourism, placemaking, and live-performance procurement."
+          }
+        ]
+      }
+    },
+    {
+      "id": "fcc68dc3-86a2-41cb-930a-555da6964093",
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "created_at": "2026-06-30T20:54:14.052Z",
+      "profile_json": {
+        "company_name": "SchoolGig",
+        "summary": "URL: https://schoolgig.us/\nTITLE: Home - School Gig\nHome - School Gig Skip to content For Schools For Educators Jobs Pricing Blog For Schools For Educators Jobs Pricing Blog Post a Job View Jobs Post a Job View Jobs Hiring Platform for Schools and Districts Effortlessly Hire the Best Teachers Post a job and explore the most cost-effective hiring and recruiting platform for schools, giving you access to a diverse pool",
+        "industries": [
+          "education workforce arts education teacher staffing"
+        ],
+        "keywords": [
+          "educator",
+          "workforce",
+          "education",
+          "prop",
+          "arts",
+          "district",
+          "hiring",
+          "schoolgig",
+          "created",
+          "california",
+          "jobs",
+          "educators",
+          "schools",
+          "school",
+          "blog",
+          "pricing",
+          "post",
+          "career",
+          "terms",
+          "service",
+          "privacy",
+          "policy",
+          "team",
+          "teacher",
+          "teaching",
+          "teacher hiring",
+          "substitute staffing",
+          "K-12 HR",
+          "applicant tracking",
+          "school district recruiting"
+        ],
+        "public_sector_search_terms": [
+          "teacher recruitment",
+          "educator workforce",
+          "school staffing",
+          "Prop 28 arts education",
+          "Proposition 28 arts education",
+          "arts education",
+          "music education",
+          "teaching artists",
+          "school arts staffing",
+          "arts enrichment",
+          "artist educators",
+          "California arts education",
+          "substitute teacher staffing",
+          "teacher shortage",
+          "teacher residency",
+          "education recruitment platform",
+          "school district hiring",
+          "applicant tracking system",
+          "education workforce development",
+          "teacher preparation program",
+          "educator pipeline",
+          "teacher hiring",
+          "substitute staffing",
+          "K-12 HR",
+          "applicant tracking",
+          "school district recruiting",
+          "funded buyer",
+          "award recipient",
+          "grantee",
+          "federal award recipient",
+          "grants",
+          "funding opportunity",
+          "grant program",
+          "direct apply",
+          "educator",
+          "workforce",
+          "education",
+          "prop",
+          "arts",
+          "district"
+        ],
+        "opportunity_lanes": [
+          "K-12 hiring, teacher staffing, and educator workforce",
+          "Education workforce grants and technical assistance",
+          "Government HR, job board, and recruiting technology procurement",
+          "School district procurement and vendor registration",
+          "Workforce boards and educator pipeline programs",
+          "Arts education and teaching artist staffing"
+        ],
+        "selected_playbooks": [
+          {
+            "playbook_id": "education_workforce_training",
+            "name": "Education / Workforce / Training",
+            "match_score": 100,
+            "matched_terms": [
+              "education workforce",
+              "teacher staffing",
+              "teacher",
+              "teachers",
+              "educator",
+              "educators",
+              "arts education",
+              "hiring platform",
+              "recruiting",
+              "applicant tracking"
+            ],
+            "source_categories_to_activate": [
+              "company_website",
+              "usaspending.gov",
+              "federal_register"
+            ],
+            "planned_source_categories": [
+              "sam.gov",
+              "grants.gov",
+              "department_of_education",
+              "department_of_labor",
+              "state_education_departments",
+              "school_district_procurement",
+              "workforce_boards"
+            ],
+            "likely_revenue_motions": [
+              "sell_to_agency",
+              "sell_to_funded_buyer",
+              "partner_with_grantee",
+              "bid_on_procurement",
+              "channel_or_program_partner"
+            ],
+            "suggested_contact_roles": [
+              "School District HR Director",
+              "Chief Talent Officer",
+              "Recruitment Director",
+              "Arts Education Program Director",
+              "VAPA Coordinator",
+              "Expanded Learning Director",
+              "Arts Funding Program Lead",
+              "Superintendent",
+              "State Education Agency Program Manager",
+              "Workforce Program Manager",
+              "Procurement Specialist",
+              "Grants Manager"
+            ],
+            "report_guidance": "Translate the company into public-sector demand around teacher recruitment, educator workforce, arts education staffing, school enrichment, HR/recruiting technology, workforce boards, school district procurement, and California Prop 28 only when the source is specifically California/Prop 28-related."
+          }
+        ]
+      }
+    }
+  ],
+  "scan_opportunities": [
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "ef69f24d-d4bc-4f0a-96cf-dbcf9c249f97",
+      "relevance_score": 80,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: physical therapy supplies",
+        "Inferred lane: VA, prosthetics, and orthotics purchasing",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review APEX INTEGRATED DISTRIBUTION INC. and Department of Veterans Affairs under the \"VA, prosthetics, and orthotics purchasing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "3ebef3b4-218f-4e01-9bdb-1c2369cc2600",
+      "relevance_score": 76,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: rehabilitation supplies",
+        "Inferred lane: Medical and rehabilitation supply procurement",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review FIRST NATIONS DISTRIBUTION LLC and Department of Health and Human Services under the \"Medical and rehabilitation supply procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "e85f7cb4-1b3a-49cc-894f-93c62f9c564c",
+      "relevance_score": 76,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: rehabilitation supplies",
+        "Inferred lane: Medical and rehabilitation supply procurement",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review PERFORMANCE HEALTH SUPPLY, LLC and Department of Health and Human Services under the \"Medical and rehabilitation supply procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "5d556625-65bc-4555-8099-772e90025cd6",
+      "relevance_score": 76,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: physical therapy supplies",
+        "Inferred lane: Medical and rehabilitation supply procurement",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review NATIONAL ENVIRONMENTAL INC and Department of Health and Human Services under the \"Medical and rehabilitation supply procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "69998483-81c7-43c6-9606-2fc6603ec275",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: veteran rehabilitation",
+        "Inferred lane: VA, prosthetics, and orthotics purchasing",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review ADAPTIVE DRIVING ALLIANCE, LLC and Department of Veterans Affairs under the \"VA, prosthetics, and orthotics purchasing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "f27864c8-759d-44d8-9cbb-6d5c0e36e7aa",
+      "relevance_score": 68,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: orthotic supplies",
+        "Inferred lane: VA, prosthetics, and orthotics purchasing",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review FOOTMAXX OF VIRGINIA, INC. and Department of Defense under the \"VA, prosthetics, and orthotics purchasing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "b37ce88a-1920-4748-bcb6-fc228da929f7",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: orthotic supplies",
+        "Inferred lane: DME, Medicare, and reimbursement infrastructure",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Use this as reimbursement/procurement infrastructure context, not a near-term product buyer. Review Department of Health and Human Services for DME policy and contractor ecosystem signals.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "a75113d4-98bd-477b-97fa-dbf6a96b58d9",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: durable medical equipment",
+        "Inferred lane: DME, Medicare, and reimbursement infrastructure",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Use this as reimbursement/procurement infrastructure context, not a near-term product buyer. Review Department of Health and Human Services for DME policy and contractor ecosystem signals.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "2e6c26cc-46a2-4bf8-adaa-f59811ba067c",
+      "opportunity_id": "692b06c3-ae11-4c89-a292-8b3ebd027d8f",
+      "relevance_score": 54,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: durable medical equipment",
+        "Inferred lane: DME, Medicare, and reimbursement infrastructure",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Use this as reimbursement/procurement infrastructure context, not a near-term product buyer. Review Department of Health and Human Services for DME policy and contractor ecosystem signals.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "5000fa45-eec5-47a0-8e42-6d455655f0d6",
+      "relevance_score": 80,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: musical performance",
+        "Inferred lane: Tourism and placemaking",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review STATE OF SOUTH CAROLINA DEPARTMENT OF PARKS RECREATION & TOURISM and Department of the Interior under the \"Tourism and placemaking\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "5c556b09-1316-410b-997a-23d4c05c77d1",
+      "relevance_score": 76,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: public concerts",
+        "Inferred lane: City and county live performance budgets",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review ALLIANCE FOR CALIFORNIA TRADITIONAL ARTS and National Endowment for the Humanities under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "0889fef2-b4bb-443f-876f-16206727e63b",
+      "relevance_score": 76,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: arts grants",
+        "Inferred lane: Arts and culture grants",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review ALASKA NATIVE HERITAGE CENTER, INCORPORATED and Department of the Interior under the \"Arts and culture grants\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "8ac1734d-9d02-4953-9993-6cf285b5c59c",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: live music performance",
+        "Inferred lane: City and county live performance budgets",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review CITY OF SEATTLE and National Endowment for the Arts under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "8b237d7c-d7e7-4196-859b-8f5e0486af86",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: artist services",
+        "Inferred lane: Creative workforce development",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review JESS CURTIS GRAVITY INC and National Endowment for the Arts under the \"Creative workforce development\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "eb7b17a1-93c1-447c-b28a-4e04d8e201bb",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: creative workforce development",
+        "Inferred lane: Creative workforce development",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review CALIFORNIA LAWYERS FOR THE ARTS, INCORPORATED and National Endowment for the Arts under the \"Creative workforce development\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "60c896f4-ae69-446a-97b5-97868634f065",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: creative workforce development",
+        "Inferred lane: Creative workforce development",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review REIMAGINE ATL, INC. and National Endowment for the Arts under the \"Creative workforce development\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "bf778d80-ebbf-43d7-ba52-d88b4edb8c79",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: performing arts",
+        "Inferred lane: School and district arts programming",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS and Department of Education under the \"School and district arts programming\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "ea4c6768-2c7a-4b3e-bdec-164334b7d2fe",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: performing arts",
+        "Inferred lane: Arts and culture grants",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS and Department of Education under the \"Arts and culture grants\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "a004afcc-f486-42fe-b112-acdbd2a96643",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: music education",
+        "Inferred lane: Cultural programming, live events, and public arts buyers",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review DOMESTIC AWARDEES (UNDISCLOSED) and Department of State under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "73c6d658-1038-4dc0-aff8-d9a993ef9675",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: music education",
+        "Inferred lane: Cultural programming, live events, and public arts buyers",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review THE CARNEGIE HALL CORPORATION and Department of Education under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "7932eb57-8482-4232-a924-236c0330a5b8",
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: arts grants",
+        "Inferred lane: Arts and culture grants",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review UNITED ARTS OF CENTRAL FLORIDA INC and National Endowment for the Arts under the \"Arts and culture grants\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "c3ed72d5-91e1-4140-8a4c-8ceccc5599bf",
+      "relevance_score": 68,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: live music performance",
+        "Inferred lane: City and county live performance budgets",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review FONDATION HAITI JAZZ and Department of State under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "ad24d37c-148c-4ec1-97db-027b1f8f4297",
+      "relevance_score": 68,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: musical performance",
+        "Inferred lane: City and county live performance budgets",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review MISCELLANEOUS FOREIGN AWARDEES and Department of State under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "3a904b35-a1b5-43b1-8b46-ba939e8f8981",
+      "relevance_score": 68,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: musician services",
+        "Inferred lane: Public-sector funded-buyer signal",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review COOK KEITH J and Department of Defense under the \"Public-sector funded-buyer signal\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "35a8baac-795e-4b78-9a60-e5c5c2650ce1",
+      "relevance_score": 68,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: musician services",
+        "Inferred lane: Public-sector funded-buyer signal",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review MUSIC MINISTRY INTERNATIONAL INC and Department of Defense under the \"Public-sector funded-buyer signal\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "81d140b9-99e0-428c-9bc4-bda451057d10",
+      "relevance_score": 68,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: public concerts",
+        "Inferred lane: City and county live performance budgets",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review JACKSON SYMPHONY ASSOCIATION and National Endowment for the Arts under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "63d6f865-d300-4775-bd55-2d365bd931e6",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: event entertainment",
+        "Inferred lane: City and county live performance budgets",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review DEGY BOOKING INTERNATIONAL INC. and Department of State under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "166b7a73-b1b8-4490-b4c7-03b6e2a919f6",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: summer concert series",
+        "Inferred lane: City and county live performance budgets",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review ISOM EVENTS LLC and Department of the Interior under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "6953c31c-62f1-4e6b-9924-d8ee86030d9a",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: summer concert series",
+        "Inferred lane: City and county live performance budgets",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review TOUCHDOWN MEDIA INC and Department of Defense under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "614214e8-e507-4ec4-bf78-ae4d996806e4",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: artist services",
+        "Inferred lane: Creative workforce development",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review CHEVO STUDIOS INC. and Department of the Interior under the \"Creative workforce development\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "76a68a38-c088-482c-ba76-6b20f87c8826",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: public arts program",
+        "Inferred lane: Arts and culture grants",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review ROSE FITZGERALD KENNEDY GREENWAY CONSERVANCY, INC. and National Endowment for the Arts under the \"Arts and culture grants\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "eb17413b-265a-4566-b9e9-b71008273a88",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: event production services",
+        "Inferred lane: Cultural programming, live events, and public arts buyers",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review HARGROVE, LLC and Department of State under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "1c5c42b2-032b-4bf6-8c22-b1a4f88fcaad",
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: event production services",
+        "Inferred lane: Cultural programming, live events, and public arts buyers",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review DDMC EVENT DESIGN and Department of State under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "06241846-38ec-404d-8d72-395da54d64c4",
+      "relevance_score": 68,
+      "novelty_score": 70,
+      "confidence_score": 60,
+      "reasoning_json": [
+        "Matched search term: event entertainment services",
+        "Inferred lane: City, state, and public venue entertainment procurement",
+        "Document type: Proposed Rule",
+        "Treat as a demand signal, not a direct buying opportunity."
+      ],
+      "recommended_action": "Review this under the \"City, state, and public venue entertainment procurement\" pathway and decide whether it implies future procurement, reimbursement, compliance, or partner demand.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "e5d289f1-50e7-40e2-ba31-476ef95249c9",
+      "relevance_score": 66,
+      "novelty_score": 74,
+      "confidence_score": 80,
+      "reasoning_json": [
+        "Matched search term: musical performance services",
+        "Inferred lane: Cultural programming, live events, and public arts buyers",
+        "Grants.gov status: posted",
+        "Treat this as a funded-buyer or partner signal; do not treat the grant contact as the sales buyer."
+      ],
+      "recommended_action": "Track likely grantees and eligible applicants under the \"Cultural programming, live events, and public arts buyers\" pathway; use the agency contact for program questions, not as the sales decision-maker.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "f99889a8-0997-467e-8a67-2eb7fdb3f12e",
+      "relevance_score": 66,
+      "novelty_score": 74,
+      "confidence_score": 80,
+      "reasoning_json": [
+        "Matched search term: artist services",
+        "Inferred lane: Medical retail, distributor, and channel targets",
+        "Grants.gov status: posted",
+        "Treat the agency contact as a program/eligibility contact."
+      ],
+      "recommended_action": "Review eligibility and contact the Grants.gov program contact for fit under the \"Medical retail, distributor, and channel targets\" pathway.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "88f1e64e-f3c4-42db-a255-280574bc7de4",
+      "opportunity_id": "2ea5fd9a-d058-44f3-9455-7b26681669f3",
+      "relevance_score": 62,
+      "novelty_score": 74,
+      "confidence_score": 80,
+      "reasoning_json": [
+        "Matched search term: arts workforce",
+        "Inferred lane: Grant and funding opportunity",
+        "Grants.gov status: posted",
+        "Treat the agency contact as a program/eligibility contact."
+      ],
+      "recommended_action": "Review eligibility and contact the Grants.gov program contact for fit under the \"Grant and funding opportunity\" pathway.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "57ad0ccc-a55e-405f-825a-b3fb7b3e0696",
+      "hidden": false,
+      "relevance_score": 96,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: teaching artists",
+        "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review THE MUSEUM OF THE AFRICAN DIASPORA and Institute of Museum and Library Services under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "d1fb78a9-e12b-4b44-822b-9de9004bfe44",
+      "hidden": false,
+      "relevance_score": 92,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: teacher recruitment",
+        "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review ALASKA COUNCIL OF SCHOOL ADMINISTRATORS and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "4611b9b3-d30b-45bd-aa17-9c32d0762474",
+      "hidden": false,
+      "relevance_score": 88,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: arts enrichment",
+        "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review THE BLOWING ROCK ART AND HISTORY MUSEUM INC and Institute of Museum and Library Services under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "65fc4076-629e-4838-a15a-172778819934",
+      "hidden": false,
+      "relevance_score": 88,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: educator workforce",
+        "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review NYSUT EDUCATION AND LEARNING TRUST and Department of Labor under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "d653f591-3ee4-4031-977c-058e3ac6370b",
+      "hidden": false,
+      "relevance_score": 88,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: school staffing",
+        "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review WESTAT, INC. and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "df37d5df-239d-4a18-86ac-89e96ff21d5d",
+      "hidden": false,
+      "relevance_score": 84,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: teaching artists",
+        "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review LADGOV CORP and Department of Transportation under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "426fa273-475e-4b0a-b9ca-9f53f633bcca",
+      "hidden": false,
+      "relevance_score": 84,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: teacher shortage",
+        "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review TREWON TECHNOLOGIES LLC and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "c6cc94dd-a79a-47e4-9658-1cab6cfe66ef",
+      "hidden": false,
+      "relevance_score": 80,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: arts education",
+        "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review FM TALENT SOURCE, LLC and Department of Education under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "6506195c-3b14-4196-9f73-720fda85f8e5",
+      "hidden": false,
+      "relevance_score": 76,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: arts education",
+        "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS and Department of Education under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "0a7ea49a-0fb9-41a4-9138-b2c785a5db3c",
+      "hidden": false,
+      "relevance_score": 76,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: teacher residency",
+        "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review VOLUNTEER TENNESSEE and Corporation for National and Community Service under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "b66ff2ed-dc96-4886-bad4-d7c867cefee3",
+      "hidden": false,
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: music education",
+        "Inferred lane: Cultural programming, live events, and public arts buyers",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review DOMESTIC AWARDEES (UNDISCLOSED) and Department of State under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "83b45b7b-6366-4d99-8882-afcfcd7752b6",
+      "hidden": false,
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: music education",
+        "Inferred lane: Cultural programming, live events, and public arts buyers",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review THE CARNEGIE HALL CORPORATION and Department of Education under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "585c5da2-b741-4455-8706-143da36e66ce",
+      "hidden": false,
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: teacher residency",
+        "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review MATHEMATICA INC. and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "0c255f90-5ea6-4582-a7a4-c68666bcd3d2",
+      "hidden": false,
+      "relevance_score": 72,
+      "novelty_score": 76,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: applicant tracking system",
+        "Inferred lane: Government HR, job board, and recruiting technology procurement",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review KAMEDDATA.COM, INC. and Department of Veterans Affairs under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "61d9d7fd-1979-48ae-96bb-adc31508eebb",
+      "hidden": false,
+      "relevance_score": 68,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: talent acquisition",
+        "Inferred lane: Government HR, job board, and recruiting technology procurement",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review YOUR RECRUITING COMPANY, INC. and General Services Administration under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "d3521b61-028e-42aa-8afa-d7828182f684",
+      "hidden": false,
+      "relevance_score": 68,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: educator pipeline",
+        "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review CENTER FOR COLLABORATIVE EDUCATION INC and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "83a6c81b-848c-4b52-8b8b-d7267af78b80",
+      "hidden": false,
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: applicant tracking system",
+        "Inferred lane: Government HR, job board, and recruiting technology procurement",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review COPPER RIVER TECHNOLOGIES, LLC and Department of State under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "6799f74f-9f75-4921-beda-5c29b0c7e44d",
+      "hidden": false,
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: human resources software",
+        "Inferred lane: Government HR, job board, and recruiting technology procurement",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review METRO REGIONAL TRANSIT AUTHORITY and Department of Transportation under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "251428f0-0d6a-4199-96cf-87616163ae35",
+      "hidden": false,
+      "relevance_score": 64,
+      "novelty_score": 64,
+      "confidence_score": 76,
+      "reasoning_json": [
+        "Matched search term: talent acquisition",
+        "Inferred lane: Government HR, job board, and recruiting technology procurement",
+        "USAspending records historical federal award activity.",
+        "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+      ],
+      "recommended_action": "Review BUSINESS MANAGEMENT ASSOCIATES INC. and Department of Energy under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "70c164d1-294d-425c-bd70-39f5af039090",
+      "hidden": false,
+      "relevance_score": 58,
+      "novelty_score": 74,
+      "confidence_score": 80,
+      "reasoning_json": [
+        "Matched search term: state education agency grants",
+        "Inferred lane: Aging, disability, and community care",
+        "Grants.gov status: posted",
+        "Treat this as a funded-buyer or partner signal; do not treat the grant contact as the sales buyer."
+      ],
+      "recommended_action": "Track likely grantees and eligible applicants under the \"Aging, disability, and community care\" pathway; use the agency contact for program questions, not as the sales decision-maker.",
+      "human_review_required": true
+    },
+    {
+      "scan_id": "b1e84eea-555a-4042-ad7e-7b7056b7f020",
+      "opportunity_id": "6a78531f-6f71-4ad2-b9d9-cf14d036a8fd",
+      "hidden": false,
+      "relevance_score": 58,
+      "novelty_score": 74,
+      "confidence_score": 80,
+      "reasoning_json": [
+        "Matched search term: talent acquisition",
+        "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+        "Grants.gov status: posted",
+        "Treat the agency contact as a program/eligibility contact."
+      ],
+      "recommended_action": "Review eligibility and contact the Grants.gov program contact for fit under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway.",
+      "human_review_required": true
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "ef69f24d-d4bc-4f0a-96cf-dbcf9c249f97",
+      "title": "APEX INTEGRATED DISTRIBUTION INC. received $14,078: VA, prosthetics, and orthotics purchasing",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "APEX INTEGRATED DISTRIBUTION INC. received $14,078: VA, prosthetics, and orthotics purchasing",
+        "external_evidence_summary": "PHYSICAL THERAPY SUPPLIES",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review APEX INTEGRATED DISTRIBUTION INC. and Department of Veterans Affairs under the \"VA, prosthetics, and orthotics purchasing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Veterans Affairs",
+        "likely_buyer_or_partner": "APEX INTEGRATED DISTRIBUTION INC.",
+        "revenue_pathway": "sell_to_agency",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "physical therapy supplies",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-09-30",
+        "reasoning": [
+          "Matched search term: physical therapy supplies",
+          "Inferred lane: VA, prosthetics, and orthotics purchasing",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-09-30"
+        }
+      }
+    },
+    {
+      "id": "3ebef3b4-218f-4e01-9bdb-1c2369cc2600",
+      "title": "FIRST NATIONS DISTRIBUTION LLC received $46,400: Medical and rehabilitation supply procurement",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "FIRST NATIONS DISTRIBUTION LLC received $46,400: Medical and rehabilitation supply procurement",
+        "external_evidence_summary": "NNMC BPA FOR MISCELLANEOUS MEDICAL AND REHABILITATION SUPPLIES AND MATERIALS-FIRST NATIONS DISTRIBUTION, INC.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review FIRST NATIONS DISTRIBUTION LLC and Department of Health and Human Services under the \"Medical and rehabilitation supply procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Health and Human Services",
+        "likely_buyer_or_partner": "FIRST NATIONS DISTRIBUTION LLC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "rehabilitation supplies",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2027-03-31",
+        "reasoning": [
+          "Matched search term: rehabilitation supplies",
+          "Inferred lane: Medical and rehabilitation supply procurement",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2027-03-31"
+        }
+      }
+    },
+    {
+      "id": "e85f7cb4-1b3a-49cc-894f-93c62f9c564c",
+      "title": "PERFORMANCE HEALTH SUPPLY, LLC received $21,600: Medical and rehabilitation supply procurement",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "PERFORMANCE HEALTH SUPPLY, LLC received $21,600: Medical and rehabilitation supply procurement",
+        "external_evidence_summary": "FCRHC BPA FOR MISCELLANEOUS MEDICAL AND REHABILITATION SUPPLIES AND MATERIALS- PERFORMANCE HEALTH SUPPLY, LLC",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review PERFORMANCE HEALTH SUPPLY, LLC and Department of Health and Human Services under the \"Medical and rehabilitation supply procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Health and Human Services",
+        "likely_buyer_or_partner": "PERFORMANCE HEALTH SUPPLY, LLC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "rehabilitation supplies",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2027-04-13",
+        "reasoning": [
+          "Matched search term: rehabilitation supplies",
+          "Inferred lane: Medical and rehabilitation supply procurement",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2027-04-13"
+        }
+      }
+    },
+    {
+      "id": "5d556625-65bc-4555-8099-772e90025cd6",
+      "title": "NATIONAL ENVIRONMENTAL INC received $20,000: Medical and rehabilitation supply procurement",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "NATIONAL ENVIRONMENTAL INC received $20,000: Medical and rehabilitation supply procurement",
+        "external_evidence_summary": "2025 PHYSICAL REHABILITATION: BPA TO PURCHASE REQUIRED PHYSICAL THERAPY SUPPLIES FOR DIRECT PATIENT CARE TO BE ORDERED ON AN ?AS NEEDED? BASIS.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review NATIONAL ENVIRONMENTAL INC and Department of Health and Human Services under the \"Medical and rehabilitation supply procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Health and Human Services",
+        "likely_buyer_or_partner": "NATIONAL ENVIRONMENTAL INC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "physical therapy supplies",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-09-18",
+        "reasoning": [
+          "Matched search term: physical therapy supplies",
+          "Inferred lane: Medical and rehabilitation supply procurement",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-09-18"
+        }
+      }
+    },
+    {
+      "id": "69998483-81c7-43c6-9606-2fc6603ec275",
+      "title": "ADAPTIVE DRIVING ALLIANCE, LLC received $80,057: VA, prosthetics, and orthotics purchasing",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "ADAPTIVE DRIVING ALLIANCE, LLC received $80,057: VA, prosthetics, and orthotics purchasing",
+        "external_evidence_summary": "PURCHASE OF A VAN TO BE MODIFIED FOR VETERAN REHABILITATION",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review ADAPTIVE DRIVING ALLIANCE, LLC and Department of Veterans Affairs under the \"VA, prosthetics, and orthotics purchasing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Veterans Affairs",
+        "likely_buyer_or_partner": "ADAPTIVE DRIVING ALLIANCE, LLC",
+        "revenue_pathway": "sell_to_agency",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "veteran rehabilitation",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2024-12-31",
+        "reasoning": [
+          "Matched search term: veteran rehabilitation",
+          "Inferred lane: VA, prosthetics, and orthotics purchasing",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2024-12-31"
+        }
+      }
+    },
+    {
+      "id": "f27864c8-759d-44d8-9cbb-6d5c0e36e7aa",
+      "title": "FOOTMAXX OF VIRGINIA, INC. received $72,180: VA, prosthetics, and orthotics purchasing",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "FOOTMAXX OF VIRGINIA, INC. received $72,180: VA, prosthetics, and orthotics purchasing",
+        "external_evidence_summary": "ORTHOTIC SUPPLIES.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review FOOTMAXX OF VIRGINIA, INC. and Department of Defense under the \"VA, prosthetics, and orthotics purchasing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Defense",
+        "likely_buyer_or_partner": "FOOTMAXX OF VIRGINIA, INC.",
+        "revenue_pathway": "sell_to_agency",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "orthotic supplies",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2024-09-30",
+        "reasoning": [
+          "Matched search term: orthotic supplies",
+          "Inferred lane: VA, prosthetics, and orthotics purchasing",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2024-09-30"
+        }
+      }
+    },
+    {
+      "id": "b37ce88a-1920-4748-bcb6-fc228da929f7",
+      "title": "SOFTRAMS LLC received $7,008,356: DME, Medicare, and reimbursement infrastructure",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "SOFTRAMS LLC received $7,008,356: DME, Medicare, and reimbursement infrastructure",
+        "external_evidence_summary": "THE PURPOSE OF THIS ORDER IS TO OBTAIN COMPUTER SOFTWARE SERVICES TO SUPPORT THE DURABLE MEDICAL EQUIPMENT, PROSTHETICS, ORTHOTICS & SUPPLIES (DMEPOS) COMPETITIVE BIDDING SYSTEM (DBIDS) INCLUDING MAINTENANCE, DEVELOPMENTAL ENHANCEMENTS, AND SPECI",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Use this as reimbursement/procurement infrastructure context, not a near-term product buyer. Review Department of Health and Human Services for DME policy and contractor ecosystem signals.",
+        "agency_or_funder": "Department of Health and Human Services",
+        "likely_buyer_or_partner": "SOFTRAMS LLC",
+        "revenue_pathway": "monitor_policy",
+        "actionability": "unlikely",
+        "confidence_score": 76,
+        "query_used": "orthotic supplies",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-02-24",
+        "reasoning": [
+          "Matched search term: orthotic supplies",
+          "Inferred lane: DME, Medicare, and reimbursement infrastructure",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-02-24"
+        }
+      }
+    },
+    {
+      "id": "a75113d4-98bd-477b-97fa-dbf6a96b58d9",
+      "title": "EMPOWER AI, INC. received $206,694,861: DME, Medicare, and reimbursement infrastructure",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "EMPOWER AI, INC. received $206,694,861: DME, Medicare, and reimbursement infrastructure",
+        "external_evidence_summary": "IGF::OT::IGF THE CERT PROGRAM CALCULATES BI-ANNUAL IMPROPER PAYMENT RATES BASED ON THE RESULTS OF THE REVIEWS CONDUCTED. THESE RATES INCLUDE AN OVERALL NATIONAL MEDICARE FFS IMPROPER PAYMENT RATE AND IMPROPER PAYMENT RATES FOR EACH CLAIM TYPE [PART A INPATIENT HOSPITAL PROSPECTIVE PAYMENT SYSTEM (PPS); PART A EXCLUDING INPATIENT HOSPITAL PPS; PART B; AND DURABLE MEDICAL EQUIPMENT, PROSTHETICS, ORTHOTICS, AND SUPPLIES (DMEPOS)].  THE CERT PROGRAM ENSURES A STATISTICALLY VALID RANDOM SAMPLE; THEREFORE, THE IMPROPER PAYMENT RATE CALCULATED FROM THIS SAMPLE IS CONSIDERED TO BE   REFLECTIVE OF ALL OF CLAIMS PROCESSED BY MEDICARE FFS PROGRAM DURING THE REPORT PERIOD. CMS ALSO USES THE CERT PROGRAM TO PERFORM SPECIAL STUDIES AND SUPPLEMENTAL MEASUREMENTS TO DETERMINE THE IMPROPER PAYMENT RATES OF PARTICULAR CLAIM TYPES. CALCULATIONS OF THESE RATES FACILITATE CMS ABILITY TO TAKE APPROPRIATE CORRECTIVE ACTIONS TO REDUCE IMPROPER PAYMENTS.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Use this as reimbursement/procurement infrastructure context, not a near-term product buyer. Review Department of Health and Human Services for DME policy and contractor ecosystem signals.",
+        "agency_or_funder": "Department of Health and Human Services",
+        "likely_buyer_or_partner": "EMPOWER AI, INC.",
+        "revenue_pathway": "monitor_policy",
+        "actionability": "unlikely",
+        "confidence_score": 76,
+        "query_used": "durable medical equipment",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-08-15",
+        "reasoning": [
+          "Matched search term: durable medical equipment",
+          "Inferred lane: DME, Medicare, and reimbursement infrastructure",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-08-15"
+        }
+      }
+    },
+    {
+      "id": "692b06c3-ae11-4c89-a292-8b3ebd027d8f",
+      "title": "CGS ADMINISTRATORS, LLC received $228,251,917: DME, Medicare, and reimbursement infrastructure",
+      "created_at": "2026-06-26T15:28:36.812Z",
+      "raw_json": {
+        "opportunity_title": "CGS ADMINISTRATORS, LLC received $228,251,917: DME, Medicare, and reimbursement infrastructure",
+        "external_evidence_summary": "DURABLE MEDICAL EQUIPMENT (DME) MEDICARE ADMINISTRATIVE CONTRACTOR (MAC) FOR JURISDICTION C (JC)",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Use this as reimbursement/procurement infrastructure context, not a near-term product buyer. Review Department of Health and Human Services for DME policy and contractor ecosystem signals.",
+        "agency_or_funder": "Department of Health and Human Services",
+        "likely_buyer_or_partner": "CGS ADMINISTRATORS, LLC",
+        "revenue_pathway": "monitor_policy",
+        "actionability": "unlikely",
+        "confidence_score": 76,
+        "query_used": "durable medical equipment",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-08-31",
+        "reasoning": [
+          "Matched search term: durable medical equipment",
+          "Inferred lane: DME, Medicare, and reimbursement infrastructure",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-08-31"
+        }
+      }
+    },
+    {
+      "id": "5000fa45-eec5-47a0-8e42-6d455655f0d6",
+      "title": "STATE OF SOUTH CAROLINA DEPARTMENT OF PARKS RECREATION & TOURISM received $300,000: Tourism and placemaking",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "STATE OF SOUTH CAROLINA DEPARTMENT OF PARKS RECREATION & TOURISM received $300,000: Tourism and placemaking",
+        "external_evidence_summary": "BOYD POND PARK HAS A PERFECT SETUP FOR AN OUTDOOR AMPHITHEATER AS IT IS AN OUTDOOR RECREATION PARK WITH A NATURE AND EDUCATIONAL BASED FOCUS. THE PROPOSED 50 X 25 OPEN AIR AMPHITHEATER COMPLIMENTS WHAT WE CURRENTLY PROVIDE AT THE PARK. SEATING IS PLANNED TO BE TIERED AND NATURAL GRASS WITH DRAINAGE. LANDSCAPING HARDSCAPES ADA ACCESSIBLE WALKWAYS AND APPROPRIATE LIGHTING FOR PERFORMANCES AND SAFETY WILL ALL BE PART OF THE PROJECT AS WELL AS UTILITIES TO SUPPORT THE PROJECT. THE PROPOSED OUTDOOR AMPHITHEATER FOR BOYD POND PARK IS ALSO INTENDED TO BECOME AN IMPORTANT FEATURE OF THE PARKS OFFERING TO THE PUBLIC FOR A WIDE VARIETY OF PROGRAMMING OPPORTUNITIES INCLUDING BUT NOT LIMITED TO THEATRICAL AND MUSICAL PERFORMANCES COMMUNITY PRESENTATIONS FROM VARIOUS CONSTITUENCIES CULTURAL CELEBRATIONS.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review STATE OF SOUTH CAROLINA DEPARTMENT OF PARKS RECREATION & TOURISM and Department of the Interior under the \"Tourism and placemaking\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of the Interior",
+        "likely_buyer_or_partner": "STATE OF SOUTH CAROLINA DEPARTMENT OF PARKS RECREATION & TOURISM",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "musical performance",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2027-09-30",
+        "reasoning": [
+          "Matched search term: musical performance",
+          "Inferred lane: Tourism and placemaking",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2027-09-30"
+        }
+      }
+    },
+    {
+      "id": "5c556b09-1316-410b-997a-23d4c05c77d1",
+      "title": "ALLIANCE FOR CALIFORNIA TRADITIONAL ARTS received $200,000: City and county live performance budgets",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "ALLIANCE FOR CALIFORNIA TRADITIONAL ARTS received $200,000: City and county live performance budgets",
+        "external_evidence_summary": "SOUNDS OF CALIFORNIA: MAPPING THE MUSIC OF MIGRATION [THE ALLIANCE FOR CALIFORNIA TRADITIONAL ARTS (ACTA) PROPOSES A ONE-YEAR PROJECT CONTINUING OUR LONGSTANDING SOUNDS OF CALIFORNIA PROGRAM. THE TWO-PART PROJECT WILL 1) PUBLICLY LAUNCH COMMUNITY-DRIVEN PRIMARY MATERIAL RELATING TO THE SOUNDSCAPES AND STORIES OF MIGRATION FROM THE BAYVIEW-HUNTER'S POINT COMMUNITY ONTO OUR SOUNDS OF CALIFORNIA MICROSITE, INCLUDING A BROWSABLE ARCHIVE OF SOUNDS AND STORIES AS WELL AS INTERPRETIVE CONTENT DEVELOPMENT BY HUMANITIES PROFESSIONALS ON ACTA'S STAFF, AND 2) LAUNCH A NEW PROGRAM CYCLE OF SOUNDS OF CALIFORNIA IN THE SAN JOAQUIN VALLEY, WHICH WILL CENTER ON DOCUMENTATION AND PUBLIC HUMANITIES EVENTS EXPLORING THE SOCIAL AND ECONOMIC HISTORY OF THE CULTURAL COMMUNITIES OF THE UNDERSTUDIED SAN JOAQUIN VALLEY THROUGH SOUNDS, STORIES, AND INTERPRETATION. THIS PROJECT WILL CULTIVATE GREATER UNDERSTANDING OF THE CULTURAL COMMUNITIES OF CALIFORNIA THROUGH PUBLIC ENGAGEMENT CENTERED AROUND THE VOICES OF COMMUNITY MEMBERS AND CULTURE BEARERS.] [PURPOSE: THIS PROJECT WILL FUND THE NEXT PHASE OF THE ALLIANCE FOR CALIFORNIA TRADITIONAL ARTS (ACTA)'S SOUNDS OF CALIFORNIA PROJECT, A STATEWIDE PUBLIC HUMANITIES PROJECT EXPLORING MUSIC AND SOUNDSCAPES IN THE DIVERSE COMMUNITIES OF CALIFORNIA. IT ALSO FUNDS THE CATALOGUING AND MAKING AVAILABLE THE MATERIALS COLLECTED FROM THEIR 2018 SOUNDS OF CALIFORNIA PROGRAM, INCLUDING THEIR PUBLIC CONCERTS, COMMUNITY RECORDINGS, AND MULTIMEDIA STORIES.&NBSP;  ACTIVITIES TO BE PERFORMED: THIS PROJECT WILL CATALOGUE PUBLIC CONCERT RECORDINGS BY AFRICAN-AMERICAN, VIETNAMESE, KURDISH, AND CHICANO COMMUNITIES ON THE TOPIC OF MIGRATION; THE COMMUNITY RECORDINGS OF STORIES AND DEFINITIONS OF BELONGING BASED ON SOUNDS; AND THE MULTIMEDIA STORIES INTERPRETING WHAT THIS SOUNDSCAPE MEANS FOR THE STATE AND ITS HISTORY. IT FUNDS THE CREATION OF A MICROSITE REPOSITORY THAT ALSO OPERATES AS A MEANS OF ACCESSING AND INTERPRETING THESE RECORDINGS.&NBSP;&NBSP;&NBSP; THIS PROJECT WILL ALSO START THE NEW CYCLE OF THE SOUNDS OF CALIFORNIA PROGRAM BY COLLECTING FIELD RECORDINGS OF CULTURE BEARERS, COMMUNITY MEMBERS, AND PROFESSIONAL MEDIA MAKERS AT CULTURALLY MEANINGFUL EVENTS AND SITES. THIS WILL BRING TOGETHER BOTH HUMANITIES SCHOLARS AND CULTURAL PRACTITIONERS TO DOCUMENT THE CULTURAL AND HISTORICAL SOUND EXPRESSIONS OF THE AREA. LASTLY, FUNDING FOR THIS PROGRAM WILL MAINTAIN FIVE STAFF POSITIONS: THE EXECUTIVE DIRECTOR, MEDIA DIRECTOR, MEDIA AND DEVELOPMENT MANAGER, DIRECTOR OF SPECIAL INITIATIVES, AND PROGRAM MANAGER.&NBSP;  EXPECTED OUTCOMES: THIS PROJECT WILL RECORD, CATALOGUE, AND MAKE ACCESSIBLE RECORDINGS BY THE DIVERSE COMMUNITIES OF CALIFORNIA ABOUT ISSUES AFFECTING THE COMMUNITY, THEIR THOUGHTS ON BELONGING, AND THEIR ANALYSIS OF THE SONIC HISTORY AND LANDSCAPE OF THEIR REGIONS. THIS WILL ALSO BRING TOGETHER ACADEMIC SCHOLARS AND KEY COMMUNITY FIGURES IN UNDERSTANDING AND DISSEMINATING KNOWLEDGE ON THE SOUNDS OF CALIFORNIA AND THEIR IMPORTANCE TO THE STATE'S CULTURE AND HISTORY.&NBSP;&NBSP;  INTENDED BENEFICIARIES: THIS PROJECT BENEFITS THE DIVERSE COMMUNITIES WHO CONTRIBUTE THEIR STORIES TO THE PROJECT AND PARTICIPATE IN THE CONCERTS AND EVENTS THE PROJECT HOLDS. HAVING THESE RECORDINGS STORED AND AVAILABLE ONLINE THROUGH A WEBSITE MEANS THAT THESE MATERIALS ARE AVAILABLE TO PERSONS BOTH STATE-WIDE AND NATIONALLY. THE INVOLVEMENT OF SCHOLARS AND COMMUNITY MEMBERS WILL ENCOURAGE BOTH SCHOLARS AND THE PUBLIC TO ENGAGE WITH THE STORIES AND INFORMATION THAT WILL BE PRESENTED ON ACTA'S WEBSITE.&NBSP;&NBSP;  SUBRECIPIENT BENEFICIARIES: THE PROJECT DOES NOT INTEND TO ISSUE SUBAWARDS.]",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review ALLIANCE FOR CALIFORNIA TRADITIONAL ARTS and National Endowment for the Humanities under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "National Endowment for the Humanities",
+        "likely_buyer_or_partner": "ALLIANCE FOR CALIFORNIA TRADITIONAL ARTS",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "public concerts",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2024-12-31",
+        "reasoning": [
+          "Matched search term: public concerts",
+          "Inferred lane: City and county live performance budgets",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2024-12-31"
+        }
+      }
+    },
+    {
+      "id": "0889fef2-b4bb-443f-876f-16206727e63b",
+      "title": "ALASKA NATIVE HERITAGE CENTER, INCORPORATED received $750,000: Arts and culture grants",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "ALASKA NATIVE HERITAGE CENTER, INCORPORATED received $750,000: Arts and culture grants",
+        "external_evidence_summary": "THE PACIFIC NORTHWEST AND HAWAIIAN ISLANDS ARTS GRANT PROGRAM PROVIDES ENHANCED PACIFIC NORTHWEST AND HAWAIIAN ISLANDS ART PROGRAMS THAT PROMOTE THE SCHOLARLY STUDY OF, AND INSTRUCTION IN, ALASKA NATIVE AND NATIVE HAWAIIAN ARTS AND CULTURE. THIS PROJECT, THE ELISGU PROJECT ( GO LEARN IT,  YUP IK): A MASTER ARTIST EDUCATION PROJECT WITH THE ALASKA NATIVE HERITAGE CENTER BUILDS ON TWO DECADES OF SUCCESSFUL DEVELOPMENT OF THE ARTS AND CULTURE OF THE STATEWIDE ALASKA NATIVE COMMUNITY.  THE ALASKA NATIVE HERITAGE CENTER WILL IMPLEMENT THE LATEST ITERATION OF A MASTER ARTIST PROGRAM IN WHICH A STATEWIDE NETWORK OF MASTER ALASKA NATIVE ARTISTS WILL PROVIDE FACILITATION OF WORKSHOPS FOR THE PUBLIC AT THE ALASKA NATIVE HERITAGE CENTER. THE PROJECT ANTICIPATES 6 WORKSHOPS PER YEAR AND A SINGULAR SHOWCASE OF STUDENT WORK PER YEAR FOR 5 YEARS. THERE IS INCREDIBLY HIGH DEMAND FOR THIS PROGRAM FROM WITHIN THE ALASKA NATIVE COMMUNITY AND THE ORGANIZATION IS WELL VERSED IN THE OPERATION OF PROGRAMS OF THIS NATURE. THE NEED HAS BEEN ILLUSTRATED ACROSS SEVERAL SCHOLARLY, GOVERNMENTAL, AND INDEPENDENT STUDIES. THE ANTICIPATED OUTCOMES INCLUDE OPERATION OF CLASSES THAT CONTRIBUTE TO THE DEVELOPMENT OF ALASKA NATIVE ARTS AND CULTURE AND CREATION OF A STATEWIDE NETWORK OF ARTISTS WHO WILL GROW THE FIELD THROUGH HANDS-ON PRACTICE.BENEFICIARIES INCLUDE ALASKA NATIVE STUDENTS, ALASKA NATIVE COMMUNITY, VISITORS OF THE ALASKA NATIVE HERITAGE CENTER.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review ALASKA NATIVE HERITAGE CENTER, INCORPORATED and Department of the Interior under the \"Arts and culture grants\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of the Interior",
+        "likely_buyer_or_partner": "ALASKA NATIVE HERITAGE CENTER, INCORPORATED",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "arts grants",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2029-03-31",
+        "reasoning": [
+          "Matched search term: arts grants",
+          "Inferred lane: Arts and culture grants",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2029-03-31"
+        }
+      }
+    },
+    {
+      "id": "8ac1734d-9d02-4953-9993-6cf285b5c59c",
+      "title": "CITY OF SEATTLE received $30,000: City and county live performance budgets",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "CITY OF SEATTLE received $30,000: City and county live performance budgets",
+        "external_evidence_summary": "PURPOSE: TO SUPPORT A VISUAL ARTS EXHIBITION AND LIVE MUSIC PERFORMANCES.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review CITY OF SEATTLE and National Endowment for the Arts under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "National Endowment for the Arts",
+        "likely_buyer_or_partner": "CITY OF SEATTLE",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "live music performance",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-09-30",
+        "reasoning": [
+          "Matched search term: live music performance",
+          "Inferred lane: City and county live performance budgets",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-09-30"
+        }
+      }
+    },
+    {
+      "id": "8b237d7c-d7e7-4196-859b-8f5e0486af86",
+      "title": "JESS CURTIS GRAVITY INC received $15,000: Creative workforce development",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "JESS CURTIS GRAVITY INC received $15,000: Creative workforce development",
+        "external_evidence_summary": "PURPOSE: TO SUPPORT THE CREATION AND PRESENTATION OF WORKS BY ARTISTS FROM THE BEYOND GRAVITY ARTIST SERVICES PROGRAM.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review JESS CURTIS GRAVITY INC and National Endowment for the Arts under the \"Creative workforce development\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "National Endowment for the Arts",
+        "likely_buyer_or_partner": "JESS CURTIS GRAVITY INC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "artist services",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-05-31",
+        "reasoning": [
+          "Matched search term: artist services",
+          "Inferred lane: Creative workforce development",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-05-31"
+        }
+      }
+    },
+    {
+      "id": "eb7b17a1-93c1-447c-b28a-4e04d8e201bb",
+      "title": "CALIFORNIA LAWYERS FOR THE ARTS, INCORPORATED received $50,000: Creative workforce development",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "CALIFORNIA LAWYERS FOR THE ARTS, INCORPORATED received $50,000: Creative workforce development",
+        "external_evidence_summary": "PURPOSE: TO SUPPORT THE EXPANSION OF A CREATIVE WORKFORCE DEVELOPMENT PROGRAM FOR FORMERLY INCARCERATED INDIVIDUALS.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review CALIFORNIA LAWYERS FOR THE ARTS, INCORPORATED and National Endowment for the Arts under the \"Creative workforce development\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "National Endowment for the Arts",
+        "likely_buyer_or_partner": "CALIFORNIA LAWYERS FOR THE ARTS, INCORPORATED",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "creative workforce development",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-12-31",
+        "reasoning": [
+          "Matched search term: creative workforce development",
+          "Inferred lane: Creative workforce development",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-12-31"
+        }
+      }
+    },
+    {
+      "id": "60c896f4-ae69-446a-97b5-97868634f065",
+      "title": "REIMAGINE ATL, INC. received $50,000: Creative workforce development",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "REIMAGINE ATL, INC. received $50,000: Creative workforce development",
+        "external_evidence_summary": "PURPOSE: TO SUPPORT CREATIVE WORKFORCE DEVELOPMENT AND APPRENTICESHIP PROGRAMS FOR YOUTH AND YOUNG ADULTS.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review REIMAGINE ATL, INC. and National Endowment for the Arts under the \"Creative workforce development\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "National Endowment for the Arts",
+        "likely_buyer_or_partner": "REIMAGINE ATL, INC.",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "creative workforce development",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-11-30",
+        "reasoning": [
+          "Matched search term: creative workforce development",
+          "Inferred lane: Creative workforce development",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-11-30"
+        }
+      }
+    },
+    {
+      "id": "bf778d80-ebbf-43d7-ba52-d88b4edb8c79",
+      "title": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS received $32,000,000: School and district arts programming",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS received $32,000,000: School and district arts programming",
+        "external_evidence_summary": "KENNEDY CENTER NATIONAL ARTS EDUCATION PROGRAM",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS and Department of Education under the \"School and district arts programming\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "performing arts",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-09-30",
+        "reasoning": [
+          "Matched search term: performing arts",
+          "Inferred lane: School and district arts programming",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-09-30"
+        }
+      }
+    },
+    {
+      "id": "ea4c6768-2c7a-4b3e-bdec-164334b7d2fe",
+      "title": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS received $24,000,000: Arts and culture grants",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS received $24,000,000: Arts and culture grants",
+        "external_evidence_summary": "UNKNOWN TITLE",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS and Department of Education under the \"Arts and culture grants\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "performing arts",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2022-09-30",
+        "reasoning": [
+          "Matched search term: performing arts",
+          "Inferred lane: Arts and culture grants",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2022-09-30"
+        }
+      }
+    },
+    {
+      "id": "a004afcc-f486-42fe-b112-acdbd2a96643",
+      "title": "DOMESTIC AWARDEES (UNDISCLOSED) received $23,732: Cultural programming, live events, and public arts buyers",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "DOMESTIC AWARDEES (UNDISCLOSED) received $23,732: Cultural programming, live events, and public arts buyers",
+        "external_evidence_summary": "PR12009120 - GOSPEL MUSIC EDUCATIONAL PROGRAM",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review DOMESTIC AWARDEES (UNDISCLOSED) and Department of State under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of State",
+        "likely_buyer_or_partner": "DOMESTIC AWARDEES (UNDISCLOSED)",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "music education",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2023-09-30",
+        "reasoning": [
+          "Matched search term: music education",
+          "Inferred lane: Cultural programming, live events, and public arts buyers",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2023-09-30"
+        }
+      }
+    },
+    {
+      "id": "73c6d658-1038-4dc0-aff8-d9a993ef9675",
+      "title": "THE CARNEGIE HALL CORPORATION received $1,000,000: Cultural programming, live events, and public arts buyers",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "THE CARNEGIE HALL CORPORATION received $1,000,000: Cultural programming, live events, and public arts buyers",
+        "external_evidence_summary": "NYO2 PROGRAM: EXPANDING, IMPROVING, AND INNOVATING MUSIC EDUCATION FOR UNDERSERVED STUDENTS",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review THE CARNEGIE HALL CORPORATION and Department of Education under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "THE CARNEGIE HALL CORPORATION",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "music education",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-09-30",
+        "reasoning": [
+          "Matched search term: music education",
+          "Inferred lane: Cultural programming, live events, and public arts buyers",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-09-30"
+        }
+      }
+    },
+    {
+      "id": "7932eb57-8482-4232-a924-236c0330a5b8",
+      "title": "UNITED ARTS OF CENTRAL FLORIDA INC received $100,000: Arts and culture grants",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "UNITED ARTS OF CENTRAL FLORIDA INC received $100,000: Arts and culture grants",
+        "external_evidence_summary": "PURPOSE: TO SUPPORT AN ARTS GRANT PROGRAM FOR INDIVIDUAL ARTISTS AND NONPROFIT ORGANIZATIONS IN CENTRAL FLORIDA.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review UNITED ARTS OF CENTRAL FLORIDA INC and National Endowment for the Arts under the \"Arts and culture grants\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "National Endowment for the Arts",
+        "likely_buyer_or_partner": "UNITED ARTS OF CENTRAL FLORIDA INC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "arts grants",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-05-31",
+        "reasoning": [
+          "Matched search term: arts grants",
+          "Inferred lane: Arts and culture grants",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-05-31"
+        }
+      }
+    },
+    {
+      "id": "c3ed72d5-91e1-4140-8a4c-8ceccc5599bf",
+      "title": "FONDATION HAITI JAZZ received $40,000: City and county live performance budgets",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "FONDATION HAITI JAZZ received $40,000: City and county live performance budgets",
+        "external_evidence_summary": "THIS 18TH ITERATION OF THE PRESTIGIOUS ANNUAL PAPJAZZ FESTIVAL SHOWCASING THE UNITED STATES AS THE \"PAYS A L'HONNEUR.\"  PAPJAZZ OFFERS MUSIC-RELATED WORKSHOPS, LIVE MUSIC PERFORMANCES FROM DIVERSE CULTURES, AND PROMOTES ECO-RESPONSIBILITY IN YOUTH.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review FONDATION HAITI JAZZ and Department of State under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of State",
+        "likely_buyer_or_partner": "FONDATION HAITI JAZZ",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "live music performance",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-02-27",
+        "reasoning": [
+          "Matched search term: live music performance",
+          "Inferred lane: City and county live performance budgets",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-02-27"
+        }
+      }
+    },
+    {
+      "id": "ad24d37c-148c-4ec1-97db-027b1f8f4297",
+      "title": "MISCELLANEOUS FOREIGN AWARDEES received $29,450: City and county live performance budgets",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "MISCELLANEOUS FOREIGN AWARDEES received $29,450: City and county live performance budgets",
+        "external_evidence_summary": "MUSICAL PERFORMANCE EVENT SUPPORT",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review MISCELLANEOUS FOREIGN AWARDEES and Department of State under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of State",
+        "likely_buyer_or_partner": "MISCELLANEOUS FOREIGN AWARDEES",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "musical performance",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2024-03-29",
+        "reasoning": [
+          "Matched search term: musical performance",
+          "Inferred lane: City and county live performance budgets",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2024-03-29"
+        }
+      }
+    },
+    {
+      "id": "3a904b35-a1b5-43b1-8b46-ba939e8f8981",
+      "title": "COOK KEITH J received $90,640: Public-sector funded-buyer signal",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "COOK KEITH J received $90,640: Public-sector funded-buyer signal",
+        "external_evidence_summary": "ECUMENICAL MUSICIAN SERVICES - LRAFB CHAPEL",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review COOK KEITH J and Department of Defense under the \"Public-sector funded-buyer signal\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Defense",
+        "likely_buyer_or_partner": "COOK KEITH J",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "musician services",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2024-08-08",
+        "reasoning": [
+          "Matched search term: musician services",
+          "Inferred lane: Public-sector funded-buyer signal",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2024-08-08"
+        }
+      }
+    },
+    {
+      "id": "35a8baac-795e-4b78-9a60-e5c5c2650ce1",
+      "title": "MUSIC MINISTRY INTERNATIONAL INC received $83,740: Public-sector funded-buyer signal",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "MUSIC MINISTRY INTERNATIONAL INC received $83,740: Public-sector funded-buyer signal",
+        "external_evidence_summary": "MUSICIAN SERVICES",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review MUSIC MINISTRY INTERNATIONAL INC and Department of Defense under the \"Public-sector funded-buyer signal\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Defense",
+        "likely_buyer_or_partner": "MUSIC MINISTRY INTERNATIONAL INC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "musician services",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-04-22",
+        "reasoning": [
+          "Matched search term: musician services",
+          "Inferred lane: Public-sector funded-buyer signal",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-04-22"
+        }
+      }
+    },
+    {
+      "id": "81d140b9-99e0-428c-9bc4-bda451057d10",
+      "title": "JACKSON SYMPHONY ASSOCIATION received $60,000: City and county live performance budgets",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "JACKSON SYMPHONY ASSOCIATION received $60,000: City and county live performance budgets",
+        "external_evidence_summary": "PURPOSE: TO SUPPORT PERSONNEL AND PRODUCTION COSTS FOR FREE PUBLIC CONCERTS IN CELEBRATION OF&NBSP;AMERICA’S 250TH ANNIVERSARY.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review JACKSON SYMPHONY ASSOCIATION and National Endowment for the Arts under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "National Endowment for the Arts",
+        "likely_buyer_or_partner": "JACKSON SYMPHONY ASSOCIATION",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "public concerts",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-12-31",
+        "reasoning": [
+          "Matched search term: public concerts",
+          "Inferred lane: City and county live performance budgets",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-12-31"
+        }
+      }
+    },
+    {
+      "id": "63d6f865-d300-4775-bd55-2d365bd931e6",
+      "title": "DEGY BOOKING INTERNATIONAL INC. received $285,625: City and county live performance budgets",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "DEGY BOOKING INTERNATIONAL INC. received $285,625: City and county live performance budgets",
+        "external_evidence_summary": "EVENT ENTERTAINMENT",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review DEGY BOOKING INTERNATIONAL INC. and Department of State under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of State",
+        "likely_buyer_or_partner": "DEGY BOOKING INTERNATIONAL INC.",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "event entertainment",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-07-03",
+        "reasoning": [
+          "Matched search term: event entertainment",
+          "Inferred lane: City and county live performance budgets",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-07-03"
+        }
+      }
+    },
+    {
+      "id": "166b7a73-b1b8-4490-b4c7-03b6e2a919f6",
+      "title": "ISOM EVENTS LLC received $1,152,925: City and county live performance budgets",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "ISOM EVENTS LLC received $1,152,925: City and county live performance budgets",
+        "external_evidence_summary": "IGF::OT::IGF  X:NOGRN, FORT DUPONT SUMMER CONCERT SERIES AT ROCK CREEK PARK",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review ISOM EVENTS LLC and Department of the Interior under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of the Interior",
+        "likely_buyer_or_partner": "ISOM EVENTS LLC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "summer concert series",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2020-10-31",
+        "reasoning": [
+          "Matched search term: summer concert series",
+          "Inferred lane: City and county live performance budgets",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2020-10-31"
+        }
+      }
+    },
+    {
+      "id": "6953c31c-62f1-4e6b-9924-d8ee86030d9a",
+      "title": "TOUCHDOWN MEDIA INC received $670,791: City and county live performance budgets",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "TOUCHDOWN MEDIA INC received $670,791: City and county live performance budgets",
+        "external_evidence_summary": "USMA BAND SUMMER CONCERT SERIES AND SEASONAL LIGHTING",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review TOUCHDOWN MEDIA INC and Department of Defense under the \"City and county live performance budgets\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Defense",
+        "likely_buyer_or_partner": "TOUCHDOWN MEDIA INC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "summer concert series",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-06-10",
+        "reasoning": [
+          "Matched search term: summer concert series",
+          "Inferred lane: City and county live performance budgets",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-06-10"
+        }
+      }
+    },
+    {
+      "id": "614214e8-e507-4ec4-bf78-ae4d996806e4",
+      "title": "CHEVO STUDIOS INC. received $381,588: Creative workforce development",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "CHEVO STUDIOS INC. received $381,588: Creative workforce development",
+        "external_evidence_summary": "GRAND CANYON NATIONAL PARK (GRCA) DESERT VIEW INTERTRIBAL HERITAGE SITE ARTIST SERVICES. LOCATION: GRAND CANYON NP, DESERT VIEW.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review CHEVO STUDIOS INC. and Department of the Interior under the \"Creative workforce development\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of the Interior",
+        "likely_buyer_or_partner": "CHEVO STUDIOS INC.",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "artist services",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2024-07-01",
+        "reasoning": [
+          "Matched search term: artist services",
+          "Inferred lane: Creative workforce development",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2024-07-01"
+        }
+      }
+    },
+    {
+      "id": "76a68a38-c088-482c-ba76-6b20f87c8826",
+      "title": "ROSE FITZGERALD KENNEDY GREENWAY CONSERVANCY, INC. received $70,000: Arts and culture grants",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "ROSE FITZGERALD KENNEDY GREENWAY CONSERVANCY, INC. received $70,000: Arts and culture grants",
+        "external_evidence_summary": "PURPOSE: TO SUPPORT THE COMMISSION AND INSTALLATION OF TEMPORARY ARTWORKS AS PART OF THE GREENWAY CONSERVANCYS PUBLIC ART PROGRAM.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review ROSE FITZGERALD KENNEDY GREENWAY CONSERVANCY, INC. and National Endowment for the Arts under the \"Arts and culture grants\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "National Endowment for the Arts",
+        "likely_buyer_or_partner": "ROSE FITZGERALD KENNEDY GREENWAY CONSERVANCY, INC.",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "public arts program",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-05-31",
+        "reasoning": [
+          "Matched search term: public arts program",
+          "Inferred lane: Arts and culture grants",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-05-31"
+        }
+      }
+    },
+    {
+      "id": "eb17413b-265a-4566-b9e9-b71008273a88",
+      "title": "HARGROVE, LLC received $9,267,988: Cultural programming, live events, and public arts buyers",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "HARGROVE, LLC received $9,267,988: Cultural programming, live events, and public arts buyers",
+        "external_evidence_summary": "2022 SUMMIT OF THE AMERICAS, THE SUMMIT IMPLEMENTATION REVIEW GROUP -SIRG -TECHNICAL, EVENT PRODUCTION SERVICES",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review HARGROVE, LLC and Department of State under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of State",
+        "likely_buyer_or_partner": "HARGROVE, LLC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "event production services",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2023-03-17",
+        "reasoning": [
+          "Matched search term: event production services",
+          "Inferred lane: Cultural programming, live events, and public arts buyers",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2023-03-17"
+        }
+      }
+    },
+    {
+      "id": "1c5c42b2-032b-4bf6-8c22-b1a4f88fcaad",
+      "title": "DDMC EVENT DESIGN received $223,377: Cultural programming, live events, and public arts buyers",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "DDMC EVENT DESIGN received $223,377: Cultural programming, live events, and public arts buyers",
+        "external_evidence_summary": "J4 - EVENT PRODUCTION SERVICES: PRE-PRODUCTION TASK ORDER 1",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review DDMC EVENT DESIGN and Department of State under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of State",
+        "likely_buyer_or_partner": "DDMC EVENT DESIGN",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "event production services",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-05-31",
+        "reasoning": [
+          "Matched search term: event production services",
+          "Inferred lane: Cultural programming, live events, and public arts buyers",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-05-31"
+        }
+      }
+    },
+    {
+      "id": "06241846-38ec-404d-8d72-395da54d64c4",
+      "title": "Federal Acquisition Regulation: Revolutionary Federal Acquisition Regulation Overhaul Parts 3 and 49",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "Federal Acquisition Regulation: Revolutionary Federal Acquisition Regulation Overhaul Parts 3 and 49",
+        "external_evidence_summary": "OFPP, DoD, GSA, and NASA (collectively referred to as the Federal Acquisition Regulatory Council or FAR Council) are proposing to amend the Federal Acquisition Regulation (FAR) to implement Executive Order (E.O.) 14275, Restoring Common Sense to Federal Procurement. The E.O. directs the elimination of excessive acquisition regulations to stop the inefficient use of American taxpayer dollars. The FAR Council is issuing twelve proposed rules that collectively will streamline the FAR in its entirety. This rule proposes revisions to FAR parts 3 and 49.",
+        "why_it_matters": "Federal Register activity can signal agency priorities, regulatory changes, program design, or future demand before a procurement or grant is obvious.",
+        "recommended_action": "Review this under the \"City, state, and public venue entertainment procurement\" pathway and decide whether it implies future procurement, reimbursement, compliance, or partner demand.",
+        "agency_or_funder": "Management and Budget Office, Federal Procurement Policy Office, Defense Department, General Services Administration, National Aeronautics and Space Administration",
+        "likely_buyer_or_partner": "Management and Budget Office, Federal Procurement Policy Office, Defense Department, General Services Administration, National Aeronautics and Space Administration",
+        "revenue_pathway": "monitor_policy",
+        "actionability": "unlikely",
+        "confidence_score": 60,
+        "query_used": "event entertainment services",
+        "source_name": "Federal Register",
+        "source_type": "policy_signal",
+        "deadline": "",
+        "reasoning": [
+          "Matched search term: event entertainment services",
+          "Inferred lane: City, state, and public venue entertainment procurement",
+          "Document type: Proposed Rule",
+          "Treat as a demand signal, not a direct buying opportunity."
+        ]
+      }
+    },
+    {
+      "id": "e5d289f1-50e7-40e2-ba31-476ef95249c9",
+      "title": "Grants.gov posted: NEA Grants for Arts Projects 2, FY 2027",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "Grants.gov posted: NEA Grants for Arts Projects 2, FY 2027",
+        "external_evidence_summary": "Grants for Arts Projects (GAP) provides project-based funding for organizations in the areas of Arts Education, Challenge America, Dance, Design & Our Town, Folk & Traditional Arts, Literary Arts, Local Arts Agencies, Museums, Music, Opera, Presenting & Multidisciplinary Works, Theater & Musical Theater, and Visual and Media Arts. Funded activities may include a wide range of arts projects described in the application guidelines. Awards require a 1:1 cost share. We welcome applications from first-time and returning applicants; from organizations serving rural, urban, suburban, and tribal communities of all sizes; and from organizations with a range of operating budgets. Eligible applicants include: nonprofit, tax-exempt 501(c)(3), U.S. organizations; units of state or local government; and federally recognized tribal communities or tribes. Funding in this category is not available for individuals, fiscally sponsored entities, commercial/for-profit enterprises, State Arts Agencies (SAA), or Regional Arts Organizations (RAO). | Award range 10000-100000 | Eligible applicants: Public and State controlled institutions of higher education, Native American tribal organizations (other than Federally recognized tribal governments), Special district governments, County governments, Independent school districts, City or township governments, State governments, Native American tribal governments (Federally recognized), Nonprofits having a 501(c)(3) status with the IRS, other than institutions of higher education",
+        "why_it_matters": "This is an active or forecasted funding signal that may create funded buyer, grantee, partner, or program demand.",
+        "recommended_action": "Track likely grantees and eligible applicants under the \"Cultural programming, live events, and public arts buyers\" pathway; use the agency contact for program questions, not as the sales decision-maker.",
+        "agency_or_funder": "National Endowment for the Arts",
+        "likely_buyer_or_partner": "Eligible applicants or future award recipients",
+        "revenue_pathway": "partner_with_recipient",
+        "actionability": "maybe",
+        "confidence_score": 80,
+        "query_used": "musical performance services",
+        "source_name": "Grants.gov",
+        "source_type": "active_grant",
+        "deadline": "07/09/2026",
+        "reasoning": [
+          "Matched search term: musical performance services",
+          "Inferred lane: Cultural programming, live events, and public arts buyers",
+          "Grants.gov status: posted",
+          "Treat this as a funded-buyer or partner signal; do not treat the grant contact as the sales buyer."
+        ]
+      }
+    },
+    {
+      "id": "f99889a8-0997-467e-8a67-2eb7fdb3f12e",
+      "title": "Grants.gov posted: U.S. Talent Program for the U.S. Embassy and Consulates in Canada",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "Grants.gov posted: U.S. Talent Program for the U.S. Embassy and Consulates in Canada",
+        "external_evidence_summary": "<p>The U.S. Department of State’s Embassy Ottawa announces an open competition to implement a program to connect U.S. citizen talent, including subject matter experts, artists and cultural professionals, and current and former American athletes and coaches, with Canadian audiences and institutions on topics of strategic importance to the United States. Recipients should be prepared to identify and recruit U.S. citizen experts in the following strategic areas, in addition to arts, cultural, and sports experts that showcase American excellence:</p><p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U.S. prosperity and economic security (e.g. supply chains; digital policy; trade; transboundary water issues, etc.).</p><p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defense (e.g. defense spending, procurement; NORAD modernization; Arctic domain awareness and deterrence, etc.).</p><p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Border security (e.g. combatting illegal trafficking, smuggling, migration, etc.).</p><p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Freedom of speech (e.g. exposing censorship, promoting transparency etc.).</p><p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Artificial Intelligence (e.g. promoting American AI exports, building enabling infrastructure, countering foreign influence in emerging technologies, etc.).</p><p>Programs will be conducted in-person and/or through virtual platforms. The proposal should outline how the grantee would address both options. In-person programs will generally range from two days to one week in length. Virtual programs will usually take place on a single specified date and time and may be part of a continuing series. U.S. talent will address topics identified by the U.S. Mission to Canada that will advance Administration and U.S. Mission to Canada strategic goals.</p><p><br></p> | Award range 100000-200000 | Eligible applicants: Nonprofits having a 501(c)(3) status with the IRS, other than institutions of higher education, Public and State controlled institutions of higher education, Private institutions of higher education, Nonprofits that do not have a 501(c)(3) status with the IRS, other than institutions of higher education",
+        "why_it_matters": "This is an active or forecasted grant opportunity where the company may be able to evaluate direct eligibility.",
+        "recommended_action": "Review eligibility and contact the Grants.gov program contact for fit under the \"Medical retail, distributor, and channel targets\" pathway.",
+        "agency_or_funder": "Jennifer  Acuff\nGrantor",
+        "likely_buyer_or_partner": "Jennifer  Acuff\nGrantor",
+        "revenue_pathway": "direct_apply",
+        "actionability": "maybe",
+        "confidence_score": 80,
+        "query_used": "artist services",
+        "source_name": "Grants.gov",
+        "source_type": "active_grant",
+        "deadline": "07/31/2026",
+        "reasoning": [
+          "Matched search term: artist services",
+          "Inferred lane: Medical retail, distributor, and channel targets",
+          "Grants.gov status: posted",
+          "Treat the agency contact as a program/eligibility contact."
+        ]
+      }
+    },
+    {
+      "id": "2ea5fd9a-d058-44f3-9455-7b26681669f3",
+      "title": "Grants.gov posted: FY 2026 U.S. Creative Tech Exchange",
+      "created_at": "2026-06-30T15:24:32.057Z",
+      "raw_json": {
+        "opportunity_title": "Grants.gov posted: FY 2026 U.S. Creative Tech Exchange",
+        "external_evidence_summary": "<p>The U.S. <strong>Creative Tech Exchange (U.S.CTX) </strong>is a new international arts exchange program that drives economic growth by connecting U.S. creative professionals and technologists with international peers working at the intersection of the arts and emerging technologies, especially artificial intelligence (AI). &nbsp;<span style=\"color: rgb(28, 33, 39);\">The goal is to position American technology as a key driver of American innovation, economic, and cultural influence in art and technology, </span>For the purposes of this program, “arts” refers specifically to architecture, creative coding and gaming, fashion, graphic design, music and immersive art such as virtual reality (VR), augmented reality (AR), and mixed reality (MR); but excludes film and television. </p>\n<p><span style=\"color: rgb(28, 33, 39);\">&nbsp;</span></p>\n<p><span style=\"color: rgb(28, 33, 39);\">U.S.CTX will support </span><strong style=\"color: rgb(28, 33, 39);\">up to 30 participants </strong><span style=\"color: rgb(28, 33, 39);\">through short-term, hands-on activities such as collaborative labs, fellowships, workshops, and public showcases. &nbsp;</span></p>\n<p><span style=\"color: rgb(28, 33, 39);\">&nbsp;</span></p>\n<p>ECA will award one U.S.-based nonprofit or educational organization $1.32 million to design and implement the program in close coordination with ECA and U.S. embassies.&nbsp;Applicants should propose a concept that leverages their strengths and includes clear plans for recruitment, program delivery, and measurable outcomes in creative arts, economic impact, and public diplomacy.</p>\n<p><br></p>\n<p>Please see the Notice of Funding Opportunity for additional information.</p> | Award range 1320000-1320000 | Eligible applicants: Private institutions of higher education, Others (see text field entitled \"Additional Information on Eligibility\" for clarification), Nonprofits having a 501(c)(3) status with the IRS, other than institutions of higher education, Public and State controlled institutions of higher education",
+        "why_it_matters": "This is an active or forecasted grant opportunity where the company may be able to evaluate direct eligibility.",
+        "recommended_action": "Review eligibility and contact the Grants.gov program contact for fit under the \"Grant and funding opportunity\" pathway.",
+        "agency_or_funder": "Bureau Of Educational and Cultural Affairs",
+        "likely_buyer_or_partner": "Bureau Of Educational and Cultural Affairs",
+        "revenue_pathway": "direct_apply",
+        "actionability": "maybe",
+        "confidence_score": 80,
+        "query_used": "arts workforce",
+        "source_name": "Grants.gov",
+        "source_type": "active_grant",
+        "deadline": "07/06/2026",
+        "reasoning": [
+          "Matched search term: arts workforce",
+          "Inferred lane: Grant and funding opportunity",
+          "Grants.gov status: posted",
+          "Treat the agency contact as a program/eligibility contact."
+        ]
+      }
+    },
+    {
+      "id": "57ad0ccc-a55e-405f-825a-b3fb7b3e0696",
+      "title": "THE MUSEUM OF THE AFRICAN DIASPORA received $500,000: Prop 28, arts education, and teaching artist staffing",
+      "created_at": "2026-06-30T20:54:26.812Z",
+      "raw_json": {
+        "opportunity_title": "THE MUSEUM OF THE AFRICAN DIASPORA received $500,000: Prop 28, arts education, and teaching artist staffing",
+        "external_evidence_summary": "MUSEUM OF THE AFRICAN DIASPORA (MOAD) WILL EXPAND ITS VISUAL LITERACY AND ARTS PROGRAM TO PROVIDE FREE CLASSES AND MUSEUM VISITS FOR OVER 2,900 THIRD- AND FOURTH-GRADE STUDENTS FROM TITLE 1 SCHOOLS IN THE SAN FRANCISCO BAY AREA. STAFF WILL COLLABORATE WITH A TEACHER ADVISORY COMMITTEE AND TEACHING ARTISTS TO CREATE NEW STANDARDS-ALIGNED CURRICULAR RESOURCES, PROVIDE OVER 40 HOURS OF ART INTEGRATION PROFESSIONAL DEVELOPMENT WORKSHOPS TO TEACHERS, AND DEVELOP AN ONLINE PORTAL FOR TEACHERS ACROSS TO ACCESS FREE LESSON PLANS, PODCASTS, AND VIDEOS. MOAD WILL PARTNER WITH THE SAN FRANCISCO PUBLIC LIBRARY (SFPL) TO HOST WORKSHOPS, A STUDENT LITERACY AND ART PROJECT, AND A SHOWCASE OF STUDENT WORK. AN EXTERNAL EVALUATION TEAM WILL EMPLOY A MULTIFACETED EVALUATION APPROACH TO ASSESS PROGRAM REACH AS WELL AS IMPROVEMENTS IN KNOWLEDGE, SKILLS, AND ABILITIES FOR STUDENTS AND TEACHERS.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review THE MUSEUM OF THE AFRICAN DIASPORA and Institute of Museum and Library Services under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Institute of Museum and Library Services",
+        "likely_buyer_or_partner": "THE MUSEUM OF THE AFRICAN DIASPORA",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "teaching artists",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-12-31",
+        "reasoning": [
+          "Matched search term: teaching artists",
+          "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-12-31"
+        }
+      }
+    },
+    {
+      "id": "d1fb78a9-e12b-4b44-822b-9de9004bfe44",
+      "title": "ALASKA COUNCIL OF SCHOOL ADMINISTRATORS received $6,840,910: K-12 hiring, teacher staffing, and educator workforce",
+      "created_at": "2026-06-30T20:54:26.878Z",
+      "raw_json": {
+        "opportunity_title": "ALASKA COUNCIL OF SCHOOL ADMINISTRATORS received $6,840,910: K-12 hiring, teacher staffing, and educator workforce",
+        "external_evidence_summary": "RAISING THE BAR FOR RURAL ALASKAN EDUCATORS IS A PARTNERSHIP BETWEEN SEVEN ALASKA SCHOOL DISTRICTS AND THE ALASKA COUNCIL OF SCHOOL ADMINISTRATORS TO IMPROVE TEACHER RECRUITMENT AND RETENTION.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review ALASKA COUNCIL OF SCHOOL ADMINISTRATORS and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "ALASKA COUNCIL OF SCHOOL ADMINISTRATORS",
+        "revenue_pathway": "sell_to_agency",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "teacher recruitment",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-09-30",
+        "reasoning": [
+          "Matched search term: teacher recruitment",
+          "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-09-30"
+        }
+      }
+    },
+    {
+      "id": "4611b9b3-d30b-45bd-aa17-9c32d0762474",
+      "title": "THE BLOWING ROCK ART AND HISTORY MUSEUM INC received $23,500: Prop 28, arts education, and teaching artist staffing",
+      "created_at": "2026-06-30T20:54:26.934Z",
+      "raw_json": {
+        "opportunity_title": "THE BLOWING ROCK ART AND HISTORY MUSEUM INC received $23,500: Prop 28, arts education, and teaching artist staffing",
+        "external_evidence_summary": "THE BLOWING ROCK ART AND HISTORY MUSEUM WILL BRING ART ENRICHMENT TO AREA SENIORS THROUGH A SERIES OF WEAVING AND FIBER ART CLASSES AND WORKSHOPS, CULMINATING IN AN EXHIBITION. THE MUSEUM WILL EXPAND UPON ITS PARTNERSHIP WITH THE WATAUGA COUNTY PROJECT ON AGING AND AREA FIBER ARTISTS TO OFFER 48 CLASSES AND MULTI-DAY WORKSHOPS AT THE MUSEUM AND TWO WATAUGA COUNTY SENIOR CENTERS. MUSEUM STAFF WILL CREATE AN EXHIBITION AND DIGITAL CATALOG FEATURING WORKS CREATED BY THE SENIORS AS WELL AS THE ARTISTS AND TEACHERS. THE MUSEUM WILL OFFER SENIOR-LED TOURS FOR STUDENTS AND PROVIDE A PAID INTERNSHIP TO ASSIST WITH DATA COLLECTION, EVALUATION, AND PREPARATION OF THE CATALOG. THE PROGRAM WILL ESTABLISH A LOCAL MODEL OF USING ART AS AN INTERVENTION TOOL TO DECREASE LONELINESS AND STRENGTHEN THE COGNITIVE ABILITIES OF SENIORS AND WILL BENEFIT LOCAL SENIORS AND ARTISTS, STUDENTS, AND VISITORS.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review THE BLOWING ROCK ART AND HISTORY MUSEUM INC and Institute of Museum and Library Services under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Institute of Museum and Library Services",
+        "likely_buyer_or_partner": "THE BLOWING ROCK ART AND HISTORY MUSEUM INC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "arts enrichment",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-08-31",
+        "reasoning": [
+          "Matched search term: arts enrichment",
+          "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-08-31"
+        }
+      }
+    },
+    {
+      "id": "65fc4076-629e-4838-a15a-172778819934",
+      "title": "NYSUT EDUCATION AND LEARNING TRUST received $5,657,497: K-12 hiring, teacher staffing, and educator workforce",
+      "created_at": "2026-06-30T20:54:26.989Z",
+      "raw_json": {
+        "opportunity_title": "NYSUT EDUCATION AND LEARNING TRUST received $5,657,497: K-12 hiring, teacher staffing, and educator workforce",
+        "external_evidence_summary": "AWARD PURPOSE\nTHE PURPOSE OF THIS PROGRAM IS TO RE-ENGINEER THE EDUCATOR WORKFORCE MODEL TO BRING MORE PEOPLE INTO THE PROFESSION, PROVIDE CAREER LEADERSHIP OPPORTUNITIES TO RETAIN EXPERIENCED PROFESSIONALS, AND ADEQUATELY PREPARE CANDIDATES FOR THE PROFESSION SO THEY REMAIN IN THE PROFESSION.\n\n\nACTIVITIES PERFORMED\nTECHNICAL ASSISTANCE, AS AN INTERMEDIARY, TO ASSIST SPONSORS IN RAP DEVELOPMENT AND EXECUTION; COLLECT RAP DATA TO SUPPORT ANNUAL EXPANSION TO SCALE HIGH QUALITY, SUSTAINABLE PROGRAMS. DISSEMINATE PROCESSES, PROCEDURES, AND PROTOCOLS TO IMPLEMENT HIGH-QUALITY, SUSTAINABLE RAPS; PROMOTE AND ENCOURAGE EMPLOYERS, UNIONS, AND IHE PARTNERS TO DEVELOP AND UTILIZE PRE-APPRENTICESHIP PATHWAYS, THROUGH REVERSE ENGINEERING, TO LEAD DIRECTLY INTO RAPS; ESTABLISH A MENTORSHIP PROGRAM FOR SPONSORS AND RI TO PROVIDE ASSISTANCE AND OPPORTUNITIES FOR NETWORKED LEARNING, EXPANSION, AND GROWTH. CREATE A TOOLKIT WITH APPROPRIATE RESOURCES, MATERIALS, PROTOCOLS, FACILITATION GUIDE, AND CASE STUDY NARRATIVE TO MAP OUT THE WORK OF DESIGNING A RAP, REGISTERING AN APPRENTICESHIP PROGRAM, AND ACCESSING ADDITIONAL FUNDING TO SUPPORT THE APPRENTICE OR EMPLOYER.\n\n\nDELIVERABLES\n1)TOTAL NUMBER OF RAPS DEVELOPED 75. 2) TOTAL NUMBER OF RAPS EXPANDED 35. 3) TOTAL NUMBER OF PRE-APPRENTICESHIPS DEVELOPED (AS APPLICABLE) 10. 4) TOTAL NUMBER OF PRE-APPRENTICESHIPS EXPANDED (AS APPLICABLE) 5. 5) TOTAL NUMBER OF STAKE-HOLDER'S ENGAGED 250+. 6) TOTAL NUMBER OF EMPLOYERS RECEIVING INCENTIVE FUNDING,\nINCLUDING TOTAL AMOUNT OF FUNDS TO BE AWARDED IN INCENTIVE FUNDING FOR FIRST TIME EMPLOYERS UP TO $12,000 PER SITE. 75 $900,000. 7) TOTAL NUMBER OF TECHNICAL ASSISTANCE RESOURCES CREATED 35. 8) TOTAL NUMBER OF NEW SPONSORS 75. 9) TOTAL NUMBER OF INDIVIDUALS ENROLLED IN A RAP THAT WAS DEVELOPED USING ABA GRANT FUNDS 1,725. 10) TOTAL NUMBER OF INDIVIDUALS ENROLLED IN PRE-APPRENTICESHIP THAT WAS DEVELOPED USING ABA GRANT FUNDS 250.\n\n\nINTENDED BENEFICIARY\nUNDERREPRESENTED (IE. WOMEN, PEOPLE OF COLOR), UNDERSERVED (VETERANS), UNEMPLOYED WORKERS, UNDEREMPLOYED WORKERS, AND CAREER CHANGERS.\n\n\nSUBRECIPIENT ACTIVITIES\nINCENTIVIZE FIRST TIME EMPLOYERS (SCHOOL DISTRICTS OR BOCES) TO DEVELOP RAPS, RECRUIT, HIRE AND ONBOARD APPRENTICES; PROGRAM DEVELOPMENT WITH IHES AND UNION\nAFFILIATES TO EMBED RELATED INSTRUCTION INTO THE ON-THE-JOB TRAINING.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review NYSUT EDUCATION AND LEARNING TRUST and Department of Labor under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Labor",
+        "likely_buyer_or_partner": "NYSUT EDUCATION AND LEARNING TRUST",
+        "revenue_pathway": "sell_to_agency",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "educator workforce",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-09-30",
+        "reasoning": [
+          "Matched search term: educator workforce",
+          "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-09-30"
+        }
+      }
+    },
+    {
+      "id": "d653f591-3ee4-4031-977c-058e3ac6370b",
+      "title": "WESTAT, INC. received $9,954,119: K-12 hiring, teacher staffing, and educator workforce",
+      "created_at": "2026-06-30T20:54:27.043Z",
+      "raw_json": {
+        "opportunity_title": "WESTAT, INC. received $9,954,119: K-12 hiring, teacher staffing, and educator workforce",
+        "external_evidence_summary": "THE DEPARTMENT CONDUCTS A NUMBER OF DATA COLLECTIONS WITHIN THE NCES LEGISLATIVE MANDATE TO REPORT ON THE CONDITION OF EDUCATION - WITHIN THIS SUPPORT TASK, THESE DATA COLLECTIONS ARE: THE SCHOOLS AND STAFFING SURVEY (SASS), THE TEACHER FOLLOW-UP SURVEY (TFS), THE PRINCIPAL FOLLOW-UP SURVEY (PFS), AND THE BEGINNING TEACHER LONGITUDINAL STUDY (BTLS.  SASS IS COLLECTED EVERY 4 YEARS, WITH 2011-12 BEING THE CURRENT COLLECTION; THE TFS IS COLLECTED THE NEXT SCHOOL YEAR, IN 2012-13, THE PFS ALSO IS COLLECTED IN 2012-13.  BTLS IS CONDUCTED ONCE EVERY YEAR AND IS IN ITS FIFTH WAVE OF DATA COLLECTION IN 2012.  THE TFS AND THE PFS ARE ONE-YEAR FOLLOW-UPS OF RESPONDENTS TO THE SASS TEACHER AND PRINCIPAL SURVEYS, RESPECTIVELY.  SPECIFIC INFORMATION ABOUT THESE SURVEYS CAN BE FOUND AT THE FOLLOWING WEBSITES: HTTP://NCES.ED.GOV/SURVEYS/SASS FOR SASS, TFS, AND PFS; AND HTTP://NCES.ED.GOV/SURVEYS/BTLS FOR BTLS. THE FIELDING OF THE DATA COLLECTIONS IS HANDLED THROUGH INTERAGENCY AGREEMENTS WITH TWO DIFFERENT UNITS AT THE CENSUS BUREAU.  IN ADDITION TO PLANNING AND RELEASING DATA FILES FROM THE SURVEYS, THE DEPARTMENT IS ALSO CALLED UPON TO PROVIDE SPECIAL ANALYSES AS REQUESTED BY POLICY MAKERS, TO PRODUCE REPORTS USING THE DATA, TO DO TRAINING IN HOW TO ANALYZE THE SURVEY DATA, AND TO BE THE ED EXPERTS ON NEW AND EMERGING TOPICS RELATED TO TEACHER QUALITY, PRINCIPALS AS INSTRUCTIONAL LEADERS, SCHOOL CLIMATE, SCHOOL STAFFING, TEACHER WORKING CONDITIONS, SCHOOL DISTRICT POLICIES, PRIVATE SCHOOLS, AND TEACHER AND PRINCIPAL ATTRITION AND MOBILITY.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review WESTAT, INC. and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "WESTAT, INC.",
+        "revenue_pathway": "sell_to_agency",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "school staffing",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2022-11-30",
+        "reasoning": [
+          "Matched search term: school staffing",
+          "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2022-11-30"
+        }
+      }
+    },
+    {
+      "id": "df37d5df-239d-4a18-86ac-89e96ff21d5d",
+      "title": "LADGOV CORP received $29,346: Prop 28, arts education, and teaching artist staffing",
+      "created_at": "2026-06-30T20:54:27.101Z",
+      "raw_json": {
+        "opportunity_title": "LADGOV CORP received $29,346: Prop 28, arts education, and teaching artist staffing",
+        "external_evidence_summary": "PROCUREMENT ACTION  MUSICIAN TUTORS (TEACHING ARTISTS) FOR MIDSHIPMEN IN THE USMMA REGIMENTAL BAND",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review LADGOV CORP and Department of Transportation under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Transportation",
+        "likely_buyer_or_partner": "LADGOV CORP",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "teaching artists",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-09-23",
+        "reasoning": [
+          "Matched search term: teaching artists",
+          "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-09-23"
+        }
+      }
+    },
+    {
+      "id": "426fa273-475e-4b0a-b9ca-9f53f633bcca",
+      "title": "TREWON TECHNOLOGIES LLC received $989,054: K-12 hiring, teacher staffing, and educator workforce",
+      "created_at": "2026-06-30T20:54:27.155Z",
+      "raw_json": {
+        "opportunity_title": "TREWON TECHNOLOGIES LLC received $989,054: K-12 hiring, teacher staffing, and educator workforce",
+        "external_evidence_summary": "THE PURPOSE OF TEACHER SHORTAGE AREAS IS TO BE A REFERENCE TOOL TO SHOW WHERE STATES AND SCHOOLS ARE LOOKING TO HIRE ACADEMIC ADMINISTRATORS AND LICENSED TEACHERS.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review TREWON TECHNOLOGIES LLC and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "TREWON TECHNOLOGIES LLC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "teacher shortage",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-09-26",
+        "reasoning": [
+          "Matched search term: teacher shortage",
+          "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-09-26"
+        }
+      }
+    },
+    {
+      "id": "c6cc94dd-a79a-47e4-9658-1cab6cfe66ef",
+      "title": "FM TALENT SOURCE, LLC received $547,714: Prop 28, arts education, and teaching artist staffing",
+      "created_at": "2026-06-30T20:54:27.207Z",
+      "raw_json": {
+        "opportunity_title": "FM TALENT SOURCE, LLC received $547,714: Prop 28, arts education, and teaching artist staffing",
+        "external_evidence_summary": "THE PURPOSE OF THIS BPA CALL IS ACQUIRE LOGISTICAL SUPPORT FOR THE FOLLOWING FOUR (4) FY 2018 GRANT COMPETITIONS:  ASSISTANCE FOR THE ARTS EDUCATION (AAE) PROGRAMS-ASSISTANCE FOR ARTS EDUCATION MODEL DEVELOPMENT AND DISSEMINATION (AEMDD) AND ASSISTANCE FOR ARTS EDUCATION COMMUNITY AND NATIONAL OUTREACH (AENP); THE PROMISE NEIGHBORHOODS (PN) PROGRAM; AND THE FULL-SERVICE COMMUNITY SCHOOLS (FSCS) PROGRAM. THE CONTRACTOR SHALL BE RESPONSIBLE FOR ESTABLISHING THE REVIEW ACCORDING TO THE TASKS AS DESCRIBED IN THE CONTRACT PERFORMANCE WORK STATEMENT.",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review FM TALENT SOURCE, LLC and Department of Education under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "FM TALENT SOURCE, LLC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "arts education",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2019-09-30",
+        "reasoning": [
+          "Matched search term: arts education",
+          "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2019-09-30"
+        }
+      }
+    },
+    {
+      "id": "6506195c-3b14-4196-9f73-720fda85f8e5",
+      "title": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS received $32,000,000: Prop 28, arts education, and teaching artist staffing",
+      "created_at": "2026-06-30T20:54:27.259Z",
+      "raw_json": {
+        "opportunity_title": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS received $32,000,000: Prop 28, arts education, and teaching artist staffing",
+        "external_evidence_summary": "KENNEDY CENTER NATIONAL ARTS EDUCATION PROGRAM",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS and Department of Education under the \"Prop 28, arts education, and teaching artist staffing\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "JOHN F KENNEDY CENTER FOR THE PERFORMING ARTS",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "arts education",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-09-30",
+        "reasoning": [
+          "Matched search term: arts education",
+          "Inferred lane: Prop 28, arts education, and teaching artist staffing",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-09-30"
+        }
+      }
+    },
+    {
+      "id": "0a7ea49a-0fb9-41a4-9138-b2c785a5db3c",
+      "title": "VOLUNTEER TENNESSEE received $7,249,561: K-12 hiring, teacher staffing, and educator workforce",
+      "created_at": "2026-06-30T20:54:27.313Z",
+      "raw_json": {
+        "opportunity_title": "VOLUNTEER TENNESSEE received $7,249,561: K-12 hiring, teacher staffing, and educator workforce",
+        "external_evidence_summary": "THIS AWARD FUNDS THE APPROVED 2022?23 AMERICORPS FORMULA FIXED AMOUNT PROGRAMS, AS LISTED ON THE APPROVED PROGRAM SUMMARY CHART. THIS AWARD IS A FIXED AMOUNT GRANT AT $4,644 PER MSY (KNOXVILLE KNOX COUNTY COMMUNITY ACTION COMMITTEE: $19,825 PER MSY; MEMPHIS TEACHER RESIDENCY, INC.: $21,600 PER MSY; PORTER-LEATH: $21,600 PER MSY; RELAY GRADUATE SCHOOL OF EDUCATION: $1,000 PER MSY; TEACH FOR AMERICA, INC./TEACH FOR AMERICA-MEMPHIS: $1,000 PER MSY; TEACH FOR AMERICA, INC./TEACH FOR AMERICA NASHVILLE: $1,000 PER MSY.) NO MEMBER MAY ENROLL PRIOR TO THE APPROVED START DATE OF THE MEMBER ENROLLMENT PERIOD.\n\nKNOXVILLE KNOX COUNTY COMMUNITY ACTION COMMITTEE: FUND CURRENT ACTIVITIES. TO DO THIS, WE WILL EXPAND SERVICE BY INCREASING THE NUMBER OF SLOTS BY 40 (FT).\n\nPORTER LEATH: FUND CURRENT ACTIVITIES. TO DO THIS, WE WILL EXPAND SERVICE BY INCREASING THE NUMBER OF SLOTS BY 18 (FT).\n\nRELAY GRADUATE SCHOOL OF EDUCATION: FUND CURRENT ACTIVITIES. TO DO THIS, WE WILL EXPAND SERVICE BY INCREASING THE NUMBER OF SLOTS BY 140 (FT).",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review VOLUNTEER TENNESSEE and Corporation for National and Community Service under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Corporation for National and Community Service",
+        "likely_buyer_or_partner": "VOLUNTEER TENNESSEE",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "teacher residency",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-08-31",
+        "reasoning": [
+          "Matched search term: teacher residency",
+          "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-08-31"
+        }
+      }
+    },
+    {
+      "id": "b66ff2ed-dc96-4886-bad4-d7c867cefee3",
+      "title": "DOMESTIC AWARDEES (UNDISCLOSED) received $23,732: Cultural programming, live events, and public arts buyers",
+      "created_at": "2026-06-30T20:54:27.369Z",
+      "raw_json": {
+        "opportunity_title": "DOMESTIC AWARDEES (UNDISCLOSED) received $23,732: Cultural programming, live events, and public arts buyers",
+        "external_evidence_summary": "PR12009120 - GOSPEL MUSIC EDUCATIONAL PROGRAM",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review DOMESTIC AWARDEES (UNDISCLOSED) and Department of State under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of State",
+        "likely_buyer_or_partner": "DOMESTIC AWARDEES (UNDISCLOSED)",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "music education",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2023-09-30",
+        "reasoning": [
+          "Matched search term: music education",
+          "Inferred lane: Cultural programming, live events, and public arts buyers",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2023-09-30"
+        }
+      }
+    },
+    {
+      "id": "83b45b7b-6366-4d99-8882-afcfcd7752b6",
+      "title": "THE CARNEGIE HALL CORPORATION received $1,000,000: Cultural programming, live events, and public arts buyers",
+      "created_at": "2026-06-30T20:54:27.428Z",
+      "raw_json": {
+        "opportunity_title": "THE CARNEGIE HALL CORPORATION received $1,000,000: Cultural programming, live events, and public arts buyers",
+        "external_evidence_summary": "NYO2 PROGRAM: EXPANDING, IMPROVING, AND INNOVATING MUSIC EDUCATION FOR UNDERSERVED STUDENTS",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review THE CARNEGIE HALL CORPORATION and Department of Education under the \"Cultural programming, live events, and public arts buyers\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "THE CARNEGIE HALL CORPORATION",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "music education",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-09-30",
+        "reasoning": [
+          "Matched search term: music education",
+          "Inferred lane: Cultural programming, live events, and public arts buyers",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-09-30"
+        }
+      }
+    },
+    {
+      "id": "585c5da2-b741-4455-8706-143da36e66ce",
+      "title": "MATHEMATICA INC. received $6,915,826: K-12 hiring, teacher staffing, and educator workforce",
+      "created_at": "2026-06-30T20:54:27.483Z",
+      "raw_json": {
+        "opportunity_title": "MATHEMATICA INC. received $6,915,826: K-12 hiring, teacher staffing, and educator workforce",
+        "external_evidence_summary": "DEP. OF ED. INSTITUTE OF ED. SCIENCES REQUIRES A CONTRACT TO ASSESS THE FEASIBILITY OF CONDUCTING AN IMPACT EVALUATION OF TEACHER RESIDENCY PROGRAMS AND STUDY DESIGN",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review MATHEMATICA INC. and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "MATHEMATICA INC.",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "teacher residency",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-02-10",
+        "reasoning": [
+          "Matched search term: teacher residency",
+          "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-02-10"
+        }
+      }
+    },
+    {
+      "id": "0c255f90-5ea6-4582-a7a4-c68666bcd3d2",
+      "title": "KAMEDDATA.COM, INC. received $42,295: Government HR, job board, and recruiting technology procurement",
+      "created_at": "2026-06-30T20:54:27.537Z",
+      "raw_json": {
+        "opportunity_title": "KAMEDDATA.COM, INC. received $42,295: Government HR, job board, and recruiting technology procurement",
+        "external_evidence_summary": "NRS APPLICANT TRACKING SYSTEM BRIDGE",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review KAMEDDATA.COM, INC. and Department of Veterans Affairs under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Veterans Affairs",
+        "likely_buyer_or_partner": "KAMEDDATA.COM, INC.",
+        "revenue_pathway": "sell_to_agency",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "applicant tracking system",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2027-03-31",
+        "reasoning": [
+          "Matched search term: applicant tracking system",
+          "Inferred lane: Government HR, job board, and recruiting technology procurement",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2027-03-31"
+        }
+      }
+    },
+    {
+      "id": "61d9d7fd-1979-48ae-96bb-adc31508eebb",
+      "title": "YOUR RECRUITING COMPANY, INC. received $15,919,221: Government HR, job board, and recruiting technology procurement",
+      "created_at": "2026-06-30T20:54:27.605Z",
+      "raw_json": {
+        "opportunity_title": "YOUR RECRUITING COMPANY, INC. received $15,919,221: Government HR, job board, and recruiting technology procurement",
+        "external_evidence_summary": "OPM HRS TALENT ACQUISITION SERVICES",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review YOUR RECRUITING COMPANY, INC. and General Services Administration under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "General Services Administration",
+        "likely_buyer_or_partner": "YOUR RECRUITING COMPANY, INC.",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "talent acquisition",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-05-22",
+        "reasoning": [
+          "Matched search term: talent acquisition",
+          "Inferred lane: Government HR, job board, and recruiting technology procurement",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-05-22"
+        }
+      }
+    },
+    {
+      "id": "d3521b61-028e-42aa-8afa-d7828182f684",
+      "title": "CENTER FOR COLLABORATIVE EDUCATION INC received $2,196,822: K-12 hiring, teacher staffing, and educator workforce",
+      "created_at": "2026-06-30T20:54:27.660Z",
+      "raw_json": {
+        "opportunity_title": "CENTER FOR COLLABORATIVE EDUCATION INC received $2,196,822: K-12 hiring, teacher staffing, and educator workforce",
+        "external_evidence_summary": "COLLECTIVE OWNERSHIP GROW-YOUR-OWN EDUCATOR PIPELINE",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review CENTER FOR COLLABORATIVE EDUCATION INC and Department of Education under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Education",
+        "likely_buyer_or_partner": "CENTER FOR COLLABORATIVE EDUCATION INC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "educator pipeline",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2025-02-12",
+        "reasoning": [
+          "Matched search term: educator pipeline",
+          "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2025-02-12"
+        }
+      }
+    },
+    {
+      "id": "83a6c81b-848c-4b52-8b8b-d7267af78b80",
+      "title": "COPPER RIVER TECHNOLOGIES, LLC received $2,738,819: Government HR, job board, and recruiting technology procurement",
+      "created_at": "2026-06-30T20:54:27.716Z",
+      "raw_json": {
+        "opportunity_title": "COPPER RIVER TECHNOLOGIES, LLC received $2,738,819: Government HR, job board, and recruiting technology procurement",
+        "external_evidence_summary": "GTM APPLICANT TRACKING SYSTEM - AVATURE SOFTWARE",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review COPPER RIVER TECHNOLOGIES, LLC and Department of State under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of State",
+        "likely_buyer_or_partner": "COPPER RIVER TECHNOLOGIES, LLC",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "applicant tracking system",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2026-07-10",
+        "reasoning": [
+          "Matched search term: applicant tracking system",
+          "Inferred lane: Government HR, job board, and recruiting technology procurement",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2026-07-10"
+        }
+      }
+    },
+    {
+      "id": "6799f74f-9f75-4921-beda-5c29b0c7e44d",
+      "title": "METRO REGIONAL TRANSIT AUTHORITY received $43,004,588: Government HR, job board, and recruiting technology procurement",
+      "created_at": "2026-06-30T20:54:27.772Z",
+      "raw_json": {
+        "opportunity_title": "METRO REGIONAL TRANSIT AUTHORITY received $43,004,588: Government HR, job board, and recruiting technology procurement",
+        "external_evidence_summary": "APPLICATION PURPOSE: THIS GRANT IS TO ADD MULTIPLE SOURCES OF FEDERAL FUNDING TO COVER COSTS OF CAPITAL PROJECTS AND PREVENTATIVE MAINTENANCE. THIS FUNDING WILL HELP ASSIST METRO RTA IN SPENDING ADDITIONAL LOCAL DOLLARS ON OPERATIONAL ACTIVITIES.; ACTIVITIES PERFORMED: THE PROJECTS AND ACTIVITIES INCLUDED IN THIS GRANT INCLUDE: THIRTY CNG REPLACEMENT BUSES TWO ELECTRIC BUSES TO REPLACE TWO EXISTING 40 FOOT DIESEL BUSES DESIGN COSTS FOR A NEW MAINTENANCE AND OPERATIONS FACILITY. PREVENTATIVE MAINTENANCE IT HARDWARE SOFTWARE AND SHOP EQUIPMENT. THIS GRANT WILL CONTAIN 7 PROJECTS WITH MULTIPLE YEARS AND TYPES OF FUNDING. THE LARGE BUS PROJECT WILL BE SPLIT INTO 3 SEPARATE PROJECTS BASED ON FUNDING SOURCES AND YEARS. THE ELECTRIC BUS PROJECT WILL BE SPLIT INTO 3 SEPARATE PROJECTS BASED ON FUNDING SOURCES AND YEARS.; EXPECTED OUTCOMES: THESE PROJECTS HAVE BENEFITS TO THE ORGANIZATION AND THE REGION AS A WHOLE. THE PURCHASE OF CNG AND ELECTRIC VEHICLES WILL HELP REDUCE HARMFUL EMISSIONS THROUGHOUT AREAS OF PERSISTENT POVERTY WHERE METRO PROVIDES THE MOST FREQUENT SERVICE. THE DESIGN OF A NEW MAINTENANCE AND OPERATIONS FACILITY ALLOWS METRO TO MAINTAIN A STATE OF GOOD REPAIR CREATE EFFICIENCIES IN OUR OPERATIONS AND PROVIDE SPACE TO ADAPT AND GROW INTO NEW SERVICE MODELS AND TECHNOLOGIES. THE MAINTENANCE AND OPERATIONS CONSTRUCTION PROJECT HAS A GOAL OF ACHIEVING LEED-PLATINUM CERTIFICATION TO REDUCE CARBON EMISSIONS ENERGY AND WASTE CONSERVE WATER PRIORITIZE SAFER MATERIALS AND LOWER OUR EXPOSURE TO TOXINS. NEW TECHNOLOGIES SUCH AS A NEW HUMAN RESOURCES SOFTWARE WILL HELP ADMINISTRATIVE STAFF IMPROVE DAY-TO DAY FUNCTIONALITY. HARDWARE SUCH AS NEW SERVER FIREWALL AND SWITCHES FOR FASTER WI-FI SPEEDS WILL IMPROVE SERVICE CONVENIENCE AND EFFICIENCY. PREVENTATIVE MAINTENANCE SHOP EQUIPMENT AND CONCRETE REHAB WORK WILL HELP METRO RTA REMAIN IN A STATE OF GOOD REPAIR.; INTENDED BENEFICIARIES: THE CITIZENS OF SUMMIT COUNTY AND THE AKRON UZA REGION. THE PASSENGERS THAT UTILIZE OUR SERVICE AND EMPLOYEES OF METRO RTA.; SUBRECIPIENT ACTIVITIES: NONE",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review METRO REGIONAL TRANSIT AUTHORITY and Department of Transportation under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Transportation",
+        "likely_buyer_or_partner": "METRO REGIONAL TRANSIT AUTHORITY",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "human resources software",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2028-03-30",
+        "reasoning": [
+          "Matched search term: human resources software",
+          "Inferred lane: Government HR, job board, and recruiting technology procurement",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2028-03-30"
+        }
+      }
+    },
+    {
+      "id": "251428f0-0d6a-4199-96cf-87616163ae35",
+      "title": "BUSINESS MANAGEMENT ASSOCIATES INC. received $10,963,980: Government HR, job board, and recruiting technology procurement",
+      "created_at": "2026-06-30T20:54:27.827Z",
+      "raw_json": {
+        "opportunity_title": "BUSINESS MANAGEMENT ASSOCIATES INC. received $10,963,980: Government HR, job board, and recruiting technology procurement",
+        "external_evidence_summary": "THIS NEW TASK ORDER IS TO OBTAIN HR INFRASTRUCTURE TALENT ACQUISITION & OUTREACH SUPPORT SERVICES. PERIOD OF PERFORMANCE 02/22/2022 TO 02/21/2027 THIS IS A TIME-AND-MATERIAL TASK ORDER ISSUED AGAINST GSA SCHEDULE CONTRACT GS-02F-0156AA. TASK A",
+        "why_it_matters": "This is evidence that public money has flowed into an adjacent category, agency, or recipient market.",
+        "recommended_action": "Review BUSINESS MANAGEMENT ASSOCIATES INC. and Department of Energy under the \"Government HR, job board, and recruiting technology procurement\" pathway; look for procurement contacts, grantee relationships, or similar buyers.",
+        "agency_or_funder": "Department of Energy",
+        "likely_buyer_or_partner": "BUSINESS MANAGEMENT ASSOCIATES INC.",
+        "revenue_pathway": "sell_to_grantee",
+        "actionability": "maybe",
+        "confidence_score": 76,
+        "query_used": "talent acquisition",
+        "source_name": "USAspending.gov",
+        "source_type": "historical_award",
+        "deadline": "2027-05-15",
+        "reasoning": [
+          "Matched search term: talent acquisition",
+          "Inferred lane: Government HR, job board, and recruiting technology procurement",
+          "USAspending records historical federal award activity.",
+          "Treat as a funded-buyer or market-map signal, not proof of eligibility."
+        ],
+        "raw_json": {
+          "End Date": "2027-05-15"
+        }
+      }
+    },
+    {
+      "id": "70c164d1-294d-425c-bd70-39f5af039090",
+      "title": "Grants.gov posted: Office of Elementary and Secondary Education (OESE): Comprehensive Centers Program: National Comprehensive Center on Improving Literacy for Students with Disabilities; ALN 84.283D",
+      "created_at": "2026-06-30T20:54:27.882Z",
+      "raw_json": {
+        "opportunity_title": "Grants.gov posted: Office of Elementary and Secondary Education (OESE): Comprehensive Centers Program: National Comprehensive Center on Improving Literacy for Students with Disabilities; ALN 84.283D",
+        "external_evidence_summary": "<p>Program Description: The purpose of the Comprehensive Centers (CC) program is to provide capacity-building services to state educational agencies (SEAs), regional educational agencies (REAs), local educational agencies (LEAs), and schools that improve educational opportunities and student outcomes, close achievement gaps, and improve the quality of instruction for all students, particularly for groups of students with the greatest need. The Department intends to fund one Content Center, a National Comprehensive Center on Improving Literacy for Students with Disabilities (NCIL) focused on children in early childhood education programs through high school at risk of not attaining full literacy skills due to a disability, including dyslexia impacting reading or writing, or developmental delay impacting reading, writing, language processing, comprehension, or executive functioning.</p>\n<p><br></p>\n<p>Assistance Listing Number: 84.283D</p>\n<p><br></p>\n<p><strong>Applicants are required to follow the 2025 Common Instructions for Applicants to Department of Education Discretionary Grant Programs</strong>, published in the Federal Register on August 29, 2025 (90 FR 42234) and available at <a href=\"https://www.federalregister.gov/documents/2025/08/29/2025-16571/common-instructions-and-information-for-applicants-to-department-of-education-discretionary-grant\" target=\"_blank\" style=\"color: rgb(70, 120, 133);\">ED 2025 Common Instructions</a>.</p>\n<p><br></p>\n<p><em>Note: </em>For new potential grantees unfamiliar with grantmaking at ED, please consult our “<a href=\"http://www.ed.gov/grants-and-programs/apply-grant/getting-started-discretionary-grant-applications\" target=\"_blank\" style=\"color: rgb(70, 120, 133);\">Getting Started with Discretionary Grant Applications</a>” webpage.</p>\n<p><br></p> | Award range none-1500000 | Eligible applicants: Others (see text field entitled \"Additional Information on Eligibility\" for clarification)",
+        "why_it_matters": "This is an active or forecasted funding signal that may create funded buyer, grantee, partner, or program demand.",
+        "recommended_action": "Track likely grantees and eligible applicants under the \"Aging, disability, and community care\" pathway; use the agency contact for program questions, not as the sales decision-maker.",
+        "agency_or_funder": "Holly Clark\nManagement and Program Analyst",
+        "likely_buyer_or_partner": "Eligible applicants or future award recipients",
+        "revenue_pathway": "partner_with_recipient",
+        "actionability": "maybe",
+        "confidence_score": 80,
+        "query_used": "state education agency grants",
+        "source_name": "Grants.gov",
+        "source_type": "active_grant",
+        "deadline": "06/30/2026",
+        "reasoning": [
+          "Matched search term: state education agency grants",
+          "Inferred lane: Aging, disability, and community care",
+          "Grants.gov status: posted",
+          "Treat this as a funded-buyer or partner signal; do not treat the grant contact as the sales buyer."
+        ]
+      }
+    },
+    {
+      "id": "6a78531f-6f71-4ad2-b9d9-cf14d036a8fd",
+      "title": "Grants.gov posted: Talent Search Program",
+      "created_at": "2026-06-30T20:54:27.937Z",
+      "raw_json": {
+        "opportunity_title": "Grants.gov posted: Talent Search Program",
+        "external_evidence_summary": "<p>The Employment and Training Administration at the U.S. Department of Labor (Labor), is soliciting applications in support of the administration of the Talent Search Program (TS) on behalf of the U.S. Department of Education (ED). The purpose of the Talent Search Program is to identify qualified individuals from disadvantaged backgrounds with potential for education at the postsecondary level and encourage them to complete secondary school and undertake postsecondary education. Talent Search projects publicize the availability of, and facilitate the application for, student financial assistance for persons who seek to pursue postsecondary education, and encourage persons who have not completed programs at the secondary or postsecondary level to enter or reenter and complete these programs.We encourage prospective applicants and interested parties to use the Grants.gov subscription option to register for future updates provided for this particular Announcement Notification and Instructions.</p> | Award range 250000-10000000 | Eligible applicants: Native American tribal organizations (other than Federally recognized tribal governments), State governments, Public and State controlled institutions of higher education, Private institutions of higher education, Others (see text field entitled \"Additional Information on Eligibility\" for clarification), Independent school districts, Native American tribal governments (Federally recognized), Nonprofits having a 501(c)(3) status with the IRS, other than institutions of higher education",
+        "why_it_matters": "This is an active or forecasted grant opportunity where the company may be able to evaluate direct eligibility.",
+        "recommended_action": "Review eligibility and contact the Grants.gov program contact for fit under the \"K-12 hiring, teacher staffing, and educator workforce\" pathway.",
+        "agency_or_funder": "Office of Postsecondary Education",
+        "likely_buyer_or_partner": "Office of Postsecondary Education",
+        "revenue_pathway": "direct_apply",
+        "actionability": "maybe",
+        "confidence_score": 80,
+        "query_used": "talent acquisition",
+        "source_name": "Grants.gov",
+        "source_type": "active_grant",
+        "deadline": "07/09/2026",
+        "reasoning": [
+          "Matched search term: talent acquisition",
+          "Inferred lane: K-12 hiring, teacher staffing, and educator workforce",
+          "Grants.gov status: posted",
+          "Treat the agency contact as a program/eligibility contact."
+        ]
+      }
+    }
+  ]
+}

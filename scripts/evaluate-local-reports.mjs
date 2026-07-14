@@ -1,7 +1,11 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-const dataPath = path.join(process.cwd(), ".data", "local-db.json");
+const dataPath = process.env.REPORT_QUALITY_DATA_PATH
+  ? path.resolve(process.cwd(), process.env.REPORT_QUALITY_DATA_PATH)
+  : process.env.CI
+  ? path.join(process.cwd(), "fixtures", "report-quality-regressions.json")
+  : path.join(process.cwd(), ".data", "local-db.json");
 const outputPath = path.join(process.cwd(), "output", "quality", "report-quality-latest.json");
 const currentDate = new Date().toISOString().slice(0, 10);
 const defaultCompanyMatchers = [
