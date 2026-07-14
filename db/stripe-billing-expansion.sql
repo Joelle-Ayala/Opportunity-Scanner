@@ -33,12 +33,18 @@ create table if not exists stripe_report_access_grants (
   stripe_payment_intent_id text unique check (
     stripe_payment_intent_id is null or stripe_payment_intent_id ~ '^pi_[A-Za-z0-9]+$'
   ),
-  status text not null check (status in ('active', 'refunded')),
+  status text not null check (status in ('active', 'refunded', 'disputed')),
   granted_at timestamptz not null default now(),
   revoked_at timestamptz,
   stripe_event_created_at timestamptz not null,
   updated_at timestamptz not null default now()
 );
+
+alter table stripe_report_access_grants
+  drop constraint if exists stripe_report_access_grants_status_check;
+alter table stripe_report_access_grants
+  add constraint stripe_report_access_grants_status_check
+  check (status in ('active', 'refunded', 'disputed'));
 
 create table if not exists stripe_webhook_events (
   stripe_event_id text primary key check (stripe_event_id ~ '^evt_[A-Za-z0-9]+$'),
@@ -76,7 +82,7 @@ declare
   v_subscription_id text;
   v_product text;
   v_interval text;
-  v_expected_price_id text;
+  v_price_id text;
   v_scan_id uuid;
   v_period_start timestamptz;
   v_period_end timestamptz;
@@ -137,8 +143,6 @@ begin
       and v_object->>'payment_status' = 'paid'
       and v_object #>> '{metadata,product}' = 'report'
       and v_object #>> '{metadata,price_id}' = p_price_catalog->>'report'
-      and (v_object->>'amount_total')::bigint = 4900
-      and lower(v_object->>'currency') = 'usd'
     then
       if coalesce(v_object #>> '{metadata,scan_id}', '') !~
         '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
@@ -173,21 +177,18 @@ begin
   elsif p_event_type in ('customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted') then
     v_subscription_id := v_object->>'id';
     v_customer_id := v_object->>'customer';
-    v_product := nullif(v_object #>> '{metadata,product}', '');
-    v_interval := nullif(v_object #>> '{metadata,billing_interval}', '');
+    v_price_id := nullif(v_object #>> '{items,data,0,price,id}', '');
     if v_subscription_id !~ '^sub_[A-Za-z0-9]+$' or v_customer_id !~ '^cus_[A-Za-z0-9]+$' then
       raise exception 'Invalid Stripe subscription';
     end if;
-    if v_product is not null and v_product not in ('monitor', 'growth') then raise exception 'Invalid subscription product'; end if;
-    if v_interval is not null and v_interval not in ('monthly', 'annual') then raise exception 'Invalid billing interval'; end if;
-    if v_product is not null and v_interval is not null then
-      v_expected_price_id := p_price_catalog->>(v_product || case when v_interval = 'monthly' then 'Monthly' else 'Annual' end);
-      if coalesce(v_expected_price_id, '') = ''
-        or coalesce(v_object #>> '{items,data,0,price,id}', '') <> v_expected_price_id
-      then
-        raise exception 'Subscription Price does not match the server catalog';
-      end if;
-    end if;
+    -- Price is authoritative because portal plan changes do not rewrite subscription metadata.
+    case v_price_id
+      when p_price_catalog->>'monitorMonthly' then v_product := 'monitor'; v_interval := 'monthly';
+      when p_price_catalog->>'monitorAnnual' then v_product := 'monitor'; v_interval := 'annual';
+      when p_price_catalog->>'growthMonthly' then v_product := 'growth'; v_interval := 'monthly';
+      when p_price_catalog->>'growthAnnual' then v_product := 'growth'; v_interval := 'annual';
+      else raise exception 'Subscription Price does not match the server catalog';
+    end case;
 
     if coalesce(v_object->>'current_period_start', '') ~ '^[0-9]+$' then
       v_period_start := to_timestamp((v_object->>'current_period_start')::double precision);
@@ -224,7 +225,7 @@ begin
     ) values (
       v_subscription_id,
       v_customer_id,
-      nullif(v_object #>> '{items,data,0,price,id}', ''),
+      v_price_id,
       v_product,
       v_interval,
       case when p_event_type = 'customer.subscription.deleted' then 'canceled' else coalesce(v_object->>'status', 'unknown') end,
@@ -259,9 +260,32 @@ begin
         and excluded.status = 'canceled'
       );
 
+  elsif p_event_type in ('invoice.payment_failed', 'invoice.payment_action_required') then
+    v_subscription_id := coalesce(
+      nullif(v_object->>'subscription', ''),
+      nullif(v_object #>> '{parent,subscription_details,subscription}', '')
+    );
+    if v_subscription_id ~ '^sub_[A-Za-z0-9]+$' then
+      update stripe_subscriptions
+      set status = case
+          when p_event_type = 'invoice.payment_failed' then 'past_due'
+          else 'incomplete'
+        end,
+        stripe_event_created_at = p_stripe_created_at,
+        updated_at = now()
+      where stripe_subscription_id = v_subscription_id
+        and stripe_event_created_at <= p_stripe_created_at;
+    end if;
+
   elsif p_event_type = 'charge.refunded' and coalesce((v_object->>'refunded')::boolean, false) then
     update stripe_report_access_grants
     set status = 'refunded', revoked_at = now(), stripe_event_created_at = p_stripe_created_at, updated_at = now()
+    where stripe_payment_intent_id = v_object->>'payment_intent'
+      and stripe_event_created_at <= p_stripe_created_at;
+
+  elsif p_event_type = 'charge.dispute.created' then
+    update stripe_report_access_grants
+    set status = 'disputed', revoked_at = now(), stripe_event_created_at = p_stripe_created_at, updated_at = now()
     where stripe_payment_intent_id = v_object->>'payment_intent'
       and stripe_event_created_at <= p_stripe_created_at;
   end if;

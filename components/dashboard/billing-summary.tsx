@@ -11,7 +11,7 @@ export interface BillingInvoiceRow {
 
 export interface BillingSummaryProps {
   planName: string;
-  planPriceLabel: string;
+  subscriptionStatus: "active" | "trialing" | "none";
   planIntervalLabel?: string;
   renewalLabel?: string;
   paymentMethodLabel?: string;
@@ -23,15 +23,19 @@ export interface BillingSummaryProps {
 
 export function BillingSummary({
   planName,
-  planPriceLabel,
+  subscriptionStatus,
   planIntervalLabel,
   renewalLabel,
   paymentMethodLabel,
   paymentMethodDetail,
-  invoices = [],
+  invoices,
   manageAction,
   upgradeAction
 }: BillingSummaryProps) {
+  const hasSubscription = subscriptionStatus === "active" || subscriptionStatus === "trialing";
+  const statusLabel = subscriptionStatus === "trialing" ? "Trial" : hasSubscription ? "Active" : "No subscription";
+  const hasPaymentMethodData = Boolean(paymentMethodLabel || paymentMethodDetail);
+
   return (
     <div className="grid gap-6">
       <section className="overflow-hidden rounded-lg border border-line bg-white" aria-labelledby="billing-plan-title">
@@ -39,26 +43,25 @@ export function BillingSummary({
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-xs font-semibold uppercase text-muted">Subscription</p>
-              <DashboardStatusBadge tone="success">Active</DashboardStatusBadge>
+              <DashboardStatusBadge tone={hasSubscription ? "success" : "neutral"}>{statusLabel}</DashboardStatusBadge>
             </div>
             <h2 id="billing-plan-title" className="mt-2 text-xl font-semibold text-ink">{planName}</h2>
-            <p className="mt-1 text-sm text-muted">{renewalLabel || "Plan remains active until changed."}</p>
+            <p className="mt-1 text-sm text-muted">
+              {hasSubscription ? renewalLabel || "Recurring monitoring is enabled." : "No recurring monitoring plan is active."}
+            </p>
           </div>
-          <div className="text-left sm:text-right">
-            <p className="text-2xl font-semibold text-ink">{planPriceLabel}</p>
-            {planIntervalLabel ? <p className="mt-1 text-sm text-muted">{planIntervalLabel}</p> : null}
-          </div>
+          {hasSubscription && planIntervalLabel ? <p className="text-sm font-semibold capitalize text-steel">{planIntervalLabel} billing</p> : null}
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <div>
+        {hasPaymentMethodData || manageAction || upgradeAction ? <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+          {hasPaymentMethodData ? <div>
             <p className="text-sm font-semibold text-ink">Payment method</p>
-            <p className="mt-1 text-sm text-muted">{paymentMethodLabel || "No payment method on file"}{paymentMethodDetail ? ` / ${paymentMethodDetail}` : ""}</p>
-          </div>
+            <p className="mt-1 text-sm text-muted">{[paymentMethodLabel, paymentMethodDetail].filter(Boolean).join(" / ")}</p>
+          </div> : <div />}
           <div className="flex flex-wrap gap-2">{manageAction}{upgradeAction}</div>
-        </div>
+        </div> : null}
       </section>
 
-      <section aria-labelledby="billing-history-title">
+      {invoices !== undefined ? <section aria-labelledby="billing-history-title">
         <div className="flex items-end justify-between gap-3">
           <div>
             <h2 id="billing-history-title" className="text-lg font-semibold text-ink">Billing history</h2>
@@ -67,7 +70,7 @@ export function BillingSummary({
         </div>
         <div className="mt-4 overflow-hidden rounded-lg border border-line bg-white">
           {invoices.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-muted">No invoices are available yet.</p>
+            <p className="px-5 py-10 text-center text-sm text-muted">No invoices found.</p>
           ) : (
             <div className="divide-y divide-line">
               {invoices.map((invoice) => (
@@ -88,7 +91,7 @@ export function BillingSummary({
             </div>
           )}
         </div>
-      </section>
+      </section> : null}
     </div>
   );
 }

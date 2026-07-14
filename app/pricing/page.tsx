@@ -106,7 +106,7 @@ const faqs = [
   {
     question: "Can I buy a paid plan today?",
     answer:
-      "The free scan is available now. Self-serve paid checkout will open with the revenue-rails rollout; starting with a free scan gives you the right profile and results to upgrade when checkout launches."
+      "Paid checkout is temporarily unavailable. Run a free scan now and return to pricing when checkout is restored."
   }
 ];
 
@@ -237,7 +237,7 @@ export default function PricingPage({
         </div>
         {!checkoutEnabled ? (
           <p className="mt-4 text-center text-xs leading-5 text-muted">
-            Paid self-serve checkout is coming in the revenue-rails rollout. The free scan is available now.
+            Paid checkout is temporarily unavailable. The free scan is available now.
           </p>
         ) : null}
       </section>

@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { getStripeServerConfig, priceFor } from "../lib/payments/config.ts";
-import { validateCheckoutInput, validatePortalInput } from "../lib/payments/contract.ts";
+import { validateCheckoutInput } from "../lib/payments/contract.ts";
+import { handleBillingPortal, handleCheckout } from "../lib/payments/handlers.ts";
 import { verifyStripeSignature } from "../lib/payments/signature.ts";
+import { createCheckoutSession } from "../lib/payments/stripeApi.ts";
 
 const ENV_NAMES = [
   "STRIPE_SECRET_KEY",
@@ -103,10 +105,90 @@ test("requires a scan only for Report and a request UUID for Stripe idempotency"
   assert.equal(validateCheckoutInput(checkout({ plan: "growth", billingInterval: "monthly" })).ok, false);
 });
 
-test("portal accepts only a Checkout Session capability, never a customer ID", () => {
-  assert.equal(validatePortalInput({ checkoutSessionId: "cs_test_abc123" }).ok, true);
-  assert.equal(validatePortalInput({ customerId: "cus_attacker" }).ok, false);
-  assert.equal(validatePortalInput({ checkoutSessionId: "cus_attacker" }).ok, false);
+test("checkout handler uses verified account identity and sends anonymous Report buyers through sign-in", async () => {
+  installTestEnv();
+  const captured = [];
+  const dependencies = {
+    getConfig: getStripeServerConfig,
+    scanExists: async () => true,
+    createSession: async (input) => {
+      captured.push(input);
+      return { id: `cs_test_${captured.length}`, url: "https://checkout.stripe.com/c/pay/test" };
+    }
+  };
+  const request = () => new Request("https://scanner.example.test/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(checkout())
+  });
+
+  assert.equal((await handleCheckout(request(), null, dependencies)).status, 201);
+  assert.equal(captured[0].email, "buyer@example.com");
+  assert.equal(captured[0].customerId, null);
+  assert.equal(
+    captured[0].successUrl,
+    "https://scanner.example.test/auth/sign-in?next=%2Freports%2F91a3e66c-2c07-46cf-ab0c-3768375e050a%3Fcheckout%3Dsuccess%26session_id%3D{CHECKOUT_SESSION_ID}"
+  );
+
+  assert.equal((await handleCheckout(request(), {
+    verifiedEmail: "verified@example.com",
+    ownedCustomerId: "cus_ownedBuyer"
+  }, dependencies)).status, 201);
+  assert.equal(captured[1].email, "verified@example.com");
+  assert.equal(captured[1].customerId, "cus_ownedBuyer");
+  assert.equal(
+    captured[1].successUrl,
+    "https://scanner.example.test/reports/91a3e66c-2c07-46cf-ab0c-3768375e050a?checkout=success&session_id={CHECKOUT_SESSION_ID}"
+  );
+});
+
+test("Stripe form creates an isolated payment customer unless an owned customer is supplied", async () => {
+  const originalFetch = globalThis.fetch;
+  const forms = [];
+  globalThis.fetch = async (_url, init) => {
+    forms.push(new URLSearchParams(String(init?.body ?? "")));
+    return Response.json({ id: "cs_test_form", url: "https://checkout.stripe.com/c/pay/test" });
+  };
+  const base = {
+    secretKey: "sk_test_contract",
+    priceId: "price_report_server",
+    mode: "payment",
+    plan: "report",
+    interval: null,
+    email: "buyer@example.com",
+    scanId: "91a3e66c-2c07-46cf-ab0c-3768375e050a",
+    requestId: "5d4ec747-3c53-4ed7-bfbb-d431ddda01d9",
+    successUrl: "https://scanner.example.test/success",
+    cancelUrl: "https://scanner.example.test/cancel"
+  };
+  try {
+    await createCheckoutSession({ ...base, customerId: null });
+    await createCheckoutSession({ ...base, customerId: "cus_ownedBuyer" });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+  assert.equal(forms[0].get("customer_creation"), "always");
+  assert.equal(forms[0].get("customer_email"), "buyer@example.com");
+  assert.equal(forms[0].has("customer"), false);
+  assert.equal(forms[1].get("customer"), "cus_ownedBuyer");
+  assert.equal(forms[1].has("customer_email"), false);
+  assert.equal(forms[1].has("customer_creation"), false);
+});
+
+test("billing portal handler accepts only the signed-in account customer supplied by its route", async () => {
+  installTestEnv();
+  let portalCustomer = null;
+  const dependencies = {
+    getConfig: getStripeServerConfig,
+    createPortal: async (_key, customerId) => {
+      portalCustomer = customerId;
+      return { url: "https://billing.stripe.com/p/session/test" };
+    }
+  };
+  assert.equal((await handleBillingPortal({ ownedCustomerId: null }, dependencies)).status, 403);
+  assert.equal(portalCustomer, null);
+  assert.equal((await handleBillingPortal({ ownedCustomerId: "cus_ownedBuyer" }, dependencies)).status, 201);
+  assert.equal(portalCustomer, "cus_ownedBuyer");
 });
 
 test("verifies the raw Stripe payload signature, age, and tamper resistance", () => {
@@ -134,24 +216,39 @@ test("routes are Node-only wrappers and the Stripe API contract owns redirects a
     assert.match(route, /export async function POST/);
   }
   assert.match(stripeApi, /"line_items\[0\]\[price\]": input\.priceId/);
+  assert.match(stripeApi, /form\.customer_creation = "always"/);
   assert.match(stripeApi, /Idempotency-Key/);
   assert.doesNotMatch(stripeApi, /process\.env/);
-  assert.match(handlers, /\/reports\/\$\{input\.scanId\}\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
+  assert.match(handlers, /const reportPath = `\/reports\/\$\{scanId\}\?checkout=success&session_id=`/);
+  assert.match(handlers, /auth\/sign-in\?next=\$\{encodeURIComponent\(reportPath\)\}/);
   assert.match(handlers, /\/dashboard\/onboarding\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
   assert.match(handlers, /verifyStripeSignature\(payload/);
   assert.match(handlers, /reportScanExists/);
+  assert.match(checkoutRoute, /session\.user\.email_confirmed_at/);
+  assert.match(checkoutRoute, /ownedCustomerId: account\.stripe_customer_id/);
+  assert.match(checkoutRoute, /code: "CHECKOUT_IDENTITY_UNAVAILABLE"/);
+  assert.doesNotMatch(checkoutRoute, /resolveCustomerSession[\s\S]*\.catch\(\(\) => null\)/);
+  assert.doesNotMatch(portalRoute, /checkoutSessionId|retrieveCheckoutSession/);
 });
 
-test("migration uses an atomic event claim, upserts state, revokes refunds, and exposes RPC only to service role", async () => {
+test("migration derives plans from Price IDs and records conservative payment lifecycle state", async () => {
   const sql = await readFile(new URL("../db/stripe-billing-expansion.sql", import.meta.url), "utf8");
   assert.match(sql, /stripe_event_id text primary key/);
   assert.match(sql, /on conflict \(stripe_event_id\) do nothing/);
   assert.match(sql, /on conflict \(stripe_checkout_session_id\) do update/);
   assert.match(sql, /customer\.subscription\.deleted/);
   assert.match(sql, /charge\.refunded/);
+  assert.match(sql, /charge\.dispute\.created/);
   assert.match(sql, /status = 'refunded'/);
-  assert.match(sql, /amount_total'\)::bigint = 4900/);
+  assert.match(sql, /status = 'disputed'/);
+  assert.doesNotMatch(sql, /amount_total'\)::bigint = 4900/);
   assert.match(sql, /p_price_catalog->>'report'/);
+  assert.match(sql, /when p_price_catalog->>'monitorMonthly' then v_product := 'monitor'; v_interval := 'monthly'/);
+  assert.match(sql, /when p_price_catalog->>'growthAnnual' then v_product := 'growth'; v_interval := 'annual'/);
+  assert.match(sql, /invoice\.payment_failed/);
+  assert.match(sql, /invoice\.payment_action_required/);
+  assert.match(sql, /then 'past_due'/);
+  assert.match(sql, /else 'incomplete'/);
   assert.match(sql, /stripe_event_created_at <= p_stripe_created_at/);
   assert.match(sql, /security definer/);
   assert.match(sql, /grant execute on function[\s\S]*to service_role/);

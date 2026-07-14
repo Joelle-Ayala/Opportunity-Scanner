@@ -10,49 +10,14 @@ import { signalDate, signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal, primaryContactTarget } from "@/lib/contactTargeting";
 import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
+import { loadEnrichmentCreditBalance, type EnrichmentCreditBalance } from "@/lib/enrichmentCredits";
+import { enrichmentEligibilityForTarget, resolvePrimaryTargetForSignal } from "@/lib/organizationResolution";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
-import { OpportunityEnrichmentType, StoredOpportunitySignal } from "@/lib/types";
-import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
+import { OpportunityEnrichmentRequestRecord, StoredOpportunitySignal } from "@/lib/types";
+import { resolveRequestReportAccess } from "@/lib/payments/requestAccess";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const enrichmentActions: Array<{
-  type: OpportunityEnrichmentType;
-  label: string;
-  description: string;
-}> = [
-  {
-    type: "find_contacts",
-    label: "Find contacts",
-    description: "Identify buyer, program, procurement, or partnership contacts."
-  },
-  {
-    type: "find_similar_awards",
-    label: "Find similar awards",
-    description: "Use this signal as a pattern to find adjacent funded buyers."
-  },
-  {
-    type: "search_active_bids",
-    label: "Search active bids",
-    description: "Look for open solicitations that match this lane."
-  },
-  {
-    type: "search_grants",
-    label: "Search grants",
-    description: "Check whether this buyer or category has current funding programs."
-  },
-  {
-    type: "find_buyer_website",
-    label: "Find buyer website",
-    description: "Find the agency, department, procurement, or program page."
-  },
-  {
-    type: "generate_outreach",
-    label: "Generate outreach angle",
-    description: "Draft the sales or partnership hypothesis for this signal."
-  }
-];
 
 function opportunityHeadline(signal: StoredOpportunitySignal): string {
   const match = signal.opportunity_title.match(/^(.+?) received (\$[^:]+): (.+)$/);
@@ -72,6 +37,28 @@ function enrichmentMessage(result: Record<string, unknown>): string {
 function enrichmentContacts(result: Record<string, unknown>): Array<Record<string, unknown>> {
   const contacts = result.contacts;
   return Array.isArray(contacts) ? contacts.filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null) : [];
+}
+
+function completedContactLookup(requests: OpportunityEnrichmentRequestRecord[]): boolean {
+  return requests.some((request) => {
+    if (request.enrichment_type !== "find_contacts" || request.status !== "completed") return false;
+    const providerStatus = request.result_json.status;
+    return !["failed", "not_configured", "needs_domain", "needs_target"].includes(String(providerStatus || ""));
+  });
+}
+
+function contactLookupStatus(status: OpportunityEnrichmentRequestRecord["status"]): string {
+  if (status === "completed") return "Completed";
+  if (status === "failed") return "Could not complete";
+  return "Not completed";
+}
+
+function hasConfiguredContactProvider(): boolean {
+  return Boolean(
+    process.env.CLAY_CONTACT_WORKFLOW_URL ||
+      process.env.CLAY_CONTACT_ENRICHMENT_WEBHOOK_URL ||
+      (process.env.SNOV_CLIENT_ID && process.env.SNOV_CLIENT_SECRET)
+  );
 }
 
 function actionabilityLabel(value: string): string {
@@ -126,7 +113,7 @@ function LockedOpportunityPreview({
           </h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">
             The full opportunity workspace is part of the full report. It includes source links,
-            contact search paths, enrichment actions, CRM-ready notes, outreach angles, and workflow handoff.
+            contact search paths, eligible contact lookup, CRM-ready notes, outreach angles, and workflow handoff.
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <div className="rounded-md border border-line bg-field p-4">
@@ -194,14 +181,41 @@ export default async function OpportunityPage({
     }`,
     `${protocol}://${host}`
   ).toString();
-  if (!(await hasRequestReportAccess(requestUrl, searchParams.access, scan))) {
+  const reportAccess = await resolveRequestReportAccess(requestUrl, searchParams.access, scan);
+  if (!reportAccess.hasAccess) {
     return <LockedOpportunityPreview scanId={scan.id} signal={signal} profile={profile} access={searchParams.access} />;
   }
 
   const enrichmentRequests = await listOpportunityEnrichmentRequests(scan.id, signal.id);
+  const contactEnrichmentRequests = enrichmentRequests.filter((request) => request.enrichment_type === "find_contacts");
   const primaryContact = primaryContactTarget(signal);
   const contactTargets = contactTargetsForSignal(signal);
   const contactSummary = contactDiscoverySummary(signal);
+  const targetEligibility = enrichmentEligibilityForTarget(
+    signal.target_resolution ?? resolvePrimaryTargetForSignal(signal),
+    primaryContact.roles
+  );
+  let creditBalance: EnrichmentCreditBalance = { entitled: false, limit: 0, used: 0, remaining: 0 };
+  let creditBalanceAvailable = true;
+  if (reportAccess.authUserId) {
+    try {
+      creditBalance = await loadEnrichmentCreditBalance(reportAccess.authUserId);
+    } catch {
+      creditBalanceAvailable = false;
+    }
+  }
+  const contactLookupComplete = completedContactLookup(contactEnrichmentRequests);
+  const sourceNativeContactAvailable = contactSummary.verifiedContacts > 0;
+  const contactProviderConfigured = hasConfiguredContactProvider();
+  const contactLookupCanRun =
+    !sourceNativeContactAvailable &&
+    !contactLookupComplete &&
+    targetEligibility.clayEligible &&
+    targetEligibility.snovEligible &&
+    contactProviderConfigured &&
+    creditBalanceAvailable &&
+    creditBalance.entitled &&
+    creditBalance.remaining > 0;
   const startDate = signalDate(signal, "Start Date");
   const endDate = classification.source_deadline || signal.deadline || signalDate(signal, "End Date");
 
@@ -217,9 +231,14 @@ export default async function OpportunityPage({
           </a>
         </div>
 
-        {searchParams.enrichment === "requested" ? (
+        {searchParams.enrichment === "completed" ? (
           <section className="mt-5 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-            Enrichment request saved. This is now in the work queue for this opportunity.
+            Contact lookup completed. Review the result and verification notes in Contact Lookup History below.
+          </section>
+        ) : null}
+        {searchParams.enrichment === "unavailable" ? (
+          <section role="alert" className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            Contact lookup did not complete. Review Contact Lookup History for the reason and use the official contact path below.
           </section>
         ) : null}
         {searchParams.enrichment === "credit_limit" ? (
@@ -304,7 +323,7 @@ export default async function OpportunityPage({
         </section>
 
         <section className="mt-5 rounded-lg border border-line bg-white p-5">
-          <div className="grid gap-4 md:grid-cols-[.8fr_1.2fr_auto] md:items-center">
+          <div className="grid gap-4 md:grid-cols-[.8fr_1.2fr] md:items-start">
             <div className="rounded-md bg-field px-4 py-3">
               <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Contact Status
@@ -320,16 +339,70 @@ export default async function OpportunityPage({
                 Recommended path: {classificationLabel(classification.contact_strategy)}. Use enrichment when
                 the row needs named people, email addresses, or a verified decision owner.
               </p>
+              <p className="mt-3 text-sm leading-6 text-slate-700">
+                Person-level lookup requires a signed-in Growth plan and can use one monthly contact credit.
+                It is enabled only for a verified private-organization target with relevant roles.
+              </p>
             </div>
-            <form action="/api/opportunities/enrich" method="post">
-              <input type="hidden" name="scanId" value={scan.id} />
-              <input type="hidden" name="opportunityId" value={signal.id} />
-              <input type="hidden" name="enrichmentType" value="find_contacts" />
-              {searchParams.access ? <input type="hidden" name="access" value={searchParams.access} /> : null}
-              <button className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
-                Find Contacts
-              </button>
-            </form>
+          </div>
+          <div className="mt-4 rounded-md border border-line bg-field p-4">
+            {sourceNativeContactAvailable ? (
+              <p className="text-sm leading-6 text-slate-700">
+                <span className="font-semibold text-ink">Official contact available.</span> Use the source-listed
+                contact shown in this workspace; no third-party lookup or Growth credit is needed.
+              </p>
+            ) : contactLookupComplete ? (
+              <p className="text-sm leading-6 text-slate-700">
+                <span className="font-semibold text-ink">Contact lookup complete.</span> Review the saved result
+                below before outreach.
+              </p>
+            ) : !targetEligibility.clayEligible || !targetEligibility.snovEligible ? (
+              <p className="text-sm leading-6 text-slate-700">
+                <span className="font-semibold text-ink">Third-party lookup is not appropriate for this row.</span>{" "}
+                {targetEligibility.reason} Follow the official contact path above instead.
+              </p>
+            ) : !contactProviderConfigured ? (
+              <p className="text-sm leading-6 text-slate-700">
+                <span className="font-semibold text-ink">Contact lookup is temporarily unavailable.</span> No request
+                will be submitted and no credit will be used.
+              </p>
+            ) : !creditBalanceAvailable ? (
+              <p className="text-sm leading-6 text-slate-700">
+                <span className="font-semibold text-ink">Credit balance is temporarily unavailable.</span> Contact
+                lookup is disabled so no unverified request is submitted.
+              </p>
+            ) : !reportAccess.authUserId || !creditBalance.entitled ? (
+              <p className="text-sm leading-6 text-slate-700">
+                <span className="font-semibold text-ink">Growth plan required.</span> Sign in with an active Growth
+                plan to run person-level contact lookup. Full report access alone does not include contact credits.
+              </p>
+            ) : creditBalance.remaining <= 0 ? (
+              <p className="text-sm leading-6 text-slate-700">
+                <span className="font-semibold text-ink">Monthly contact credits used.</span> You have 0 of{" "}
+                {creditBalance.limit} Growth contact credits remaining this billing month.
+              </p>
+            ) : contactLookupCanRun ? (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm leading-6 text-slate-700">
+                  <span className="font-semibold text-ink">Growth credits:</span> {creditBalance.remaining} of{" "}
+                  {creditBalance.limit} remaining this billing month. This lookup can use one credit.
+                </p>
+                <form action="/api/opportunities/enrich" method="post">
+                  <input type="hidden" name="scanId" value={scan.id} />
+                  <input type="hidden" name="opportunityId" value={signal.id} />
+                  <input type="hidden" name="enrichmentType" value="find_contacts" />
+                  {searchParams.access ? <input type="hidden" name="access" value={searchParams.access} /> : null}
+                  <button className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+                    Run Contact Lookup
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <p className="text-sm leading-6 text-slate-700">
+                Contact lookup is unavailable for this opportunity. No request will be submitted and no credit will
+                be used.
+              </p>
+            )}
           </div>
         </section>
 
@@ -452,37 +525,6 @@ export default async function OpportunityPage({
 
         <section className="mt-5 rounded-lg border border-line bg-white p-5">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Enrich This Opportunity
-          </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-            These actions turn the opportunity into a practical workflow item. Contact lookup runs when
-            credentials and a useful domain are available; otherwise the workspace keeps the suggested
-            contact strategy and manual next step visible.
-          </p>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {enrichmentActions.map((action) => (
-              <form
-                key={action.type}
-                action="/api/opportunities/enrich"
-                method="post"
-                className="rounded-lg border border-line bg-field p-4"
-              >
-                <input type="hidden" name="scanId" value={scan.id} />
-                <input type="hidden" name="opportunityId" value={signal.id} />
-                <input type="hidden" name="enrichmentType" value={action.type} />
-                {searchParams.access ? <input type="hidden" name="access" value={searchParams.access} /> : null}
-                <h3 className="text-sm font-semibold text-ink">{action.label}</h3>
-                <p className="mt-2 min-h-[40px] text-sm leading-5 text-slate-600">{action.description}</p>
-                <button className="mt-3 rounded-md bg-ink px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700">
-                  Request enrichment
-                </button>
-              </form>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-5 rounded-lg border border-line bg-white p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
             Reasoning And Next Steps
           </h2>
           <div className="mt-3 grid gap-4 md:grid-cols-2">
@@ -508,19 +550,19 @@ export default async function OpportunityPage({
 
         <section className="mt-5 rounded-lg border border-line bg-white p-5">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Enrichment History
+            Contact Lookup History
           </h2>
-          {enrichmentRequests.length > 0 ? (
+          {contactEnrichmentRequests.length > 0 ? (
             <div className="mt-3 grid gap-2">
-              {enrichmentRequests.map((request) => (
+              {contactEnrichmentRequests.map((request) => (
                 <div
                   key={request.id}
                   className="rounded-md bg-field px-3 py-3 text-sm"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="font-medium text-ink">{request.enrichment_type.replaceAll("_", " ")}</span>
+                    <span className="font-medium text-ink">Contact lookup</span>
                     <span className="text-slate-600">
-                      {request.status} on {new Date(request.created_at).toLocaleDateString()}
+                      {contactLookupStatus(request.status)} on {new Date(request.created_at).toLocaleDateString()}
                     </span>
                   </div>
                   {enrichmentMessage(request.result_json) ? (
@@ -548,7 +590,7 @@ export default async function OpportunityPage({
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-sm text-slate-600">No enrichment requests yet.</p>
+            <p className="mt-3 text-sm text-slate-600">No contact lookup has been completed yet.</p>
           )}
         </section>
       </div>

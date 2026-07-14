@@ -17,7 +17,6 @@ type ValidationResult<T> = { ok: true; value: T } | { ok: false; code: string; m
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CHECKOUT_FIELDS = new Set(["plan", "billingInterval", "customerEmail", "requestId", "scanId"]);
-const PORTAL_FIELDS = new Set(["checkoutSessionId"]);
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
@@ -76,20 +75,4 @@ export function validateCheckoutInput(body: unknown): ValidationResult<CheckoutI
       scanId: plan === "report" ? scanId.toLowerCase() : null
     }
   };
-}
-
-export function validatePortalInput(body: unknown): ValidationResult<{ checkoutSessionId: string }> {
-  if (!isObject(body)) {
-    return { ok: false, code: "INVALID_JSON", message: "Send a valid billing portal request." };
-  }
-  if (!hasOnlyFields(body, PORTAL_FIELDS)) {
-    return { ok: false, code: "UNSUPPORTED_FIELD", message: "The billing portal request contains an unsupported field." };
-  }
-
-  const checkoutSessionId = typeof body.checkoutSessionId === "string" ? body.checkoutSessionId.trim() : "";
-  if (!/^cs_(test_|live_)?[A-Za-z0-9]+$/.test(checkoutSessionId) || checkoutSessionId.length > 255) {
-    return { ok: false, code: "INVALID_CHECKOUT_SESSION", message: "A valid completed checkout session is required." };
-  }
-
-  return { ok: true, value: { checkoutSessionId } };
 }

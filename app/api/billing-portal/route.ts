@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   if (session?.user.email) {
     try {
       const account = await ensureCustomerAccount(session.user.id, session.user.email);
-      return handleBillingPortal(request, { ownedCustomerId: account.stripe_customer_id });
+      return handleBillingPortal({ ownedCustomerId: account.stripe_customer_id });
     } catch {
       return Response.json(
         {
@@ -24,17 +24,6 @@ export async function POST(request: Request) {
         { status: 503, headers: { "Cache-Control": "no-store" } }
       );
     }
-  }
-
-  // Keep the completed-checkout path available to the pricing success screen.
-  const legacyBody = await request.clone().json().catch(() => null);
-  if (
-    legacyBody &&
-    typeof legacyBody === "object" &&
-    !Array.isArray(legacyBody) &&
-    typeof (legacyBody as Record<string, unknown>).checkoutSessionId === "string"
-  ) {
-    return handleBillingPortal(request);
   }
 
   return Response.json(

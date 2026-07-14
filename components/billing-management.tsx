@@ -43,7 +43,7 @@ export function BillingManagement({
       const response = await fetch("/api/billing-portal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ checkoutSessionId: sessionId })
+        body: "{}"
       });
       const body = (await response.json().catch(() => null)) as BillingPortalResponse | null;
       const portalUrl = secureStripeBillingPortalUrl(body?.portalUrl);

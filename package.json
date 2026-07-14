@@ -18,6 +18,7 @@
     "test:lead-magnets": "node scripts/test-lead-magnet-contract.mjs",
     "test:marketing-playbook": "node --experimental-strip-types scripts/test-marketing-playbook.mts",
     "test:billing-management": "node --experimental-strip-types scripts/test-billing-management.mjs",
+    "test:subscription-handoff": "node --experimental-strip-types scripts/test-subscription-checkout-handoff.mjs",
     "test:customer-entitlement": "node --experimental-strip-types scripts/test-customer-entitlement-contract.mjs",
     "test:monitoring": "node --experimental-strip-types scripts/test-monitoring-contract.mjs",
     "test:deadline-alerts": "node --experimental-strip-types scripts/test-deadline-alerts.mjs",
@@ -32,7 +33,10 @@
     "test:organization-resolution": "node --experimental-strip-types scripts/test-organization-resolution.mjs",
     "test:enrichment-credits": "node --experimental-strip-types scripts/test-enrichment-credits.mjs",
     "test:product-analytics": "node --experimental-strip-types scripts/test-product-analytics.mjs",
-    "test:scan-rate-limit": "node --experimental-strip-types scripts/test-scan-rate-limit.mjs"
+    "test:scan-rate-limit": "node --experimental-strip-types scripts/test-scan-rate-limit.mjs",
+    "test:customer-experience": "node scripts/test-customer-experience-audit.mjs",
+    "test:growth-hardening": "node scripts/test-growth-hardening.mjs",
+    "test:truthful-enrichment": "node scripts/test-truthful-enrichment-ux.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

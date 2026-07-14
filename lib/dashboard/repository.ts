@@ -30,7 +30,7 @@ type ReportRow = {
   created_at: string;
 };
 type GrantOwnershipRow = { report_access_grant_id: string };
-type GrantRow = { id: string; scan_id: string; status: "active" | "refunded" };
+type GrantRow = { id: string; scan_id: string; status: "active" | "refunded" | "disputed" };
 type ScanVersionRow = { scan_id: string; saved_search_version_id: string };
 type MonitoredOwnershipRow = { monitored_profile_id: string };
 type MonitoredProfileRow = {
@@ -86,21 +86,43 @@ export async function ensureCustomerAccount(authUserId: string, emailValue: stri
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
     throw new Error("A valid verified customer email is required.");
   }
+  const stripeCustomers = await dashboardSelect<StripeCustomerRow>("stripe_customers", {
+    select: "stripe_customer_id,email",
+    email: `eq.${email}`,
+    deleted_at: "is.null",
+    order: "created_at.desc"
+  });
   let account = await dashboardSelectOne<CustomerAccountRecord>("customer_accounts", {
     select: "id,auth_user_id,stripe_customer_id,email,created_at,updated_at",
     auth_user_id: `eq.${authUserId}`
   });
-  if (!account) {
-    const stripe = await dashboardSelectOne<StripeCustomerRow>("stripe_customers", {
-      select: "stripe_customer_id,email",
-      email: `eq.${email}`,
-      order: "created_at.desc"
+  let linkableStripe: StripeCustomerRow | null = null;
+  const claimableStripeCustomers: StripeCustomerRow[] = [];
+  for (const stripe of stripeCustomers) {
+    const linkedAccount = await dashboardSelectOne<{ id: string }>("customer_accounts", {
+      select: "id",
+      stripe_customer_id: `eq.${stripe.stripe_customer_id}`
     });
+    if (!linkedAccount || linkedAccount.id === account?.id) {
+      linkableStripe ??= stripe;
+      claimableStripeCustomers.push(stripe);
+    }
+  }
+  if (!account) {
     account = await dashboardInsert<CustomerAccountRecord>("customer_accounts", {
       auth_user_id: authUserId,
-      stripe_customer_id: stripe?.stripe_customer_id ?? null,
+      stripe_customer_id: linkableStripe?.stripe_customer_id ?? null,
       email
     });
+  } else if (!account.stripe_customer_id) {
+    const stripe = linkableStripe;
+    if (stripe) {
+      account = await dashboardUpdate<CustomerAccountRecord>(
+        "customer_accounts",
+        { id: `eq.${account.id}`, stripe_customer_id: "is.null" },
+        { stripe_customer_id: stripe.stripe_customer_id, updated_at: new Date().toISOString() }
+      ) ?? account;
+    }
   }
   if (!account) throw new Error("Customer account could not be created.");
 
@@ -112,16 +134,23 @@ export async function ensureCustomerAccount(authUserId: string, emailValue: stri
       ownership_kind: "claimed"
     }, { onConflict: "scan_id", ignoreDuplicates: true });
   }
-  if (account.stripe_customer_id) {
+  const customerIds = Array.from(new Set([
+    ...claimableStripeCustomers.map((stripe) => stripe.stripe_customer_id),
+    ...(account.stripe_customer_id ? [account.stripe_customer_id] : [])
+  ]));
+  if (customerIds.length > 0) {
     const [grants, profiles] = await Promise.all([
       dashboardSelect<{ id: string }>("stripe_report_access_grants", {
         select: "id",
-        stripe_customer_id: `eq.${account.stripe_customer_id}`
+        // A verified account may claim isolated guest purchases made with the same email.
+        stripe_customer_id: inFilter(customerIds)
       }),
-      dashboardSelect<{ id: string }>("monitored_profiles", {
-        select: "id",
-        stripe_customer_id: `eq.${account.stripe_customer_id}`
-      })
+      account.stripe_customer_id
+        ? dashboardSelect<{ id: string }>("monitored_profiles", {
+            select: "id",
+            stripe_customer_id: `eq.${account.stripe_customer_id}`
+          })
+        : Promise.resolve([])
     ]);
     for (const grant of grants) {
       await dashboardInsert("customer_report_grant_ownership", {

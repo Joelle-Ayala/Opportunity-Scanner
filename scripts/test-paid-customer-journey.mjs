@@ -100,6 +100,10 @@ test("dashboard data is account-scoped and browser database roles remain closed"
   assert.match(repository, /auth_user_id: `eq\.\$\{authUserId\}`/);
   assert.match(repository, /customer_scan_ownership[\s\S]*customer_account_id: `eq\.\$\{accountId\}`/);
   assert.match(repository, /customer_report_grant_ownership[\s\S]*customer_account_id: `eq\.\$\{account\.id\}`/);
+  assert.match(repository, /else if \(!account\.stripe_customer_id\)/);
+  assert.match(repository, /stripe_customer_id: "is\.null"/);
+  assert.match(repository, /claimableStripeCustomers/);
+  assert.match(repository, /stripe_customer_id: inFilter\(customerIds\)/);
   assert.match(repository, /customer_monitored_profile_ownership[\s\S]*customer_account_id: `eq\.\$\{accountId\}`/);
   assert.match(schema, /auth_user_id uuid not null unique references auth\.users/);
   assert.match(schema, /alter table customer_scan_ownership enable row level security/);
@@ -149,10 +153,15 @@ test("saved-search edits and controls remain owner-scoped, versioned, and plan-l
 test("report ownership grants full access only through stored grants or active owned monitoring", async () => {
   let grantLookups = 0;
   assert.equal(
-    await resolveStoredReportAccess(false, "91a3e66c-2c07-46cf-ab0c-3768375e050a", async () => {
+    await resolveStoredReportAccess(
+      false,
+      "f018c793-41fc-4df7-ab85-8f7dd684f8ef",
+      "91a3e66c-2c07-46cf-ab0c-3768375e050a",
+      async () => {
       grantLookups += 1;
       return true;
-    }),
+      }
+    ),
     true
   );
   assert.equal(grantLookups, 1);
@@ -165,7 +174,7 @@ test("report ownership grants full access only through stored grants or active o
   ]);
   assert.match(requestAccess, /session\?\.user\.id \?\? null/);
   assert.match(requestAccess, /hasCustomerServerReportAccess\(access, scan, authUserId\)/);
-  assert.match(access, /if \(await hasServerReportAccess\(access, scan\)\) return true/);
+  assert.match(access, /resolveStoredReportAccess\(legacyAccess, authUserId, scan\.id/);
   assert.match(access, /if \(!authUserId\) return false/);
   assert.match(entitlement, /status: "in\.\(active,trialing\)"/);
   assert.match(entitlement, /customer_monitored_profile_ownership/);
@@ -225,8 +234,9 @@ test("billing portal uses the signed-in account customer ID and never trusts a b
   assert.match(route, /ownedCustomerId: account\.stripe_customer_id/);
   assert.match(route, /code: "AUTHENTICATION_REQUIRED"/);
   assert.match(route, /status: 401/);
-  assert.match(handlers, /options\.ownedCustomerId/);
-  assert.match(handlers, /createBillingPortalSession\(config\.secretKey, customerId, `\$\{config\.appUrl\}\/dashboard`\)/);
+  assert.match(handlers, /options\.ownedCustomerId|const customerId = options\.ownedCustomerId/);
+  assert.match(handlers, /dependencies\.createPortal\(config\.secretKey, customerId, `\$\{config\.appUrl\}\/dashboard`\)/);
+  assert.doesNotMatch(route, /checkoutSessionId/);
   assert.match(button, /body: "\{\}"/);
   assert.doesNotMatch(button, /customerId|stripeCustomerId|checkoutSessionId/);
   assert.equal(secureStripeBillingPortalUrl("https://billing.stripe.com/p/session/test"), "https://billing.stripe.com/p/session/test");

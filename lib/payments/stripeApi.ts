@@ -19,6 +19,32 @@ export type StripeCheckoutSession = {
   amount_total?: number | null;
   currency?: string | null;
   customer?: string | { id?: string } | null;
+  customer_details?: { email?: string | null } | null;
+  line_items?: {
+    has_more?: boolean;
+    data?: Array<{
+      quantity?: number | null;
+      price?: string | { id?: string } | null;
+    }>;
+  } | null;
+  subscription?:
+    | string
+    | {
+        id?: string;
+        customer?: string | { id?: string } | null;
+        status?: string;
+        current_period_start?: number;
+        current_period_end?: number;
+        cancel_at_period_end?: boolean;
+        items?: {
+          data?: Array<{
+            current_period_start?: number;
+            current_period_end?: number;
+            price?: string | { id?: string } | null;
+          }>;
+        };
+      }
+    | null;
   payment_intent?:
     | string
     | {
@@ -61,6 +87,7 @@ export async function createCheckoutSession(input: {
   plan: string;
   interval: string | null;
   email: string;
+  customerId: string | null;
   scanId: string | null;
   requestId: string;
   successUrl: string;
@@ -70,7 +97,6 @@ export async function createCheckoutSession(input: {
     mode: input.mode,
     "line_items[0][price]": input.priceId,
     "line_items[0][quantity]": "1",
-    customer_email: input.email,
     success_url: input.successUrl,
     cancel_url: input.cancelUrl,
     "metadata[product]": input.plan,
@@ -78,6 +104,13 @@ export async function createCheckoutSession(input: {
     "metadata[price_id]": input.priceId,
     "metadata[request_id]": input.requestId
   };
+  if (input.customerId) {
+    form.customer = input.customerId;
+  } else {
+    form.customer_email = input.email;
+    // Anonymous payment-mode purchases must create a durable, isolated Stripe Customer.
+    if (input.mode === "payment") form.customer_creation = "always";
+  }
   if (input.scanId) {
     form.client_reference_id = input.scanId;
     form["metadata[scan_id]"] = input.scanId;
@@ -95,9 +128,18 @@ export async function createCheckoutSession(input: {
 }
 
 export function retrieveCheckoutSession(secretKey: string, sessionId: string): Promise<StripeCheckoutSession> {
+  const query = new URLSearchParams();
+  for (const expansion of [
+    "payment_intent.latest_charge",
+    "line_items.data.price",
+    "subscription",
+    "subscription.items.data.price"
+  ]) {
+    query.append("expand[]", expansion);
+  }
   return stripeRequest<StripeCheckoutSession>(
     secretKey,
-    `/checkout/sessions/${encodeURIComponent(sessionId)}?expand%5B%5D=payment_intent.latest_charge`
+    `/checkout/sessions/${encodeURIComponent(sessionId)}?${query.toString()}`
   );
 }
 

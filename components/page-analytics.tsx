@@ -5,10 +5,31 @@ import {
   scanDurationBucket,
   signalCountBucket,
   trackProductEvent,
+  type BillingPeriod,
   type MonitoringOnboardingState,
+  type PurchasePlan,
   type ReportTier,
   type SubscriptionPlan
 } from "@/lib/productAnalytics";
+
+export function PurchaseCompletedAnalytics({
+  plan,
+  billingPeriod,
+  eventKey
+}: {
+  plan: PurchasePlan;
+  billingPeriod: BillingPeriod;
+  eventKey: string;
+}) {
+  useEffect(() => {
+    const storageKey = `opportunity-scanner:purchase-completed:${eventKey}`;
+    if (window.sessionStorage.getItem(storageKey)) return;
+    trackProductEvent("purchase_completed", { plan, billing_period: billingPeriod });
+    window.sessionStorage.setItem(storageKey, "1");
+  }, [billingPeriod, eventKey, plan]);
+
+  return null;
+}
 
 export function PricingAnalytics({ source }: { source: "navigation" | "report_gate" | "checkout_return" | "unknown" }) {
   useEffect(() => {

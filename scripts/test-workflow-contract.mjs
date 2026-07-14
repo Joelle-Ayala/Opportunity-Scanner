@@ -45,7 +45,7 @@ for (const typeMarker of [
 const injectableSource = `
 const {
   NextResponse,
-  hasServerReportAccess,
+  hasRequestReportAccess,
   getCompanyProfile,
   getScan,
   getStoredOpportunitySignal,
@@ -64,8 +64,8 @@ globalThis.__workflowRouteTestMocks = {
       return Response.json(body, init);
     }
   },
-  async hasServerReportAccess(access, scan) {
-    activeState.calls.access.push({ access, scan });
+  async hasRequestReportAccess(requestUrl, access, scan) {
+    activeState.calls.access.push({ requestUrl, access, scan });
     return activeState.hasAccess;
   },
   async getScan(scanId) {
@@ -260,7 +260,11 @@ test("requires full report access against the stored scan", async () => {
 
   await assertError(await POST(validRequest()), 403, "FULL_REPORT_ACCESS_REQUIRED");
   assert.deepEqual(state.calls.access, [
-    { access: "full-access-token", scan: state.scan }
+    {
+      requestUrl: "http://local.test/api/workflow/send",
+      access: "full-access-token",
+      scan: state.scan
+    }
   ]);
   assert.equal(state.calls.getSignal.length, 0);
   assert.equal(state.calls.build.length, 0);

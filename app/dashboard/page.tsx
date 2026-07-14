@@ -60,8 +60,13 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     loadDashboardMonitoringRuns(session.user.id, { limit: 20 }),
     loadCustomerAlertPreferences(session.user.id)
   ]);
-  const subscription = summary.billing.subscriptions.find((item) => ["active", "trialing"].includes(item.status));
+  const subscription = summary.billing.subscriptions.find((item) =>
+    ["active", "trialing"].includes(item.status) && (item.product === "monitor" || item.product === "growth")
+  );
+  if (subscription && searches.length === 0) redirect("/dashboard/onboarding");
+
   const subscriptionPlan = subscription?.product === "growth" ? "growth" : subscription?.product === "monitor" ? "monitor" : "none";
+  const subscriptionStatus = subscription?.status === "trialing" ? "trialing" : subscription ? "active" : "none";
   const planName = subscription?.product === "growth" ? "Growth" : subscription?.product === "monitor" ? "Monitor" : "Report access";
   const profileLimit = subscription?.product === "growth" ? 3 : subscription?.product === "monitor" ? 1 : 0;
   const monitoredScanIds = new Set([
@@ -98,7 +103,9 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
       excludeTerms: configurationValue(search.currentVersion?.configuration, "excludeTerms")
     }
   }));
-  const renewal = subscription?.currentPeriodEnd ? `Renews ${dateLabel(subscription.currentPeriodEnd)}` : undefined;
+  const renewal = subscription?.currentPeriodEnd
+    ? `${subscription.cancelAtPeriodEnd ? "Access ends" : "Renews"} ${dateLabel(subscription.currentPeriodEnd)}`
+    : undefined;
   const sourceScanByProfile = new Map(
     searches.flatMap((search) => search.monitoredProfile
       ? [[search.monitoredProfile.id, search.monitoredProfile.sourceScanId] as const]
@@ -164,10 +171,10 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           monitoringChanges: runs.map((run) => ({ id: run.id, title: run.status === "failed" ? "Monitoring run needs attention" : `${run.newOpportunityCount} new opportunities found`, summary: run.errorMessage || "Your saved search was checked against the latest public records.", occurredLabel: dateLabel(run.completedAt || run.startedAt), kind: run.status === "failed" ? "system" as const : "new" as const, href: comparableScanIds.has(run.scanId) ? `/dashboard/compare/${run.scanId}` : `/reports/${run.scanId}` })),
           reportEmptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>
         }}
-        reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <><a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Run updated</a>{comparableScanIds.has(report.id) ? <a href={`/dashboard/compare/${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Compare</a> : null}</> }}
-        savedSearches={{ searches: searchRows, emptyAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Add monitoring</a> }}
+        reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <><a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Update preview</a>{comparableScanIds.has(report.id) ? <a href={`/dashboard/compare/${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Compare</a> : null}</> }}
+        savedSearches={{ searches: searchRows, emptyAction: subscription ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Set up monitoring</a> : <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">View monitoring plans</a> }}
         alerts={{ preferences: alertPreferences, emailVerified: Boolean(session.user.email_confirmed_at) }}
-        billing={{ planName, planPriceLabel: subscription ? "Active" : "No subscription", planIntervalLabel: subscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: subscription ? <BillingPortalButton /> : <a href="/pricing" className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink">View plans</a>, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Compare plans</a> }}
+        billing={{ planName, subscriptionStatus, planIntervalLabel: subscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: subscription ? <BillingPortalButton /> : undefined, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">{subscription ? "Compare plans" : "View plans"}</a> }}
       />
     </main>
   );

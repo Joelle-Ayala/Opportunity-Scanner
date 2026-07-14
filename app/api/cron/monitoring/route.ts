@@ -78,7 +78,10 @@ export async function GET(request: Request): Promise<Response> {
     profiles = requestedProfileId && /^[0-9a-f-]{36}$/i.test(requestedProfileId)
       ? await claimMonitoredProfileById(requestedProfileId)
       : await claimDueMonitoredProfiles(1);
-  } catch {
+  } catch (cause) {
+    console.error("Unable to claim due monitoring profiles", {
+      error: cause instanceof Error ? cause.message : "Unknown monitoring storage error"
+    });
     return Response.json(
       { ok: false, error: "Monitoring storage is unavailable." },
       { status: 503 }
@@ -114,6 +117,11 @@ export async function GET(request: Request): Promise<Response> {
       results.push({ profileId: profile.id, status: "completed", newCount: newSignals.length });
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "Monitoring run failed.";
+      console.error("Monitoring run failed", {
+        profileId: profile.id,
+        scanId,
+        error: message
+      });
       if (scanId) {
         await updateScan(scanId, { status: "failed", error_message: message }).catch(() => undefined);
       }
@@ -124,7 +132,10 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
     deadlineAlertsEnqueued = await enqueueDueDeadlineAlerts(100);
-  } catch {
+  } catch (cause) {
+    console.error("Unable to enqueue deadline alerts", {
+      error: cause instanceof Error ? cause.message : "Unknown deadline alert error"
+    });
     deadlineAlertsFailed += 1;
   }
 
@@ -136,6 +147,11 @@ export async function GET(request: Request): Promise<Response> {
         await markMonitoringAlertSent(alert.alert_id, providerMessageId);
         alertsDelivered += 1;
       } catch (cause) {
+        console.error("Monitoring alert delivery failed", {
+          alertId: alert.alert_id,
+          scanId: alert.scan_id,
+          error: cause instanceof Error ? cause.message : "Unknown monitoring alert error"
+        });
         await releaseMonitoringAlert(alert, cause).catch(() => undefined);
         alertsFailed += 1;
       }
@@ -150,6 +166,11 @@ export async function GET(request: Request): Promise<Response> {
         await markDeadlineAlertSent(alert.alert_id, providerMessageId);
         deadlineAlertsDelivered += 1;
       } catch (cause) {
+        console.error("Deadline alert delivery failed", {
+          alertId: alert.alert_id,
+          scanId: alert.scan_id,
+          error: cause instanceof Error ? cause.message : "Unknown deadline alert error"
+        });
         await releaseDeadlineAlert(alert, cause).catch(() => undefined);
         deadlineAlertsFailed += 1;
       }

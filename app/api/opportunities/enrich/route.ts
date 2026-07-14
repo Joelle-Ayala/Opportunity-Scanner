@@ -6,28 +6,21 @@ import {
   reserveContactEnrichmentCredit
 } from "@/lib/enrichmentCredits";
 import { getScan, getStoredOpportunitySignal, saveOpportunityEnrichmentRequest } from "@/lib/storage";
-import { OpportunityEnrichmentType } from "@/lib/types";
 import { resolveRequestReportAccess } from "@/lib/payments/requestAccess";
 
 export const runtime = "nodejs";
-
-const enrichmentTypes: OpportunityEnrichmentType[] = [
-  "find_contacts",
-  "find_similar_awards",
-  "search_active_bids",
-  "search_grants",
-  "find_buyer_website",
-  "generate_outreach"
-];
 
 export async function POST(request: Request) {
   const form = await request.formData();
   const scanId = String(form.get("scanId") || "");
   const opportunityId = String(form.get("opportunityId") || "");
-  const enrichmentType = String(form.get("enrichmentType") || "") as OpportunityEnrichmentType;
+  const enrichmentType = String(form.get("enrichmentType") || "");
 
-  if (!scanId || !opportunityId || !enrichmentTypes.includes(enrichmentType)) {
+  if (!scanId || !opportunityId) {
     return NextResponse.json({ error: "Invalid enrichment request." }, { status: 400 });
+  }
+  if (enrichmentType !== "find_contacts") {
+    return NextResponse.json({ error: "This enrichment action is not available." }, { status: 400 });
   }
 
   const scan = await getScan(scanId);
@@ -41,74 +34,65 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Full report access is required to enrich opportunities." }, { status: 403 });
   }
 
-  if (enrichmentType === "find_contacts") {
-    const signal = await getStoredOpportunitySignal(scanId, opportunityId);
-    if (signal) {
-      try {
-        await ensureContactEnrichment({
+  const signal = await getStoredOpportunitySignal(scanId, opportunityId);
+  if (!signal) {
+    return NextResponse.json({ error: "Opportunity not found." }, { status: 404 });
+  }
+
+  let enrichmentOutcome = "completed";
+  try {
+    const result = await ensureContactEnrichment({
+      scanId,
+      signal,
+      reserveProviderCredit: async () => {
+        if (!reportAccess.authUserId) {
+          throw new EnrichmentCreditError({
+            status: "not_entitled",
+            limit: 0,
+            used: 0,
+            remaining: 0
+          });
+        }
+        requireReservedEnrichmentCredit(await reserveContactEnrichmentCredit({
+          authUserId: reportAccess.authUserId,
           scanId,
-          signal,
-          reserveProviderCredit: async () => {
-            if (!reportAccess.authUserId) {
-              throw new EnrichmentCreditError({
-                status: "not_entitled",
-                limit: 0,
-                used: 0,
-                remaining: 0
-              });
-            }
-            requireReservedEnrichmentCredit(await reserveContactEnrichmentCredit({
-              authUserId: reportAccess.authUserId,
-              scanId,
-              opportunityId
-            }));
-          }
-        });
-      } catch (error) {
-        if (!(error instanceof EnrichmentCreditError)) throw error;
-        await saveOpportunityEnrichmentRequest({
-          scanId,
-          opportunityId,
-          enrichmentType,
-          status: "failed",
-          resultJson: {
-            provider: "credit-accounting",
-            status: error.reservation.status,
-            message: error.message,
-            credits_remaining: error.reservation.remaining,
-            credits_limit: error.reservation.limit,
-            period_end: error.reservation.periodEnd
-          }
-        });
-        const redirectUrl = new URL(`/opportunities/${opportunityId}`, request.url);
-        redirectUrl.searchParams.set("scanId", scanId);
-        redirectUrl.searchParams.set(
-          "enrichment",
-          error.reservation.status === "limit_reached" ? "credit_limit" : "growth_required"
-        );
-        if (access) redirectUrl.searchParams.set("access", access);
-        return NextResponse.redirect(redirectUrl, 303);
+          opportunityId
+        }));
       }
-    } else {
-      await saveOpportunityEnrichmentRequest({
-        scanId,
-        opportunityId,
-        enrichmentType,
-        status: "failed",
-        resultJson: { message: "Opportunity not found." }
-      });
+    });
+    const resultStatus = String(result?.result_json.status || "completed");
+    if (["failed", "not_configured", "needs_domain", "needs_target"].includes(resultStatus)) {
+      enrichmentOutcome = "unavailable";
     }
-  } else {
+  } catch (error) {
+    if (!(error instanceof EnrichmentCreditError)) throw error;
     await saveOpportunityEnrichmentRequest({
       scanId,
       opportunityId,
-      enrichmentType
+      enrichmentType,
+      status: "failed",
+      resultJson: {
+        provider: "credit-accounting",
+        status: error.reservation.status,
+        message: error.message,
+        credits_remaining: error.reservation.remaining,
+        credits_limit: error.reservation.limit,
+        period_end: error.reservation.periodEnd
+      }
     });
+    const redirectUrl = new URL(`/opportunities/${opportunityId}`, request.url);
+    redirectUrl.searchParams.set("scanId", scanId);
+    redirectUrl.searchParams.set(
+      "enrichment",
+      error.reservation.status === "limit_reached" ? "credit_limit" : "growth_required"
+    );
+    if (access) redirectUrl.searchParams.set("access", access);
+    return NextResponse.redirect(redirectUrl, 303);
   }
 
   const redirectUrl = new URL(`/opportunities/${opportunityId}`, request.url);
   redirectUrl.searchParams.set("scanId", scanId);
-  redirectUrl.searchParams.set("enrichment", "requested");
+  redirectUrl.searchParams.set("enrichment", enrichmentOutcome);
   if (access) redirectUrl.searchParams.set("access", access);
   return NextResponse.redirect(redirectUrl, 303);
 }

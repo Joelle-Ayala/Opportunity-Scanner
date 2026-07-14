@@ -2,30 +2,29 @@ import { hasFullReportAccess } from "../access";
 import type { ScanRecord } from "../types";
 import { isMatchingPaidReportSession, resolveStoredReportAccess } from "./accessContract";
 import { getStripeServerConfig } from "./config";
-import { fulfillVerifiedReportCheckout, hasActiveStripeReportGrant } from "./persistence";
+import { fulfillVerifiedReportCheckout } from "./persistence";
 import { retrieveCheckoutSession, type StripeCheckoutSession } from "./stripeApi";
-import { hasActiveCustomerMonitoringEntitlement } from "./customerEntitlement";
+import { hasActiveCustomerMonitoringEntitlement, hasActiveCustomerReportGrant } from "./customerEntitlement";
 
 type ReportAccessScan = Pick<ScanRecord, "id" | "report_access">;
 
 export type ReportPaymentAccessDependencies = {
-  hasActiveGrant: (scanId: string) => Promise<boolean>;
+  hasActiveGrant: (authUserId: string, scanId: string) => Promise<boolean>;
   retrieveSession: (secretKey: string, sessionId: string) => Promise<StripeCheckoutSession>;
   fulfillCheckout: (scanId: string, session: StripeCheckoutSession) => Promise<boolean>;
 };
 
 const defaultDependencies: ReportPaymentAccessDependencies = {
-  hasActiveGrant: hasActiveStripeReportGrant,
+  hasActiveGrant: hasActiveCustomerReportGrant,
   retrieveSession: retrieveCheckoutSession,
   fulfillCheckout: fulfillVerifiedReportCheckout
 };
 
 export async function hasServerReportAccess(
   access: string | undefined,
-  scan: ReportAccessScan,
-  dependencies: Pick<ReportPaymentAccessDependencies, "hasActiveGrant"> = defaultDependencies
+  scan: ReportAccessScan
 ): Promise<boolean> {
-  return resolveStoredReportAccess(hasFullReportAccess(access, scan), scan.id, dependencies.hasActiveGrant);
+  return hasFullReportAccess(access, scan);
 }
 
 export async function hasCustomerServerReportAccess(
@@ -33,9 +32,12 @@ export async function hasCustomerServerReportAccess(
   scan: ReportAccessScan,
   authUserId?: string | null
 ): Promise<boolean> {
-  if (await hasServerReportAccess(access, scan)) return true;
-  if (!authUserId) return false;
+  const legacyAccess = await hasServerReportAccess(access, scan);
   try {
+    if (await resolveStoredReportAccess(legacyAccess, authUserId, scan.id, defaultDependencies.hasActiveGrant)) {
+      return true;
+    }
+    if (!authUserId) return false;
     return await hasActiveCustomerMonitoringEntitlement(authUserId, scan.id);
   } catch {
     return false;

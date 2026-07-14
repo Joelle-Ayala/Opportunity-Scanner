@@ -19,6 +19,7 @@ function paidSession(overrides = {}) {
     created: 1_750_000_000,
     livemode: false,
     customer: "cus_reportbuyer",
+    customer_details: { email: "buyer@example.com" },
     payment_intent: {
       id: "pi_reportpayment",
       latest_charge: {
@@ -43,7 +44,7 @@ function test(name, run) {
 
 test("preserves legacy admin and report-code access without querying billing", async () => {
   let queries = 0;
-  const granted = await resolveStoredReportAccess(true, SCAN_ID, async () => {
+  const granted = await resolveStoredReportAccess(true, null, SCAN_ID, async () => {
     queries += 1;
     return false;
   });
@@ -51,26 +52,37 @@ test("preserves legacy admin and report-code access without querying billing", a
   assert.equal(queries, 0);
 });
 
-test("recognizes only an active scan-scoped grant and fails closed on storage errors", async () => {
-  assert.equal(await resolveStoredReportAccess(false, SCAN_ID, async (scanId) => scanId === SCAN_ID), true);
-  assert.equal(await resolveStoredReportAccess(false, SCAN_ID, async () => false), false);
+test("recognizes only an active account-owned scan grant and fails closed for anonymous buyers", async () => {
+  const authUserId = "f018c793-41fc-4df7-ab85-8f7dd684f8ef";
   assert.equal(
-    await resolveStoredReportAccess(false, SCAN_ID, async () => {
+    await resolveStoredReportAccess(false, authUserId, SCAN_ID, async (ownerId, scanId) => (
+      ownerId === authUserId && scanId === SCAN_ID
+    )),
+    true
+  );
+  let anonymousQueries = 0;
+  assert.equal(await resolveStoredReportAccess(false, null, SCAN_ID, async () => {
+    anonymousQueries += 1;
+    return true;
+  }), false);
+  assert.equal(anonymousQueries, 0);
+  assert.equal(await resolveStoredReportAccess(false, authUserId, SCAN_ID, async () => false), false);
+  assert.equal(
+    await resolveStoredReportAccess(false, authUserId, SCAN_ID, async () => {
       throw new Error("private database failure");
     }),
     false
   );
 });
 
-test("accepts only a paid $49 Report session for the exact scan and server Price", () => {
+test("accepts a paid Report session by exact server Price without a hardcoded amount", () => {
   assert.equal(isMatchingPaidReportSession(paidSession(), SCAN_ID, PRICE_ID), true);
   const rejected = [
     paidSession({ status: "open" }),
     paidSession({ mode: "subscription" }),
     paidSession({ payment_status: "unpaid" }),
-    paidSession({ amount_total: 4800 }),
-    paidSession({ currency: "eur" }),
     paidSession({ customer: "not-a-customer" }),
+    paidSession({ customer_details: { email: "invalid" } }),
     paidSession({ payment_intent: "pi_unexpanded" }),
     paidSession({
       payment_intent: {
@@ -89,7 +101,8 @@ test("accepts only a paid $49 Report session for the exact scan and server Price
 
 test("checkout sends Report buyers to their report while subscriptions enter monitoring onboarding", async () => {
   const handlers = await readFile(new URL("../lib/payments/handlers.ts", import.meta.url), "utf8");
-  assert.match(handlers, /\/reports\/\$\{input\.scanId\}\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
+  assert.match(handlers, /const reportPath = `\/reports\/\$\{scanId\}\?checkout=success&session_id=`/);
+  assert.match(handlers, /auth\/sign-in\?next=\$\{encodeURIComponent\(reportPath\)\}/);
   assert.match(handlers, /input\.plan === "report"/);
   assert.match(handlers, /\/dashboard\/onboarding\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
 });
@@ -107,7 +120,7 @@ test("paid pages and APIs await the same server-side scan access guard", async (
     const source = await readFile(new URL(path, import.meta.url), "utf8");
     const guard = path.includes("app/reports/[id]/page.tsx")
       ? /await hasCustomerServerReportAccess/
-      : /await hasRequestReportAccess/;
+      : /await (?:hasRequestReportAccess|resolveRequestReportAccess)/;
     assert.match(source, guard);
   }
 });
@@ -128,13 +141,16 @@ test("handoff is report-scoped, fulfilled server-side, and not propagated as an 
   assert.match(paymentAccess, /isMatchingPaidReportSession\(session, scanId, config\.prices\.report\)/);
   assert.match(paymentAccess, /await dependencies\.fulfillCheckout\(scanId, session\)/);
   assert.match(accessContract, /session\.metadata\?\.scan_id === scanId/);
+  assert.doesNotMatch(accessContract, /amount_total === 4900/);
   assert.match(accessContract, /latestCharge\.refunded === false/);
-  assert.match(stripeApi, /expand%5B%5D=payment_intent\.latest_charge/);
-  assert.match(persistence, /status: "eq\.active"/);
-  assert.match(persistence, /stripe_report_access_grants/);
+  assert.match(stripeApi, /query\.append\("expand\[\]", expansion\)/);
+  assert.match(stripeApi, /"payment_intent\.latest_charge"/);
+  assert.match(persistence, /p_customer_email: customerEmail/);
   assert.match(persistence, /SUPABASE_SERVICE_ROLE_KEY|databaseHeaders/);
   assert.match(persistence, /rpc\/fulfill_verified_report_checkout/);
   assert.match(handoffSql, /on conflict \(stripe_checkout_session_id\) do nothing/);
+  assert.match(handoffSql, /p_customer_email text/);
+  assert.match(handoffSql, /drop function if exists fulfill_verified_report_checkout\(uuid, text, text, text, timestamptz, boolean\)/);
   assert.match(handoffSql, /and status = 'active'/);
   assert.match(handoffSql, /security definer/);
   assert.match(handoffSql, /grant execute[\s\S]*to service_role/);

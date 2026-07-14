@@ -85,6 +85,9 @@ try {
 }
 
 const componentSource = await readFile(new URL("../components/product-analytics.tsx", import.meta.url), "utf8");
+const pageAnalyticsSource = await readFile(new URL("../components/page-analytics.tsx", import.meta.url), "utf8");
+assert.match(pageAnalyticsSource, /trackProductEvent\("purchase_completed"/);
+assert.match(pageAnalyticsSource, /opportunity-scanner:purchase-completed:/);
 for (const privacySetting of [
   "autocapture: false",
   "capture_pageview: false",

@@ -191,8 +191,8 @@ export function Badge({
   const tones = {
     slate: "border-line bg-white text-steel",
     blue: "border-cyan-100 bg-mist text-accent",
-    green: "border-emerald-100 bg-emerald-50 text-signal",
-    amber: "border-amber-100 bg-amber-50 text-review",
+    green: "border-emerald-200 bg-emerald-50 text-emerald-800",
+    amber: "border-amber-200 bg-amber-50 text-amber-900",
     red: "border-red-100 bg-red-50 text-red-700",
     locked: "border-slate-200 bg-white text-slate-500"
   };

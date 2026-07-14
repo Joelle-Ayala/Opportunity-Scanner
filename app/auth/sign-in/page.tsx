@@ -23,7 +23,7 @@ export default function SignInPage({
   const error = searchParams?.error ? messages[searchParams.error] : null;
   const emailSent = searchParams?.status === "email-sent";
   const signedOut = searchParams?.status === "signed-out";
-  const nextPath = searchParams?.next || "/";
+  const nextPath = searchParams?.next || "/dashboard";
 
   return (
     <main className="min-h-screen bg-field">

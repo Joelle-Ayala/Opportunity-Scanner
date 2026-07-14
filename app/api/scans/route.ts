@@ -106,6 +106,11 @@ export async function POST(request: Request) {
       });
     }
   } catch (error) {
+    console.error("Scan pipeline failed", {
+      scanId: scan.id,
+      companyUrl: input.companyUrl,
+      error: error instanceof Error ? error.message : "Unknown scan error"
+    });
     await updateScan(scan.id, {
       status: "failed",
       error_message: error instanceof Error ? error.message : "Unknown scan error"

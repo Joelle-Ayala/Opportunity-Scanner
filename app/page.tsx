@@ -480,7 +480,7 @@ export default function HomePage({
             <div className="mt-5 divide-y divide-line border-y border-line">
             {[
               ["Free scan", "A preview with 2-3 sourced opportunity signals, total signals found, target lanes, source summaries, and next steps."],
-              ["Full report access", "The full action layer: all prioritized opportunities, source links, revenue motions, contact paths, CRM-ready notes, outreach drafts, workflow export, and capped contact enrichment where appropriate. Beta access is request-based while checkout is being finalized."]
+              ["Full report access", "The full action layer: all prioritized opportunities, source links, revenue motions, contact paths, CRM-ready notes, outreach drafts, workflow export, and capped contact enrichment where appropriate. Purchase the full report from your free scan, or choose a monitoring plan through secure checkout."]
             ].map(([title, copy]) => (
               <div key={title} className="py-4">
                 <h3 className="font-semibold text-ink">{title}</h3>

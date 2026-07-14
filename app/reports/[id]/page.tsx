@@ -7,7 +7,7 @@ import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types
 import { accessSuffix, hasAdminAccess, reportAccessHref } from "@/lib/access";
 import { hasCustomerServerReportAccess, hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
 import { getStripeServerConfig } from "@/lib/payments/config";
-import { ReportAnalytics } from "@/components/page-analytics";
+import { PurchaseCompletedAnalytics, ReportAnalytics } from "@/components/page-analytics";
 import { ReportMonitorCheckout } from "@/components/report-monitor-checkout";
 import { signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal } from "@/lib/contactTargeting";
@@ -192,7 +192,7 @@ function ReportHeader({
             Dashboard
           </a>
           <a href={`/dashboard/new?from=${encodeURIComponent(scan.id)}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
-            Run Updated Report
+            Run Free Preview
           </a>
           {comparisonHref ? (
             <a href={comparisonHref} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
@@ -817,7 +817,7 @@ function UnlockCTA({ scan }: { scan: ScanRecord }) {
     "CRM-ready notes",
     "outreach angles",
     "workflow-ready payloads",
-    "PDF/export"
+    "CSV and Markdown exports"
   ];
   return (
     <section className="rounded-lg border border-cyan-100 bg-mist p-4 shadow-sm sm:p-6">
@@ -1123,7 +1123,7 @@ export default async function ReportPage({
   searchParams
 }: {
   params: { id: string };
-  searchParams?: { access?: string; unlock?: string; checkout?: string; session_id?: string };
+  searchParams?: { access?: string; unlock?: string; checkout?: string; session_id?: string; purchase?: string };
 }) {
   const scan = await getScan(params.id);
   if (!scan) notFound();
@@ -1138,7 +1138,7 @@ export default async function ReportPage({
       ? await verifyReportCheckoutHandoff(scan.id, searchParams.session_id)
       : false;
   if (checkoutHandoffFulfilled) {
-    redirect(reportAccessHref(`/reports/${scan.id}`, searchParams?.access));
+    redirect(reportAccessHref(`/reports/${scan.id}?purchase=report`, searchParams?.access));
   }
   let comparisonHref: string | null = null;
   let hasActiveMonitoringPlan = false;
@@ -1200,6 +1200,9 @@ export default async function ReportPage({
         createdAt={scan.created_at}
         completedAt={scan.completed_at}
       />
+      {searchParams?.purchase === "report" && isPaid ? (
+        <PurchaseCompletedAnalytics plan="full_report" billingPeriod="one_time" eventKey={`report:${scan.id}`} />
+      ) : null}
       <div className="mx-auto grid max-w-7xl gap-6">
         <ReportHeader
           scan={scan}
@@ -1320,7 +1323,7 @@ export default async function ReportPage({
               <h2 className="text-lg font-semibold text-ink">Workflow Actions</h2>
               <p className="mt-2 text-sm leading-6 text-muted">
                 Use each table row to send a workflow-ready opportunity to your webhook.
-                PDF/export is available from the report header.
+                CSV and Markdown exports are available from the report header.
               </p>
             </section>
           </>

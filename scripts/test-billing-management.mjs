@@ -46,7 +46,8 @@ const [component, pricingPage] = await Promise.all([
 ]);
 
 assert.match(component, /fetch\("\/api\/billing-portal"/);
-assert.match(component, /JSON\.stringify\(\{ checkoutSessionId: sessionId \}\)/);
+assert.match(component, /body: "\{\}"/);
+assert.doesNotMatch(component, /body: JSON\.stringify\(\{ checkoutSessionId/);
 assert.match(component, /searchParams\.delete\("session_id"\)/);
 assert.match(component, /aria-live="polite"/);
 assert.match(component, /role="alert"/);

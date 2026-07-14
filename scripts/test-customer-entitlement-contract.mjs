@@ -16,7 +16,8 @@ test("requires a valid authenticated owner and an exact scan UUID", async () => 
   assert.match(entitlement, /UUID_PATTERN\.test\(authUserId\)/);
   assert.match(entitlement, /UUID_PATTERN\.test\(scanId\)/);
   assert.match(entitlement, /"customer_accounts"[\s\S]*auth_user_id: `eq\.\$\{authUserId\}`/);
-  assert.match(entitlement, /if \(!account\?\.stripe_customer_id\) return false/);
+  assert.match(entitlement, /hasActiveCustomerReportGrant/);
+  assert.match(entitlement, /customer_report_grant_ownership/);
   assert.match(
     entitlement,
     /"customer_monitored_profile_ownership"[\s\S]*customer_account_id: `eq\.\$\{account\.id\}`/
@@ -50,7 +51,7 @@ test("limits entitlement to source, latest, or completed scans for owned monitor
 test("preserves legacy and one-time report access before subscription lookup", async () => {
   let billingQueries = 0;
   assert.equal(
-    await resolveStoredReportAccess(true, "91a3e66c-2c07-46cf-ab0c-3768375e050a", async () => {
+    await resolveStoredReportAccess(true, null, "91a3e66c-2c07-46cf-ab0c-3768375e050a", async () => {
       billingQueries += 1;
       return false;
     }),
@@ -59,8 +60,8 @@ test("preserves legacy and one-time report access before subscription lookup", a
   assert.equal(billingQueries, 0);
 
   const access = await source("lib/payments/access.ts");
-  assert.match(access, /if \(await hasServerReportAccess\(access, scan\)\) return true/);
-  assert.match(access, /hasActiveStripeReportGrant/);
+  assert.match(access, /resolveStoredReportAccess\(legacyAccess, authUserId, scan\.id/);
+  assert.match(access, /hasActiveCustomerReportGrant/);
   assert.match(access, /return await hasActiveCustomerMonitoringEntitlement\(authUserId, scan\.id\)/);
   assert.match(access, /catch \{\s*return false;\s*\}/);
 });
