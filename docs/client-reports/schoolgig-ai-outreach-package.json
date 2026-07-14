@@ -1,7 +1,7 @@
 {
   "company": "SchoolGig",
   "prepared_at": "July 6, 2026",
-  "purpose": "AI-ready outreach package for Jammcard business development follow-up. Use source context, contacts, drafts, and follow-up logic to create tasks, draft sends, and manage replies.",
+  "purpose": "AI-ready outreach package for SchoolGig business development follow-up. Use source context, contacts, drafts, and follow-up logic to create tasks, draft sends, and manage replies.",
   "operating_rules": [
     "Use the CSV or JSON as the upload source for a SchoolGig outreach AI instance.",
     "Prioritize educator workforce and school staffing lanes before broad HR/recruiting technology or generic education grants.",

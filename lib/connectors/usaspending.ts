@@ -142,6 +142,7 @@ const awardTypeGroups = [
   ["A", "B", "C", "D"],
   ["02", "03", "04", "05", "F001", "F002"]
 ];
+const USA_SPENDING_MAX_TERMS = 8;
 
 const creativeHighIntentTerms = [
   "live music performance",
@@ -193,10 +194,8 @@ function uniqueTerms(terms: string[]): string[] {
 
 async function searchAwards(query: string, context: ConnectorExecutionContext): Promise<UsaAward[]> {
   const endDate = new Date().toISOString().slice(0, 10);
-  const awards: UsaAward[] = [];
-
-  for (const awardTypeCodes of awardTypeGroups) {
-    if (connectorShouldStop(context)) break;
+  const searches = awardTypeGroups.map(async (awardTypeCodes) => {
+    if (connectorShouldStop(context)) return [];
     try {
       const data = await fetchConnectorJson<{ results?: UsaAward[] }>(
         context,
@@ -243,14 +242,14 @@ async function searchAwards(query: string, context: ConnectorExecutionContext): 
         },
         query
       );
-      awards.push(...(data.results ?? []));
+      return data.results ?? [];
     } catch {
-      // Request diagnostics are recorded by fetchConnectorJson. Continue so one
-      // failed award group does not discard usable results from another group.
+      // Diagnostics retain the failed group while usable award groups continue.
+      return [];
     }
-  }
+  });
 
-  return awards;
+  return (await Promise.all(searches)).flat();
 }
 
 export async function searchUsaSpending(
@@ -261,10 +260,10 @@ export async function searchUsaSpending(
   const creativeWorkforceProfile = isCreativeWorkforceProfile(profile);
   const creativeOnlyProfile = creativeWorkforceProfile && !educationWorkforceProfile;
   const terms = creativeOnlyProfile
-    ? uniqueTerms([...creativeHighIntentTerms, ...collectSearchTerms(profile, 40)]).slice(0, 45)
+    ? uniqueTerms([...creativeHighIntentTerms, ...collectSearchTerms(profile, 16)]).slice(0, USA_SPENDING_MAX_TERMS)
     : educationWorkforceProfile
-    ? uniqueTerms([...educationHighIntentTerms, ...collectSearchTerms(profile, 36)]).slice(0, 40)
-    : collectSearchTerms(profile, 18);
+    ? uniqueTerms([...educationHighIntentTerms, ...collectSearchTerms(profile, 16)]).slice(0, USA_SPENDING_MAX_TERMS)
+    : collectSearchTerms(profile, USA_SPENDING_MAX_TERMS);
   const signals: OpportunitySignal[] = [];
   const seen = new Set<string>();
   const perQueryCount = new Map<string, number>();

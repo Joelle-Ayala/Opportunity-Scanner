@@ -19,6 +19,7 @@ export type IndustrySampleReport = {
   exampleSlug: string;
   title: string;
   fictionalClient: string;
+  fictionalClientLogo?: string;
   clientDescription: string;
   summary: string;
   estimatedPipeline: string;
@@ -174,6 +175,7 @@ export const sampleReports: IndustrySampleReport[] = [
     exampleSlug: "creative-economy-live-events-opportunity-scan",
     title: "Sample Opportunity Scan: Arts, Creative Economy, and Live Events",
     fictionalClient: "CivicStage Talent Network",
+    fictionalClientLogo: "/sample-companies/civicstage-talent-network.svg",
     clientDescription:
       "Fictional creative marketplace helping cities, schools, venues, and brands book artists, performers, teaching artists, and cultural programming.",
     summary:

@@ -2,7 +2,7 @@
 
 Prepared: July 6, 2026
 
-## Moved From Jammcard Review
+## SchoolGig Arts-Education Fit Review
 
 ### Kennedy Center National Arts Education Program
 
@@ -19,4 +19,4 @@ Prepared: July 6, 2026
 
 ## Handling Note
 
-Do not include this as a priority Jammcard outreach item unless the ask is specifically teaching artists, music education staffing, or student-facing career exposure. For Jammcard's current report, event-entertainment vendors and musician-services contractors are the stronger lane.
+Include this for SchoolGig only when the ask is specifically teaching artists, music education staffing, arts enrichment, or student-facing career exposure. Keep general live-event and entertainment-vendor opportunities outside the SchoolGig priority lane.

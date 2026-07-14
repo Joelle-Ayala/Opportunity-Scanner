@@ -71,7 +71,7 @@ export function OpportunityScannerLogo({ compact = false }: { compact?: boolean 
 
 export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-line/80 bg-white/92 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-line/80 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:py-4">
         <div className="min-w-0">
           <OpportunityScannerLogo />

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { ReportPreview, RevenueOutcomeGrid, SectionIntro } from "@/components/marketing";
+import { ReportPreview, SectionIntro } from "@/components/marketing";
 import { ScanSubmitButton } from "@/components/scan-submit-button";
-import { industryPages, solutionPages } from "@/lib/marketingContent";
+import { industryPages, revenueOutcomes, solutionPages } from "@/lib/marketingContent";
 
 const title = "Opportunity Scanner | Public-Sector Opportunity Intelligence";
 const description =
@@ -48,7 +48,7 @@ const visualMoments = [
   {
     title: "Founder sees a new channel",
     copy: "The scan turns a normal company website into public-sector search logic, then shows where money and demand already exist.",
-    image: "/product-proof/report-overview.png",
+    image: "/product-proof/report-overview.jpg",
     alt: "Opportunity Scanner report overview with sourced opportunity summary"
   },
   {
@@ -65,59 +65,24 @@ const visualMoments = [
   }
 ];
 
-function HeroSignalVisual() {
-  return (
-    <div className="overflow-hidden rounded-lg border border-line bg-white shadow-panel">
-      <div className="relative aspect-[16/9] bg-field">
-        <img
-          src="/product-proof/report-overview.png"
-          alt="Opportunity Scanner report showing sourced pipeline rows and an executive summary"
-          className="absolute inset-0 h-full w-full object-cover object-top"
-        />
-      </div>
-      <div className="border-t border-line bg-ink p-5 text-white">
-        <Badge tone="green">From signal to next step</Badge>
-        <h2 className="mt-3 text-xl font-semibold leading-7">
-          See public-sector demand you were not tracking.
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-slate-200">
-          Get sourced targets, a pursuit path, and a practical next action.
-        </p>
-      </div>
-      <div className="grid gap-3 border-t border-white/10 bg-ink px-4 pb-4 text-sm text-white">
-        {[
-          ["Signal", "Funded buyer / active program"],
-          ["Revenue motion", "Sell to Agency or Partner"],
-          ["Next step", "Source-backed outreach task"]
-        ].map(([label, value]) => (
-          <div key={label} className="flex items-center justify-between gap-3 rounded-md bg-white/8 px-3 py-2">
-            <span className="text-slate-300">{label}</span>
-            <span className="text-right font-semibold">{value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function CustomerVisualSection() {
   return (
     <section className="border-y border-line bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-12">
+      <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
         <SectionIntro title="Find a new path to revenue without searching another database." eyebrow="How teams use it">
           <p>
             Find buyer targets, funded partners, public programs, and practical next steps your
             team may not know to search for today.
           </p>
         </SectionIntro>
-        <div className="mt-6 grid gap-5 lg:grid-cols-3">
+        <div className="mt-8 grid border-y border-line lg:grid-cols-3 lg:divide-x lg:divide-line">
           {visualMoments.map((moment) => (
-            <article key={moment.title} className="overflow-hidden rounded-lg border border-line bg-field shadow-sm">
-              <img src={moment.image} alt={moment.alt} className="h-48 w-full object-cover object-top" loading="lazy" />
-              <div className="p-5">
-                <h3 className="text-lg font-semibold text-ink">{moment.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{moment.copy}</p>
+            <article key={moment.title} className="border-b border-line py-6 last:border-b-0 lg:border-b-0 lg:px-6 lg:first:pl-0 lg:last:pr-0">
+              <div className="overflow-hidden rounded-md border border-line bg-field">
+                <img src={moment.image} alt={moment.alt} className="aspect-[16/10] w-full object-cover object-top" loading="lazy" />
               </div>
+              <h3 className="mt-5 text-lg font-semibold text-ink">{moment.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{moment.copy}</p>
             </article>
           ))}
         </div>
@@ -135,7 +100,7 @@ export default function HomePage({
     searchParams?.error === "invalid-url" ? "Enter a valid company website URL." : null;
 
   return (
-    <main className="min-h-screen bg-field">
+    <main className="min-h-screen bg-white">
       <SiteHeader
         rightSlot={
           <a href="#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
@@ -144,73 +109,33 @@ export default function HomePage({
         }
       />
 
-      <section className="border-b border-line bg-cream">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_500px] lg:py-14">
-          <div className="self-center">
+      <section className="border-b border-slate-700 bg-ink text-white">
+        <div className="mx-auto grid max-w-7xl items-start gap-8 px-6 py-7 lg:grid-cols-[minmax(0,1fr)_480px] lg:gap-x-12 lg:py-12">
+          <div className="min-w-0 lg:col-start-1 lg:row-start-1">
             <div className="flex flex-wrap gap-2">
               <Badge tone="blue">Public-sector revenue intelligence</Badge>
               <Badge tone="green">New deal-flow channel</Badge>
             </div>
-            <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+            <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl">
               Find a new public-sector revenue channel from your company website.
             </h1>
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-200">
               Opportunity Scanner finds government contracts, funded buyers, grants, policy
               signals, workforce programs, reimbursement pathways, and public money flows, then
               turns them into actions your team can actually pursue.
             </p>
-            <p className="mt-5 max-w-2xl text-sm leading-6 text-muted">
-              Most companies treat public-sector money as too confusing, too slow, or irrelevant.
-              We show where money is already moving, who may be a buyer or partner, what is
-              available now, and what your team should do next.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#scan" className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a href="#scan" className="rounded-md bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:bg-mist">
                 Scan Your Company Website
               </a>
-              <a href="/public-sector-revenue" className="rounded-md border border-line bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:border-accent">
+              <a href="/public-sector-revenue" className="rounded-md border border-slate-500 px-4 py-3 text-sm font-semibold text-white hover:border-slate-200 hover:bg-white/5">
                 Learn About This Channel
               </a>
             </div>
-            <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
-              {[
-                ["01", "Find money and demand signals"],
-                ["02", "Choose the right revenue motion"],
-                ["03", "Route the next action"]
-              ].map(([step, item]) => (
-                <div key={item} className="rounded-lg border border-line bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold text-accent">{step}</p>
-                  <p className="mt-2 text-sm font-semibold leading-5 text-ink">{item}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-8 max-w-3xl rounded-lg border border-line bg-white p-4 shadow-panel">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
-                <p className="text-sm font-semibold text-ink">Opportunity Action Table</p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge tone="green">High Actionability</Badge>
-                  <Badge tone="blue">Sell to Funded Buyer</Badge>
-                </div>
-              </div>
-              <div className="mt-4 grid gap-3 text-sm md:grid-cols-[1.1fr_.8fr_.8fr]">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">Target</p>
-                  <p className="mt-1 font-semibold text-ink">Funded buyer or partner</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">Contact path</p>
-                  <p className="mt-1 font-semibold text-ink">Program office / recipient</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">Next action</p>
-                  <p className="mt-1 font-semibold text-ink">CRM-ready outreach task</p>
-                </div>
-              </div>
-            </div>
           </div>
 
-          <div className="grid gap-4">
-            <form id="scan" action="/api/scans" method="post" className="rounded-lg border border-line bg-white p-5 shadow-panel">
+          <div className="lg:sticky lg:top-24 lg:col-start-2 lg:row-span-3 lg:row-start-1">
+            <form id="scan" action="/api/scans" method="post" className="rounded-lg border border-slate-200 bg-white p-5 text-ink shadow-lift sm:p-6">
               <input type="hidden" name="reportType" value="quick" />
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -346,28 +271,97 @@ export default function HomePage({
                 </p>
               </div>
             </form>
+          </div>
 
-            <HeroSignalVisual />
+          <div className="grid max-w-3xl border-y border-white/15 sm:grid-cols-3 sm:divide-x sm:divide-white/15 lg:col-start-1 lg:row-start-2">
+            {[
+              ["SOURCE", "Public records linked to every signal"],
+              ["MOTION", "A clear path to revenue"],
+              ["ACTION", "A next step your team can route"]
+            ].map(([label, item]) => (
+              <div key={item} className="border-b border-white/15 py-4 last:border-b-0 sm:border-b-0 sm:px-4 sm:first:pl-0 sm:last:pr-0">
+                <p className="text-xs font-semibold text-teal-300">{label}</p>
+                <p className="mt-1 text-sm font-semibold leading-5 text-white">{item}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="max-w-3xl overflow-hidden rounded-lg border border-white/20 bg-white shadow-lift lg:col-start-1 lg:row-start-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-field px-4 py-3 text-ink">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent">Product proof</p>
+                <p className="mt-1 text-sm font-semibold">A sourced report, not a company summary</p>
+              </div>
+              <Badge tone="green">High Actionability</Badge>
+            </div>
+            <img
+              src="/product-proof/report-overview.jpg"
+              alt="Opportunity Scanner report showing sourced opportunity signals and an executive summary"
+              className="aspect-[16/8] w-full object-cover object-top"
+            />
           </div>
         </div>
       </section>
 
-      <ReportPreview />
+      <section className="border-b border-line bg-white">
+        <div className="mx-auto grid max-w-7xl divide-y divide-line px-6 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          {[
+            ["2-3", "real sourced signals in the free preview"],
+            ["8", "revenue motions used to classify the path"],
+            ["1 row", "from source evidence to target and next action"]
+          ].map(([value, label]) => (
+            <div key={label} className="py-6 sm:px-6 sm:first:pl-0 sm:last:pr-0">
+              <p className="text-2xl font-semibold text-ink">{value}</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="bg-field py-2">
+        <ReportPreview />
+      </div>
 
       <CustomerVisualSection />
 
-      <RevenueOutcomeGrid />
+      <section className="bg-field">
+        <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
+          <SectionIntro title="Revenue outcomes the scan can surface" eyebrow="What this turns into">
+            <p>
+              The scan is not trying to summarize your company. It identifies public-sector paths
+              your team can pursue, route, monitor, or move into a workflow.
+            </p>
+          </SectionIntro>
+          <div className="mt-8 grid border-t border-line md:grid-cols-2">
+            {revenueOutcomes.map((outcome, index) => (
+              <article
+                key={outcome.label}
+                className="grid grid-cols-[36px_1fr] gap-3 border-b border-line py-5 md:odd:pr-8 md:even:border-l md:even:pl-8"
+              >
+                <span className={`text-sm font-semibold ${index === 2 ? "text-ember" : index === 4 ? "text-signal" : "text-accent"}`}>
+                  0{index + 1}
+                </span>
+                <div>
+                  <h3 className="font-semibold text-ink">{outcome.label}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{outcome.detail}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-12">
+      <section className="border-y border-line bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
         <SectionIntro title="Three ways teams use Opportunity Scanner" eyebrow="Solutions">
           <p>
             Start with a scan to see where public-sector revenue may fit, then route the strongest
             opportunities into sales, partnerships, research, or your existing workflow.
           </p>
         </SectionIntro>
-        <div className="mt-6 grid gap-5 lg:grid-cols-3">
+        <div className="mt-8 grid border-y border-line lg:grid-cols-3 lg:divide-x lg:divide-line">
           {solutionPages.map((solution) => (
-            <article key={solution.slug} className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <article key={solution.slug} className="border-b border-line py-6 last:border-b-0 lg:border-b-0 lg:px-6 lg:first:pl-0 lg:last:pr-0">
               <Badge tone="blue">{solution.name}</Badge>
               <h2 className="mt-4 text-xl font-semibold leading-7 text-ink">{solution.headline}</h2>
               <p className="mt-3 text-sm leading-6 text-slate-600">{solution.description}</p>
@@ -377,21 +371,22 @@ export default function HomePage({
             </article>
           ))}
         </div>
+        </div>
       </section>
 
-      <section className="border-y border-line bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-12">
+      <section className="bg-field">
+        <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
           <SectionIntro title="Public-sector revenue can show up in markets that do not think of themselves as government vendors." eyebrow="Industries">
             <p>
               Opportunity Scanner is built for companies exploring public money, funded buyers,
               agencies, partners, and policy demand as a new deal-flow channel.
             </p>
           </SectionIntro>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-8 grid border-t border-line md:grid-cols-2 xl:grid-cols-4">
             {industryPages.map((industry) => (
-              <article key={industry.slug} className="rounded-lg border border-line bg-field p-5 shadow-sm">
-                <Badge tone="blue">{industry.name}</Badge>
-                <h2 className="mt-4 text-lg font-semibold leading-6 text-ink">{industry.headline}</h2>
+              <article key={industry.slug} className="border-b border-line py-6 md:px-5 md:odd:border-r md:odd:pl-0 xl:border-r xl:odd:border-r xl:[&:nth-child(4n+1)]:pl-0 xl:[&:nth-child(4n)]:border-r-0 xl:[&:nth-child(4n)]:pr-0">
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent">{industry.name}</p>
+                <h2 className="mt-3 text-lg font-semibold leading-6 text-ink">{industry.headline}</h2>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{industry.outcome}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {industry.revenueMotions.slice(0, 2).map((motion) => (
@@ -407,29 +402,33 @@ export default function HomePage({
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-5 px-6 py-12 md:grid-cols-3">
-        {[
-          ["1. Translate", "Opportunity Scanner turns your company into public-sector buying and funding language."],
-          ["2. Prioritize", "It ranks source-backed opportunities by buyer clarity, timing, revenue motion, and fit."],
-          ["3. Move", "Each row becomes a target, contact path, CRM-ready note, outreach angle, and workflow action."]
-        ].map(([title, copy]) => (
-          <article key={title} className="rounded-lg border border-line bg-white p-5 shadow-sm">
-            <h2 className="text-lg font-semibold text-ink">{title}</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
-          </article>
-        ))}
+      <section className="border-y border-line bg-white">
+        <div className="mx-auto grid max-w-7xl px-6 py-14 md:grid-cols-3 md:divide-x md:divide-line lg:py-16">
+          {[
+            ["01", "Translate", "Opportunity Scanner turns your company into public-sector buying and funding language."],
+            ["02", "Prioritize", "It ranks source-backed opportunities by buyer clarity, timing, revenue motion, and fit."],
+            ["03", "Move", "Each row becomes a target, contact path, CRM-ready note, outreach angle, and workflow action."]
+          ].map(([number, title, copy], index) => (
+            <article key={title} className={`border-b border-line py-6 last:border-b-0 md:border-b-0 md:px-8 md:first:pl-0 md:last:pr-0 ${index === 1 ? "text-accent" : ""}`}>
+              <p className="text-xs font-semibold text-ember">{number}</p>
+              <h2 className="mt-3 text-xl font-semibold text-ink">{title}</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
-      <section className="border-y border-line bg-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[0.8fr_1.2fr]">
+      <section className="bg-field">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[0.75fr_1.25fr] lg:py-16">
           <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-accent">Coverage</p>
             <h2 className="text-2xl font-semibold text-ink">What Opportunity Scanner looks for</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               The scan looks for public records that can become buyer targets, partner targets,
               account research, or workflow-ready business development tasks.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid border-t border-line sm:grid-cols-2">
             {[
               "Funding and grant programs",
               "Government contracts and active bids",
@@ -439,80 +438,93 @@ export default function HomePage({
               "Healthcare reimbursement pathways",
               "State and local spending",
               "Buyer and partner targets"
-            ].map((item) => (
-              <div key={item} className="rounded-md border border-line bg-field px-4 py-3 text-sm font-semibold text-ink">
-                {item}
+            ].map((item, index) => (
+              <div key={item} className="flex gap-3 border-b border-line py-4 text-sm font-semibold text-ink sm:odd:pr-6 sm:even:border-l sm:even:pl-6">
+                <span className={index === 2 || index === 6 ? "text-ember" : "text-signal"}>+</span>
+                <span>{item}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-2">
-        <article className="rounded-lg border border-line bg-white p-6 shadow-sm">
-          <div className="flex flex-wrap gap-2">
-            <Badge tone="green">High Actionability</Badge>
-            <Badge tone="blue">Sell to Funded Buyer</Badge>
-          </div>
-          <h2 className="mt-4 text-xl font-semibold text-ink">Example pipeline row</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-700">
-            A public agency funded a program adjacent to your offer, creating a credible buyer or
-            partner target with source-backed evidence.
-          </p>
-          <div className="mt-5 grid gap-3 text-sm">
-            <p><span className="font-semibold text-ink">Target organization:</span> County program office</p>
-            <p><span className="font-semibold text-ink">Contact path:</span> Find program manager or procurement contact</p>
-            <p><span className="font-semibold text-ink">Recommended next step:</span> Validate fit, add a CRM-ready note, and send source-backed outreach.</p>
-          </div>
-        </article>
+      <section className="border-y border-line bg-white">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-2 lg:gap-14 lg:py-16">
+          <article>
+            <div className="flex flex-wrap gap-2">
+              <Badge tone="green">High Actionability</Badge>
+              <Badge tone="blue">Sell to Funded Buyer</Badge>
+            </div>
+            <h2 className="mt-4 text-2xl font-semibold text-ink">Example pipeline row</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              A public agency funded a program adjacent to your offer, creating a credible buyer or
+              partner target with source-backed evidence.
+            </p>
+            <dl className="mt-6 divide-y divide-line border-y border-line text-sm">
+              {[
+                ["Target organization", "County program office"],
+                ["Contact path", "Find program manager or procurement contact"],
+                ["Recommended next step", "Validate fit, add a CRM-ready note, and send source-backed outreach."]
+              ].map(([label, value]) => (
+                <div key={label} className="grid gap-1 py-4 sm:grid-cols-[155px_1fr] sm:gap-4">
+                  <dt className="font-semibold text-ink">{label}</dt>
+                  <dd className="leading-6 text-slate-600">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </article>
 
-        <article className="rounded-lg border border-line bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-ink">Free vs Full report</h2>
-          <div className="mt-5 grid gap-3">
+          <article className="border-t-4 border-ember pt-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-ember">Access</p>
+            <h2 className="mt-2 text-2xl font-semibold text-ink">Free vs Full report</h2>
+            <div className="mt-5 divide-y divide-line border-y border-line">
             {[
               ["Free scan", "A preview with 2-3 sourced opportunity signals, total signals found, target lanes, source summaries, and next steps."],
               ["Full report access", "The full action layer: all prioritized opportunities, source links, revenue motions, contact paths, CRM-ready notes, outreach drafts, workflow export, and capped contact enrichment where appropriate. Beta access is request-based while checkout is being finalized."]
             ].map(([title, copy]) => (
-              <div key={title} className="rounded-md border border-line bg-field p-4">
+              <div key={title} className="py-4">
                 <h3 className="font-semibold text-ink">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
               </div>
             ))}
+            </div>
+          </article>
           </div>
-        </article>
       </section>
 
-      <section className="border-t border-line bg-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-2">
+      <section className="bg-ink text-white">
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-14">
           <div>
-            <h2 className="text-2xl font-semibold text-ink">Send opportunities into your workflow</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
+            <p className="text-xs font-semibold uppercase tracking-wide text-teal-300">Workflow-ready</p>
+            <h2 className="mt-2 text-2xl font-semibold">Send opportunities into your workflow</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
               The full report packages each opportunity with target account, source evidence,
               contact path, next step, CRM note, and outreach angle for Zapier, Make, n8n,
               Airtable, Notion, Slack, HubSpot workflows, or your CRM.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {["Create CRM deal", "Post Slack alert", "Add Airtable record", "Create Notion task"].map((item) => (
-              <div key={item} className="rounded-md border border-line bg-field px-4 py-3 text-sm font-semibold text-ink">
-                {item}
+          <div className="grid border-y border-white/15 sm:grid-cols-2">
+            {["Create CRM deal", "Post Slack alert", "Add Airtable record", "Create Notion task"].map((item, index) => (
+              <div key={item} className="flex items-center gap-3 border-b border-white/15 py-4 text-sm font-semibold last:border-b-0 sm:px-5 sm:odd:border-r sm:[&:nth-last-child(-n+2)]:border-b-0">
+                <span className={index === 1 ? "text-ember" : "text-signal"}>+</span>
+                <span>{item}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-12">
+      <section className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
         <h2 className="text-2xl font-semibold text-ink">FAQ</h2>
-        <div className="mt-5 grid gap-3 md:grid-cols-2">
+        <div className="mt-6 grid gap-x-8 md:grid-cols-2">
           {[
             ["Is this just a grant finder?", "No. It looks across funding, procurement, policy, workforce, reimbursement, and public spending records."],
             ["What does the free scan include?", "A preview report with 2-3 sourced opportunities, target lanes, source summaries, and recommended next steps."],
             ["Do I need public-sector experience?", "No. The report translates public records into revenue motions, contact paths, and buyer or partner targets."],
             ["Can I send results to my tools?", "The full report includes workflow-ready rows for common automation tools, CRMs, and outbound webhooks."]
           ].map(([question, answer]) => (
-            <details key={question} className="rounded-lg border border-line bg-white p-5">
-              <summary className="cursor-pointer font-semibold text-ink">{question}</summary>
+            <details key={question} className="border-t border-line py-5 last:border-b md:[&:nth-last-child(-n+2)]:border-b">
+              <summary className="cursor-pointer font-semibold text-ink marker:text-accent">{question}</summary>
               <p className="mt-3 text-sm leading-6 text-slate-600">{answer}</p>
             </details>
           ))}

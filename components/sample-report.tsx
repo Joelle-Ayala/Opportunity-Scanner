@@ -1,4 +1,4 @@
-import { Badge } from "@/components/brand";
+import { Badge, CompanyLogo } from "@/components/brand";
 import type { IndustrySampleReport } from "@/lib/sampleReports";
 
 export function SampleReportPreview({ report }: { report: IndustrySampleReport }) {
@@ -9,10 +9,13 @@ export function SampleReportPreview({ report }: { report: IndustrySampleReport }
       <div className="overflow-hidden rounded-lg border border-line bg-white shadow-panel">
         <div className="border-b border-line bg-ink px-5 py-5 text-white">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
+            <div className="flex min-w-0 items-start gap-4">
+              <CompanyLogo name={report.fictionalClient} logoUrl={report.fictionalClientLogo} />
+              <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">Sample report</p>
               <h2 className="mt-1 text-2xl font-semibold">{report.fictionalClient}</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">{report.summary}</p>
+              </div>
             </div>
             <div className="grid gap-2 text-right text-sm">
               <span className="font-semibold text-white">{report.estimatedPipeline}</span>
@@ -94,7 +97,10 @@ export function FullSampleReport({ report }: { report: IndustrySampleReport }) {
         <section className="grid gap-5 border-b border-line bg-field p-6 lg:grid-cols-[1fr_1fr]">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-accent">Executive brief</p>
-            <h2 className="mt-2 text-2xl font-semibold text-ink">{report.fictionalClient}</h2>
+            <div className="mt-3 flex min-w-0 items-center gap-3">
+              <CompanyLogo name={report.fictionalClient} logoUrl={report.fictionalClientLogo} />
+              <h2 className="min-w-0 break-words text-2xl font-semibold text-ink">{report.fictionalClient}</h2>
+            </div>
             <p className="mt-4 text-sm leading-6 text-slate-700">{report.summary}</p>
           </div>
           <div className="grid gap-3">

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title description">
+  <title id="title">CivicStage Talent Network</title>
+  <desc id="description">A coral stage arch with teal signal lines.</desc>
+  <rect width="64" height="64" rx="12" fill="#D95D39"/>
+  <path d="M18 49V32c0-8 6-14 14-14s14 6 14 14v17h-7V32c0-4-3-7-7-7s-7 3-7 7v17h-7Z" fill="#FFF"/>
+  <path d="M20 14c7-5 17-5 24 0M24 19c5-3 11-3 16 0" fill="none" stroke="#0E7C86" stroke-linecap="round" stroke-width="4"/>
+</svg>
