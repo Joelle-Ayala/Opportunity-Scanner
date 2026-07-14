@@ -8,6 +8,8 @@ export type EnqueueScanNurtureInput = {
   email: string;
   recipientName?: string | null;
   companyName?: string | null;
+  consentedAt: string;
+  consentSource: "homepage_scan";
 };
 
 export type ScanNurtureEnrollmentResult = {
@@ -33,7 +35,14 @@ export async function enqueueScanNurture(
   input: EnqueueScanNurtureInput
 ): Promise<ScanNurtureEnrollmentResult> {
   const email = input.email.trim();
-  if (!UUID_PATTERN.test(input.scanId) || !EMAIL_PATTERN.test(email) || email.length > 254) {
+  const consentedAt = new Date(input.consentedAt);
+  if (
+    !UUID_PATTERN.test(input.scanId) ||
+    !EMAIL_PATTERN.test(email) ||
+    email.length > 254 ||
+    !Number.isFinite(consentedAt.getTime()) ||
+    input.consentSource !== "homepage_scan"
+  ) {
     throw new Error("A valid scan ID and recipient email are required for nurture enrollment.");
   }
 
@@ -41,7 +50,9 @@ export async function enqueueScanNurture(
     p_scan_id: input.scanId,
     p_email: email,
     p_recipient_name: input.recipientName?.trim().slice(0, 120) || null,
-    p_company_name: input.companyName?.trim().slice(0, 160) || null
+    p_company_name: input.companyName?.trim().slice(0, 160) || null,
+    p_consented_at: consentedAt.toISOString(),
+    p_consent_source: input.consentSource
   });
   const result = rows[0];
   if (!result) throw new Error("Scan nurture enrollment did not return a result.");

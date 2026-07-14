@@ -12,8 +12,9 @@ export function ScanSubmitButton() {
       onClick={(event) => {
         const form = event.currentTarget.form;
         if (!form?.checkValidity()) return;
+        const marketingConsent = new FormData(form).get("marketingConsent") === "on";
         trackProductEvent("scan_started", { entry_point: "homepage" });
-        trackProductEvent("email_captured", { surface: "scan", marketing_consent: false });
+        trackProductEvent("email_captured", { surface: "scan", marketing_consent: marketingConsent });
       }}
       className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] disabled:cursor-wait disabled:bg-slate-400"
     >

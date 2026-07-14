@@ -20,11 +20,31 @@ create table if not exists scan_nurture_enrollments (
   subscriber_id uuid not null references scan_nurture_subscribers(id) on delete cascade,
   recipient_name text check (recipient_name is null or char_length(recipient_name) <= 120),
   company_name text check (company_name is null or char_length(company_name) <= 160),
+  marketing_consent boolean not null default false,
+  consented_at timestamptz,
+  consent_source text check (consent_source is null or consent_source = 'homepage_scan'),
   canceled_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique (scan_id, subscriber_id)
+  unique (scan_id, subscriber_id),
+  check (
+    (marketing_consent = true and consented_at is not null and consent_source = 'homepage_scan')
+    or (marketing_consent = false and consented_at is null and consent_source is null)
+  )
 );
+
+alter table scan_nurture_enrollments add column if not exists marketing_consent boolean not null default false;
+alter table scan_nurture_enrollments add column if not exists consented_at timestamptz;
+alter table scan_nurture_enrollments add column if not exists consent_source text;
+alter table scan_nurture_enrollments drop constraint if exists scan_nurture_enrollments_consent_source_check;
+alter table scan_nurture_enrollments add constraint scan_nurture_enrollments_consent_source_check
+  check (consent_source is null or consent_source = 'homepage_scan');
+alter table scan_nurture_enrollments drop constraint if exists scan_nurture_enrollments_marketing_consent_check;
+alter table scan_nurture_enrollments add constraint scan_nurture_enrollments_marketing_consent_check
+  check (
+    (marketing_consent = true and consented_at is not null and consent_source = 'homepage_scan')
+    or (marketing_consent = false and consented_at is null and consent_source is null)
+  );
 
 create table if not exists scan_nurture_jobs (
   id uuid primary key default gen_random_uuid(),
@@ -53,11 +73,15 @@ alter table scan_nurture_subscribers enable row level security;
 alter table scan_nurture_enrollments enable row level security;
 alter table scan_nurture_jobs enable row level security;
 
+drop function if exists enqueue_scan_nurture(uuid, text, text, text);
+
 create or replace function enqueue_scan_nurture(
   p_scan_id uuid,
   p_email text,
   p_recipient_name text default null,
-  p_company_name text default null
+  p_company_name text default null,
+  p_consented_at timestamptz default null,
+  p_consent_source text default null
 ) returns table (
   enrollment_id uuid,
   subscriber_id uuid,
@@ -77,6 +101,10 @@ begin
   if p_scan_id is null
     or v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
     or char_length(v_email) > 254
+    or p_consented_at is null
+    or p_consented_at < now() - interval '1 day'
+    or p_consented_at > now() + interval '5 minutes'
+    or p_consent_source <> 'homepage_scan'
     or not exists (select 1 from scans where id = p_scan_id and status = 'completed')
   then
     raise exception 'Invalid scan nurture enrollment';
@@ -94,6 +122,9 @@ begin
     subscriber_id,
     recipient_name,
     company_name,
+    marketing_consent,
+    consented_at,
+    consent_source,
     canceled_at
   ) values (
     p_scan_id,
@@ -103,11 +134,17 @@ begin
       nullif(left(trim(coalesce(p_company_name, '')), 160), ''),
       (select nullif(left(trim(coalesce(company_name, '')), 160), '') from scans where id = p_scan_id)
     ),
+    true,
+    p_consented_at,
+    p_consent_source,
     case when v_subscriber.status = 'unsubscribed' then now() else null end
   )
   on conflict on constraint scan_nurture_enrollments_scan_id_subscriber_id_key do update
     set recipient_name = coalesce(excluded.recipient_name, scan_nurture_enrollments.recipient_name),
         company_name = coalesce(excluded.company_name, scan_nurture_enrollments.company_name),
+        marketing_consent = true,
+        consented_at = excluded.consented_at,
+        consent_source = excluded.consent_source,
         canceled_at = case
           when v_subscriber.status = 'unsubscribed' then coalesce(scan_nurture_enrollments.canceled_at, now())
           else scan_nurture_enrollments.canceled_at
@@ -168,6 +205,8 @@ begin
       and job.scheduled_at <= now()
       and (job.lease_expires_at is null or job.lease_expires_at <= now())
       and enrollment.canceled_at is null
+      and enrollment.marketing_consent = true
+      and enrollment.consented_at is not null
       and subscriber.status = 'subscribed'
     order by job.scheduled_at asc, job.created_at asc
     for update of job skip locked
@@ -294,12 +333,12 @@ grant all on table scan_nurture_subscribers to service_role;
 grant all on table scan_nurture_enrollments to service_role;
 grant all on table scan_nurture_jobs to service_role;
 
-revoke all on function enqueue_scan_nurture(uuid, text, text, text) from public, anon, authenticated;
+revoke all on function enqueue_scan_nurture(uuid, text, text, text, timestamptz, text) from public, anon, authenticated;
 revoke all on function claim_due_scan_nurture_jobs(integer) from public, anon, authenticated;
 revoke all on function complete_scan_nurture_job(uuid, text) from public, anon, authenticated;
 revoke all on function release_scan_nurture_job(uuid, text) from public, anon, authenticated;
 revoke all on function unsubscribe_scan_nurture(uuid) from public, anon, authenticated;
-grant execute on function enqueue_scan_nurture(uuid, text, text, text) to service_role;
+grant execute on function enqueue_scan_nurture(uuid, text, text, text, timestamptz, text) to service_role;
 grant execute on function claim_due_scan_nurture_jobs(integer) to service_role;
 grant execute on function complete_scan_nurture_job(uuid, text) to service_role;
 grant execute on function release_scan_nurture_job(uuid, text) to service_role;

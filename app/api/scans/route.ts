@@ -57,6 +57,7 @@ function scanRejectedResponse(result: ScanRateLimitResult): Response {
 
 export async function POST(request: Request) {
   const formData = await request.formData();
+  const marketingConsent = formData.get("marketingConsent") === "on";
   const session = await resolveCustomerSession(getCustomerAuthConfig(request.url), cookies()).catch(() => null);
   let companyUrl: string;
   try {
@@ -93,11 +94,13 @@ export async function POST(request: Request) {
   try {
     await executeScanPipeline(scan.id, input);
 
-    if (input.email) {
+    if (input.email && marketingConsent) {
       await enqueueScanNurture({
         scanId: scan.id,
         email: input.email,
-        companyName: input.companyName
+        companyName: input.companyName,
+        consentedAt: new Date().toISOString(),
+        consentSource: "homepage_scan"
       }).catch((error) => {
         console.error("Unable to enroll completed scan in nurture sequence", {
           scanId: scan.id,

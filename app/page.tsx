@@ -179,6 +179,11 @@ export default function HomePage({
                   <a href="/privacy" className="font-semibold text-accent hover:underline">privacy notice</a>.
                 </p>
 
+                <label className="flex min-h-11 items-start gap-3 rounded-md border border-line bg-field p-3 text-sm leading-6 text-slate-700">
+                  <input name="marketingConsent" type="checkbox" className="mt-1 h-4 w-4 accent-[#0E7C86]" />
+                  <span>Send me practical opportunity guidance and occasional product updates. I can unsubscribe at any time.</span>
+                </label>
+
                 <details className="rounded-lg border border-line bg-field p-3">
                   <summary className="cursor-pointer list-none text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
                     Prioritize my scan with more context

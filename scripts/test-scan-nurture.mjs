@@ -75,7 +75,13 @@ test("Resend delivery is idempotent and includes visible and one-click unsubscri
 });
 
 test("migration provides transactional dedupe, leasing, retries, and durable suppression", async () => {
-  const sql = await readFile(new URL("../db/scan-nurture.sql", import.meta.url), "utf8");
+  const [sql, route, storage, homepage, submitButton] = await Promise.all([
+    readFile(new URL("../db/scan-nurture.sql", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/scans/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/nurture/storage.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/scan-submit-button.tsx", import.meta.url), "utf8")
+  ]);
   assert.match(sql, /unique \(scan_id, subscriber_id\)/);
   assert.match(sql, /unique \(enrollment_id, touch_number\)/);
   assert.match(sql, /interval '10 days'/);
@@ -92,6 +98,16 @@ test("migration provides transactional dedupe, leasing, retries, and durable sup
   );
   assert.doesNotMatch(sql, /on conflict \(scan_id, subscriber_id\) do update/);
   assert.match(sql, /grant execute on function enqueue_scan_nurture/);
+  assert.match(sql, /marketing_consent boolean not null default false/);
+  assert.match(sql, /enrollment\.marketing_consent = true/);
+  assert.match(sql, /p_consent_source <> 'homepage_scan'/);
+  assert.match(sql, /drop function if exists enqueue_scan_nurture\(uuid, text, text, text\)/);
+  assert.match(sql, /enqueue_scan_nurture\(uuid, text, text, text, timestamptz, text\)/);
+  assert.match(route, /input\.email && marketingConsent/);
+  assert.match(storage, /p_consented_at: consentedAt\.toISOString\(\)/);
+  assert.match(storage, /p_consent_source: input\.consentSource/);
+  assert.match(homepage, /name="marketingConsent"/);
+  assert.match(submitButton, /marketing_consent: marketingConsent/);
 });
 
 test("cron and environment configuration expose the isolated nurture runner", async () => {
