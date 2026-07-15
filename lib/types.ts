@@ -60,7 +60,14 @@ export type ScanRecord = {
   industry?: string | null;
   customer_type?: string | null;
   email?: string | null;
-  status: "queued" | "scraping" | "profiling" | "discovering" | "completed" | "failed";
+  status:
+    | "queued"
+    | "scraping"
+    | "profiling"
+    | "discovering"
+    | "quality_review"
+    | "completed"
+    | "failed";
   report_type: ReportType;
   report_access?: ReportAccess | null;
   opportunity_focus?: string | null;

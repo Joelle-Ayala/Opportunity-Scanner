@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { DashboardEmptyState } from "./empty-state";
 import { DashboardStatusBadge, type DashboardStatusTone } from "./status-badge";
 
-export type DashboardReportStatus = "queued" | "scanning" | "ready" | "failed";
+export type DashboardReportStatus = "queued" | "scanning" | "review" | "ready" | "failed";
 
 export interface DashboardReportRow {
   id: string;
@@ -31,6 +31,7 @@ export interface ReportListProps {
 const statusDisplay: Record<DashboardReportStatus, { label: string; tone: DashboardStatusTone }> = {
   queued: { label: "Queued", tone: "neutral" },
   scanning: { label: "Scanning", tone: "info" },
+  review: { label: "Quality review", tone: "warning" },
   ready: { label: "Ready", tone: "success" },
   failed: { label: "Needs retry", tone: "danger" }
 };
@@ -108,7 +109,7 @@ export function ReportList({
                     <button type="button" onClick={() => onDownload(report)} className="rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:border-accent hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent">Export</button>
                   ) : null}
                   {report.href ? (
-                    <a href={report.href} className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">View report</a>
+                    <a href={report.href} className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">{report.status === "review" ? "View status" : "View report"}</a>
                   ) : onView ? (
                     <button type="button" onClick={() => onView(report)} disabled={report.status !== "ready"} className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300">View report</button>
                   ) : null}

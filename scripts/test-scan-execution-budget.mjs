@@ -66,6 +66,22 @@ function dependencies(overrides = {}) {
     discoverExternalSignalsWithStatus: async () => ({ signals: [], runs: [] }),
     saveConnectorRunStatuses: async () => [],
     saveOpportunitySignals: async () => [],
+    normalizeOpportunitySignals: (signals) => signals,
+    evaluateReportQuality: (_profile, signals, tier) => ({
+      passed: true,
+      score: 100,
+      blockingReasons: [],
+      metrics: {
+        tier,
+        opportunityCount: signals.length,
+        minimumOpportunityCount: 3,
+        qualifyingOpportunityCount: signals.length,
+        minimumQualifyingOpportunityCount: 3,
+        requirementPassCounts: {},
+        requirementCoverage: {}
+      },
+      opportunities: []
+    }),
     now: Date.now,
     ...overrides
   };
@@ -322,6 +338,55 @@ test("healthy zero-match discovery completes even when other sources are skipped
   });
 
   assert.equal(updates.at(-1)?.status, "completed");
+});
+
+test("quality gate holds a scan from completion without discarding source diagnostics", async () => {
+  const updates = [];
+  const savedSignals = [];
+  const quality = {
+    passed: false,
+    score: 42,
+    blockingReasons: [{ code: "INSUFFICIENT_QUALIFYING_OPPORTUNITIES", message: "Needs three qualified rows.", opportunityIndexes: [] }],
+    metrics: {
+      tier: "full",
+      opportunityCount: 1,
+      minimumOpportunityCount: 3,
+      qualifyingOpportunityCount: 1,
+      minimumQualifyingOpportunityCount: 3,
+      requirementPassCounts: {},
+      requirementCoverage: {}
+    },
+    opportunities: []
+  };
+
+  const result = await executeScanPipeline("quality-hold", input, {
+    deadlineAtMs: Date.now() + 1_000,
+    terminalDeadlineAtMs: Date.now() + 1_500,
+    postDiscoveryReserveMs: 100,
+    dependencies: dependencies({
+      updateScan: async (_scanId, payload) => {
+        updates.push(payload);
+        return payload;
+      },
+      discoverExternalSignalsWithStatus: async () => ({
+        signals: [{ opportunity_title: "One reportable row", show_in_report: true }],
+        runs: [{ source_name: "USAspending.gov", status: "active", outcome: "matches_found" }]
+      }),
+      saveOpportunitySignals: async (_scanId, signals) => {
+        savedSignals.push(...signals);
+        return [];
+      },
+      evaluateReportQuality: () => quality
+    })
+  });
+
+  assert.equal(result.status, "quality_review");
+  assert.equal(result.quality, quality);
+  assert.equal(savedSignals.length, 1, "held signals remain available for operator diagnosis");
+  assert.equal(updates.at(-1)?.status, "quality_review");
+  assert.equal(updates.at(-1)?.completed_at, null);
+  assert.match(updates.at(-1)?.error_message ?? "", /QUALITY_REVIEW_REQUIRED/);
+  assert.ok(!updates.some((update) => update.status === "completed"));
 });
 
 test("all attempted sources failing persists diagnostics and fails terminally", async () => {

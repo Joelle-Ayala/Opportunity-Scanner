@@ -313,6 +313,13 @@ const workflowRequire = (specifier: string): unknown => {
       NextResponse: { json: (body: unknown, init?: ResponseInit) => Response.json(body, init) }
     },
     "@/lib/payments/requestAccess": { hasRequestReportAccess: async () => true },
+    "@/lib/reportReadiness": {
+      getCompletedReportReadiness: async () => ({
+        ready: true,
+        profile: { company_name: "Stored company" },
+        signals: [{ id: "opportunity-1" }]
+      })
+    },
     "@/lib/storage": {
       getScan: async () => ({ id: "scan-1", report_access: "full" }),
       getStoredOpportunitySignal: async () => ({ id: "opportunity-1" }),

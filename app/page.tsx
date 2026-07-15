@@ -3,6 +3,8 @@ import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { SectionIntro } from "@/components/marketing";
 import { ScanSubmitButton } from "@/components/scan-submit-button";
 import { industryPages } from "@/lib/marketingContent";
+import { getScan } from "@/lib/storage";
+import type { ScanRecord } from "@/lib/types";
 
 const title = "Opportunity Scanner | Public-Sector Opportunity Intelligence";
 const description =
@@ -46,6 +48,7 @@ const focusOptions = [
 
 type HomeSearchParams = {
   error?: string;
+  retry?: string;
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
@@ -53,8 +56,18 @@ type HomeSearchParams = {
   utm_term?: string;
 };
 
-function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
-  const errorMessage = searchParams?.error === "invalid-url" ? "Enter a valid company website URL." : null;
+function ScanForm({
+  searchParams,
+  retryScan
+}: {
+  searchParams?: HomeSearchParams;
+  retryScan?: ScanRecord | null;
+}) {
+  const errorMessage = searchParams?.error === "invalid-url"
+    ? "Enter a valid company website URL."
+    : searchParams?.error === "missing-context"
+      ? "Describe what the company sells and who it wants to reach so we can run a focused scan."
+      : null;
 
   return (
     <form id="scan" action="/api/scans" method="post" className="home-scan-form scroll-mt-24 rounded-lg border border-line bg-white p-5 sm:p-6">
@@ -67,7 +80,7 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold text-ink">Run a free opportunity scan</h2>
-          <p className="mt-1 text-sm leading-6 text-muted">Start with your website and work email.</p>
+          <p className="mt-1 text-sm leading-6 text-muted">Start with your website, work email, and a sentence about the opportunity you want.</p>
         </div>
         <Badge tone="amber">Beta</Badge>
       </div>
@@ -75,6 +88,13 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
       {errorMessage ? (
         <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {errorMessage}
+        </div>
+      ) : null}
+
+      {retryScan ? (
+        <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-3 text-sm leading-6 text-amber-950">
+          Add a little more detail about what you sell, the buyers you want, or the opportunity type
+          that matters most. Your email is intentionally not carried into this form.
         </div>
       ) : null}
 
@@ -86,6 +106,7 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
               required
               name="companyUrl"
               type="url"
+              defaultValue={retryScan?.company_url || ""}
               placeholder="https://example.com"
               className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
             />
@@ -107,12 +128,26 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
           <a href="/privacy" className="font-semibold text-accent hover:underline">privacy notice</a>.
         </p>
 
+        <label className="grid gap-2">
+          <span className="text-sm font-medium text-ink">What do you sell, and who should we find as buyers or partners?</span>
+          <textarea
+            required
+            minLength={15}
+            maxLength={2000}
+            name="opportunityFocus"
+            rows={3}
+            defaultValue={retryScan?.opportunity_focus || ""}
+            placeholder="Example: We provide teacher recruiting software to school districts and want district HR, staffing, and workforce opportunities."
+            className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+          />
+        </label>
+
         <label className="flex min-h-11 items-start gap-3 rounded-md border border-line bg-field p-3 text-sm leading-6 text-slate-700">
           <input name="marketingConsent" type="checkbox" className="mt-1 h-4 w-4 accent-[#0E7C86]" />
           <span>Send me practical opportunity guidance and occasional product updates. I can unsubscribe at any time.</span>
         </label>
 
-        <details className="rounded-md border border-line bg-field p-3">
+        <details open={Boolean(retryScan)} className="rounded-md border border-line bg-field p-3">
           <summary className="cursor-pointer list-none text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
             Add context for a tighter scan
             <span className="ml-2 text-xs font-medium text-muted">Optional</span>
@@ -121,26 +156,26 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-2">
                 <span className="text-sm font-medium text-ink">Company name</span>
-                <input name="companyName" placeholder="Optional" className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent" />
+                <input name="companyName" defaultValue={retryScan?.company_name || ""} placeholder="Optional" className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent" />
               </label>
               <label className="grid gap-2">
                 <span className="text-sm font-medium text-ink">Industry</span>
-                <input name="industry" placeholder="Healthcare, education, marketing..." className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent" />
+                <input name="industry" defaultValue={retryScan?.industry || ""} placeholder="Healthcare, education, marketing..." className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent" />
               </label>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-2">
                 <span className="text-sm font-medium text-ink">HQ state</span>
-                <input name="headquartersState" placeholder="MD" className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent" />
+                <input name="headquartersState" defaultValue={retryScan?.headquarters_state || ""} placeholder="MD" className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent" />
               </label>
               <label className="grid gap-2">
                 <span className="text-sm font-medium text-ink">Target regions</span>
-                <input name="targetStates" placeholder="MD, CA, national" className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent" />
+                <input name="targetStates" defaultValue={retryScan?.target_states || ""} placeholder="MD, CA, national" className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent" />
               </label>
             </div>
             <label className="grid gap-2">
               <span className="text-sm font-medium text-ink">Customer type</span>
-              <select name="customerType" defaultValue="" className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent">
+              <select name="customerType" defaultValue={retryScan?.customer_type || ""} className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent">
                 <option value="">Optional</option>
                 {customerTypes.map((type) => <option key={type}>{type}</option>)}
               </select>
@@ -156,15 +191,6 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
                 ))}
               </div>
             </fieldset>
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-ink">Extra context</span>
-              <textarea
-                name="opportunityFocus"
-                rows={3}
-                placeholder="Example: buyer targets for city programs, workforce funding, or public event procurement"
-                className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-              />
-            </label>
           </div>
         </details>
 
@@ -241,7 +267,14 @@ function ProductProof() {
   );
 }
 
-export default function HomePage({ searchParams }: { searchParams?: HomeSearchParams }) {
+export default async function HomePage({ searchParams }: { searchParams?: HomeSearchParams }) {
+  const retryId = searchParams?.retry;
+  const retryScan = retryId && /^[0-9a-f-]{36}$/i.test(retryId)
+    ? await getScan(retryId).catch(() => null)
+    : null;
+  const reusableRetryScan = retryScan && ["quality_review", "failed"].includes(retryScan.status)
+    ? retryScan
+    : null;
   return (
     <main className="home-page min-h-screen bg-white">
       <SiteHeader
@@ -318,7 +351,7 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
             </dl>
           </div>
           <div className="order-1 lg:order-2">
-            <ScanForm searchParams={searchParams} />
+            <ScanForm searchParams={searchParams} retryScan={reusableRetryScan} />
           </div>
         </div>
       </section>

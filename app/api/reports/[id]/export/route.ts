@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/storage";
+import { getScan } from "@/lib/storage";
 import { signalLane } from "@/lib/actionability";
 import { primaryContactTarget } from "@/lib/contactTargeting";
 import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
-import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
+import { getCompletedReportReadiness } from "@/lib/reportReadiness";
+import type { StoredOpportunitySignal } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -14,7 +15,7 @@ function csvCell(value: unknown): string {
   return `"${text.replaceAll('"', '""')}"`;
 }
 
-function sourceLabel(signal: Awaited<ReturnType<typeof listScanOpportunitySignals>>[number]): string {
+function sourceLabel(signal: StoredOpportunitySignal): string {
   const endDate =
     signal.deadline || (typeof signal.raw_json?.["End Date"] === "string" ? signal.raw_json["End Date"] : "");
 
@@ -25,7 +26,7 @@ function sourceLabel(signal: Awaited<ReturnType<typeof listScanOpportunitySignal
   return `${signal.source_name} - ${signal.source_type.replaceAll("_", " ")}`;
 }
 
-function opportunityHeadline(signal: Awaited<ReturnType<typeof listScanOpportunitySignals>>[number]): string {
+function opportunityHeadline(signal: StoredOpportunitySignal): string {
   const match = signal.opportunity_title.match(/^(.+?) received (\$[^:]+): (.+)$/);
   if (match) {
     const [, recipient, amount] = match;
@@ -46,9 +47,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ error: "Full report access is required to export this scan." }, { status: 403 });
   }
 
-  const profileRecord = await getCompanyProfile(params.id);
-  const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
-  const signals = await listScanOpportunitySignals(params.id);
+  const readiness = await getCompletedReportReadiness(scan);
+  if (!readiness.ready) {
+    return NextResponse.json(
+      { error: readiness.message, code: readiness.code },
+      { status: readiness.status }
+    );
+  }
+
+  const { profile, signals } = readiness;
   const sortedSignals = signals
     .filter((signal) => opportunityActionFor(signal, profile).show_in_report)
     .sort(

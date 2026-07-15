@@ -24,6 +24,7 @@ function dateLabel(value?: string | null): string {
 
 function reportStatus(status: string): DashboardReportRow["status"] {
   if (status === "completed") return "ready";
+  if (status === "quality_review") return "review";
   if (status === "failed") return "failed";
   if (status === "queued") return "queued";
   return "scanning";

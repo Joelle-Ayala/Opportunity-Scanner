@@ -28,6 +28,7 @@ import {
 } from "@/lib/workflowPayload";
 import { configuredSupportEmail } from "@/lib/support";
 import { sourceEvidenceText } from "@/lib/reportText";
+import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -91,6 +92,7 @@ function reportStatusLabel(status: ScanRecord["status"]): string {
     scraping: "Scanning website",
     profiling: "Building profile",
     discovering: "Finding opportunities",
+    quality_review: "Quality review",
     completed: "Report ready",
     failed: "Needs retry"
   };
@@ -116,6 +118,10 @@ const IN_PROGRESS_SCAN_COPY: Record<
   discovering: {
     heading: "We are checking public-sector sources",
     detail: "We are reviewing source-backed signals and deciding which opportunities are useful enough to include."
+  },
+  quality_review: {
+    heading: "We're checking these results before we call the report ready",
+    detail: "The initial source search needs an extra review for company fit, source evidence, and useful next steps. You can close this page; we'll email you when the report is ready or if a revised scan would be more useful."
   }
 };
 
@@ -220,7 +226,9 @@ function ReportScanState({
             </h2>
             <p className="mt-3 text-sm leading-6 text-muted">{progress.detail}</p>
             <p className="mt-3 text-sm leading-6 text-muted">
-              The opportunity report will appear here when the scan is complete.
+              {scan.status === "quality_review"
+                ? "We will only release the report when the results are relevant, source-backed, and actionable."
+                : "The opportunity report will appear here when the scan is complete."}
             </p>
             <a
               href={`/reports/${encodeURIComponent(scan.id)}`}
@@ -228,6 +236,14 @@ function ReportScanState({
             >
               Check status
             </a>
+            {scan.status === "quality_review" ? (
+              <a
+                href={`/?retry=${encodeURIComponent(scan.id)}#scan`}
+                className="ml-3 mt-5 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
+              >
+                Run a revised scan
+              </a>
+            ) : null}
           </section>
         )}
       </div>
@@ -1444,8 +1460,24 @@ export default async function ReportPage({
   if (!scan) notFound();
 
   const isAdminView = hasAdminAccess(searchParams?.access, scan);
-  if (scan.status !== "completed") {
+  if (scan.status !== "completed" && !(scan.status === "quality_review" && isAdminView)) {
     return <ReportScanState scan={scan} isAdminView={isAdminView} />;
+  }
+  const completedReadiness = scan.status === "completed"
+    ? await getCompletedReportReadiness(scan)
+    : null;
+  if (completedReadiness && !completedReadiness.ready && !isAdminView) {
+    return (
+      <ReportScanState
+        scan={{
+          ...scan,
+          status: "quality_review",
+          completed_at: null,
+          error_message: completedReadiness.message
+        }}
+        isAdminView={false}
+      />
+    );
   }
 
   let pageSessionResolution: Awaited<ReturnType<typeof resolveCustomerPageSession>> | null = null;
@@ -1527,9 +1559,15 @@ export default async function ReportPage({
       : null;
   const checkoutAvailability = reportCheckoutAvailability();
 
-  const profileRecord = await getCompanyProfile(scan.id);
-  const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
-  const signals = await listScanOpportunitySignals(scan.id);
+  const profileRecord = completedReadiness?.ready ? null : await getCompanyProfile(scan.id);
+  const profile = completedReadiness?.ready
+    ? completedReadiness.profile
+    : profileRecord
+      ? ensureProfileRefinementFields(profileRecord.profile_json)
+      : undefined;
+  const signals = completedReadiness?.ready
+    ? completedReadiness.signals
+    : await listScanOpportunitySignals(scan.id);
   const moveForwardSignals = signals
     .filter((signal) => opportunityActionFor(signal, profile).show_in_report)
     .sort(

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
-import { getCompanyProfile, getScan, getStoredOpportunitySignal } from "@/lib/storage";
-import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
+import { getScan } from "@/lib/storage";
+import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 import { buildWorkflowPayload, type WorkflowPayload } from "@/lib/workflowPayload";
 import {
   fetchSafeOutboundUrl,
@@ -150,17 +150,20 @@ export async function POST(request: Request) {
     return jsonError(403, "FULL_REPORT_ACCESS_REQUIRED", "Full report access is required to send workflow payloads.");
   }
 
-  const signal = await getStoredOpportunitySignal(validation.scanId, validation.opportunityId);
+  const readiness = await getCompletedReportReadiness(scan);
+  if (!readiness.ready) {
+    return jsonError(readiness.status, readiness.code, readiness.message);
+  }
+
+  const signal = readiness.signals.find((item) => item.id === validation.opportunityId);
   if (!signal) {
     return jsonError(404, "OPPORTUNITY_NOT_FOUND", "Opportunity not found for this scan.");
   }
 
-  const profileRecord = await getCompanyProfile(validation.scanId);
-  const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
   const payload = buildWorkflowPayload({
     scanId: validation.scanId,
     signal,
-    profile,
+    profile: readiness.profile,
     includeSourceUrl: true
   });
   const payloadValidation = validateWorkflowPayload(payload);

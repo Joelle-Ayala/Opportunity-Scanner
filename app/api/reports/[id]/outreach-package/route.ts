@@ -11,9 +11,9 @@ import {
   outreachPackageCsv,
   outreachPackageMarkdown
 } from "@/lib/outreachPackage";
-import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
-import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/storage";
+import { getScan } from "@/lib/storage";
 import { opportunityActionFor } from "@/lib/opportunityAction";
+import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 
 export const runtime = "nodejs";
 
@@ -47,9 +47,16 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ error: "Full report access is required to export the outreach package." }, { status: 403 });
   }
 
-  const profileRecord = await getCompanyProfile(params.id);
-  const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
-  const signals = (await listScanOpportunitySignals(params.id))
+  const readiness = await getCompletedReportReadiness(scan);
+  if (!readiness.ready) {
+    return NextResponse.json(
+      { error: readiness.message, code: readiness.code },
+      { status: readiness.status }
+    );
+  }
+
+  const { profile } = readiness;
+  const signals = readiness.signals
     .filter((signal) => opportunityActionFor(signal, profile).show_in_report)
     .sort(
       (a, b) =>

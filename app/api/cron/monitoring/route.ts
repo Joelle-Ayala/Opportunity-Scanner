@@ -208,10 +208,22 @@ async function processMonitoredProfile(
     const scan = await createScan(input);
     scanId = scan.id;
     run = await startMonitoringRun(profile.id, scan.id, profile.lease_token);
-    await executeScanPipeline(scan.id, input, {
+    const pipelineResult = await executeScanPipeline(scan.id, input, {
       deadlineAtMs: pipelineDeadlineAtMs,
       terminalDeadlineAtMs: pipelineDeadlineAtMs + PROFILE_TERMINAL_WRITE_BUDGET_MS
     });
+
+    if (pipelineResult.status === "quality_review") {
+      const message = "Monitoring results did not meet the report quality standard and were held from delivery.";
+      await failMonitoringRun({ profile, run, message }).catch((cause) => {
+        console.error("Unable to record monitoring quality hold", {
+          profileId: profile.id,
+          scanId: scan.id,
+          error: cause instanceof Error ? cause.message : "Unknown monitoring quality hold error"
+        });
+      });
+      return { profileId: profile.id, status: "failed" };
+    }
 
     const [previousSignals, currentSignals] = await Promise.all([
       listScanOpportunitySignals(previousScanId),

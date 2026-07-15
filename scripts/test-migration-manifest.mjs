@@ -239,7 +239,8 @@ const expectedOrder = [
   "db/monitoring-throughput-reliability.sql",
   "db/repeat-report-purchase-recovery.sql",
   "db/scan-nurture-first-touch-delay.sql",
-  "db/monitoring-scheduler-heartbeats.sql"
+  "db/monitoring-scheduler-heartbeats.sql",
+  "db/report-quality-publication-fence.sql"
 ];
 
 const requiredDependencies = {
@@ -314,7 +315,8 @@ const requiredDependencies = {
   ],
   "db/monitoring-scheduler-heartbeats.sql": [
     "db/monitoring-throughput-reliability.sql"
-  ]
+  ],
+  "db/report-quality-publication-fence.sql": ["db/stripe-report-payment-lifecycle.sql"]
 };
 
 const [manifestSource, readme, workflow] = await Promise.all([

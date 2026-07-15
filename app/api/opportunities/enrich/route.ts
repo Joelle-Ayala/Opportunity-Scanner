@@ -5,8 +5,9 @@ import {
   requireReservedEnrichmentCredit,
   reserveContactEnrichmentCredit
 } from "@/lib/enrichmentCredits";
-import { getScan, getStoredOpportunitySignal, saveOpportunityEnrichmentRequest } from "@/lib/storage";
+import { getScan, saveOpportunityEnrichmentRequest } from "@/lib/storage";
 import { resolveRequestReportAccess } from "@/lib/payments/requestAccess";
+import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 
 export const runtime = "nodejs";
 
@@ -34,7 +35,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Full report access is required to enrich opportunities." }, { status: 403 });
   }
 
-  const signal = await getStoredOpportunitySignal(scanId, opportunityId);
+  const readiness = await getCompletedReportReadiness(scan);
+  if (!readiness.ready) {
+    return NextResponse.json(
+      { error: readiness.message, code: readiness.code },
+      { status: readiness.status }
+    );
+  }
+
+  const signal = readiness.signals.find((item) => item.id === opportunityId);
   if (!signal) {
     return NextResponse.json({ error: "Opportunity not found." }, { status: 404 });
   }

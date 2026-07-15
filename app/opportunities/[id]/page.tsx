@@ -1,9 +1,7 @@
 import { cookies, headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import {
-  getCompanyProfile,
   getScan,
-  getStoredOpportunitySignal,
   listOpportunityEnrichmentRequests
 } from "@/lib/storage";
 import { signalDate, signalLane } from "@/lib/actionability";
@@ -12,9 +10,9 @@ import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { loadEnrichmentCreditBalance, type EnrichmentCreditBalance } from "@/lib/enrichmentCredits";
 import { enrichmentEligibilityForTarget, resolvePrimaryTargetForSignal } from "@/lib/organizationResolution";
-import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
-import { OpportunityEnrichmentRequestRecord, StoredOpportunitySignal } from "@/lib/types";
+import { OpportunityEnrichmentRequestRecord, StoredOpportunitySignal, type CompanyProfile } from "@/lib/types";
 import { resolveRequestReportAccess } from "@/lib/payments/requestAccess";
+import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 import { configuredSupportEmail } from "@/lib/support";
 import { sourceEvidenceText } from "@/lib/reportText";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
@@ -97,7 +95,7 @@ function LockedOpportunityPreview({
 }: {
   scanId: string;
   signal: StoredOpportunitySignal;
-  profile?: ReturnType<typeof ensureProfileRefinementFields>;
+  profile?: CompanyProfile;
   access?: string;
 }) {
   const classification = opportunityActionFor(signal, profile);
@@ -167,13 +165,17 @@ export default async function OpportunityPage({
     notFound();
   }
 
-  const signal = await getStoredOpportunitySignal(scan.id, params.id);
+  const readiness = await getCompletedReportReadiness(scan);
+  if (!readiness.ready) {
+    redirect(`/reports/${scan.id}${searchParams.access ? `?access=${encodeURIComponent(searchParams.access)}` : ""}`);
+  }
+
+  const signal = readiness.signals.find((item) => item.id === params.id);
   if (!signal) {
     notFound();
   }
 
-  const profileRecord = await getCompanyProfile(scan.id);
-  const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
+  const profile = readiness.profile;
   const classification = opportunityActionFor(signal, profile);
   const requestHeaders = headers();
   const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "localhost";

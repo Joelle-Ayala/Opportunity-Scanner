@@ -1,5 +1,5 @@
 import { applyPlaybooksToProfile } from "./playbooks";
-import { CompanyProfile, ProfileFeedbackRecord, ScanInput, StoredOpportunitySignal } from "./types";
+import type { CompanyProfile, ProfileFeedbackRecord, ScanInput, StoredOpportunitySignal } from "./types";
 
 export type ProfileSearchStrategy = {
   search_terms: string[];

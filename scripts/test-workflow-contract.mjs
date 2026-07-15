@@ -41,6 +41,18 @@ globalThis.__workflowRouteTestMocks = {
     activeState.calls.refine.push(profile);
     return activeState.refinedProfile;
   },
+  async getCompletedReportReadiness(scan) {
+    activeState.calls.readiness.push(scan);
+    if (activeState.readinessFailure) return activeState.readinessFailure;
+    const [signal, profileRecord] = await Promise.all([
+      globalThis.__workflowRouteTestMocks.getStoredOpportunitySignal(scan.id, "opportunity-1"),
+      globalThis.__workflowRouteTestMocks.getCompanyProfile(scan.id)
+    ]);
+    const profile = profileRecord
+      ? globalThis.__workflowRouteTestMocks.ensureProfileRefinementFields(profileRecord.profile_json)
+      : undefined;
+    return { ready: true, signals: signal ? [signal] : [], profile };
+  },
   buildWorkflowPayload(input) {
     activeState.calls.build.push(input);
     return activeState.payload;
@@ -61,6 +73,9 @@ const workflowRequire = (specifier) => {
     },
     "@/lib/profileRefinement": {
       ensureProfileRefinementFields: globalThis.__workflowRouteTestMocks.ensureProfileRefinementFields
+    },
+    "@/lib/reportReadiness": {
+      getCompletedReportReadiness: globalThis.__workflowRouteTestMocks.getCompletedReportReadiness
     },
     "@/lib/workflowPayload": {
       buildWorkflowPayload: globalThis.__workflowRouteTestMocks.buildWorkflowPayload
@@ -110,6 +125,7 @@ function freshState() {
     profileRecord: { profile_json: { company_name: "Stored company" } },
     refinedProfile: { company_name: "Refined stored company" },
     hasAccess: true,
+    readinessFailure: null,
     payload: { ...validPayload },
     fetchBehavior: "success",
     fetchStatus: 200,
@@ -119,6 +135,7 @@ function freshState() {
       getSignal: [],
       getProfile: [],
       refine: [],
+      readiness: [],
       build: [],
       fetch: []
     }
@@ -267,7 +284,24 @@ test("looks up the opportunity within the requested scan and rejects a missing o
   assert.deepEqual(state.calls.getSignal, [
     { scanId: "scan-1", opportunityId: "opportunity-1" }
   ]);
-  assert.equal(state.calls.getProfile.length, 0);
+  assert.deepEqual(state.calls.getProfile, ["scan-1"]);
+  assert.equal(state.calls.build.length, 0);
+  assert.equal(state.calls.fetch.length, 0);
+});
+
+test("rejects paid workflow delivery when the stored report is not ready", async () => {
+  const state = freshState();
+  state.readinessFailure = {
+    ready: false,
+    status: 409,
+    code: "REPORT_SCAN_NOT_COMPLETED",
+    message: "This scan is still being prepared."
+  };
+  installBoundaries(state);
+
+  await assertError(await POST(validRequest()), 409, "REPORT_SCAN_NOT_COMPLETED");
+  assert.deepEqual(state.calls.readiness, [state.scan]);
+  assert.equal(state.calls.getSignal.length, 0);
   assert.equal(state.calls.build.length, 0);
   assert.equal(state.calls.fetch.length, 0);
 });

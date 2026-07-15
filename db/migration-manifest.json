@@ -231,6 +231,14 @@
       "prerequisites": ["v0025"],
       "sha256": "c492c45bd551d6dfbdf472b4eb2078f3aa26751544fc1f8eb5e51ad8ea320e4b",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0029",
+      "file": "db/report-quality-publication-fence.sql",
+      "description": "Require quality-approved completed scans before Stripe report access or paid report delivery.",
+      "prerequisites": ["v0023"],
+      "sha256": "1c9a9b170388794c1c91f906486677291310d46b289a67ecab634ff385459e51",
+      "requiredInProduction": true
     }
   ]
 }

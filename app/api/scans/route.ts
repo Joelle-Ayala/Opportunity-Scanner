@@ -35,7 +35,7 @@ const SCAN_LIFECYCLE_EMAIL_TIMEOUT_MS = 3_000;
 async function attemptScanLifecycleEmail(input: {
   scanId: string;
   recipientEmail?: string | null;
-  state: "completed" | "failed";
+  state: "completed" | "quality_review" | "failed";
 }): Promise<void> {
   try {
     await deliverScanLifecycleEmailSafely(input, {
@@ -165,6 +165,11 @@ export async function POST(request: Request) {
     }
   });
 
+  const opportunityFocus = optionalString(formData.get("opportunityFocus"));
+  if (!opportunityFocus || opportunityFocus.length < 15) {
+    redirect("/?error=missing-context#scan");
+  }
+
   const input: ScanInput = {
     companyUrl,
     companyName: optionalString(formData.get("companyName")),
@@ -174,7 +179,7 @@ export async function POST(request: Request) {
     customerType: optionalString(formData.get("customerType")) as CustomerType | undefined,
     email: session?.user.email || optionalString(formData.get("email")),
     reportType: ((optionalString(formData.get("reportType")) as ReportType | undefined) ?? "quick"),
-    opportunityFocus: optionalString(formData.get("opportunityFocus")),
+    opportunityFocus,
     includeTerms: optionalString(formData.get("includeTerms")),
     excludeTerms: optionalString(formData.get("excludeTerms")),
     prioritySignals: optionalStringArray(formData.getAll("prioritySignals")),
@@ -187,7 +192,7 @@ export async function POST(request: Request) {
   const scan = await createScan(input);
 
   try {
-    await executeScanPipeline(scan.id, input, {
+    const pipelineResult = await executeScanPipeline(scan.id, input, {
       deadlineAtMs: executionDeadlineAtMs,
       terminalDeadlineAtMs
     });
@@ -199,10 +204,10 @@ export async function POST(request: Request) {
     await attemptScanLifecycleEmail({
       scanId: scan.id,
       recipientEmail: input.email,
-      state: "completed"
+      state: pipelineResult.status
     });
 
-    if (input.email && marketingConsent) {
+    if (pipelineResult.status === "completed" && input.email && marketingConsent) {
       const nurtureTimeoutMs = Math.max(0, terminalDeadlineAtMs - Date.now());
       if (nurtureTimeoutMs > 0) {
         await withSupabaseRequestBudget({ timeoutMs: nurtureTimeoutMs }, () =>

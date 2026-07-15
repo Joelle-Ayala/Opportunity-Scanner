@@ -8,6 +8,7 @@ import type {
   ScrapedPage
 } from "./types";
 import type { ConnectorRunStatus } from "./connectors/runtime";
+import type { ReportQualityEvaluation, ReportQualityTier } from "./reportQuality";
 
 export const SCAN_FUNCTION_MAX_DURATION_MS = 60_000;
 export const SCAN_EXECUTION_DEADLINE_MS = 50_000;
@@ -87,7 +88,21 @@ type ScanPipelineDependencies = {
     signals: OpportunitySignal[],
     profile?: CompanyProfile | null
   ) => Promise<unknown>;
+  normalizeOpportunitySignals: (
+    signals: OpportunitySignal[],
+    profile: CompanyProfile
+  ) => OpportunitySignal[];
+  evaluateReportQuality: (
+    profile: CompanyProfile,
+    signals: readonly OpportunitySignal[],
+    tier: ReportQualityTier
+  ) => ReportQualityEvaluation;
   now: () => number;
+};
+
+export type ScanPipelineResult = {
+  status: "completed" | "quality_review";
+  quality: ReportQualityEvaluation;
 };
 
 export type ScanPipelineOptions = {
@@ -98,10 +113,13 @@ export type ScanPipelineOptions = {
 };
 
 async function loadDefaultDependencies(): Promise<ScanPipelineDependencies> {
-  const [discovery, profile, refinement, scraper, storage] = await Promise.all([
+  const [discovery, opportunityAction, profile, quality, refinement, reportText, scraper, storage] = await Promise.all([
     import("./connectors/discover"),
+    import("./opportunityAction"),
     import("./profile"),
+    import("./reportQuality"),
     import("./profileRefinement"),
+    import("./reportText"),
     import("./scraper"),
     import("./storage")
   ]);
@@ -117,6 +135,19 @@ async function loadDefaultDependencies(): Promise<ScanPipelineDependencies> {
       discovery.discoverExternalSignalsWithStatus(companyProfile, budget),
     saveConnectorRunStatuses: storage.saveConnectorRunStatuses,
     saveOpportunitySignals: storage.saveOpportunitySignals,
+    normalizeOpportunitySignals: (signals, companyProfile) =>
+      signals.map((signal) => {
+        const normalized = opportunityAction.withNormalizedOpportunityAction(signal, companyProfile);
+        return {
+          ...normalized,
+          opportunity_title: reportText.plainSourceText(normalized.opportunity_title),
+          source_name: reportText.plainSourceText(normalized.source_name),
+          agency_or_funder: reportText.plainSourceText(normalized.agency_or_funder),
+          external_evidence_summary: reportText.plainSourceText(normalized.external_evidence_summary),
+          likely_buyer_or_partner: reportText.plainSourceText(normalized.likely_buyer_or_partner)
+        };
+      }),
+    evaluateReportQuality: quality.evaluateReportQuality,
     now: Date.now
   };
 }
@@ -135,6 +166,8 @@ function hasCompleteDependencies(
       dependencies.discoverExternalSignalsWithStatus &&
       dependencies.saveConnectorRunStatuses &&
       dependencies.saveOpportunitySignals &&
+      dependencies.normalizeOpportunitySignals &&
+      dependencies.evaluateReportQuality &&
       dependencies.now
   );
 }
@@ -255,7 +288,7 @@ export async function executeScanPipeline(
   scanId: string,
   input: ScanInput,
   options: ScanPipelineOptions = {}
-): Promise<void> {
+): Promise<ScanPipelineResult> {
   const dependencies = hasCompleteDependencies(options.dependencies)
     ? options.dependencies
     : { ...(await loadDefaultDependencies()), ...options.dependencies };
@@ -349,6 +382,13 @@ export async function executeScanPipeline(
       true
     );
 
+    const normalizedSignals = dependencies.normalizeOpportunitySignals(discovery.signals, profile);
+    const reportSignals = normalizedSignals.filter(
+      (signal) => signal.normalized_action?.show_in_report === true || signal.show_in_report === true
+    );
+    // Every scan can become a paid report, so completion must meet the full-report standard.
+    const quality = dependencies.evaluateReportQuality(profile, reportSignals, "full");
+
     await storageStage(
       "connector status storage",
       () => dependencies.saveConnectorRunStatuses(scanId, discovery.runs),
@@ -356,7 +396,7 @@ export async function executeScanPipeline(
     );
     await storageStage(
       "opportunity storage",
-      () => dependencies.saveOpportunitySignals(scanId, discovery.signals, profile),
+      () => dependencies.saveOpportunitySignals(scanId, normalizedSignals, profile),
       signalWriteTimeoutMs
     );
 
@@ -366,6 +406,21 @@ export async function executeScanPipeline(
           .filter((run) => run.outcome === "failed")
           .map((run) => run.source_name)
       );
+    }
+
+    if (!quality.passed) {
+      const blockerCodes = quality.blockingReasons.map((reason) => reason.code).join(",");
+      await storageStage(
+        "completion storage",
+        () =>
+          dependencies.updateScan(scanId, {
+            status: "quality_review",
+            error_message: `QUALITY_REVIEW_REQUIRED score=${quality.score} qualifying=${quality.metrics.qualifyingOpportunityCount}/${quality.metrics.minimumQualifyingOpportunityCount} blockers=${blockerCodes}`.slice(0, 500),
+            completed_at: null
+          }),
+        completionWriteTimeoutMs
+      );
+      return { status: "quality_review", quality };
     }
 
     await storageStage(
@@ -378,6 +433,7 @@ export async function executeScanPipeline(
         }),
       completionWriteTimeoutMs
     );
+    return { status: "completed", quality };
   } catch (error) {
     try {
       await persistScanFailure(scanId, error, {

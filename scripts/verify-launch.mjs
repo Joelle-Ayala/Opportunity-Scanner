@@ -6,6 +6,26 @@ const checks = [
   ["Launch health", ["scripts/test-launch-health.mjs"]],
   ["Safe outbound URLs", ["--experimental-strip-types", "scripts/test-safe-outbound-urls.mts"]],
   ["Report scan states", ["scripts/test-report-scan-states.mjs"]],
+  [
+    "Report quality gate",
+    [
+      "--experimental-strip-types",
+      "--import",
+      "./scripts/register-ts-test-hooks.mjs",
+      "scripts/test-report-quality.mts"
+    ]
+  ],
+  [
+    "Report readiness",
+    [
+      "--experimental-strip-types",
+      "--import",
+      "./scripts/register-ts-test-hooks.mjs",
+      "scripts/test-report-readiness.mts"
+    ]
+  ],
+  ["Quality review retry", ["scripts/test-quality-review-retry.mjs"]],
+  ["Admin quality review", ["scripts/test-admin-quality-review.mjs"]],
   ["Report source text", ["--experimental-strip-types", "scripts/test-report-text.mts"]],
   [
     "Demo report relevance",
@@ -45,6 +65,7 @@ const checks = [
   ["Product analytics", ["--experimental-strip-types", "scripts/test-product-analytics.mjs"]],
   ["Report outcome analytics", ["scripts/test-report-outcome-analytics.mjs"]],
   ["Migration manifest", ["scripts/test-migration-manifest.mjs"]],
+  ["Report quality publication fence", ["scripts/test-report-quality-publication-fence.mjs"]],
   ["Scan execution budget", ["--experimental-strip-types", "scripts/test-scan-execution-budget.mjs"]],
   ["Connector runtime", ["--experimental-strip-types", "scripts/test-connector-runtime.mjs"]],
   ["Supabase request budget", ["--experimental-strip-types", "scripts/test-supabase-request-budget.mjs"]],

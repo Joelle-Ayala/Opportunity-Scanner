@@ -7,7 +7,7 @@ import { configuredSupportEmail } from "../support.ts";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-export type ScanLifecycleEmailState = "completed" | "failed";
+export type ScanLifecycleEmailState = "completed" | "quality_review" | "failed";
 
 export type ScanLifecycleEmailConfig = {
   apiKey: string;
@@ -93,9 +93,12 @@ export async function sendScanLifecycleEmail(
 ): Promise<string> {
   const reportUrl = scanLifecycleReportUrl(config, input.scanId);
   const completed = input.state === "completed";
+  const qualityReview = input.state === "quality_review";
   const subject = completed
     ? "Your Opportunity Scanner report is ready"
-    : "We couldn't complete your Opportunity Scanner report";
+    : qualityReview
+      ? "We're reviewing your Opportunity Scanner results"
+      : "We couldn't complete your Opportunity Scanner report";
   const text = completed
     ? [
         "Your Opportunity Scanner report is ready.",
@@ -104,7 +107,17 @@ export async function sendScanLifecycleEmail(
         "",
         "This is a transactional message about the report you requested."
       ].join("\n")
-    : [
+      : qualityReview
+        ? [
+            "We're reviewing your Opportunity Scanner results before release.",
+            "",
+            "The initial source search needs an extra review for company fit, source evidence, and useful next steps. We will email you when the report is ready or if a revised scan would be more useful.",
+            "",
+            `Check review status: ${reportUrl}`,
+            "",
+            "This is a transactional message about the report you requested."
+          ].join("\n")
+        : [
         "We couldn't complete the Opportunity Scanner report you requested.",
         "",
         `Review the scan and retry: ${reportUrl}`,
@@ -118,7 +131,14 @@ export async function sendScanLifecycleEmail(
         `<p style="margin:24px 0"><a href="${escapeHtml(reportUrl)}" style="background:#0e7c86;color:#ffffff;padding:12px 18px;text-decoration:none;border-radius:6px;font-weight:600">View report</a></p>`,
         '<p style="border-top:1px solid #d8dee8;padding-top:16px;font-size:12px;line-height:1.5;color:#667085">This is a transactional message about the report you requested.</p>'
       ].join("")
-    : [
+    : qualityReview
+      ? [
+          '<p style="font-size:16px;line-height:1.6;color:#172033">We&#39;re reviewing your Opportunity Scanner results before release.</p>',
+          '<p style="font-size:14px;line-height:1.6;color:#42526b">The initial source search needs an extra review for company fit, source evidence, and useful next steps. We will email you when the report is ready or if a revised scan would be more useful.</p>',
+          `<p style="margin:24px 0"><a href="${escapeHtml(reportUrl)}" style="background:#0e7c86;color:#ffffff;padding:12px 18px;text-decoration:none;border-radius:6px;font-weight:600">Check review status</a></p>`,
+          '<p style="border-top:1px solid #d8dee8;padding-top:16px;font-size:12px;line-height:1.5;color:#667085">This is a transactional message about the report you requested.</p>'
+        ].join("")
+      : [
         '<p style="font-size:16px;line-height:1.6;color:#172033">We couldn&#39;t complete the Opportunity Scanner report you requested.</p>',
         `<p style="margin:24px 0"><a href="${escapeHtml(reportUrl)}" style="background:#0e7c86;color:#ffffff;padding:12px 18px;text-decoration:none;border-radius:6px;font-weight:600">Review scan and retry</a></p>`,
         `<p style="font-size:14px;line-height:1.6;color:#42526b">Need help? Email <a href="mailto:${escapeHtml(config.supportEmail)}">${escapeHtml(config.supportEmail)}</a>.</p>`,

@@ -66,6 +66,27 @@ test("definitively failed scans send only retry and support guidance", async () 
   assert.doesNotMatch(body.text, /company_url|query_used|raw_json|error_message/i);
 });
 
+test("quality-review scans explain the hold without claiming the report is ready", async () => {
+  let request;
+  const result = await deliverScanLifecycleEmailSafely(
+    { scanId, recipientEmail: "customer@example.test", state: "quality_review" },
+    {
+      env,
+      fetchImpl: async (url, init) => {
+        request = { url, init, body: JSON.parse(String(init?.body)) };
+        return Response.json({ id: "email-quality-review" });
+      }
+    }
+  );
+
+  assert.deepEqual(result, { status: "delivered", providerMessageId: "email-quality-review" });
+  assert.equal(request.body.subject, "We're reviewing your Opportunity Scanner results");
+  assert.match(request.body.text, /needs an extra review/i);
+  assert.match(request.body.text, /revised scan would be more useful/i);
+  assert.doesNotMatch(request.body.text, /^Your .*report is ready/im);
+  assert.equal(request.init.headers["Idempotency-Key"], `scan-lifecycle/${scanId}/quality_review`);
+});
+
 test("missing or invalid recipient email safely skips delivery", async () => {
   let providerCalled = false;
   const fetchImpl = async () => {
@@ -124,12 +145,13 @@ test("configuration requires a secure application origin and no unsubscribe secr
 
 test("scan lifecycle delivery stays separate from consent-gated nurture", async () => {
   const route = await readFile(new URL("../app/api/scans/route.ts", import.meta.url), "utf8");
-  const completedDelivery = route.indexOf('state: "completed"');
-  const nurtureConsent = route.indexOf("if (input.email && marketingConsent)");
+  const completedDelivery = route.indexOf("state: pipelineResult.status");
+  const nurtureConsent = route.indexOf('if (pipelineResult.status === "completed" && input.email && marketingConsent)');
   const failurePersistence = route.indexOf("if (failurePersisted)");
   const failedDelivery = route.indexOf('state: "failed"');
 
   assert.ok(completedDelivery > 0 && completedDelivery < nurtureConsent);
+  assert.match(route, /pipelineResult\.status === "completed" && input\.email && marketingConsent/);
   assert.ok(failurePersistence > 0 && failurePersistence < failedDelivery);
   assert.match(route, /async function attemptScanLifecycleEmail/);
   assert.match(route, /try \{[\s\S]*?await deliverScanLifecycleEmailSafely[\s\S]*?\} catch \{/);

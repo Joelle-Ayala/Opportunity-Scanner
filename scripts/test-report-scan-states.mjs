@@ -21,6 +21,7 @@ assert.deepEqual(supportedStatuses, [
   "scraping",
   "profiling",
   "discovering",
+  "quality_review",
   "completed",
   "failed"
 ]);
@@ -29,7 +30,7 @@ const progressContract = reportPage.match(/const IN_PROGRESS_SCAN_COPY:[\s\S]*?=
 assert.ok(progressContract, "Report page must define in-progress copy as an exhaustive status contract");
 
 const progressStatuses = [...progressContract[1].matchAll(/^  (\w+): \{/gm)].map((match) => match[1]);
-assert.deepEqual(progressStatuses, ["queued", "scraping", "profiling", "discovering"]);
+assert.deepEqual(progressStatuses, ["queued", "scraping", "profiling", "discovering", "quality_review"]);
 assert.match(reportPage, /Exclude<ScanRecord\["status"\], "completed" \| "failed">/);
 
 const expectedExperience = new Map([
@@ -37,6 +38,7 @@ const expectedExperience = new Map([
   ["scraping", "in-progress"],
   ["profiling", "in-progress"],
   ["discovering", "in-progress"],
+  ["quality_review", "quality-review"],
   ["completed", "completed-report"],
   ["failed", "failed"]
 ]);
@@ -46,13 +48,14 @@ for (const status of supportedStatuses) {
 }
 
 const pageEntry = reportPage.slice(reportPage.indexOf("export default async function ReportPage"));
-const stateGuard = pageEntry.indexOf('if (scan.status !== "completed")');
+const stateGuard = pageEntry.indexOf('if (scan.status !== "completed" && !(scan.status === "quality_review" && isAdminView))');
 const accessLookup = pageEntry.indexOf("const storedAccess = await hasServerReportAccess");
 const reportAnalytics = pageEntry.indexOf("<ReportAnalytics");
 assert.ok(stateGuard >= 0, "Non-completed scans must exit through a dedicated state view");
 assert.ok(stateGuard < accessLookup, "State guard must run before report access and checkout work");
 assert.ok(stateGuard < reportAnalytics, "State guard must run before completed-report analytics");
 assert.match(pageEntry, /return <ReportScanState scan=\{scan\} isAdminView=\{isAdminView\} \/>/);
+assert.match(pageEntry, /scan\.status === "quality_review" && isAdminView/);
 
 const stateViewStart = reportPage.indexOf("function ReportScanState");
 const stateViewEnd = reportPage.indexOf("function fullReportRequestHref", stateViewStart);

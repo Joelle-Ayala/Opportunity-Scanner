@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import {
+import type {
   CompanyProfile,
   CompanyProfileRecord,
   LeadMagnetCaptureRecord,
@@ -166,6 +166,57 @@ export async function updateScan(
   return db.scans[idx];
 }
 
+type QualityReviewResolution = {
+  status: "completed" | "failed";
+  error_message: string | null;
+  completed_at: string;
+};
+
+export async function resolveQualityReviewScan(
+  id: string,
+  resolution: QualityReviewResolution
+): Promise<ScanRecord | null> {
+  if (resolution.status === "completed" && resolution.error_message !== null) {
+    throw new Error("Published scans must clear the quality-review error.");
+  }
+  if (resolution.status === "failed" && !resolution.error_message?.trim()) {
+    throw new Error("Revised scans must record an honest failure reason.");
+  }
+
+  const config = getSupabaseConfig();
+  if (config) {
+    const query = new URLSearchParams({
+      id: `eq.${id}`,
+      status: "eq.quality_review"
+    });
+    const response = await fetch(`${config.url}/rest/v1/scans?${query.toString()}`, {
+      method: "PATCH",
+      headers: {
+        apikey: config.key,
+        Authorization: `Bearer ${config.key}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation"
+      },
+      body: JSON.stringify(resolution),
+      cache: "no-store"
+    });
+    if (!response.ok) {
+      throw new Error(`Supabase quality-review resolution failed: ${await response.text()}`);
+    }
+
+    const rows = (await response.json()) as ScanRecord[];
+    return rows[0] ?? null;
+  }
+
+  const db = normalizeLocalDb(await readLocalDb());
+  const idx = db.scans.findIndex((scan) => scan.id === id && scan.status === "quality_review");
+  if (idx === -1) return null;
+
+  db.scans[idx] = { ...db.scans[idx], ...resolution };
+  await writeLocalDb(db);
+  return db.scans[idx];
+}
+
 export async function saveCompanyProfile(
   scanId: string,
   profile: CompanyProfile,
@@ -264,6 +315,39 @@ export async function listCompletedScansWithProfiles(limit = 50): Promise<
   }>
 > {
   const scans = await listCompletedScans(limit);
+  const profiles = await Promise.all(scans.map((scan) => getCompanyProfile(scan.id)));
+  return scans.map((scan, index) => ({
+    scan,
+    profile: profiles[index]
+  }));
+}
+
+async function listQualityReviewScans(limit = 50): Promise<ScanRecord[]> {
+  if (usesSupabase()) {
+    return supabaseSelectMany<ScanRecord>(
+      "scans",
+      `status=eq.quality_review&order=created_at.desc&limit=${limit}`
+    );
+  }
+
+  const db = normalizeLocalDb(await readLocalDb());
+  return db.scans
+    .filter((scan) => scan.status === "quality_review")
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    .slice(0, limit);
+}
+
+export async function listAdminScansWithProfiles(limit = 50): Promise<
+  Array<{
+    scan: ScanRecord;
+    profile: CompanyProfileRecord | null;
+  }>
+> {
+  const [heldScans, completedScans] = await Promise.all([
+    listQualityReviewScans(limit),
+    listCompletedScans(limit)
+  ]);
+  const scans = [...heldScans, ...completedScans];
   const profiles = await Promise.all(scans.map((scan) => getCompanyProfile(scan.id)));
   return scans.map((scan, index) => ({
     scan,

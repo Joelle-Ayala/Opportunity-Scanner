@@ -1,6 +1,6 @@
 import { applyPlaybooksToProfile } from "./playbooks";
 import { ensureProfileRefinementFields } from "./profileRefinement";
-import { CompanyProfile, ScanInput } from "./types";
+import type { CompanyProfile, ScanInput } from "./types";
 
 const opportunityCategories = [
   "grants",
@@ -596,7 +596,13 @@ async function generateWithOpenAi(
           {
             role: "system",
             content:
-              "Create a structured company profile for a policy opportunity scanner. Use the website only to classify the business and generate search language. Do not invent external opportunities."
+              "Create a source-grounded company profile for a public-sector opportunity scanner. " +
+              "Use only the submitted scan intent and website text. Identify what the company actually sells, who can buy it, and the specific public-sector revenue motions that fit. " +
+              "Keep products and buyer types as precise multi-word phrases; do not promote adjacent website topics into offerings. " +
+              "Good-fit examples must describe records with a credible path to revenue, while bad-fit examples must name tempting but irrelevant matches. " +
+              "Search terms should be language an agency, grant program, prime, or funded recipient would use in an official record. " +
+              "Use a profile confidence score below 55 when the offering, buyer, or requested scan focus is ambiguous. " +
+              "Do not invent external opportunities, contracts, grants, buyers, eligibility, or company capabilities. Return only the requested JSON object."
           },
           {
             role: "user",
@@ -696,7 +702,7 @@ export async function generateCompanyProfile(
   );
   const host = new URL(input.companyUrl).hostname.replace(/^www\./, "");
 
-  return ensureProfileRefinementFields(applyPlaybooksToProfile({
+  const fallbackProfile = ensureProfileRefinementFields(applyPlaybooksToProfile({
     company_name: input.companyName || host.split(".")[0],
     website: input.companyUrl,
     summary:
@@ -728,6 +734,20 @@ export async function generateCompanyProfile(
     planned_source_categories: [],
     likely_revenue_motions: [],
     suggested_contact_roles: [],
-    report_guidance: []
+    report_guidance: [],
+    profile_confidence_score: 35
   }, input), input);
+
+  return {
+    ...fallbackProfile,
+    profile_confidence_score: 35,
+    profile_assumptions_summary: [
+      "The AI profile step was unavailable, so these assumptions were generated from submitted text and website keywords only.",
+      fallbackProfile.profile_assumptions_summary
+    ].filter(Boolean).join(" "),
+    report_guidance: unique([
+      "Keyword-only fallback profile. Hold results for review until the company's offering and buyer assumptions are verified.",
+      ...(fallbackProfile.report_guidance ?? [])
+    ])
+  };
 }
