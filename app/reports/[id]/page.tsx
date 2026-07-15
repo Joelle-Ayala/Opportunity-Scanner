@@ -1569,6 +1569,7 @@ export default async function ReportPage({
           <ReportMonitorCheckout
             companyName={reportCompanyName}
             defaultEmail={customerSession?.user.email}
+            scanId={scan.id}
           />
         ) : null}
 

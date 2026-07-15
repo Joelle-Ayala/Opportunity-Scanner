@@ -1,4 +1,4 @@
-import { supabaseInsert, supabaseRpc, supabaseUpdate } from "../supabaseRest.ts";
+import { supabaseRpc, supabaseUpdate } from "../supabaseRest.ts";
 import type { StoredOpportunitySignal } from "../types.ts";
 import {
   monitoringOpportunityKey,
@@ -6,10 +6,20 @@ import {
   type MonitoringCadence
 } from "./core.ts";
 
-export const MONITORING_FAILURE_RETRY_MS = 15 * 60_000;
+export const MONITORING_MAX_FAILURE_ATTEMPTS = 5;
+export const MONITORING_INITIAL_RETRY_MS = 15 * 60_000;
+export const MONITORING_MAX_RETRY_MS = 2 * 60 * 60_000;
 
-export function nextMonitoringFailureRetryAt(failedAt = new Date()): Date {
-  return new Date(failedAt.getTime() + MONITORING_FAILURE_RETRY_MS);
+export function monitoringFailureRetryDelayMs(attemptCount: number): number {
+  const normalizedAttempt = Math.max(1, Math.min(Math.floor(attemptCount), MONITORING_MAX_FAILURE_ATTEMPTS));
+  return Math.min(
+    MONITORING_INITIAL_RETRY_MS * 2 ** (normalizedAttempt - 1),
+    MONITORING_MAX_RETRY_MS
+  );
+}
+
+export function nextMonitoringFailureRetryAt(attemptCount: number, failedAt = new Date()): Date {
+  return new Date(failedAt.getTime() + monitoringFailureRetryDelayMs(attemptCount));
 }
 
 export type MonitoredProfileRecord = {
@@ -22,6 +32,11 @@ export type MonitoredProfileRecord = {
   next_run_at: string;
   last_run_at?: string | null;
   lease_expires_at?: string | null;
+  lease_token?: string | null;
+  failure_attempt_count: number;
+  last_failure_at?: string | null;
+  last_error?: string | null;
+  dead_lettered_at?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -33,8 +48,27 @@ export type MonitoringRunRecord = {
   status: "running" | "completed" | "failed";
   new_opportunity_count: number;
   error_message?: string | null;
+  claim_token?: string | null;
   started_at: string;
   completed_at?: string | null;
+};
+
+export type MonitoringQueueHealth = {
+  backlog_count: number;
+  oldest_due_at?: string | null;
+  oldest_due_age_seconds?: number | null;
+  leased_count: number;
+  stale_lease_count: number;
+  retrying_count: number;
+  dead_letter_count: number;
+  last_success_at?: string | null;
+};
+
+type MonitoringFailureResult = {
+  finalized: boolean;
+  attemptCount?: number;
+  nextRunAt?: string | null;
+  deadLetteredAt?: string | null;
 };
 
 export type ClaimedMonitoringAlert = {
@@ -63,13 +97,17 @@ export async function claimMonitoredProfileById(profileId: string): Promise<Moni
 
 export async function startMonitoringRun(
   monitoredProfileId: string,
-  scanId: string
+  scanId: string,
+  leaseToken: string
 ): Promise<MonitoringRunRecord> {
-  return supabaseInsert<MonitoringRunRecord>("monitoring_runs", {
-    monitored_profile_id: monitoredProfileId,
-    scan_id: scanId,
-    status: "running"
+  const runs = await supabaseRpc<MonitoringRunRecord[]>("start_monitoring_profile_run", {
+    p_profile_id: monitoredProfileId,
+    p_scan_id: scanId,
+    p_lease_token: leaseToken
   });
+  const run = runs[0];
+  if (!run) throw new Error("The monitoring claim expired before the run could start.");
+  return run;
 }
 
 export async function completeMonitoringRun(input: {
@@ -80,32 +118,22 @@ export async function completeMonitoringRun(input: {
   completedAt?: Date;
 }): Promise<void> {
   const completedAt = input.completedAt ?? new Date();
+  const leaseToken = input.profile.lease_token;
+  if (!leaseToken) throw new Error("The monitoring claim has no lease token.");
 
-  if (input.newSignals.length > 0) {
-    await supabaseRpc<number>("record_monitoring_alerts", {
-      p_monitoring_run_id: input.run.id,
-      p_monitored_profile_id: input.profile.id,
-      p_alerts: input.newSignals.map((signal) => ({
-        opportunity_id: signal.id,
-        dedupe_key: monitoringOpportunityKey(signal)
-      }))
-    });
-  }
-
-  await supabaseUpdate<MonitoringRunRecord>("monitoring_runs", input.run.id, {
-    status: "completed",
-    new_opportunity_count: input.newSignals.length,
-    completed_at: completedAt.toISOString(),
-    error_message: null
+  const finalized = await supabaseRpc<boolean>("complete_monitoring_profile_run", {
+    p_profile_id: input.profile.id,
+    p_run_id: input.run.id,
+    p_scan_id: input.scanId,
+    p_lease_token: leaseToken,
+    p_new_opportunity_count: input.newSignals.length,
+    p_alerts: input.newSignals.map((signal) => ({
+      opportunity_id: signal.id,
+      dedupe_key: monitoringOpportunityKey(signal)
+    })),
+    p_completed_at: completedAt.toISOString()
   });
-
-  await supabaseUpdate<MonitoredProfileRecord>("monitored_profiles", input.profile.id, {
-    latest_scan_id: input.scanId,
-    last_run_at: completedAt.toISOString(),
-    next_run_at: nextMonitoringRunAt(input.profile.cadence, completedAt).toISOString(),
-    lease_expires_at: null,
-    updated_at: completedAt.toISOString()
-  });
+  if (!finalized) throw new Error("The monitoring lease expired before completion could be saved.");
 
   console.info("monitoring.run_summary", {
     profileId: input.profile.id,
@@ -162,23 +190,18 @@ export async function failMonitoringRun(input: {
   run?: MonitoringRunRecord | null;
   message: string;
   failedAt?: Date;
-}): Promise<void> {
+}): Promise<MonitoringFailureResult> {
   const failedAt = input.failedAt ?? new Date();
   const message = input.message.trim().slice(0, 500) || "Monitoring run failed.";
-  const retryAt = nextMonitoringFailureRetryAt(failedAt);
+  const leaseToken = input.profile.lease_token;
+  if (!leaseToken) return { finalized: false };
 
-  if (input.run) {
-    await supabaseUpdate<MonitoringRunRecord>("monitoring_runs", input.run.id, {
-      status: "failed",
-      error_message: message,
-      completed_at: failedAt.toISOString()
-    });
-  }
-
-  await supabaseUpdate<MonitoredProfileRecord>("monitored_profiles", input.profile.id, {
-    next_run_at: retryAt.toISOString(),
-    lease_expires_at: null,
-    updated_at: failedAt.toISOString()
+  const result = await supabaseRpc<MonitoringFailureResult>("fail_monitoring_profile_run", {
+    p_profile_id: input.profile.id,
+    p_run_id: input.run?.id ?? null,
+    p_lease_token: leaseToken,
+    p_error_message: message,
+    p_failed_at: failedAt.toISOString()
   });
 
   console.info("monitoring.run_summary", {
@@ -186,7 +209,27 @@ export async function failMonitoringRun(input: {
     runId: input.run?.id ?? null,
     status: "failed",
     failedAt: failedAt.toISOString(),
-    retryAt: retryAt.toISOString(),
+    finalized: result.finalized,
+    attemptCount: result.attemptCount ?? null,
+    retryAt: result.nextRunAt ?? null,
+    deadLetteredAt: result.deadLetteredAt ?? null,
     error: message
   });
+
+  return result;
+}
+
+export async function releaseMonitoringProfileClaim(profile: MonitoredProfileRecord): Promise<boolean> {
+  if (!profile.lease_token) return false;
+  return supabaseRpc<boolean>("release_monitoring_profile_claim", {
+    p_profile_id: profile.id,
+    p_lease_token: profile.lease_token
+  });
+}
+
+export async function getMonitoringQueueHealth(): Promise<MonitoringQueueHealth> {
+  const rows = await supabaseRpc<MonitoringQueueHealth[]>("get_monitoring_queue_health", {});
+  const health = rows[0];
+  if (!health) throw new Error("Monitoring queue health was unavailable.");
+  return health;
 }

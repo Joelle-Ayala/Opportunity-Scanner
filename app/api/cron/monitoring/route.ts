@@ -15,11 +15,14 @@ import {
   claimMonitoredProfileById,
   completeMonitoringRun,
   failMonitoringRun,
+  getMonitoringQueueHealth,
   markMonitoringAlertSent,
+  releaseMonitoringProfileClaim,
   releaseMonitoringAlert,
   startMonitoringRun,
   type ClaimedMonitoringAlert,
   type MonitoredProfileRecord,
+  type MonitoringQueueHealth,
   type MonitoringRunRecord
 } from "@/lib/monitoring/storage";
 import { executeScanPipeline } from "@/lib/scanPipeline";
@@ -35,13 +38,21 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const DEFAULT_PROFILE_BATCH_SIZE = 3;
-const MAX_PROFILE_BATCH_SIZE = 5;
+const DEFAULT_PROFILE_BATCH_SIZE = 5;
+const MAX_PROFILE_BATCH_SIZE = 10;
+const DEFAULT_PROFILE_CONCURRENCY = 3;
+const MAX_PROFILE_CONCURRENCY = 5;
+const PROFILE_PIPELINE_BUDGET_MS = 40_000;
+const PROFILE_TERMINAL_WRITE_BUDGET_MS = 5_000;
+const MINIMUM_PROFILE_START_BUDGET_MS = 20_000;
+// The checked-in Hobby cron remains daily. Production throughput requires a frequent authorized invocation.
 
 type MonitoringResult = {
   profileId: string;
-  status: "completed" | "failed";
+  status: "completed" | "failed" | "deferred";
   newCount?: number;
+  deadLettered?: boolean;
+  releaseFailed?: boolean;
 };
 
 type MonitoringCronSummary = {
@@ -50,6 +61,8 @@ type MonitoringCronSummary = {
   claimed: number;
   completed: number;
   failed: number;
+  deferred: number;
+  health: MonitoringQueueHealth | null;
   delivery: {
     configured: boolean;
     claimed: number;
@@ -116,11 +129,21 @@ function profileBatchSize(): number {
   return Math.min(Math.max(configured, 1), MAX_PROFILE_BATCH_SIZE);
 }
 
-async function processMonitoredProfile(profile: MonitoredProfileRecord): Promise<MonitoringResult> {
+function profileConcurrency(): number {
+  const configured = Number.parseInt(process.env.MONITORING_PROFILE_CONCURRENCY ?? "", 10);
+  if (!Number.isFinite(configured)) return DEFAULT_PROFILE_CONCURRENCY;
+  return Math.min(Math.max(configured, 1), MAX_PROFILE_CONCURRENCY);
+}
+
+async function processMonitoredProfile(
+  profile: MonitoredProfileRecord,
+  pipelineDeadlineAtMs: number
+): Promise<MonitoringResult> {
   let scanId: string | null = null;
   let run: MonitoringRunRecord | null = null;
 
   try {
+    if (!profile.lease_token) throw new Error("The monitoring profile claim has no lease token.");
     const previousScanId = profile.latest_scan_id || profile.source_scan_id;
     const baselineScan = await getScan(previousScanId);
     if (!baselineScan || baselineScan.status !== "completed") {
@@ -130,8 +153,11 @@ async function processMonitoredProfile(profile: MonitoredProfileRecord): Promise
     const input = scanInputFromRecord(baselineScan);
     const scan = await createScan(input);
     scanId = scan.id;
-    run = await startMonitoringRun(profile.id, scan.id);
-    await executeScanPipeline(scan.id, input);
+    run = await startMonitoringRun(profile.id, scan.id, profile.lease_token);
+    await executeScanPipeline(scan.id, input, {
+      deadlineAtMs: pipelineDeadlineAtMs,
+      terminalDeadlineAtMs: pipelineDeadlineAtMs + PROFILE_TERMINAL_WRITE_BUDGET_MS
+    });
 
     const [previousSignals, currentSignals] = await Promise.all([
       listScanOpportunitySignals(previousScanId),
@@ -151,9 +177,47 @@ async function processMonitoredProfile(profile: MonitoredProfileRecord): Promise
     if (scanId) {
       await updateScan(scanId, { status: "failed", error_message: message }).catch(() => undefined);
     }
-    await failMonitoringRun({ profile, run, message }).catch(() => undefined);
-    return { profileId: profile.id, status: "failed" };
+    const failure = await failMonitoringRun({ profile, run, message }).catch(() => null);
+    return {
+      profileId: profile.id,
+      status: "failed",
+      deadLettered: Boolean(failure?.deadLetteredAt)
+    };
   }
+}
+
+async function processClaimedProfiles(
+  profiles: MonitoredProfileRecord[],
+  startedAt: number
+): Promise<MonitoringResult[]> {
+  const results = new Array<MonitoringResult>(profiles.length);
+  const pipelineDeadlineAtMs = startedAt + PROFILE_PIPELINE_BUDGET_MS;
+  let cursor = 0;
+
+  const worker = async () => {
+    while (true) {
+      const index = cursor;
+      cursor += 1;
+      const profile = profiles[index];
+      if (!profile) return;
+
+      if (pipelineDeadlineAtMs - Date.now() < MINIMUM_PROFILE_START_BUDGET_MS) {
+        const released = await releaseMonitoringProfileClaim(profile).catch(() => false);
+        results[index] = {
+          profileId: profile.id,
+          status: "deferred",
+          releaseFailed: !released
+        };
+        continue;
+      }
+
+      results[index] = await processMonitoredProfile(profile, pipelineDeadlineAtMs);
+    }
+  };
+
+  const workerCount = Math.min(profileConcurrency(), profiles.length);
+  await Promise.all(Array.from({ length: workerCount }, worker));
+  return results;
 }
 
 export async function GET(request: Request): Promise<Response> {
@@ -180,6 +244,8 @@ export async function GET(request: Request): Promise<Response> {
   let deadlineAlertsDeadLettered = 0;
   let deadlineAlertsClaimFailed = false;
   let deadlineAlertsReleaseFailed = 0;
+  let queueHealth: MonitoringQueueHealth | null = null;
+  let queueHealthFailed = false;
 
   let profiles;
   try {
@@ -197,6 +263,8 @@ export async function GET(request: Request): Promise<Response> {
       claimed: 0,
       completed: 0,
       failed: 0,
+      deferred: 0,
+      health: null,
       delivery: {
         configured: Boolean(emailConfig),
         claimed: 0,
@@ -224,7 +292,7 @@ export async function GET(request: Request): Promise<Response> {
     }, 503);
   }
 
-  const results = await Promise.all(profiles.map(processMonitoredProfile));
+  const results = await processClaimedProfiles(profiles, startedAt);
 
   try {
     deadlineAlertsEnqueued = await enqueueDueDeadlineAlerts(100);
@@ -313,12 +381,24 @@ export async function GET(request: Request): Promise<Response> {
 
   const completed = results.filter((result) => result.status === "completed").length;
   const failed = results.filter((result) => result.status === "failed").length;
+  const deferred = results.filter((result) => result.status === "deferred").length;
+  const profileReleaseFailed = results.filter((result) => result.releaseFailed).length;
+  try {
+    queueHealth = await getMonitoringQueueHealth();
+  } catch (cause) {
+    queueHealthFailed = true;
+    console.error("Unable to read monitoring queue health", {
+      error: cause instanceof Error ? cause.message : "Unknown monitoring health error"
+    });
+  }
   const configurationFailed = !emailConfig || !deadlineEmailConfig;
   const storageFailed = deadlineAlertsEnqueueFailed
     || alertsClaimFailed
     || alertsReleaseFailed > 0
     || deadlineAlertsClaimFailed
-    || deadlineAlertsReleaseFailed > 0;
+    || deadlineAlertsReleaseFailed > 0
+    || profileReleaseFailed > 0
+    || queueHealthFailed;
   const deliveryFailed = alertsFailed > 0
     || alertsDeadLettered > 0
     || deadlineAlertsFailed > 0
@@ -340,6 +420,8 @@ export async function GET(request: Request): Promise<Response> {
     claimed: profiles.length,
     completed,
     failed,
+    deferred,
+    health: queueHealth,
     delivery: {
       configured: Boolean(emailConfig),
       claimed: alertsClaimed,

@@ -14,7 +14,10 @@ import {
   sendMonitoringAlertEmail
 } from "../lib/monitoring/delivery.ts";
 import {
-  MONITORING_FAILURE_RETRY_MS,
+  MONITORING_INITIAL_RETRY_MS,
+  MONITORING_MAX_FAILURE_ATTEMPTS,
+  MONITORING_MAX_RETRY_MS,
+  monitoringFailureRetryDelayMs,
   nextMonitoringFailureRetryAt
 } from "../lib/monitoring/storage.ts";
 
@@ -38,12 +41,18 @@ test("calculates daily and weekly monitoring schedules", () => {
 
 test("failed monitoring scans retry shortly instead of skipping the cadence", async () => {
   const failedAt = new Date("2026-07-12T12:00:00.000Z");
-  assert.equal(MONITORING_FAILURE_RETRY_MS, 15 * 60_000);
-  assert.equal(nextMonitoringFailureRetryAt(failedAt).toISOString(), "2026-07-12T12:15:00.000Z");
+  assert.equal(MONITORING_INITIAL_RETRY_MS, 15 * 60_000);
+  assert.equal(MONITORING_MAX_RETRY_MS, 2 * 60 * 60_000);
+  assert.equal(MONITORING_MAX_FAILURE_ATTEMPTS, 5);
+  assert.deepEqual(
+    [1, 2, 3, 4, 5].map(monitoringFailureRetryDelayMs),
+    [15, 30, 60, 120, 120].map((minutes) => minutes * 60_000)
+  );
+  assert.equal(nextMonitoringFailureRetryAt(1, failedAt).toISOString(), "2026-07-12T12:15:00.000Z");
 
   const storage = await readFile(new URL("../lib/monitoring/storage.ts", import.meta.url), "utf8");
-  assert.match(storage, /const retryAt = nextMonitoringFailureRetryAt\(failedAt\)/);
-  assert.match(storage, /next_run_at: retryAt\.toISOString\(\)/);
+  assert.match(storage, /fail_monitoring_profile_run/);
+  assert.match(storage, /deadLetteredAt/);
 });
 
 test("normalizes source URLs before comparing opportunities", () => {
@@ -125,14 +134,19 @@ test("cron monitoring is secret-protected and writes durable run outcomes", asyn
   ]);
   assert.match(route, /process\.env\.CRON_SECRET/);
   assert.match(route, /timingSafeEqual/);
-  assert.match(route, /DEFAULT_PROFILE_BATCH_SIZE = 3/);
-  assert.match(route, /MAX_PROFILE_BATCH_SIZE = 5/);
+  assert.match(route, /DEFAULT_PROFILE_BATCH_SIZE = 5/);
+  assert.match(route, /MAX_PROFILE_BATCH_SIZE = 10/);
+  assert.match(route, /DEFAULT_PROFILE_CONCURRENCY = 3/);
+  assert.match(route, /MAX_PROFILE_CONCURRENCY = 5/);
   assert.match(route, /process\.env\.MONITORING_PROFILE_BATCH_SIZE/);
+  assert.match(route, /process\.env\.MONITORING_PROFILE_CONCURRENCY/);
   assert.match(route, /claimDueMonitoredProfiles\(profileBatchSize\(\)\)/);
-  assert.match(route, /Promise\.all\(profiles\.map\(processMonitoredProfile\)\)/);
+  assert.match(route, /processClaimedProfiles\(profiles, startedAt\)/);
+  assert.match(route, /releaseMonitoringProfileClaim/);
   assert.match(route, /claimPendingMonitoringAlerts\(5\)/);
-  assert.match(route, /executeScanPipeline\(scan\.id, input\)/);
+  assert.match(route, /executeScanPipeline\(scan\.id, input, \{/);
   assert.match(route, /findNewMonitoringSignals/);
+  assert.match(route, /getMonitoringQueueHealth/);
   assert.match(route, /event: "cron\.monitoring\.summary"/);
   assert.match(route, /const configurationFailed = !emailConfig \|\| !deadlineEmailConfig/);
   assert.match(route, /configurationFailed \|\| storageFailed \? 503 : deliveryFailed \? 502 : 500/);
@@ -140,11 +154,14 @@ test("cron monitoring is secret-protected and writes durable run outcomes", asyn
   assert.match(route, /deadlineAlertsDeadLettered \+= 1/);
   assert.doesNotMatch(route, /claimPendingMonitoringAlerts\(5\)\.catch\(\(\) => \[\]\)/);
   assert.doesNotMatch(route, /claimPendingDeadlineAlerts\(5\)\.catch\(\(\) => \[\]\)/);
-  assert.match(storage, /record_monitoring_alerts/);
   assert.match(storage, /monitoringOpportunityKey/);
+  assert.match(storage, /start_monitoring_profile_run/);
+  assert.match(storage, /complete_monitoring_profile_run/);
+  assert.match(storage, /fail_monitoring_profile_run/);
+  assert.match(storage, /release_monitoring_profile_claim/);
+  assert.match(storage, /get_monitoring_queue_health/);
   assert.match(storage, /provider_message_id/);
   assert.match(storage, /nextMonitoringRunAt/);
-  assert.match(storage, /lease_expires_at: null/);
 });
 
 test("repeated manual runs collapse into one cooldown-protected queue request", async () => {

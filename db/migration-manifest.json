@@ -199,6 +199,14 @@
       "prerequisites": ["v0023"],
       "sha256": "38574b0584240044601141d51e417c756c1515691afd8de1f7fa22ce009775d3",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0025",
+      "file": "db/monitoring-throughput-reliability.sql",
+      "description": "Concurrency-safe monitoring batches, bounded retries, stale lease recovery, dead letters, and aggregate queue health.",
+      "prerequisites": ["v0008"],
+      "sha256": "ec4ccf379cf7b51df9d7c89ba93dcd59bd4d99b49ca89f646d7029f6538fb447",
+      "requiredInProduction": true
     }
   ]
 }

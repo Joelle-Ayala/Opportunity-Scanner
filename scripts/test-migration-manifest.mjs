@@ -235,7 +235,8 @@ const expectedOrder = [
   "db/first-touch-acquisition-attribution.sql",
   "db/paid-report-fulfillment-recovery.sql",
   "db/stripe-report-payment-lifecycle.sql",
-  "db/stripe-report-full-refund-guard.sql"
+  "db/stripe-report-full-refund-guard.sql",
+  "db/monitoring-throughput-reliability.sql"
 ];
 
 const requiredDependencies = {
@@ -298,6 +299,9 @@ const requiredDependencies = {
   ],
   "db/stripe-report-full-refund-guard.sql": [
     "db/stripe-report-payment-lifecycle.sql"
+  ],
+  "db/monitoring-throughput-reliability.sql": [
+    "db/monitoring-alert-delivery.sql"
   ]
 };
 

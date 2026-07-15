@@ -18,6 +18,7 @@ const checks = [
   ["Demo provisioning", ["scripts/test-demo-provisioning.mjs"]],
   ["Workflow contract", ["--experimental-strip-types", "scripts/test-workflow-contract.mjs"]],
   ["Monitoring contract", ["--experimental-strip-types", "scripts/test-monitoring-contract.mjs"]],
+  ["Monitoring throughput", ["--experimental-strip-types", "scripts/test-monitoring-throughput.mjs"]],
   ["Deadline alerts", ["--experimental-strip-types", "scripts/test-deadline-alerts.mjs"]],
   ["Nurture contract", ["--experimental-strip-types", "scripts/test-scan-nurture.mjs"]],
   ["Scan rate limit", ["--experimental-strip-types", "scripts/test-scan-rate-limit.mjs"]],

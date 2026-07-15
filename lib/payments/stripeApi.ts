@@ -13,6 +13,7 @@ export type StripeCheckoutSession = {
   created?: number;
   livemode?: boolean;
   url?: string | null;
+  client_reference_id?: string | null;
   status?: string;
   mode?: string;
   payment_status?: string;
@@ -36,6 +37,7 @@ export type StripeCheckoutSession = {
         current_period_start?: number;
         current_period_end?: number;
         cancel_at_period_end?: boolean;
+        metadata?: Record<string, string> | null;
         items?: {
           data?: Array<{
             current_period_start?: number;
@@ -136,6 +138,7 @@ export async function createCheckoutSession(input: {
     form["subscription_data[metadata][product]"] = input.plan;
     form["subscription_data[metadata][billing_interval]"] = input.interval ?? "";
     form["subscription_data[metadata][request_id]"] = input.requestId;
+    if (input.scanId) form["subscription_data[metadata][scan_id]"] = input.scanId;
   }
   return stripeRequest<StripeCheckoutSession>(input.secretKey, "/checkout/sessions", {
     method: "POST",

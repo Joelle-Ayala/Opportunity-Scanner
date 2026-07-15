@@ -61,8 +61,8 @@ export function validateCheckoutInput(body: unknown): ValidationResult<CheckoutI
   if (plan === "report" && !UUID_PATTERN.test(scanId)) {
     return { ok: false, code: "INVALID_SCAN_ID", message: "A valid scan ID is required for report access." };
   }
-  if (plan !== "report" && scanId) {
-    return { ok: false, code: "UNSUPPORTED_FIELD", message: "Scan ID is only supported for report purchases." };
+  if (plan !== "report" && scanId && !UUID_PATTERN.test(scanId)) {
+    return { ok: false, code: "INVALID_SCAN_ID", message: "Choose a valid report to continue monitoring setup." };
   }
 
   return {
@@ -72,7 +72,7 @@ export function validateCheckoutInput(body: unknown): ValidationResult<CheckoutI
       billingInterval: plan === "report" ? null : (rawInterval as BillingInterval),
       customerEmail,
       requestId: requestId.toLowerCase(),
-      scanId: plan === "report" ? scanId.toLowerCase() : null
+      scanId: scanId ? scanId.toLowerCase() : null
     }
   };
 }

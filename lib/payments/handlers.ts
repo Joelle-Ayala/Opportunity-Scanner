@@ -5,6 +5,7 @@ import { verifyReportCatalogCached } from "./reportCatalogPreflight.ts";
 import { verifyStripeSignature } from "./signature.ts";
 import { createBillingPortalSession, createCheckoutSession } from "./stripeApi.ts";
 import { deliverPaidReportFulfillment } from "../transactionalEmail/paidReport.ts";
+import { dashboardSelectOne } from "../dashboard/rest.ts";
 
 const NO_STORE_HEADERS = { "Cache-Control": "no-store" };
 const MAX_REQUEST_BYTES = 8_192;
@@ -35,6 +36,7 @@ export type CheckoutIdentity = {
 type CheckoutDependencies = {
   getConfig: typeof getStripeServerConfig;
   inspectReport: typeof inspectReportCheckoutEligibility;
+  inspectSubscriptionSource: typeof inspectSubscriptionSourceReport;
   createSession: typeof createCheckoutSession;
   verifyReportCatalog: typeof verifyReportCatalogCached;
 };
@@ -42,9 +44,56 @@ type CheckoutDependencies = {
 const checkoutDependencies: CheckoutDependencies = {
   getConfig: getStripeServerConfig,
   inspectReport: inspectReportCheckoutEligibility,
+  inspectSubscriptionSource: inspectSubscriptionSourceReport,
   createSession: createCheckoutSession,
   verifyReportCatalog: verifyReportCatalogCached
 };
+
+type SubscriptionSourceEligibility =
+  | { ok: true }
+  | { ok: false; status: number; code: string; message: string };
+
+export async function inspectSubscriptionSourceReport(
+  scanId: string,
+  accountId: string | null
+): Promise<SubscriptionSourceEligibility> {
+  if (!accountId) {
+    return {
+      ok: false,
+      status: 401,
+      code: "AUTHENTICATION_REQUIRED",
+      message: "Sign in with a verified account to monitor this report."
+    };
+  }
+
+  const ownership = await dashboardSelectOne<{ scan_id?: string }>("customer_scan_ownership", {
+    select: "scan_id",
+    customer_account_id: `eq.${accountId}`,
+    scan_id: `eq.${scanId}`
+  });
+  if (ownership?.scan_id !== scanId) {
+    return {
+      ok: false,
+      status: 403,
+      code: "REPORT_OWNERSHIP_CONFLICT",
+      message: "Choose a completed report owned by this account."
+    };
+  }
+
+  const scan = await dashboardSelectOne<{ id?: string; status?: string }>("scans", {
+    select: "id,status",
+    id: `eq.${scanId}`
+  });
+  if (scan?.id !== scanId || scan.status !== "completed") {
+    return {
+      ok: false,
+      status: 409,
+      code: "REPORT_NOT_READY",
+      message: "Choose a completed report to continue monitoring setup."
+    };
+  }
+  return { ok: true };
+}
 
 function reportSuccessUrl(appUrl: string, scanId: string, signedIn: boolean): string {
   const reportPath = `/reports/${scanId}?checkout=success&session_id=`;
@@ -75,10 +124,19 @@ export async function handleCheckout(
   try {
     const config = dependencies.getConfig();
     const input = validation.value;
-    if (input.scanId) {
+    if (input.plan === "report" && input.scanId) {
       const reportEligibility = await dependencies.inspectReport(input.scanId, identity?.accountId ?? null);
       if (!reportEligibility.ok) {
         return error(reportEligibility.status, reportEligibility.code, reportEligibility.message);
+      }
+    }
+    if (input.plan !== "report" && input.scanId) {
+      const sourceEligibility = await dependencies.inspectSubscriptionSource(
+        input.scanId,
+        identity?.accountId ?? null
+      );
+      if (!sourceEligibility.ok) {
+        return error(sourceEligibility.status, sourceEligibility.code, sourceEligibility.message);
       }
     }
     if (input.plan === "report") {

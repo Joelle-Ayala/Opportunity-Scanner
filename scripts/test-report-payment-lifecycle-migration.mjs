@@ -8,8 +8,8 @@ const [sql, fullRefundGuardSql, manifestSource] = await Promise.all([
   readFile(new URL("../db/migration-manifest.json", import.meta.url), "utf8")
 ]);
 const manifest = JSON.parse(manifestSource);
-const lifecycleMigration = manifest.migrations.at(-2);
-const refundGuardMigration = manifest.migrations.at(-1);
+const lifecycleMigration = manifest.migrations.find((migration) => migration.version === "v0023");
+const refundGuardMigration = manifest.migrations.find((migration) => migration.version === "v0024");
 
 assert.deepEqual(lifecycleMigration, {
   version: "v0023",

@@ -7,6 +7,7 @@ import { trackProductEvent } from "@/lib/productAnalytics";
 type ReportMonitorCheckoutProps = {
   companyName: string;
   defaultEmail?: string;
+  scanId: string;
 };
 
 type CheckoutResponse = {
@@ -30,7 +31,8 @@ function secureStripeCheckoutUrl(value: unknown): string | null {
 
 export function ReportMonitorCheckout({
   companyName,
-  defaultEmail
+  defaultEmail,
+  scanId
 }: ReportMonitorCheckoutProps) {
   const accountEmail = defaultEmail?.trim().toLowerCase() ?? "";
   const [email, setEmail] = useState(accountEmail);
@@ -64,7 +66,7 @@ export function ReportMonitorCheckout({
           billingInterval: "monthly",
           customerEmail,
           requestId: crypto.randomUUID(),
-          scanId: null
+          scanId
         })
       });
       const body = (await response.json().catch(() => null)) as CheckoutResponse | null;
@@ -94,8 +96,8 @@ export function ReportMonitorCheckout({
             New opportunities will not wait for your next report.
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-700">
-            Monitor {companyName} weekly for newly found public-sector opportunities. Start from
-            this paid report, then confirm the search in onboarding.
+            Monitor {companyName} weekly for newly found public-sector opportunities. This report
+            will already be selected when you finish secure checkout and continue setup.
           </p>
           <ul className="mt-4 grid gap-2 text-sm text-slate-700 sm:grid-cols-3">
             {[
@@ -149,7 +151,7 @@ export function ReportMonitorCheckout({
               disabled={loading}
               className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] disabled:cursor-wait disabled:opacity-70"
             >
-              {loading ? "Opening Secure Checkout..." : "Monitor This Report Weekly"}
+              {loading ? "Opening Secure Checkout..." : "Continue With This Report"}
             </button>
 
             <div aria-live="polite" aria-atomic="true" className="min-h-6">

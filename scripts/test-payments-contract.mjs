@@ -190,6 +190,9 @@ test("accepts only monthly or annual server-catalog subscriptions", () => {
     for (const billingInterval of ["monthly", "annual"]) {
       const result = validateCheckoutInput(checkout({ plan, billingInterval, scanId: undefined }));
       assert.equal(result.ok, true);
+      const reportOrigin = validateCheckoutInput(checkout({ plan, billingInterval }));
+      assert.equal(reportOrigin.ok, true);
+      if (reportOrigin.ok) assert.equal(reportOrigin.value.scanId, "91a3e66c-2c07-46cf-ab0c-3768375e050a");
     }
   }
   assert.equal(validateCheckoutInput(checkout({ plan: "enterprise" })).ok, false);
@@ -204,10 +207,11 @@ test("rejects client-controlled prices, destinations, customer IDs, and metadata
   }
 });
 
-test("requires a scan only for Report and a request UUID for Stripe idempotency", () => {
+test("requires a scan for Report, permits an optional valid subscription origin, and requires request idempotency", () => {
   assert.equal(validateCheckoutInput(checkout({ scanId: undefined })).ok, false);
   assert.equal(validateCheckoutInput(checkout({ requestId: "repeat-me" })).ok, false);
-  assert.equal(validateCheckoutInput(checkout({ plan: "growth", billingInterval: "monthly" })).ok, false);
+  assert.equal(validateCheckoutInput(checkout({ plan: "growth", billingInterval: "monthly" })).ok, true);
+  assert.equal(validateCheckoutInput(checkout({ plan: "growth", billingInterval: "monthly", scanId: "other-account" })).ok, false);
 });
 
 test("checkout handler uses verified account identity and sends anonymous Report buyers through sign-in", async () => {
