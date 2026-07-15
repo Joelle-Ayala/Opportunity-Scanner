@@ -80,7 +80,7 @@ export function DashboardShell({
         </div>
 
         <nav className="mt-6 border-b border-line" aria-label="Dashboard sections">
-          <div className="grid grid-cols-3 gap-x-2 sm:flex sm:gap-6" role="tablist" aria-orientation="horizontal">
+          <div className="flex gap-5 overflow-x-auto sm:gap-6" role="tablist" aria-orientation="horizontal">
             {tabs.map((tab, tabIndex) => {
               const selected = activeTab === tab.id;
               return (
@@ -94,7 +94,7 @@ export function DashboardShell({
                   onClick={() => onTabChange(tab.id)}
                   onKeyDown={(event) => handleTabKeyDown(event, tabIndex)}
                   tabIndex={selected ? 0 : -1}
-                  className={`flex min-h-11 min-w-0 items-center justify-center gap-1.5 border-b-2 px-1 text-xs font-semibold sm:justify-start sm:gap-2 sm:px-0.5 sm:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                  className={`flex min-h-11 shrink-0 items-center justify-center gap-1.5 border-b-2 px-1 text-xs font-semibold sm:justify-start sm:gap-2 sm:px-0.5 sm:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
                     selected
                       ? "border-accent text-accent"
                       : "border-transparent text-slate-600 hover:border-slate-300 hover:text-ink"

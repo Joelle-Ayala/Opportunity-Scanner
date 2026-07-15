@@ -7,6 +7,31 @@ export type CustomerAuthCookieReader = {
   get(name: string): { value: string } | undefined;
 };
 
+export type CustomerPageSessionResolution = {
+  session: CustomerSession | null;
+  refreshRequired: boolean;
+};
+
+export async function resolveCustomerPageSession(
+  config: CustomerAuthConfig,
+  cookieStore: CustomerAuthCookieReader
+): Promise<CustomerPageSessionResolution> {
+  const accessToken = cookieStore.get(CUSTOMER_AUTH_COOKIES.accessToken)?.value;
+  const refreshToken = cookieStore.get(CUSTOMER_AUTH_COOKIES.refreshToken)?.value;
+  if (!accessToken) return { session: null, refreshRequired: Boolean(refreshToken) };
+
+  try {
+    const user = await fetchCustomerUser(config, accessToken);
+    return {
+      session: { user, accessToken, refreshedTokens: null },
+      refreshRequired: false
+    };
+  } catch (error) {
+    if (!(error instanceof CustomerAuthError) || error.status !== 401) throw error;
+    return { session: null, refreshRequired: Boolean(refreshToken) };
+  }
+}
+
 export async function resolveCustomerSession(
   config: CustomerAuthConfig,
   cookieStore: CustomerAuthCookieReader

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/brand";
 import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
 import { MonitoringOnboardingAnalytics, PurchaseCompletedAnalytics } from "@/components/page-analytics";
-import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
+import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import {
   ensureCustomerAccount,
   loadDashboardReports,
@@ -33,7 +33,10 @@ export default async function MonitoringOnboardingPage({
   const next = validCheckoutReturn
     ? `/dashboard/onboarding?checkout=success&session_id=${encodeURIComponent(checkoutSessionId!)}`
     : "/dashboard/onboarding";
-  const session = await resolveCustomerSession(getCustomerAuthConfig(), cookies()).catch(() => null);
+  const resolution = await resolveCustomerPageSession(getCustomerAuthConfig(), cookies())
+    .catch(() => ({ session: null, refreshRequired: false }));
+  if (resolution.refreshRequired) redirect(`/api/auth/session?next=${encodeURIComponent(next)}`);
+  const session = resolution.session;
   if (!session?.user.email) redirect(`/auth/sign-in?next=${encodeURIComponent(next)}`);
   const account = await ensureCustomerAccount(session.user.id, session.user.email);
   const handoff = validCheckoutReturn

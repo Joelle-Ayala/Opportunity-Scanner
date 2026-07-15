@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { DashboardStatusBadge, type DashboardStatusTone } from "./status-badge";
 
 export type MonitoringChangeKind = "new" | "updated" | "closing" | "system";
@@ -18,6 +19,7 @@ export interface MonitoringChangeFeedProps {
   title?: string;
   description?: string;
   emptyMessage?: string;
+  emptyAction?: ReactNode;
   viewAllHref?: string;
 }
 
@@ -33,6 +35,7 @@ export function MonitoringChangeFeed({
   title = "Monitoring changes",
   description = "Recent changes across your active saved searches.",
   emptyMessage = "No changes detected yet. New and updated signals will appear here.",
+  emptyAction,
   viewAllHref
 }: MonitoringChangeFeedProps) {
   return (
@@ -45,7 +48,10 @@ export function MonitoringChangeFeed({
         {viewAllHref ? <a href={viewAllHref} className="text-sm font-semibold text-accent hover:text-[#0A6871]">View all</a> : null}
       </div>
       {items.length === 0 ? (
-        <p className="px-5 py-10 text-center text-sm leading-6 text-muted">{emptyMessage}</p>
+        <div className="px-5 py-8 text-center">
+          <p className="text-sm leading-6 text-muted">{emptyMessage}</p>
+          {emptyAction ? <div className="mt-4 flex justify-center">{emptyAction}</div> : null}
+        </div>
       ) : (
         <div className="divide-y divide-line">
           {items.map((item) => {

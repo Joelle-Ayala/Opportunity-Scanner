@@ -35,7 +35,7 @@ assert.match(checkout, /scanId/);
 assert.match(checkout, /url\.origin === "https:\/\/checkout\.stripe\.com"/);
 assert.doesNotMatch(checkout, /access(?:Token|Code)?\s*:/);
 
-assert.match(onboarding, /resolveCustomerSession\(/);
+assert.match(onboarding, /resolveCustomer(?:Page)?Session\(/);
 assert.match(onboarding, /loadDashboardReports\(session\.user\.id\)/);
 assert.match(onboarding, /report\.status === "completed"/);
 assert.match(onboarding, /eligibleReports\.find\(\(report\) => report\.scanId === requestedSourceScanId\)/);

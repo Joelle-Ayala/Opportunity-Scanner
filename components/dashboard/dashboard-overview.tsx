@@ -11,6 +11,14 @@ export interface DashboardOverviewMetric {
   tone?: "default" | "positive" | "attention";
 }
 
+export interface DashboardFocus {
+  eyebrow: string;
+  title: string;
+  detail: string;
+  primaryAction: ReactNode;
+  secondaryAction?: ReactNode;
+}
+
 export interface DashboardOverviewProps {
   metrics: DashboardOverviewMetric[];
   planName: string;
@@ -19,8 +27,12 @@ export interface DashboardOverviewProps {
   usage: DashboardUsageMetric[];
   recentReports: DashboardReportRow[];
   monitoringChanges: MonitoringChangeItem[];
+  focus?: DashboardFocus;
   usageAction?: ReactNode;
   reportEmptyAction?: ReactNode;
+  monitoringEmptyAction?: ReactNode;
+  monitoringDescription?: string;
+  monitoringEmptyMessage?: string;
   reportsHref?: string;
   monitoringHref?: string;
   onViewReport?: (report: DashboardReportRow) => void;
@@ -42,8 +54,12 @@ export function DashboardOverview({
   usage,
   recentReports,
   monitoringChanges,
+  focus,
   usageAction,
   reportEmptyAction,
+  monitoringEmptyAction,
+  monitoringDescription,
+  monitoringEmptyMessage,
   reportsHref,
   monitoringHref,
   onViewReport,
@@ -52,6 +68,20 @@ export function DashboardOverview({
 }: DashboardOverviewProps) {
   return (
     <div className="grid gap-6">
+      {focus ? (
+        <section className="grid gap-5 border-l-4 border-accent bg-white px-5 py-5 shadow-panel sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-6" aria-labelledby="workspace-focus-title">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase text-accent">{focus.eyebrow}</p>
+            <h2 id="workspace-focus-title" className="mt-2 break-words text-xl font-semibold text-ink sm:text-2xl">{focus.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-muted">{focus.detail}</p>
+          </div>
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            {focus.secondaryAction}
+            {focus.primaryAction}
+          </div>
+        </section>
+      ) : null}
+
       <section className="overflow-hidden rounded-lg border border-line bg-white" aria-label="Workspace summary">
         <div className="grid divide-y divide-line sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
           {metrics.map((metric) => (
@@ -82,7 +112,13 @@ export function DashboardOverview({
           onRetry={onRetryReport}
           onDownload={onDownloadReport}
         />
-        <MonitoringChangeFeed items={monitoringChanges} viewAllHref={monitoringHref} />
+        <MonitoringChangeFeed
+          items={monitoringChanges}
+          description={monitoringDescription}
+          emptyMessage={monitoringEmptyMessage}
+          viewAllHref={monitoringHref}
+          emptyAction={monitoringEmptyAction}
+        />
       </div>
 
       {reportsHref && recentReports.length > 0 ? (

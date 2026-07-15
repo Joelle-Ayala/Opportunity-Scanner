@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { CustomerDashboard, type DashboardReportRow, type MonitoredSearchRow } from "@/components/dashboard";
+import { CustomerDashboard, DashboardActionLink, type DashboardReportRow, type MonitoredSearchRow } from "@/components/dashboard";
 import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
 import type { BillingSummaryProps } from "@/components/dashboard/billing-summary";
 import { DashboardAnalytics } from "@/components/page-analytics";
-import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
+import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import {
   ensureCustomerAccount,
   loadDashboardMonitoringRuns,
@@ -26,6 +26,15 @@ function reportStatus(status: string): DashboardReportRow["status"] {
   if (status === "failed") return "failed";
   if (status === "queued") return "queued";
   return "scanning";
+}
+
+function reportCompanyName(companyName: string | null, companyUrl: string): string {
+  if (companyName) return companyName;
+  try {
+    return new URL(companyUrl).hostname.replace(/^www\./, "");
+  } catch {
+    return companyUrl.replace(/^https?:\/\//, "").split("/")[0] || "Company";
+  }
 }
 
 type DashboardSearchParams = {
@@ -66,16 +75,18 @@ function planDescriptionFor(status: BillingSummaryProps["subscriptionStatus"]): 
   if (status === "past_due") return "Monitoring is paused until the payment issue is resolved.";
   if (status === "incomplete") return "Complete billing setup before monitoring can begin.";
   if (status === "canceled") return "This monitoring subscription is canceled.";
-  return "Buy reports individually or add monitoring.";
+  return "Full access to your purchased reports.";
 }
 
 export default async function DashboardPage({ searchParams }: { searchParams?: DashboardSearchParams }) {
-  let session;
+  let resolution;
   try {
-    session = await resolveCustomerSession(getCustomerAuthConfig(), cookies());
+    resolution = await resolveCustomerPageSession(getCustomerAuthConfig(), cookies());
   } catch {
     redirect("/auth/sign-in?next=%2Fdashboard");
   }
+  if (resolution.refreshRequired) redirect("/api/auth/session?next=%2Fdashboard");
+  const session = resolution.session;
   if (!session?.user.email) redirect("/auth/sign-in?next=%2Fdashboard");
 
   await ensureCustomerAccount(session.user.id, session.user.email);
@@ -118,13 +129,17 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
   ]);
   const reportRows: DashboardReportRow[] = reports.map((report) => ({
     id: report.scanId,
-    companyName: report.companyName || new URL(report.companyUrl).hostname.replace(/^www\./, ""),
+    companyName: reportCompanyName(report.companyName, report.companyUrl),
     companyUrl: report.companyUrl,
     createdLabel: dateLabel(report.completedAt || report.createdAt),
     status: reportStatus(report.status),
     reportType: report.hasFullAccountAccess || report.hasActiveGrant || report.reportAccess === "paid" || (subscription && monitoredScanIds.has(report.scanId)) ? "Full report" : "Free report",
+    signalCount: report.signalCount,
     href: `/reports/${report.scanId}`
   }));
+  const latestReadyReport = reportRows.find((report) => report.status === "ready" && report.href);
+  const fullReportCount = reportRows.filter((report) => report.reportType === "Full report").length;
+  const workspaceCompany = latestReadyReport?.companyName;
   const searchRows: MonitoredSearchRow[] = searches.map((search) => ({
     id: search.id,
     name: search.name,
@@ -195,16 +210,24 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
         </div>
       ) : null}
       <CustomerDashboard
-        title="Opportunity workspace"
-        description="Reports, saved searches, monitoring changes, and billing in one place."
-        initialTab={searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError ? "alerts" : searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : searchParams?.tab === "billing" ? "billing" : "overview"}
+        title={workspaceCompany ? `${workspaceCompany} workspace` : "Opportunity workspace"}
+        description="Continue recent reports, run fresh searches, and manage monitoring."
+        initialTab={subscription && (searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError) ? "alerts" : searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : searchParams?.tab === "billing" ? "billing" : "overview"}
+        showAlerts={Boolean(subscription)}
         primaryAction={needsMonitoringSetup
           ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Continue setup</a>
           : hasMonitoringCapacity
             ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Add monitored search</a>
-          : <a href="/dashboard/new" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run new report</a>}
+          : <DashboardActionLink action="new_report" href="/dashboard/new" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run new report</DashboardActionLink>}
         accountSlot={<form action="/api/auth/sign-out" method="post"><button className="text-sm font-semibold text-steel hover:text-accent">Sign out</button></form>}
         overview={{
+          focus: latestReadyReport ? {
+            eyebrow: "Pick up where you left off",
+            title: `${latestReadyReport.companyName} opportunity report`,
+            detail: `${latestReadyReport.reportType || "Opportunity report"} / Updated ${latestReadyReport.createdLabel}`,
+            primaryAction: <DashboardActionLink action="open_report" href={latestReadyReport.href || "/dashboard"} className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Open report</DashboardActionLink>,
+            secondaryAction: <DashboardActionLink action="refresh_report" href={`/dashboard/new?from=${encodeURIComponent(latestReadyReport.id)}`} className="rounded-md border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-accent hover:text-accent">Refresh report</DashboardActionLink>
+          } : undefined,
           metrics: [
             { id: "reports", label: "Reports", value: summary.reportCount },
             { id: "searches", label: "Saved searches", value: summary.activeSavedSearchCount },
@@ -214,9 +237,9 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           planName,
           planDescription: planDescriptionFor(subscriptionStatus),
           renewalLabel: renewal,
-          usage: [
+          usage: subscription ? [
             { id: "profiles", label: "Monitored profiles", used: capacityUsedCount, limit: profileLimit },
-            { id: "reports", label: "Reports", used: summary.reportCount, limit: null },
+            { id: "reports", label: "Reports", used: summary.reportCount, limit: null, unlimitedLabel: "No monthly limit" },
             ...(summary.enrichmentCredits.entitled
               ? [{
                   id: "enrichment-credits",
@@ -226,10 +249,23 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
                   limit: summary.enrichmentCredits.limit
                 }]
               : [{ id: "signals", label: "New opportunities", used: summary.newOpportunityCount, limit: null }])
+          ] : [
+            { id: "full-reports", label: "Full reports", used: fullReportCount, limit: null },
+            { id: "reports", label: "Reports in workspace", used: summary.reportCount, limit: null },
+            { id: "searches", label: "Saved searches", used: summary.activeSavedSearchCount, limit: null }
           ],
-          usageAction: <a href="/pricing" className="text-sm font-semibold text-accent">View plans</a>,
+          usageAction: <DashboardActionLink action="view_plans" href="/pricing" className="text-sm font-semibold text-accent">View plans</DashboardActionLink>,
           recentReports: reportRows.slice(0, 5),
           monitoringChanges: runs.map((run) => ({ id: run.id, title: run.status === "failed" ? "Monitoring run needs attention" : `${run.newOpportunityCount} new opportunities found`, summary: run.errorMessage || "Your saved search was checked against the latest public records.", occurredLabel: dateLabel(run.completedAt || run.startedAt), kind: run.status === "failed" ? "system" as const : "new" as const, href: comparableScanIds.has(run.scanId) ? `/dashboard/compare/${run.scanId}` : `/reports/${run.scanId}` })),
+          monitoringDescription: subscription
+            ? "Recent changes across your active saved searches."
+            : "Recurring checks and deadline alerts.",
+          monitoringEmptyMessage: !subscription && latestReadyReport
+            ? `${latestReadyReport.companyName} is not monitored yet.`
+            : undefined,
+          monitoringEmptyAction: !subscription && latestReadyReport
+            ? <DashboardActionLink action="view_plans" href="/pricing" className="rounded-md border border-accent bg-white px-3 py-2 text-sm font-semibold text-accent hover:bg-mist">Keep {latestReadyReport.companyName} current</DashboardActionLink>
+            : undefined,
           reportEmptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>
         }}
         reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <><a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Update preview</a>{hasMonitoringCapacity && eligibleMonitoringReportIds.has(report.id) ? <a href={`/dashboard/onboarding?source_scan_id=${encodeURIComponent(report.id)}`} className="rounded-md border border-accent px-3 py-2 text-sm font-semibold text-accent hover:bg-mist">Monitor</a> : null}{comparableScanIds.has(report.id) ? <a href={`/dashboard/compare/${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Compare</a> : null}</> }}

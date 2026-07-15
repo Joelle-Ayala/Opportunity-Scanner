@@ -9,6 +9,8 @@ export type SubscriptionPlan = "none" | "monitor" | "growth";
 export type MonitoringOnboardingState = "eligible_report" | "report_required" | "limit_reached";
 export type SavedSearchStatus = "active" | "paused" | "archived";
 export type ComparisonFilter = "new" | "changed" | "expired" | "removed" | "unchanged";
+export type DashboardAction = "open_report" | "refresh_report" | "new_report" | "view_plans" | "setup_monitoring";
+export type ReportValueAction = "open_opportunity" | "open_source" | "export_report" | "export_outreach_csv" | "export_outreach_markdown";
 
 export type ProductAnalyticsEventMap = {
   scan_started: {
@@ -41,6 +43,13 @@ export type ProductAnalyticsEventMap = {
   dashboard_viewed: {
     subscription_plan: SubscriptionPlan;
     has_active_monitoring: boolean;
+  };
+  dashboard_action_selected: {
+    action: DashboardAction;
+  };
+  report_value_action_selected: {
+    action: ReportValueAction;
+    report_tier: ReportTier;
   };
   monitoring_onboarding_viewed: {
     subscription_plan: Exclude<SubscriptionPlan, "none">;
@@ -83,6 +92,8 @@ const EVENT_NAMES = new Set<ProductAnalyticsEventName>([
   "checkout_started",
   "purchase_completed",
   "dashboard_viewed",
+  "dashboard_action_selected",
+  "report_value_action_selected",
   "monitoring_onboarding_viewed",
   "monitoring_onboarding_completed",
   "saved_search_changed",
@@ -102,6 +113,8 @@ const PAID_SUBSCRIPTION_PLANS = ["monitor", "growth"] as const;
 const MONITORING_ONBOARDING_STATES = ["eligible_report", "report_required", "limit_reached"] as const;
 const SAVED_SEARCH_STATUSES = ["active", "paused", "archived"] as const;
 const COMPARISON_FILTERS = ["new", "changed", "expired", "removed", "unchanged"] as const;
+const DASHBOARD_ACTIONS = ["open_report", "refresh_report", "new_report", "view_plans", "setup_monitoring"] as const;
+const REPORT_VALUE_ACTIONS = ["open_opportunity", "open_source", "export_report", "export_outreach_csv", "export_outreach_markdown"] as const;
 
 export function signalCountBucket(count: number): SignalCountBucket {
   if (count <= 0) return "0";
@@ -206,6 +219,21 @@ export function sanitizeProductAnalyticsEvent(
             properties: {
               subscription_plan: properties.subscription_plan,
               has_active_monitoring: properties.has_active_monitoring
+            }
+          }
+        : null;
+    case "dashboard_action_selected":
+      return isOneOf(properties.action, DASHBOARD_ACTIONS)
+        ? { name, properties: { action: properties.action } }
+        : null;
+    case "report_value_action_selected":
+      return isOneOf(properties.action, REPORT_VALUE_ACTIONS)
+        && isOneOf(properties.report_tier, REPORT_TIERS)
+        ? {
+            name,
+            properties: {
+              action: properties.action,
+              report_tier: properties.report_tier
             }
           }
         : null;

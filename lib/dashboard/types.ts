@@ -22,6 +22,7 @@ export type DashboardReport = {
   hasActiveGrant: boolean;
   hasFullAccountAccess: boolean;
   savedSearchVersionId: string | null;
+  signalCount: number;
 };
 
 export type SavedSearchConfiguration = Record<string, unknown>;

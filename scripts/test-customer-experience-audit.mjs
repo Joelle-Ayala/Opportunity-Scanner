@@ -6,7 +6,7 @@ import { safeSameOriginRedirect } from "../lib/customer-auth/redirect.ts";
 const ROOT = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, ROOT), "utf8");
 
-const [dashboard, onboarding, billing, signIn, signInRoute, dashboardLoading, dashboardError, reportLoading, reportError] = await Promise.all([
+const [dashboard, onboarding, billing, signIn, signInRoute, dashboardLoading, dashboardError, reportLoading, reportError, reportPage, opportunityPage] = await Promise.all([
   source("app/dashboard/page.tsx"),
   source("app/dashboard/onboarding/page.tsx"),
   source("components/dashboard/billing-summary.tsx"),
@@ -15,7 +15,9 @@ const [dashboard, onboarding, billing, signIn, signInRoute, dashboardLoading, da
   source("app/dashboard/loading.tsx"),
   source("app/dashboard/error.tsx"),
   source("app/reports/loading.tsx"),
-  source("app/reports/error.tsx")
+  source("app/reports/error.tsx"),
+  source("app/reports/[id]/page.tsx"),
+  source("app/opportunities/[id]/page.tsx")
 ]);
 
 assert.match(dashboard, /item\.product === "monitor" \|\| item\.product === "growth"/);
@@ -29,6 +31,18 @@ assert.match(onboarding, />View account status<\/a>/);
 assert.match(onboarding, /summary\.billing\.stripeCustomerId \? <BillingPortalButton \/>/);
 assert.match(dashboard, />Set up monitoring<\/a>/);
 assert.match(dashboard, />View monitoring plans<\/a>/);
+assert.match(dashboard, /Pick up where you left off/);
+assert.match(dashboard, /latestReadyReport/);
+assert.match(dashboard, />Open report<\/DashboardActionLink>/);
+assert.match(dashboard, />Refresh report<\/DashboardActionLink>/);
+assert.match(dashboard, /label: "Full reports"/);
+assert.match(dashboard, /monitoringEmptyMessage: !subscription && latestReadyReport/);
+assert.match(dashboard, /showAlerts=\{Boolean\(subscription\)\}/);
+assert.match(reportPage, /Start with this opportunity/);
+assert.match(reportPage, /action="open_opportunity"/);
+assert.match(reportPage, /action="open_source"/);
+assert.match(opportunityPage, /resolveCustomerPageSession/);
+assert.match(opportunityPage, /redirect\(`\/api\/auth\/session\?next=/);
 
 assert.match(dashboard, /subscriptionStatus/);
 assert.match(billing, /subscriptionStatus: "active" \| "trialing" \| "canceling" \| "past_due" \| "incomplete" \| "canceled" \| "none"/);

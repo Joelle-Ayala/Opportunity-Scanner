@@ -22,6 +22,7 @@ export interface CustomerDashboardProps {
   onTabChange?: (tab: DashboardTabId) => void;
   primaryAction?: ReactNode;
   accountSlot?: ReactNode;
+  showAlerts?: boolean;
 }
 
 export function CustomerDashboard({
@@ -36,7 +37,8 @@ export function CustomerDashboard({
   activeTab: controlledTab,
   onTabChange,
   primaryAction,
-  accountSlot
+  accountSlot,
+  showAlerts = true
 }: CustomerDashboardProps) {
   const [internalTab, setInternalTab] = useState<DashboardTabId>(initialTab);
   const activeTab = controlledTab ?? internalTab;
@@ -49,8 +51,8 @@ export function CustomerDashboard({
   const tabs: DashboardTab[] = [
     { id: "overview", label: "Overview" },
     { id: "reports", label: "Reports", count: reports.reports.length },
-    { id: "saved-searches", label: "Saved Searches", count: savedSearches.searches.length },
-    { id: "alerts", label: "Alerts" },
+    { id: "saved-searches", label: "Saved Searches", shortLabel: "Searches", count: savedSearches.searches.length },
+    ...(showAlerts ? [{ id: "alerts" as const, label: "Alerts" }] : []),
     { id: "billing", label: "Billing" }
   ];
 
@@ -67,7 +69,7 @@ export function CustomerDashboard({
       {activeTab === "overview" ? <DashboardOverview {...overview} /> : null}
       {activeTab === "reports" ? <ReportList {...reports} /> : null}
       {activeTab === "saved-searches" ? <SavedSearchList {...savedSearches} /> : null}
-      {activeTab === "alerts" ? <AlertPreferences {...alerts} /> : null}
+      {showAlerts && activeTab === "alerts" ? <AlertPreferences {...alerts} /> : null}
       {activeTab === "billing" ? <BillingSummary {...billing} /> : null}
     </DashboardShell>
   );

@@ -10,6 +10,7 @@ import { getStripeServerConfig, reportCheckoutIsEnabled } from "@/lib/payments/c
 import { claimActiveReportPurchaseByEmail } from "@/lib/payments/persistence";
 import { PurchaseCompletedAnalytics, ReportAnalytics } from "@/components/page-analytics";
 import { ReportMonitorCheckout } from "@/components/report-monitor-checkout";
+import { ReportActionLink } from "@/components/report-action-link";
 import { signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal } from "@/lib/contactTargeting";
 import { isSamGovConfigured } from "@/lib/connectors/samGov";
@@ -17,7 +18,7 @@ import { opportunityActionFor } from "@/lib/opportunityAction";
 import { classificationLabel } from "@/lib/opportunityClassification";
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { sourceCatalog } from "@/lib/sourceRegistry";
-import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
+import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import { ensureCustomerAccount, loadDashboardSummary, loadOwnedMonitoringComparisonPair } from "@/lib/dashboard/repository";
 import {
   buildWorkflowPayload,
@@ -369,24 +370,30 @@ function ReportHeader({
           ) : null}
           {isPaid ? (
             <>
-              <a
+              <ReportActionLink
+                action="export_report"
+                reportTier="full"
                 href={`/api/reports/${scan.id}/export${accessQuery}`}
                 className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent"
               >
                 Report CSV
-              </a>
-              <a
+              </ReportActionLink>
+              <ReportActionLink
+                action="export_outreach_csv"
+                reportTier="full"
                 href={packageBase}
                 className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
               >
                 Outreach CSV
-              </a>
-              <a
+              </ReportActionLink>
+              <ReportActionLink
+                action="export_outreach_markdown"
+                reportTier="full"
                 href={`${packageBase}${accessQuery ? "&" : "?"}format=md`}
                 className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent"
               >
                 Outreach MD
-              </a>
+              </ReportActionLink>
             </>
           ) : (
             <span className="rounded-md border border-line bg-field px-3 py-2 text-sm font-semibold text-muted">
@@ -440,10 +447,16 @@ function ReportHeader({
 
 function ExecutiveSummaryCard({
   signals,
-  profile
+  profile,
+  scanId,
+  access,
+  isPaid
 }: {
   signals: StoredOpportunitySignal[];
   profile?: CompanyProfile;
+  scanId: string;
+  access?: string;
+  isPaid: boolean;
 }) {
   const summary = buildExecutiveSummary(signals, profile);
   return (
@@ -468,6 +481,35 @@ function ExecutiveSummaryCard({
           <p className="mt-2 text-sm leading-6 text-slate-700">{summary.bestNextAction}</p>
         </div>
       </div>
+      {isPaid && summary.best ? (
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-line pt-5">
+          <div className="min-w-0 max-w-3xl">
+            <p className="text-xs font-semibold uppercase text-accent">Start with this opportunity</p>
+            <h3 className="mt-2 text-base font-semibold text-ink">{opportunityHeadline(summary.best)}</h3>
+            <p className="mt-2 text-sm leading-6 text-muted">{summary.bestNextAction}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <ReportActionLink
+              action="open_opportunity"
+              reportTier="full"
+              href={`/opportunities/${summary.best.id}?scanId=${scanId}${accessSuffix(access)}`}
+              className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
+            >
+              Open opportunity
+            </ReportActionLink>
+            <ReportActionLink
+              action="open_source"
+              reportTier="full"
+              href={summary.best.source_url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-md border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-accent hover:text-accent"
+            >
+              Open official source
+            </ReportActionLink>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -1403,12 +1445,16 @@ export default async function ReportPage({
     return <ReportScanState scan={scan} isAdminView={isAdminView} />;
   }
 
-  let customerSession: Awaited<ReturnType<typeof resolveCustomerSession>> = null;
+  let pageSessionResolution: Awaited<ReturnType<typeof resolveCustomerPageSession>> | null = null;
   try {
-    customerSession = await resolveCustomerSession(getCustomerAuthConfig(), cookies());
+    pageSessionResolution = await resolveCustomerPageSession(getCustomerAuthConfig(), cookies());
   } catch {
-    customerSession = null;
+    pageSessionResolution = null;
   }
+  if (pageSessionResolution?.refreshRequired) {
+    redirect(`/api/auth/session?next=${encodeURIComponent(`/reports/${scan.id}`)}`);
+  }
+  const customerSession = pageSessionResolution?.session || null;
   const customerAccount = customerSession?.user.email && customerSession.user.email_confirmed_at
     ? await ensureCustomerAccount(customerSession.user.id, customerSession.user.email).catch(() => null)
     : null;
@@ -1647,7 +1693,13 @@ export default async function ReportPage({
           </section>
         ) : null}
 
-        <ExecutiveSummaryCard signals={reportSignals} profile={profile} />
+        <ExecutiveSummaryCard
+          signals={reportSignals}
+          profile={profile}
+          scanId={scan.id}
+          access={searchParams?.access}
+          isPaid={isPaid}
+        />
 
         {showReportMonitorUpsell ? (
           <ReportMonitorCheckout

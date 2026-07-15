@@ -1,6 +1,7 @@
 export * from "./billing-summary";
 export * from "./alert-preferences";
 export * from "./customer-dashboard";
+export * from "./dashboard-action-link";
 export * from "./dashboard-overview";
 export * from "./dashboard-shell";
 export * from "./empty-state";

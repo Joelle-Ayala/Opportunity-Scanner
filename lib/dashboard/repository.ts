@@ -34,6 +34,7 @@ type ReportRow = {
 type GrantOwnershipRow = { report_access_grant_id: string };
 type GrantRow = { id: string; scan_id: string; status: "active" | "refunded" | "disputed" };
 type ScanVersionRow = { scan_id: string; saved_search_version_id: string };
+type ScanOpportunityRow = { scan_id: string };
 type MonitoredOwnershipRow = { monitored_profile_id: string };
 type MonitoredProfileRow = {
   id: string;
@@ -399,13 +400,13 @@ export async function loadDashboardReports(
   const scans = await dashboardSelect<ScanRow>("scans", {
     select: "id,company_name,company_url,status,report_type,report_access,created_at,completed_at",
     id: inFilter(scanIds),
-    order: "created_at.desc",
+    order: "created_at.desc,id.desc",
     ...page
   });
   if (scans.length === 0) return [];
   const pageScanIds = scans.map((scan) => scan.id);
 
-  const [reports, scanVersions, grantOwnership] = await Promise.all([
+  const [reports, scanVersions, grantOwnership, scanOpportunities] = await Promise.all([
     dashboardSelect<ReportRow>("reports", {
       select: "id,scan_id,report_pdf_url,created_at",
       scan_id: inFilter(pageScanIds),
@@ -418,6 +419,11 @@ export async function loadDashboardReports(
     dashboardSelect<GrantOwnershipRow>("customer_report_grant_ownership", {
       select: "report_access_grant_id",
       customer_account_id: `eq.${account.id}`
+    }),
+    dashboardSelect<ScanOpportunityRow>("scan_opportunities", {
+      select: "scan_id",
+      scan_id: inFilter(pageScanIds),
+      hidden: "eq.false"
     })
   ]);
 
@@ -438,6 +444,10 @@ export async function loadDashboardReports(
   const activeGrantScans = new Set(
     grants.filter((grant) => grant.status === "active").map((grant) => grant.scan_id)
   );
+  const signalCountByScan = new Map<string, number>();
+  for (const row of scanOpportunities) {
+    signalCountByScan.set(row.scan_id, (signalCountByScan.get(row.scan_id) || 0) + 1);
+  }
 
   return scans.map((scan) => {
     const report = reportByScan.get(scan.id);
@@ -455,7 +465,8 @@ export async function loadDashboardReports(
       pdfUrl: report?.report_pdf_url ?? null,
       hasActiveGrant: activeGrantScans.has(scan.id),
       hasFullAccountAccess: fullAccessScanIds.has(scan.id),
-      savedSearchVersionId: versionByScan.get(scan.id) ?? null
+      savedSearchVersionId: versionByScan.get(scan.id) ?? null,
+      signalCount: signalCountByScan.get(scan.id) || 0
     };
   });
 }

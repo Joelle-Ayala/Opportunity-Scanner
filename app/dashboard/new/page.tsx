@@ -1,14 +1,16 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/brand";
-import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
+import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import { ensureCustomerAccount, loadDashboardReports } from "@/lib/dashboard/repository";
 import { getScan } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewDashboardReportPage({ searchParams }: { searchParams?: { from?: string } }) {
-  const session = await resolveCustomerSession(getCustomerAuthConfig(), cookies());
+  const resolution = await resolveCustomerPageSession(getCustomerAuthConfig(), cookies());
+  if (resolution.refreshRequired) redirect("/api/auth/session?next=%2Fdashboard%2Fnew");
+  const session = resolution.session;
   if (!session?.user.email) redirect("/auth/sign-in?next=%2Fdashboard%2Fnew");
   await ensureCustomerAccount(session.user.id, session.user.email);
   const ownedReports = await loadDashboardReports(session.user.id);

@@ -14,14 +14,17 @@ export async function hasRequestReportAccess(
 export async function resolveRequestReportAccess(
   requestUrl: string,
   access: string | undefined,
-  scan: Pick<ScanRecord, "id" | "report_access">
+  scan: Pick<ScanRecord, "id" | "report_access">,
+  resolvedAuthUserId?: string | null
 ): Promise<{ hasAccess: boolean; authUserId: string | null }> {
-  let authUserId: string | null = null;
-  try {
-    const session = await resolveCustomerSession(getCustomerAuthConfig(requestUrl), cookies());
-    authUserId = session?.user.id ?? null;
-  } catch {
-    authUserId = null;
+  let authUserId = resolvedAuthUserId ?? null;
+  if (resolvedAuthUserId === undefined) {
+    try {
+      const session = await resolveCustomerSession(getCustomerAuthConfig(requestUrl), cookies());
+      authUserId = session?.user.id ?? null;
+    } catch {
+      authUserId = null;
+    }
   }
   return {
     hasAccess: await hasCustomerServerReportAccess(access, scan, authUserId),

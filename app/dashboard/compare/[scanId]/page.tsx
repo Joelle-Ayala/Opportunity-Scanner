@@ -6,7 +6,7 @@ import {
   type ReportComparisonOpportunity,
   type ReportComparisonStatus
 } from "@/components/comparison";
-import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
+import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import {
   ensureCustomerAccount,
   loadOwnedMonitoringComparisonPair
@@ -23,7 +23,10 @@ function dateLabel(value?: string | null): string {
 
 export default async function DashboardComparisonPage({ params }: { params: { scanId: string } }) {
   const next = `/dashboard/compare/${params.scanId}`;
-  const session = await resolveCustomerSession(getCustomerAuthConfig(), cookies()).catch(() => null);
+  const resolution = await resolveCustomerPageSession(getCustomerAuthConfig(), cookies())
+    .catch(() => ({ session: null, refreshRequired: false }));
+  if (resolution.refreshRequired) redirect(`/api/auth/session?next=${encodeURIComponent(next)}`);
+  const session = resolution.session;
   if (!session?.user.email) redirect(`/auth/sign-in?next=${encodeURIComponent(next)}`);
   await ensureCustomerAccount(session.user.id, session.user.email);
   const pair = await loadOwnedMonitoringComparisonPair(session.user.id, params.scanId);

@@ -24,7 +24,9 @@ const validEvents = [
   ["email_captured", { surface: "scan", marketing_consent: false }],
   ["pricing_viewed", { source: "report_gate" }],
   ["checkout_started", { plan: "full_report", billing_period: "one_time" }],
-  ["purchase_completed", { plan: "growth", billing_period: "annual" }]
+  ["purchase_completed", { plan: "growth", billing_period: "annual" }],
+  ["dashboard_action_selected", { action: "open_report" }],
+  ["report_value_action_selected", { action: "open_source", report_tier: "full" }]
 ];
 
 for (const [name, properties] of validEvents) {
@@ -34,6 +36,15 @@ for (const [name, properties] of validEvents) {
 assert.equal(sanitizeProductAnalyticsEvent("unknown_event", {}), null);
 assert.equal(sanitizeProductAnalyticsEvent("scan_viewed", { report_tier: "admin", signal_count_bucket: "1-3" }), null);
 assert.equal(sanitizeProductAnalyticsEvent("email_captured", { surface: "scan", marketing_consent: "yes" }), null);
+assert.equal(sanitizeProductAnalyticsEvent("dashboard_action_selected", { action: "email_customer", email: "private@example.com" }), null);
+assert.deepEqual(
+  sanitizeProductAnalyticsEvent("report_value_action_selected", {
+    action: "open_source",
+    report_tier: "full",
+    source_url: "https://secret.example"
+  }),
+  { name: "report_value_action_selected", properties: { action: "open_source", report_tier: "full" } }
+);
 
 const hostilePayload = sanitizeProductAnalyticsEvent("scan_started", {
   entry_point: "homepage",

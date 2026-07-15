@@ -7,6 +7,7 @@ export interface DashboardUsageMetric {
   limit: number | null;
   unit?: string;
   remaining?: number;
+  unlimitedLabel?: string;
 }
 
 export interface UsageSummaryProps {
@@ -64,7 +65,7 @@ export function UsageSummary({
                   <div className="h-full rounded-full bg-accent" style={{ width: `${percentage}%` }} />
                 </div>
               ) : (
-                <p className="mt-3 text-xs font-medium text-signal">No monthly limit</p>
+                metric.unlimitedLabel ? <p className="mt-3 text-xs font-medium text-signal">{metric.unlimitedLabel}</p> : null
               )}
             </div>
           );

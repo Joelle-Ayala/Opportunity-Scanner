@@ -1,5 +1,5 @@
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { cookies, headers } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 import {
   getCompanyProfile,
   getScan,
@@ -16,6 +16,7 @@ import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { OpportunityEnrichmentRequestRecord, StoredOpportunitySignal } from "@/lib/types";
 import { resolveRequestReportAccess } from "@/lib/payments/requestAccess";
 import { configuredSupportEmail } from "@/lib/support";
+import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -182,7 +183,20 @@ export default async function OpportunityPage({
     }`,
     `${protocol}://${host}`
   ).toString();
-  const reportAccess = await resolveRequestReportAccess(requestUrl, searchParams.access, scan);
+  const pageSessionResolution = await resolveCustomerPageSession(getCustomerAuthConfig(requestUrl), cookies())
+    .catch(() => ({ session: null, refreshRequired: false }));
+  if (pageSessionResolution.refreshRequired) {
+    const next = `/opportunities/${params.id}?scanId=${encodeURIComponent(scan.id)}${
+      searchParams.access ? `&access=${encodeURIComponent(searchParams.access)}` : ""
+    }`;
+    redirect(`/api/auth/session?next=${encodeURIComponent(next)}`);
+  }
+  const reportAccess = await resolveRequestReportAccess(
+    requestUrl,
+    searchParams.access,
+    scan,
+    pageSessionResolution.session?.user.id ?? null
+  );
   if (!reportAccess.hasAccess) {
     return <LockedOpportunityPreview scanId={scan.id} signal={signal} profile={profile} access={searchParams.access} />;
   }

@@ -54,8 +54,8 @@ assert.match(articleCharts, /min-w-\[44rem\]/);
 assert.match(articleCharts, /Open visual full size/);
 assert.match(sampleReport, /w-full min-w-0[^"]+sm:min-w-\[16rem\]/);
 assert.match(dashboardShell, /shortLabel: "Searches"/);
-assert.match(dashboardShell, /grid grid-cols-3 gap-x-2 sm:flex/);
-assert.doesNotMatch(dashboardShell, /overflow-x-auto[^\n]+Dashboard sections/);
+assert.match(dashboardShell, /flex gap-5 overflow-x-auto sm:gap-6/);
+assert.match(dashboardShell, /min-h-11 shrink-0/);
 assert.match(workflow, /role="dialog"/);
 assert.match(workflow, /aria-modal="true"/);
 

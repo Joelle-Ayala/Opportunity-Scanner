@@ -66,7 +66,7 @@ test("dashboard, onboarding, report creation, and comparison pages fail closed t
 
   for (const [path, redirectPattern] of pages) {
     const page = await source(path);
-    assert.match(page, /resolveCustomerSession\(/, `${path} must resolve the server session`);
+    assert.match(page, /resolveCustomer(?:Page)?Session\(/, `${path} must resolve the server session`);
     assert.match(page, /if \(!session\?\.user\.email\) redirect/, `${path} must reject anonymous users`);
     assert.match(page, redirectPattern, `${path} must preserve a safe customer return path`);
     assert.match(page, /ensureCustomerAccount\(session\.user\.id, session\.user\.email\)/);
