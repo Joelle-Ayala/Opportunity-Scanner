@@ -71,9 +71,10 @@ for (const completedOnlySurface of [
   "Report CSV",
   "Outreach CSV",
   "Outreach MD",
-  "Pipeline rows found",
+  "Source matches",
+  "Action-table rows",
   "Rows shown",
-  "Locked rows"
+  "Rows locked"
 ]) {
   assert.ok(!stateView.includes(completedOnlySurface), `${completedOnlySurface} must stay out of non-success states`);
 }
@@ -96,5 +97,18 @@ assert.equal(stateView.match(/scan\.error_message/g)?.length, 2, "Failure detail
 for (const completedSurface of ["<ReportAnalytics", "<ReportHeader", "<ExecutiveSummaryCard", "<UnlockCTA"] ) {
   assert.ok(pageEntry.includes(completedSurface), `Completed report must preserve ${completedSurface}`);
 }
+
+for (const summaryLabel of ["Source matches", "Action-table rows", "Rows shown", "Rows locked"]) {
+  assert.match(reportPage, new RegExp(summaryLabel), `Completed reports must label ${summaryLabel}`);
+}
+assert.match(pageEntry, /sourceMatches: signals\.length/);
+assert.match(pageEntry, /actionTableRows: reportSignals\.length/);
+assert.match(pageEntry, /shownRows: displayedSignals\.length/);
+assert.match(pageEntry, /lockedRows: lockedSignals\.length/);
+assert.match(
+  reportPage,
+  /rows shown plus rows locked equal the action-table total/,
+  "The report must explain how preview counts reconcile"
+);
 
 console.log("Report scan state contract tests passed.");

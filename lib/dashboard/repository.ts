@@ -1,5 +1,6 @@
 import { dashboardInsert, dashboardSelect, dashboardSelectOne, dashboardUpdate, inFilter, pageParameters } from "./rest";
 import { loadEnrichmentCreditBalance } from "../enrichmentCredits";
+import { claimActiveReportPurchasesByVerifiedEmail } from "../payments/persistence";
 import { supabaseRpc } from "../supabaseRest";
 import type {
   CustomerAccountRecord,
@@ -163,6 +164,11 @@ export async function ensureCustomerAccount(authUserId: string, emailValue: stri
     }
   }
   if (!account) throw new Error("Customer account could not be created.");
+
+  await claimActiveReportPurchasesByVerifiedEmail({
+    authUserId,
+    accountId: account.id
+  });
 
   const scans = await dashboardSelect<{ id: string }>("scans", { select: "id", email: `eq.${email}` });
   for (const scan of scans) {

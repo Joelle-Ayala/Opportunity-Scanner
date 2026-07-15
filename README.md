@@ -150,7 +150,7 @@ Copy `.env.example` to `.env.local`.
 - `ENABLE_SUBSCRIPTION_CHECKOUT=true` plus all four Monitor/Growth Stripe Price IDs explicitly enables subscription checkout. Any other value keeps subscriptions unavailable.
 - `CRON_SECRET` enables authenticated monitoring and nurture jobs.
 - `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and the alert/nurture unsubscribe secrets enable customer email delivery.
-- `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` enable privacy-limited product events; Vercel Analytics remains available independently.
+- Enable Vercel Web Analytics and set `VERCEL_WEB_ANALYTICS_ENABLED=true` for privacy-friendly traffic and UTM reporting. `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` optionally add privacy-limited product events.
 - `OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE` and `OPPORTUNITY_SCANNER_ADMIN_CODE` are legacy local-only URL access codes. Production ignores them unless `OPPORTUNITY_SCANNER_EMERGENCY_ENABLE_LEGACY_URL_ACCESS_CODES_IN_PRODUCTION=true`; any emergency code must be at least 32 characters.
 - Without Supabase variables, scans are stored locally in `.data/local-db.json` for development. Production requires Supabase unless `ALLOW_LOCAL_STORAGE_IN_PRODUCTION=true` is set for temporary internal testing.
 

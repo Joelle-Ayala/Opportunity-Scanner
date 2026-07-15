@@ -1,3 +1,5 @@
+import type { BillingInterval, PaymentPlan } from "./payments/contract";
+
 export type LaunchFunnelScan = {
   id: string;
   status: string;
@@ -11,6 +13,15 @@ export type LaunchFunnelScan = {
 export type LaunchFunnelGrant = {
   scan_id: string;
   status: "active" | "refunded" | "disputed" | string;
+};
+
+export type LaunchFunnelSubscription = {
+  product?: string | null;
+  billing_interval?: string | null;
+  status: string;
+  livemode: boolean;
+  created_at: string;
+  canceled_at?: string | null;
 };
 
 export type LaunchFunnelStage = {
@@ -31,6 +42,26 @@ export type LaunchFunnelSegment = LaunchFunnelStage & {
   campaign: string;
 };
 
+export type LaunchFunnelPlanMix = {
+  activeSubscriptions: number;
+  normalizedMrr: number;
+  subscriptionShare: number;
+};
+
+export type LaunchFunnelMrrScorecard = {
+  currency: "USD";
+  targetMrr: number;
+  activeNormalizedMrr: number;
+  remainingToTarget: number;
+  progressToTarget: number;
+  activeSubscriptions: number;
+  planMix: Record<BillingInterval, LaunchFunnelPlanMix>;
+  newSubscriptions: number;
+  canceledSubscriptions: number;
+  pastDueSubscriptions: number;
+  notes: string[];
+};
+
 export type LaunchFunnelSnapshot = {
   generatedAt: string;
   window: {
@@ -40,8 +71,25 @@ export type LaunchFunnelSnapshot = {
   };
   totals: LaunchFunnelStage;
   segments: LaunchFunnelSegment[];
+  mrrScorecard: LaunchFunnelMrrScorecard;
   notes: string[];
 };
+
+type SubscriptionCatalogEntry = {
+  product: Exclude<PaymentPlan, "report">;
+  interval: BillingInterval;
+  contractValue: number;
+};
+
+const MRR_TARGET = 10_000;
+const SUBSCRIPTION_CATALOG: readonly SubscriptionCatalogEntry[] = [
+  { product: "monitor", interval: "monthly", contractValue: 99 },
+  { product: "monitor", interval: "annual", contractValue: 990 },
+  { product: "growth", interval: "monthly", contractValue: 249 },
+  { product: "growth", interval: "annual", contractValue: 2_490 }
+];
+
+const COUNTABLE_SUBSCRIPTION_STATUSES = new Set(["active", "trialing", "past_due", "canceled"]);
 
 type MutableStage = Omit<LaunchFunnelStage, "completionRate" | "paidConversionRate">;
 
@@ -60,6 +108,10 @@ function emptyStage(): MutableStage {
 function percentage(numerator: number, denominator: number): number {
   if (denominator <= 0) return 0;
   return Math.round((numerator / denominator) * 1_000) / 10;
+}
+
+function currency(value: number): number {
+  return Math.round(value * 100) / 100;
 }
 
 function finalizeStage(stage: MutableStage): LaunchFunnelStage {
@@ -108,9 +160,88 @@ function applyScan(stage: MutableStage, scan: LaunchFunnelScan, paidState?: stri
   else if (paidState === "disputed") stage.disputedReports += 1;
 }
 
+function subscriptionCatalogEntry(subscription: LaunchFunnelSubscription): SubscriptionCatalogEntry | null {
+  if (!subscription.livemode) return null;
+  return SUBSCRIPTION_CATALOG.find(
+    (entry) => entry.product === subscription.product && entry.interval === subscription.billing_interval
+  ) ?? null;
+}
+
+function buildMrrScorecard(input: {
+  subscriptions: LaunchFunnelSubscription[];
+  startedAt: Date;
+  now: Date;
+}): LaunchFunnelMrrScorecard {
+  const planMix: Record<BillingInterval, LaunchFunnelPlanMix> = {
+    monthly: { activeSubscriptions: 0, normalizedMrr: 0, subscriptionShare: 0 },
+    annual: { activeSubscriptions: 0, normalizedMrr: 0, subscriptionShare: 0 }
+  };
+  let newSubscriptions = 0;
+  let canceledSubscriptions = 0;
+  let pastDueSubscriptions = 0;
+
+  for (const subscription of input.subscriptions) {
+    const catalogEntry = subscriptionCatalogEntry(subscription);
+    if (!catalogEntry) continue;
+
+    const createdAt = Date.parse(subscription.created_at);
+    if (
+      COUNTABLE_SUBSCRIPTION_STATUSES.has(subscription.status) &&
+      Number.isFinite(createdAt) &&
+      createdAt >= input.startedAt.getTime() &&
+      createdAt <= input.now.getTime()
+    ) {
+      newSubscriptions += 1;
+    }
+
+    const canceledAt = Date.parse(subscription.canceled_at ?? "");
+    if (
+      subscription.status === "canceled" &&
+      Number.isFinite(canceledAt) &&
+      canceledAt >= input.startedAt.getTime() &&
+      canceledAt <= input.now.getTime()
+    ) {
+      canceledSubscriptions += 1;
+    }
+
+    if (subscription.status === "past_due") pastDueSubscriptions += 1;
+    if (subscription.status !== "active") continue;
+
+    planMix[catalogEntry.interval].activeSubscriptions += 1;
+    planMix[catalogEntry.interval].normalizedMrr +=
+      catalogEntry.contractValue / (catalogEntry.interval === "annual" ? 12 : 1);
+  }
+
+  const activeSubscriptions = planMix.monthly.activeSubscriptions + planMix.annual.activeSubscriptions;
+  const activeNormalizedMrr = currency(planMix.monthly.normalizedMrr + planMix.annual.normalizedMrr);
+  for (const interval of ["monthly", "annual"] as const) {
+    planMix[interval].normalizedMrr = currency(planMix[interval].normalizedMrr);
+    planMix[interval].subscriptionShare = percentage(planMix[interval].activeSubscriptions, activeSubscriptions);
+  }
+
+  return {
+    currency: "USD",
+    targetMrr: MRR_TARGET,
+    activeNormalizedMrr,
+    remainingToTarget: currency(Math.max(0, MRR_TARGET - activeNormalizedMrr)),
+    progressToTarget: percentage(activeNormalizedMrr, MRR_TARGET),
+    activeSubscriptions,
+    planMix,
+    newSubscriptions,
+    canceledSubscriptions,
+    pastDueSubscriptions,
+    notes: [
+      "MRR uses the fixed Monitor and Growth catalog values; annual contract value is divided by 12.",
+      "Only live-mode, server-normalized catalog subscriptions with active status contribute to MRR and plan mix.",
+      "New and canceled counts use this reporting window; past-due is the current aggregate count."
+    ]
+  };
+}
+
 export function buildLaunchFunnelSnapshot(input: {
   scans: LaunchFunnelScan[];
   grants: LaunchFunnelGrant[];
+  subscriptions?: LaunchFunnelSubscription[];
   days: number;
   now?: Date;
   capped?: boolean;
@@ -157,6 +288,11 @@ export function buildLaunchFunnelSnapshot(input: {
     },
     totals: finalizeStage(totals),
     segments,
+    mrrScorecard: buildMrrScorecard({
+      subscriptions: input.subscriptions ?? [],
+      startedAt,
+      now
+    }),
     notes: [
       "Rates are cohort-based: active paid reports divided by completed scans created in this window.",
       "The snapshot contains aggregate campaign labels only; it excludes emails, company URLs, and report IDs.",

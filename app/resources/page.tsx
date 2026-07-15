@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, SectionIntro } from "@/components/marketing";
 import { leadMagnets } from "@/lib/leadMagnets";
-import { resourceArticles, upcomingResourceIdeas } from "@/lib/marketingContent";
+import { resourceArticles } from "@/lib/marketingContent";
 
 const title = "Resources | Opportunity Scanner";
 const description =
@@ -126,10 +126,10 @@ export default function ResourcesPage() {
 
       <section className="border-y border-line bg-white">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[0.8fr_1.2fr]">
-          <SectionIntro title="Browse by theme" eyebrow="Content pillars">
+          <SectionIntro title="Browse by theme" eyebrow="Topics covered">
             <p>
-              Opportunity Scanner content is designed to explain public-sector opportunity in
-              practical language, then route the reader back to a scan or action table.
+              Explore practical guidance on public-sector sales, funding, procurement, funded
+              buyers, policy signals, and growing industry markets.
             </p>
           </SectionIntro>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -139,22 +139,6 @@ export default function ResourcesPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-12">
-        <SectionIntro title="Publishing next" eyebrow="Content backlog">
-          <p>
-            These topics are queued for the next content sprint because they connect directly to
-            buyer education, SEO intent, and paid report value.
-          </p>
-        </SectionIntro>
-        <div className="mt-6 grid gap-3 md:grid-cols-2">
-          {upcomingResourceIdeas.map((title) => (
-            <div key={title} className="rounded-md border border-line bg-white p-4 text-sm font-semibold text-ink shadow-sm">
-              {title}
-            </div>
-          ))}
         </div>
       </section>
 

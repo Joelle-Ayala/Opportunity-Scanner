@@ -33,9 +33,7 @@ const required = [
   "OPPORTUNITY_SCANNER_CONTACT_EMAIL",
   "ALERT_UNSUBSCRIBE_SECRET",
   "NURTURE_UNSUBSCRIBE_SECRET",
-  "SCAN_RATE_LIMIT_HASH_SECRET",
-  "NEXT_PUBLIC_POSTHOG_KEY",
-  "NEXT_PUBLIC_POSTHOG_HOST"
+  "SCAN_RATE_LIMIT_HASH_SECRET"
 ];
 const recommended = [
   "SAM_API_KEY",
@@ -77,6 +75,7 @@ try {
     [...required, ...recommended].map((name, index) => [name, `private-value-${index}`])
   );
   configuredValues.STRIPE_SECRET_KEY = "sk_live_growth_hardening";
+  configuredValues.VERCEL_WEB_ANALYTICS_ENABLED = "true";
   const configured = runPreflight(configuredValues);
   assert.equal(configured.status, 0, `Preflight should pass with required variables configured: ${configured.stderr}`);
 
@@ -93,6 +92,7 @@ try {
   for (const name of subscriptionPrices) {
     assert.match(subscriptionEnabled.stdout, new RegExp(`\\b${name}\\b`));
   }
+  assert.match(subscriptionEnabled.stdout, /MONITORING_SCHEDULER_READY=true/);
 } finally {
   fs.rmSync(emptyDirectory, { recursive: true, force: true });
 }

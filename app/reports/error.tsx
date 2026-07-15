@@ -1,5 +1,7 @@
 "use client";
 
+import { configuredSupportEmail } from "@/lib/support";
+
 export default function ReportError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <main className="min-h-screen bg-field px-4 py-8 text-ink sm:px-6">
@@ -16,7 +18,7 @@ export default function ReportError({ reset }: { error: Error & { digest?: strin
           <a href="/dashboard" className="rounded-md border border-line px-4 py-3 text-sm font-semibold text-ink hover:border-accent">
             Dashboard
           </a>
-          <a href="mailto:in@joelleayala.com" className="px-2 py-3 text-sm font-semibold text-accent hover:underline">
+          <a href={`mailto:${configuredSupportEmail()}`} className="px-2 py-3 text-sm font-semibold text-accent hover:underline">
             Contact support
           </a>
         </div>

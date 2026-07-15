@@ -93,11 +93,23 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
   const billingSubscription = subscription || monitoringSubscriptions[0];
   const subscriptionStatus = billingStatusFor(billingSubscription);
   const activeMonitorCount = subscription ? summary.activeMonitorCount : 0;
-  const needsMonitoringSetup = Boolean(subscription && searches.length === 0);
 
   const subscriptionPlan = subscription?.product === "growth" ? "growth" : subscription?.product === "monitor" ? "monitor" : "none";
   const planName = billingSubscription?.product === "growth" ? "Growth" : billingSubscription?.product === "monitor" ? "Monitor" : "Report access";
   const profileLimit = subscription?.product === "growth" ? 3 : subscription?.product === "monitor" ? 1 : 0;
+  const capacityUsedCount = subscription
+    ? searches.filter((search) => search.monitoredProfile && search.monitoredProfile.status !== "canceled").length
+    : 0;
+  const hasMonitoringCapacity = Boolean(subscription && capacityUsedCount < profileLimit);
+  const needsMonitoringSetup = Boolean(subscription && capacityUsedCount === 0);
+  const monitoredSourceScanIds = new Set(
+    searches.flatMap((search) => search.monitoredProfile ? [search.monitoredProfile.sourceScanId] : [])
+  );
+  const eligibleMonitoringReportIds = new Set(
+    reports
+      .filter((report) => report.status === "completed" && !monitoredSourceScanIds.has(report.scanId))
+      .map((report) => report.scanId)
+  );
   const monitoredScanIds = new Set([
     ...runs.map((run) => run.scanId),
     ...searches.flatMap((search) => search.monitoredProfile
@@ -188,6 +200,8 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
         initialTab={searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError ? "alerts" : searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : searchParams?.tab === "billing" ? "billing" : "overview"}
         primaryAction={needsMonitoringSetup
           ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Continue setup</a>
+          : hasMonitoringCapacity
+            ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Add monitored search</a>
           : <a href="/dashboard/new" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run new report</a>}
         accountSlot={<form action="/api/auth/sign-out" method="post"><button className="text-sm font-semibold text-steel hover:text-accent">Sign out</button></form>}
         overview={{
@@ -201,7 +215,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           planDescription: planDescriptionFor(subscriptionStatus),
           renewalLabel: renewal,
           usage: [
-            { id: "profiles", label: "Monitored profiles", used: activeMonitorCount, limit: profileLimit },
+            { id: "profiles", label: "Monitored profiles", used: capacityUsedCount, limit: profileLimit },
             { id: "reports", label: "Reports", used: summary.reportCount, limit: null },
             ...(summary.enrichmentCredits.entitled
               ? [{
@@ -218,8 +232,19 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           monitoringChanges: runs.map((run) => ({ id: run.id, title: run.status === "failed" ? "Monitoring run needs attention" : `${run.newOpportunityCount} new opportunities found`, summary: run.errorMessage || "Your saved search was checked against the latest public records.", occurredLabel: dateLabel(run.completedAt || run.startedAt), kind: run.status === "failed" ? "system" as const : "new" as const, href: comparableScanIds.has(run.scanId) ? `/dashboard/compare/${run.scanId}` : `/reports/${run.scanId}` })),
           reportEmptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>
         }}
-        reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <><a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Update preview</a>{comparableScanIds.has(report.id) ? <a href={`/dashboard/compare/${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Compare</a> : null}</> }}
-        savedSearches={{ searches: searchRows, emptyAction: subscription ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Set up monitoring</a> : <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">View monitoring plans</a> }}
+        reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <><a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Update preview</a>{hasMonitoringCapacity && eligibleMonitoringReportIds.has(report.id) ? <a href={`/dashboard/onboarding?source_scan_id=${encodeURIComponent(report.id)}`} className="rounded-md border border-accent px-3 py-2 text-sm font-semibold text-accent hover:bg-mist">Monitor</a> : null}{comparableScanIds.has(report.id) ? <a href={`/dashboard/compare/${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Compare</a> : null}</> }}
+        savedSearches={{
+          searches: searchRows,
+          emptyAction: subscription
+            ? hasMonitoringCapacity
+              ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Set up monitoring</a>
+              : <span className="text-sm font-semibold text-amber-900">Plan limit reached</span>
+            : <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">View monitoring plans</a>,
+          addMonitoringAction: hasMonitoringCapacity
+            ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-[#0A6871]">Add monitored search</a>
+            : undefined,
+          monitoringCapacity: subscription ? { used: capacityUsedCount, limit: profileLimit } : undefined
+        }}
         alerts={{ preferences: alertPreferences, emailVerified: Boolean(session.user.email_confirmed_at) }}
         billing={{ planName, subscriptionStatus, planIntervalLabel: billingSubscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: summary.billing.stripeCustomerId ? <BillingPortalButton /> : undefined, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">{billingSubscription ? "Compare plans" : "View plans"}</a> }}
       />

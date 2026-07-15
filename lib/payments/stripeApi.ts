@@ -116,6 +116,7 @@ export async function createCheckoutSession(input: {
     mode: input.mode,
     "line_items[0][price]": input.priceId,
     "line_items[0][quantity]": "1",
+    "consent_collection[terms_of_service]": "required",
     success_url: input.successUrl,
     cancel_url: input.cancelUrl,
     "metadata[product]": input.plan,
@@ -129,6 +130,9 @@ export async function createCheckoutSession(input: {
     form.customer_email = input.email;
     // Anonymous payment-mode purchases must create a durable, isolated Stripe Customer.
     if (input.mode === "payment") form.customer_creation = "always";
+  }
+  if (input.mode === "payment") {
+    form["payment_method_types[0]"] = "card";
   }
   if (input.scanId) {
     form.client_reference_id = input.scanId;

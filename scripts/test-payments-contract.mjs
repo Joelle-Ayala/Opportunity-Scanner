@@ -131,6 +131,7 @@ test("launch environment rejects test credentials without requiring legacy URL c
     STRIPE_PRICE_GROWTH_MONTHLY: "price_growth_monthly",
     STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual",
     ENABLE_SUBSCRIPTION_CHECKOUT: "false",
+    MONITORING_SCHEDULER_READY: "true",
     ENABLE_PAID_REPORT_CHECKOUT: "true",
     CRON_SECRET: "cron-launch-test",
     RESEND_API_KEY: "resend-launch-test",
@@ -476,7 +477,7 @@ test("fails closed when subscription eligibility cannot be verified from account
   assert.match(lookupUrl, /status=in\.%28active%2Ctrialing%29/);
 });
 
-test("Stripe form creates an isolated payment customer unless an owned customer is supplied", async () => {
+test("Stripe form makes Report payments card-only, requires terms, and preserves subscription methods", async () => {
   const originalFetch = globalThis.fetch;
   const forms = [];
   globalThis.fetch = async (_url, init) => {
@@ -498,15 +499,34 @@ test("Stripe form creates an isolated payment customer unless an owned customer 
   try {
     await createCheckoutSession({ ...base, customerId: null });
     await createCheckoutSession({ ...base, customerId: "cus_ownedBuyer" });
+    await createCheckoutSession({
+      ...base,
+      mode: "subscription",
+      plan: "monitor",
+      interval: "monthly",
+      customerId: "cus_ownedBuyer",
+      scanId: null
+    });
   } finally {
     globalThis.fetch = originalFetch;
   }
   assert.equal(forms[0].get("customer_creation"), "always");
   assert.equal(forms[0].get("customer_email"), "buyer@example.com");
+  assert.equal(forms[0].get("payment_method_types[0]"), "card");
+  assert.deepEqual(
+    [...forms[0]].filter(([key]) => key.startsWith("payment_method_types[")),
+    [["payment_method_types[0]", "card"]]
+  );
+  assert.equal(forms[0].get("consent_collection[terms_of_service]"), "required");
   assert.equal(forms[0].has("customer"), false);
   assert.equal(forms[1].get("customer"), "cus_ownedBuyer");
   assert.equal(forms[1].has("customer_email"), false);
   assert.equal(forms[1].has("customer_creation"), false);
+  assert.equal(forms[1].get("payment_method_types[0]"), "card");
+  assert.equal(forms[1].get("consent_collection[terms_of_service]"), "required");
+  assert.equal(forms[2].get("mode"), "subscription");
+  assert.equal(forms[2].get("consent_collection[terms_of_service]"), "required");
+  assert.equal(forms[2].has("payment_method_types[0]"), false);
 });
 
 test("billing portal handler accepts only the signed-in account customer supplied by its route", async () => {

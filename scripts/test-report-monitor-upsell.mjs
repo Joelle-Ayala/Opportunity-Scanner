@@ -13,7 +13,7 @@ const [reportPage, checkout, onboarding] = await Promise.all([
 assert.match(reportPage, /const showReportMonitorUpsell =\s*isPaid/);
 assert.match(reportPage, /!isAdminView/);
 assert.match(reportPage, /!hasActiveMonitoringPlan/);
-assert.match(reportPage, /reportCheckoutIsConfigured\(\)/);
+assert.match(reportPage, /subscriptionCheckoutIsConfigured\(\)/);
 assert.match(reportPage, /showReportMonitorUpsell \? \(/);
 assert.match(reportPage, /<ReportMonitorCheckout/);
 assert.doesNotMatch(reportPage, /action="\/api\/dashboard\/searches"/);

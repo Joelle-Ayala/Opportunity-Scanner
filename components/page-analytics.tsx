@@ -40,7 +40,7 @@ export function PurchaseCompletedAnalytics({
   return null;
 }
 
-export function PricingAnalytics({ source }: { source: "navigation" | "report_gate" | "checkout_return" | "unknown" }) {
+export function PricingAnalytics({ source }: { source: "navigation" | "report_gate" | "checkout_return" | "nurture" | "unknown" }) {
   useEffect(() => {
     trackProductEvent("pricing_viewed", { source });
   }, [source]);

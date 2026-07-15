@@ -97,12 +97,13 @@ No-go if required customer email is landing in spam, the sender is unverified, o
 
 ## 6. Configure Product Analytics
 
-- Set `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`.
-- Confirm `pricing_viewed`, `checkout_started`, `purchase_completed`, `dashboard_viewed`, `monitoring_onboarding_viewed`, and `monitoring_onboarding_completed` arrive when their steps occur.
+- Enable Vercel Web Analytics and set `VERCEL_WEB_ANALYTICS_ENABLED=true`, or configure both `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`.
+- With Vercel Analytics, confirm production pageviews, referrers, and UTM parameters arrive. Reconcile scan first-touch attribution with Stripe and Supabase for conversion reporting.
+- When PostHog is configured, also confirm `pricing_viewed`, `checkout_started`, `purchase_completed`, `dashboard_viewed`, `monitoring_onboarding_viewed`, and `monitoring_onboarding_completed` arrive when their steps occur.
 - Review the aggregate 7-day and 90-day launch-funnel snapshot by first-touch source, medium, and campaign; confirm it excludes emails, company URLs, report IDs, and full referrers.
 - Confirm events contain only the allowlisted plan, billing period, source, state, and aggregate status fields.
 - Confirm email addresses, scan IDs, Stripe IDs, auth tokens, and URL query strings are absent.
-- Keep PostHog autocapture, pageview capture, session replay, and persistent anonymous profiling disabled.
+- If PostHog is used, keep autocapture, pageview capture, session replay, and persistent anonymous profiling disabled.
 
 Use Stripe and Supabase as the financial/access source of truth. Analytics is evidence of funnel behavior, not entitlement.
 
@@ -122,6 +123,8 @@ Current operating capacity:
 
 Before selling subscriptions, calculate the maximum due profiles in the busiest day and prove enough authenticated invocations can complete them within the 60-second route limit. Record claimed, completed, failed, overdue, and alert-queue counts. A single daily invocation is not sufficient for a fully used Growth plan with three daily profiles.
 
+Set `MONITORING_SCHEDULER_READY=true` only after that evidence is recorded. Subscription checkout remains fail-closed without it even when all plan Price IDs are configured.
+
 If capacity is not proven, choose **Go - Report only**.
 
 ## 8. Run The Controlled Live Purchase
@@ -136,7 +139,7 @@ If capacity is not proven, choose **Go - Report only**.
 6. Confirm the buyer receives one private claim email and can use the same verified email to complete magic-link sign-in.
 7. Confirm return to the same report with the full action layer, export, opportunity workspace, and workflow access.
 8. Refresh, sign out, and sign back in. Confirm the same report stays unlocked and a different report stays locked.
-9. Reconcile the Stripe payment and receipt, successful webhook event, delivery attempt, Supabase customer/account ownership and active report grant, and PostHog checkout/purchase events.
+9. Reconcile the Stripe payment and receipt, successful webhook event, delivery attempt, Supabase customer/account ownership and active report grant, and the configured analytics/attribution evidence.
 10. Refund the test charge if that was pre-approved. Confirm the refund webhook revokes the report grant; otherwise document why the paid access intentionally remains active.
 
 ### Subscription Proof

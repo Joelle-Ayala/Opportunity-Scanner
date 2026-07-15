@@ -37,7 +37,7 @@ Do not begin a live purchase until all of these are true:
 - The Supabase migration ledger matches every required entry in `db/migration-manifest.json`.
 - Supabase Auth Site URL and redirect allowlist include the production origin and `/auth/callback`.
 - The Stripe live webhook endpoint is healthy and subscribed to the required billing events.
-- The Resend sender is verified, PostHog receives approved product events, and cron authentication is configured.
+- The Resend sender is verified, a production analytics provider is enabled, and cron authentication is configured.
 - The founder has approved the buyer email, product, maximum charge, rollback owner, and test window.
 
 ## Test Passes
@@ -84,7 +84,7 @@ Use the $49 Report as the minimum live-money proof.
 5. Complete sign-in if requested and confirm the buyer returns to the same report with the full action layer unlocked.
 6. Confirm refresh, sign-out/sign-in, export, opportunity workspace, and workflow access preserve the same report entitlement.
 7. Confirm no other report is unlocked.
-8. Confirm the receipt reaches the buyer and PostHog records `checkout_started` and `purchase_completed` without email, scan ID, or query-string leakage.
+8. Confirm the receipt reaches the buyer and the configured analytics path records acquisition/conversion evidence without email, scan ID, or query-string leakage.
 
 Pass when payment, webhook fulfillment, account ownership, report-scoped access, receipt, and analytics all agree.
 
@@ -105,7 +105,7 @@ Capacity warning: the current scheduled monitoring worker claims one due profile
 ### 5. Email, Analytics, And Operations
 
 - Resend: confirm the verified sender can deliver one monitoring or deadline alert and one consent-eligible nurture message; verify unsubscribe links and suppression behavior.
-- PostHog: confirm pricing, checkout, purchase, dashboard, onboarding, and monitoring events arrive with only allowlisted properties. Autocapture and session replay should remain disabled.
+- Analytics: confirm Vercel pageviews/referrers/UTMs and persisted first-touch scan attribution arrive. If PostHog is configured, confirm allowlisted pricing, checkout, purchase, dashboard, onboarding, and monitoring events; keep autocapture and session replay disabled.
 - Monitoring: record due profile count, claimed/completed/failed runs, alert queue depth, and delivery failures for the test window.
 - Stripe: inspect webhook delivery failures, duplicate handling, refunds/disputes, and subscription status changes.
 - Supabase: inspect schema ledger parity and the expected customer, ownership, grant/subscription, monitoring, and webhook-event records without exporting secrets or unnecessary personal data.
@@ -122,7 +122,7 @@ The Project Management Agent records:
 - Auth email delivery and callback result.
 - Stripe live Product/Price IDs checked, webhook endpoint status, payment/subscription object IDs, amount, currency, and receipt result.
 - Supabase entitlement and ownership result.
-- Resend delivery result and PostHog event result.
+- Resend delivery result and analytics/attribution result.
 - Monitoring capacity calculation and observed run/alert counts.
 - Refund/cancellation outcome for any controlled test charge that should not remain active.
 - Known defects, owners, severity, workarounds, and rollback status.
@@ -141,7 +141,7 @@ Do not place card data, secret values, magic links, auth tokens, webhook signatu
 - The private paid-operations health gate confirms recent webhook persistence, delivery recovery coverage, and no stale or failed paid Report delivery.
 - Required Supabase migrations and production Auth settings are verified.
 - Required customer emails deliver from a verified sender with working unsubscribe behavior where applicable.
-- PostHog records the paid funnel without personal data or sensitive URL parameters.
+- The configured analytics and attribution path records acquisition and paid-funnel evidence without personal data or sensitive URL parameters.
 - Monitoring capacity is measured and sufficient for every subscription offered.
 - A rollback owner and known-good release are named, and cleanup of the controlled purchase is complete or intentionally documented.
 

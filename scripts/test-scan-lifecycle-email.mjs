@@ -13,7 +13,7 @@ const env = {
   APP_URL: "https://scanner.example.test",
   RESEND_API_KEY: "re_test",
   RESEND_FROM_EMAIL: "reports@example.test",
-  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@example.test"
+  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@opportunityscanner.ai"
 };
 
 test("completed scans send a private, idempotent report-ready message", async () => {
@@ -62,7 +62,7 @@ test("definitively failed scans send only retry and support guidance", async () 
   assert.equal(result.status, "delivered");
   assert.match(body.text, /couldn't complete/i);
   assert.match(body.text, /Review the scan and retry:/);
-  assert.match(body.text, /support@example\.test/);
+  assert.match(body.text, /support@opportunityscanner\.ai/);
   assert.doesNotMatch(body.text, /company_url|query_used|raw_json|error_message/i);
 });
 
@@ -118,7 +118,7 @@ test("configuration requires a secure application origin and no unsubscribe secr
     apiKey: "re_test",
     fromEmail: "reports@example.test",
     appUrl: "https://scanner.example.test",
-    supportEmail: "support@example.test"
+    supportEmail: "support@opportunityscanner.ai"
   });
 });
 

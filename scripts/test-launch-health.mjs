@@ -22,9 +22,8 @@ const reportReadyEnvironment = {
   STRIPE_PRICE_REPORT: "price_report",
   RESEND_API_KEY: "resend-test",
   RESEND_FROM_EMAIL: "scanner@example.test",
-  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@example.test",
-  NEXT_PUBLIC_POSTHOG_KEY: "posthog-test",
-  NEXT_PUBLIC_POSTHOG_HOST: "https://analytics.example.test",
+  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@opportunityscanner.ai",
+  VERCEL_WEB_ANALYTICS_ENABLED: "true",
   ENABLE_PAID_REPORT_CHECKOUT: "true",
   CRON_SECRET: "cron-test"
 };
@@ -37,6 +36,7 @@ assert.equal(reportOnly.ready.subscriptionCheckout, false);
 assert.equal(reportOnly.services.email, true);
 assert.equal(reportOnly.services.support, true);
 assert.equal(reportOnly.services.analytics, true);
+assert.equal(reportOnly.services.analyticsProvider, "vercel");
 assert.equal(reportOnly.services.reportCheckoutEnabled, true);
 assert.equal(reportOnly.services.reportCatalog, "unverified");
 
@@ -82,7 +82,7 @@ const invalidSender = evaluateLaunchHealth({
 assert.equal(invalidSender.services.email, false);
 assert.equal(invalidSender.ready.reportCheckout, false);
 
-for (const contactEmail of ["", "not-an-email"]) {
+for (const contactEmail of ["", "not-an-email", "support@example.test", "joelle@reparel.com"]) {
   const health = evaluateLaunchHealth({
     ...reportReadyEnvironment,
     OPPORTUNITY_SCANNER_CONTACT_EMAIL: contactEmail
@@ -92,13 +92,23 @@ for (const contactEmail of ["", "not-an-email"]) {
   assert.equal(health.ready.reportCheckout, false);
 }
 
-for (const missing of ["NEXT_PUBLIC_POSTHOG_KEY", "NEXT_PUBLIC_POSTHOG_HOST"]) {
-  const environment = { ...reportReadyEnvironment, [missing]: "" };
-  const health = evaluateLaunchHealth(environment);
-  assert.equal(health.services.analytics, false, `${missing} must close analytics readiness`);
-  assert.equal(health.ready.paidSignup, false);
-  assert.equal(health.ready.reportCheckout, false);
-}
+const postHogAnalytics = evaluateLaunchHealth({
+  ...reportReadyEnvironment,
+  VERCEL_WEB_ANALYTICS_ENABLED: "false",
+  NEXT_PUBLIC_POSTHOG_KEY: "posthog-test",
+  NEXT_PUBLIC_POSTHOG_HOST: "https://analytics.example.test"
+});
+assert.equal(postHogAnalytics.services.analytics, true);
+assert.equal(postHogAnalytics.services.analyticsProvider, "posthog");
+
+const noAnalytics = evaluateLaunchHealth({
+  ...reportReadyEnvironment,
+  VERCEL_WEB_ANALYTICS_ENABLED: "false"
+});
+assert.equal(noAnalytics.services.analytics, false);
+assert.equal(noAnalytics.services.analyticsProvider, "none");
+assert.equal(noAnalytics.ready.paidSignup, false);
+assert.equal(noAnalytics.ready.reportCheckout, false);
 
 const subscriptionPrices = {
   STRIPE_PRICE_MONITOR_MONTHLY: "price_monitor_monthly",
@@ -123,14 +133,24 @@ assert.equal(
   evaluateLaunchHealth({
     ...reportReadyEnvironment,
     ...subscriptionPrices,
-    ENABLE_SUBSCRIPTION_CHECKOUT: "true"
+    ENABLE_SUBSCRIPTION_CHECKOUT: "true",
+    MONITORING_SCHEDULER_READY: "true"
   }).ready.subscriptionCheckout,
   true
 );
 
+const schedulerNotProven = evaluateLaunchHealth({
+  ...reportReadyEnvironment,
+  ...subscriptionPrices,
+  ENABLE_SUBSCRIPTION_CHECKOUT: "true",
+  MONITORING_SCHEDULER_READY: "false"
+});
+assert.equal(schedulerNotProven.ready.subscriptionCheckout, false);
+assert.equal(schedulerNotProven.services.monitoringSchedulerReady, false);
+
 assert.match(healthEvaluator, /reportCheckoutEnabled/);
 assert.match(healthEvaluator, /mode === "live"/);
-assert.match(healthEvaluator, /subscriptionsEnabled && subscriptionPrices/);
+assert.match(healthEvaluator, /subscriptionsEnabled[\s\S]*subscriptionPrices[\s\S]*monitoringSchedulerReady/);
 assert.match(route, /evaluateLaunchHealth\(process\.env\)/);
 assert.match(route, /verifyReportCatalogCached\(getStripeServerConfig\(\)\)/);
 assert.match(route, /REPORT_CATALOG_HEALTH_TIMEOUT_MS = 1_500/);
@@ -148,5 +168,7 @@ assert.match(eligibility, /subscriptionCheckoutIsEnabled\(\)/);
 assert.match(launchCheck, /ENABLE_SUBSCRIPTION_CHECKOUT/);
 assert.match(launchCheck, /ENABLE_PAID_REPORT_CHECKOUT/);
 assert.match(launchCheck, /requires all Monitor and Growth Stripe Price IDs/);
+assert.match(launchCheck, /MONITORING_SCHEDULER_READY/);
+assert.match(launchCheck, /documented capacity proof/);
 
 console.log("Paid launch gating and health contract passed without exposing configuration values.");

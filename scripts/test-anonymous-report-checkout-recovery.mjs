@@ -63,19 +63,41 @@ assert.equal(
 );
 assert.doesNotMatch(captured[0].successUrl, /buyer%40example\.com|buyer@example\.com/);
 
-const [access, signIn, report, pricing] = await Promise.all([
+const [access, signIn, report, pricing, checkoutButton] = await Promise.all([
   readFile(new URL("../lib/payments/access.ts", import.meta.url), "utf8"),
   readFile(new URL("../app/auth/sign-in/page.tsx", import.meta.url), "utf8"),
   readFile(new URL("../app/reports/[id]/page.tsx", import.meta.url), "utf8"),
-  readFile(new URL("../app/pricing/page.tsx", import.meta.url), "utf8")
+  readFile(new URL("../app/pricing/page.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../components/checkout-button.tsx", import.meta.url), "utf8")
 ]);
 
 assert.match(access, /resolveVerifiedReportCheckoutSignIn/);
 assert.match(report, /searchParams\?\.checkout === "cancelled"/);
-assert.match(report, /No charge was made/);
+assert.match(report, /Checkout was canceled/);
+assert.doesNotMatch(report, /No charge was made/);
 assert.match(report, /source=checkout_return&scanId=/);
+assert.match(report, /Checkout return needs verification/);
+assert.match(report, /checkoutHandoffFailed/);
+assert.match(report, /Retry verification/);
+assert.match(report, /paidReportClaimSupportHref\(scan\.id\)/);
+assert.match(report, /reportCheckoutIsEnabled/);
+assert.match(report, /return reportCheckoutIsEnabled\(\) \? "available" : "paused"/);
+assert.match(report, /checkoutAvailability === "paused"/);
+assert.match(report, /Checkout paused/);
+assert.match(report, /!isPaid && !checkoutHandoffFailed/);
 assert.match(pricing, /searchParams\?\.source === "report_gate" \|\| searchParams\?\.source === "checkout_return"/);
 assert.match(pricing, /scanId=\{plan\.name === "Report" \? reportScanId : undefined\}/);
+assert.match(checkoutButton, /if \(!checkoutEnabled\)/);
+assert.match(checkoutButton, /plan === "report" \? "Checkout Paused"/);
+assert.ok(
+  checkoutButton.indexOf("if (!checkoutEnabled)") < checkoutButton.indexOf("if (!canCheckout)"),
+  "Disabled Report checkout must render its paused state before the free-scan fallback"
+);
+assert.match(checkoutButton, /This is a one-time purchase/);
+assert.match(checkoutButton, /Full report access is delivered after payment confirmation/);
+assert.match(checkoutButton, /Fees are non-refundable except where required by law/);
+assert.match(checkoutButton, /href="\/terms"/);
+assert.match(checkoutButton, /href="\/privacy"/);
 assert.match(access, /isMatchingPaidReportSession\(session, checkoutReturn\.scanId, config\.prices\.report\)/);
 assert.match(access, /hasOnlyExpectedParams/);
 assert.match(access, /checkoutStates\[0\] !== "success"/);

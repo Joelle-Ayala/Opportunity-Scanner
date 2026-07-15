@@ -1,3 +1,5 @@
+import { isBrandedSupportEmail } from "./support.ts";
+
 type LaunchHealthEnvironment = Record<string, string | undefined>;
 
 type ReportCatalogHealth = {
@@ -33,13 +35,16 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog
     "STRIPE_PRICE_GROWTH_ANNUAL"
   ].every((name) => configured(env, name));
   const subscriptionsEnabled = env.ENABLE_SUBSCRIPTION_CHECKOUT?.trim() === "true";
+  const monitoringSchedulerReady = env.MONITORING_SCHEDULER_READY?.trim() === "true";
   const reportCheckoutEnabled = env.ENABLE_PAID_REPORT_CHECKOUT?.trim() === "true";
   const mode = stripeMode(env);
   const payments = mode !== "unconfigured" && configured(env, "STRIPE_WEBHOOK_SECRET") && reportPrice;
   const email = configured(env, "RESEND_API_KEY") && validEmail(env.RESEND_FROM_EMAIL);
-  const support = validEmail(env.OPPORTUNITY_SCANNER_CONTACT_EMAIL);
+  const support = isBrandedSupportEmail(env.OPPORTUNITY_SCANNER_CONTACT_EMAIL);
   const monitoring = scans && configured(env, "CRON_SECRET");
-  const analytics = configured(env, "NEXT_PUBLIC_POSTHOG_KEY") && configured(env, "NEXT_PUBLIC_POSTHOG_HOST");
+  const vercelAnalytics = env.VERCEL_WEB_ANALYTICS_ENABLED?.trim() === "true";
+  const postHogAnalytics = configured(env, "NEXT_PUBLIC_POSTHOG_KEY") && configured(env, "NEXT_PUBLIC_POSTHOG_HOST");
+  const analytics = vercelAnalytics || postHogAnalytics;
   const demoReady = scans && auth;
   const reportCatalogVerified = reportCatalog?.ok ?? true;
   const paidSignupReady = demoReady
@@ -50,7 +55,10 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog
     && support
     && analytics
     && reportCatalogVerified;
-  const subscriptionCheckoutReady = paidSignupReady && subscriptionsEnabled && subscriptionPrices;
+  const subscriptionCheckoutReady = paidSignupReady
+    && subscriptionsEnabled
+    && subscriptionPrices
+    && monitoringSchedulerReady;
 
   return {
     ok: demoReady,
@@ -67,6 +75,7 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog
       payments,
       reportCheckoutEnabled,
       subscriptions: subscriptionCheckoutReady,
+      monitoringSchedulerReady,
       stripeMode: mode,
       reportCatalog: reportCatalog ? (reportCatalog.ok ? "verified" : "invalid") : "unverified",
       reportCatalogReason: reportCatalog && !reportCatalog.ok ? reportCatalog.reason : null,
@@ -74,7 +83,14 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog
       email,
       support,
       monitoring,
-      analytics
+      analytics,
+      analyticsProvider: vercelAnalytics && postHogAnalytics
+        ? "vercel+posthog"
+        : vercelAnalytics
+          ? "vercel"
+          : postHogAnalytics
+            ? "posthog"
+            : "none"
     }
   };
 }

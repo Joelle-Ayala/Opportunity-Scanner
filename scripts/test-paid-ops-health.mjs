@@ -34,7 +34,7 @@ const readyEnvironment = {
   STRIPE_PRICE_REPORT: "price_report_fixture",
   RESEND_API_KEY: "resend-private",
   RESEND_FROM_EMAIL: "scanner@example.test",
-  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@example.test",
+  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@opportunityscanner.ai",
   NEXT_PUBLIC_POSTHOG_KEY: "posthog-private",
   NEXT_PUBLIC_POSTHOG_HOST: "https://analytics.example.test",
   ENABLE_PAID_REPORT_CHECKOUT: "true"

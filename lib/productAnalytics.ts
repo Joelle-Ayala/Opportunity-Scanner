@@ -28,7 +28,7 @@ export type ProductAnalyticsEventMap = {
     marketing_consent: boolean;
   };
   pricing_viewed: {
-    source: "navigation" | "report_gate" | "checkout_return" | "unknown";
+    source: "navigation" | "report_gate" | "checkout_return" | "nurture" | "unknown";
   };
   checkout_started: {
     plan: PurchasePlan;
@@ -183,7 +183,7 @@ export function sanitizeProductAnalyticsEvent(
           }
         : null;
     case "pricing_viewed":
-      return isOneOf(properties.source, ["navigation", "report_gate", "checkout_return", "unknown"])
+      return isOneOf(properties.source, ["navigation", "report_gate", "checkout_return", "nurture", "unknown"])
         ? { name, properties: { source: properties.source } }
         : null;
     case "checkout_started":

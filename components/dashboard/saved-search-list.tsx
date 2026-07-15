@@ -35,6 +35,11 @@ export interface SavedSearchListProps {
   title?: string;
   description?: string;
   emptyAction?: ReactNode;
+  addMonitoringAction?: ReactNode;
+  monitoringCapacity?: {
+    used: number;
+    limit: number;
+  };
   onOpen?: (search: MonitoredSearchRow) => void;
   onToggleStatus?: (search: MonitoredSearchRow) => void;
   onEdit?: (search: MonitoredSearchRow) => void;
@@ -55,6 +60,8 @@ export function SavedSearchList({
   title = "Saved searches",
   description = "Track recurring public-sector signals without starting from scratch.",
   emptyAction,
+  addMonitoringAction,
+  monitoringCapacity,
   onOpen,
   onToggleStatus,
   onEdit,
@@ -71,6 +78,10 @@ export function SavedSearchList({
     );
   }
 
+  const monitoringLimitReached = Boolean(
+    monitoringCapacity && monitoringCapacity.used >= monitoringCapacity.limit
+  );
+
   return (
     <section aria-labelledby="saved-searches-title">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -78,7 +89,20 @@ export function SavedSearchList({
           <h2 id="saved-searches-title" className="text-lg font-semibold text-ink">{title}</h2>
           <p className="mt-1 text-sm text-muted">{description}</p>
         </div>
-        <span className="text-sm font-medium text-muted">{searches.length} saved</span>
+        <div className="flex flex-wrap items-center gap-3">
+          {monitoringCapacity ? (
+            <span className="text-sm font-medium text-muted">
+              {monitoringCapacity.used} of {monitoringCapacity.limit} monitored
+            </span>
+          ) : (
+            <span className="text-sm font-medium text-muted">{searches.length} saved</span>
+          )}
+          {monitoringLimitReached ? (
+            <span role="status" className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900">
+              Plan limit reached
+            </span>
+          ) : addMonitoringAction}
+        </div>
       </div>
 
       <div className="mt-4 overflow-hidden rounded-lg border border-line bg-white">

@@ -10,9 +10,17 @@ import { createUnsubscribeToken, readUnsubscribeToken } from "../lib/nurture/tok
 const secret = "test-secret-that-is-at-least-thirty-two-characters";
 const subscriberId = "4f09e8fa-9f78-4c7a-92b0-52f3529afeca";
 
-test("five touches span days 0 through 10 and preserve the approved annual offer", () => {
-  assert.deepEqual(SCAN_NURTURE_TOUCHES.map((touch) => touch.dayOffset), [0, 2, 4, 7, 10]);
+test("five additive touches span days 1 through 10 and preserve the approved annual offer", () => {
+  assert.deepEqual(SCAN_NURTURE_TOUCHES.map((touch) => touch.dayOffset), [1, 2, 4, 7, 10]);
+  assert.equal(nurtureScheduledAt(1, new Date("2026-07-12T12:00:00Z")).toISOString(), "2026-07-13T12:00:00.000Z");
   assert.equal(nurtureScheduledAt(5, new Date("2026-07-12T12:00:00Z")).toISOString(), "2026-07-22T12:00:00.000Z");
+  const firstTouch = getNurtureTouch(1);
+  const firstTouchCopy = [firstTouch.subject("Example Co"), firstTouch.heading, ...firstTouch.body].join(" ");
+  assert.match(firstTouchCopy, /three ways|start by comparing/i);
+  assert.match(firstTouchCopy, /source records/i);
+  assert.match(firstTouchCopy, /revenue motion/i);
+  assert.match(firstTouchCopy, /contact route/i);
+  assert.doesNotMatch(firstTouchCopy, /report is ready|scan is ready|report for Example Co/i);
   assert.match(getNurtureTouch(5).body.join(" "), /12 months of access for the price of 10/);
   assert.match(getNurtureTouch(5).body.join(" "), /2 months free annually/);
 });
@@ -139,10 +147,11 @@ test("nurture delivery removes caller abort listeners after completion", async (
   assert.equal(getEventListeners(controller.signal, "abort").length, 0);
 });
 
-test("migration provides transactional dedupe, leasing, retries, and durable suppression", async () => {
-  const [sql, ambiguityFix, route, storage, homepage, submitButton] = await Promise.all([
+test("migration provides transactional dedupe, delayed additive touch one, leasing, retries, and durable suppression", async () => {
+  const [sql, ambiguityFix, firstTouchDelay, route, storage, homepage, submitButton] = await Promise.all([
     readFile(new URL("../db/scan-nurture.sql", import.meta.url), "utf8"),
     readFile(new URL("../db/scan-nurture-enrollment-ambiguity-fix.sql", import.meta.url), "utf8"),
+    readFile(new URL("../db/scan-nurture-first-touch-delay.sql", import.meta.url), "utf8"),
     readFile(new URL("../app/api/scans/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/nurture/storage.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
@@ -172,6 +181,19 @@ test("migration provides transactional dedupe, leasing, retries, and durable sup
   assert.match(ambiguityFix, /create or replace function enqueue_scan_nurture/);
   assert.match(ambiguityFix, /#variable_conflict use_column/);
   assert.match(ambiguityFix, /grant execute on function enqueue_scan_nurture/);
+  assert.match(firstTouchDelay, /create or replace function enqueue_scan_nurture/);
+  assert.match(firstTouchDelay, /\(1::smallint, interval '1 day'\)/);
+  assert.match(firstTouchDelay, /\(2::smallint, interval '2 days'\)/);
+  assert.match(firstTouchDelay, /p_consented_at \+ schedule\.delay/);
+  assert.doesNotMatch(firstTouchDelay, /\(1::smallint, interval '0 days'\)/);
+  assert.match(firstTouchDelay, /update scan_nurture_jobs job/);
+  assert.match(firstTouchDelay, /greatest\(job\.scheduled_at, enrollment\.consented_at \+ interval '1 day'\)/);
+  assert.match(firstTouchDelay, /job\.touch_number = 1/);
+  assert.match(firstTouchDelay, /job\.status = 'pending'/);
+  assert.match(firstTouchDelay, /job\.attempt_count = 0/);
+  assert.match(firstTouchDelay, /job\.last_attempt_at is null/);
+  assert.match(firstTouchDelay, /job\.lease_expires_at is null/);
+  assert.match(firstTouchDelay, /grant execute on function enqueue_scan_nurture/);
   assert.match(route, /input\.email && marketingConsent/);
   assert.match(storage, /p_consented_at: consentedAt\.toISOString\(\)/);
   assert.match(storage, /p_consent_source: input\.consentSource/);

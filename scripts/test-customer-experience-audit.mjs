@@ -20,7 +20,7 @@ const [dashboard, onboarding, billing, signIn, signInRoute, dashboardLoading, da
 
 assert.match(dashboard, /item\.product === "monitor" \|\| item\.product === "growth"/);
 assert.doesNotMatch(dashboard, /if \(subscription && searches\.length === 0\) redirect\("\/dashboard\/onboarding"\)/);
-assert.match(dashboard, /const needsMonitoringSetup = Boolean\(subscription && searches\.length === 0\)/);
+assert.match(dashboard, /const needsMonitoringSetup = Boolean\(subscription && capacityUsedCount === 0\)/);
 assert.match(dashboard, /Your plan is active, but monitoring setup is not complete yet\./);
 assert.match(dashboard, />Continue setup<\/a>/);
 assert.match(dashboard, /searchParams\?\.tab === "billing" \? "billing" : "overview"/);

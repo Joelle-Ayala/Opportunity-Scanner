@@ -21,6 +21,7 @@
     "test:billing-management": "node --experimental-strip-types scripts/test-billing-management.mjs",
     "test:subscription-handoff": "node --experimental-strip-types scripts/test-subscription-checkout-handoff.mjs",
     "test:anonymous-report-recovery": "node --experimental-strip-types scripts/test-anonymous-report-checkout-recovery.mjs",
+    "test:repeat-report-recovery": "node --experimental-strip-types scripts/test-repeat-report-purchase-recovery.mjs",
     "test:customer-entitlement": "node --experimental-strip-types scripts/test-customer-entitlement-contract.mjs",
     "test:demo-provisioning": "node scripts/test-demo-provisioning.mjs",
     "test:workflow": "node --experimental-strip-types scripts/test-workflow-contract.mjs",

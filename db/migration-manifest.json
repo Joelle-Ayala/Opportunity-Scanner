@@ -207,6 +207,22 @@
       "prerequisites": ["v0008"],
       "sha256": "ec4ccf379cf7b51df9d7c89ba93dcd59bd4d99b49ca89f646d7029f6538fb447",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0026",
+      "file": "db/repeat-report-purchase-recovery.sql",
+      "description": "Verified-email recovery for all active one-time Report purchases across Stripe customers.",
+      "prerequisites": ["v0024"],
+      "sha256": "9c023df072183974e019ee1eb803f475a794784016b8c24fe44661abccc729b2",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0027",
+      "file": "db/scan-nurture-first-touch-delay.sql",
+      "description": "Day-one additive first nurture touch with safe rescheduling of untouched pending jobs.",
+      "prerequisites": ["v0019"],
+      "sha256": "924d7890309477452474fbe37d347bf5a4fb9c04a88de23f579678994615b36a",
+      "requiredInProduction": true
     }
   ]
 }

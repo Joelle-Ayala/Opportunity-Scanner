@@ -6,7 +6,7 @@ import { getCompanyProfile, getScan, listScanOpportunitySignals } from "@/lib/st
 import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types";
 import { accessSuffix, hasAdminAccess, reportAccessHref } from "@/lib/access";
 import { hasCustomerServerReportAccess, hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
-import { getStripeServerConfig } from "@/lib/payments/config";
+import { getStripeServerConfig, reportCheckoutIsEnabled } from "@/lib/payments/config";
 import { claimActiveReportPurchaseByEmail } from "@/lib/payments/persistence";
 import { PurchaseCompletedAnalytics, ReportAnalytics } from "@/components/page-analytics";
 import { ReportMonitorCheckout } from "@/components/report-monitor-checkout";
@@ -266,12 +266,14 @@ function paidReportClaimSupportHref(scanId: string): string {
   return `mailto:${configuredSupportEmail()}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-function reportCheckoutIsConfigured(): boolean {
+type ReportCheckoutAvailability = "available" | "paused" | "unconfigured";
+
+function reportCheckoutAvailability(): ReportCheckoutAvailability {
   try {
     getStripeServerConfig();
-    return true;
+    return reportCheckoutIsEnabled() ? "available" : "paused";
   } catch {
-    return false;
+    return "unconfigured";
   }
 }
 
@@ -283,8 +285,12 @@ function subscriptionCheckoutIsConfigured(): boolean {
   }
 }
 
-function fullReportUpgradeHref(scan: ScanRecord, signal?: StoredOpportunitySignal): string {
-  if (reportCheckoutIsConfigured()) {
+function fullReportUpgradeHref(
+  scan: ScanRecord,
+  checkoutAvailability: ReportCheckoutAvailability,
+  signal?: StoredOpportunitySignal
+): string {
+  if (checkoutAvailability === "available") {
     return `/pricing?source=report_gate&scanId=${encodeURIComponent(scan.id)}`;
   }
   return fullReportRequestHref(scan, signal);
@@ -323,18 +329,20 @@ function buildExecutiveSummary(signals: StoredOpportunitySignal[], profile?: Com
 function ReportHeader({
   scan,
   profile,
-  totalSignals,
-  visibleSignals,
-  lockedSignals,
+  sourceMatches,
+  actionTableRows,
+  shownRows,
+  lockedRows,
   isPaid,
   access,
   comparisonHref
 }: {
   scan: ScanRecord;
   profile?: CompanyProfile;
-  totalSignals: number;
-  visibleSignals: number;
-  lockedSignals: number;
+  sourceMatches: number;
+  actionTableRows: number;
+  shownRows: number;
+  lockedRows: number;
   isPaid: boolean;
   access?: string;
   comparisonHref?: string | null;
@@ -394,7 +402,7 @@ function ReportHeader({
           <p className="mt-1 break-all text-sm text-muted">{scan.company_url}</p>
         </div>
       </div>
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
         <div className="rounded-md border border-line bg-field p-3">
           <p className="text-xs font-semibold uppercase text-muted">Scan date</p>
           <p className="mt-1 text-sm font-semibold text-ink">
@@ -402,29 +410,30 @@ function ReportHeader({
           </p>
         </div>
         <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">Pipeline rows found</p>
-          <p className="mt-1 text-sm font-semibold text-ink">{totalSignals}</p>
+          <p className="text-xs font-semibold uppercase text-muted">Source matches</p>
+          <p className="mt-1 text-sm font-semibold text-ink">{sourceMatches}</p>
+        </div>
+        <div className="rounded-md border border-line bg-field p-3">
+          <p className="text-xs font-semibold uppercase text-muted">Action-table rows</p>
+          <p className="mt-1 text-sm font-semibold text-ink">{actionTableRows}</p>
         </div>
         <div className="rounded-md border border-line bg-field p-3">
           <p className="text-xs font-semibold uppercase text-muted">Rows shown</p>
-          <p className="mt-1 text-sm font-semibold text-ink">{visibleSignals}</p>
+          <p className="mt-1 text-sm font-semibold text-ink">{shownRows}</p>
         </div>
-        {!isPaid ? (
-          <div className="rounded-md border border-line bg-field p-3">
-            <p className="text-xs font-semibold uppercase text-muted">Locked rows</p>
-            <p className="mt-1 text-sm font-semibold text-ink">{lockedSignals}</p>
-          </div>
-        ) : (
-          <div className="rounded-md border border-line bg-field p-3">
-            <p className="text-xs font-semibold uppercase text-muted">Full access</p>
-            <p className="mt-1 text-sm font-semibold text-ink">Enabled</p>
-          </div>
-        )}
+        <div className="rounded-md border border-line bg-field p-3">
+          <p className="text-xs font-semibold uppercase text-muted">Rows locked</p>
+          <p className="mt-1 text-sm font-semibold text-ink">{lockedRows}</p>
+        </div>
         <div className="rounded-md border border-line bg-field p-3">
           <p className="text-xs font-semibold uppercase text-muted">Status</p>
           <p className="mt-1 text-sm font-semibold text-ink">{reportStatusLabel(scan.status)}</p>
         </div>
       </div>
+      <p className="mt-3 text-xs leading-5 text-muted">
+        Source matches include every stored public-source result. Action-table rows are the promoted
+        pipeline; rows shown plus rows locked equal the action-table total.
+      </p>
     </header>
   );
 }
@@ -995,11 +1004,15 @@ function OpportunitySignalCard({
 function LockedOpportunityCard({
   scan,
   signal,
-  profile
+  profile,
+  checkoutAvailability,
+  checkoutHandoffFailed
 }: {
   scan: ScanRecord;
   signal: StoredOpportunitySignal;
   profile?: CompanyProfile;
+  checkoutAvailability: ReportCheckoutAvailability;
+  checkoutHandoffFailed: boolean;
 }) {
   const classification = opportunityActionFor(signal, profile);
   return (
@@ -1021,14 +1034,33 @@ function LockedOpportunityCard({
         <p>{classification.source_status}</p>
         <p>{classificationLabel(classification.contact_strategy)} in full report</p>
       </div>
-      <a href={fullReportUpgradeHref(scan, signal)} className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
-        {reportCheckoutIsConfigured() ? "Buy Full Report" : "Request Full Pipeline"}
-      </a>
+      {checkoutHandoffFailed ? (
+        <p aria-disabled="true" className="mt-4 inline-flex rounded-md border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900">
+          Purchase verification needed
+        </p>
+      ) : checkoutAvailability === "paused" ? (
+        <div className="mt-4">
+          <p aria-disabled="true" className="inline-flex rounded-md border border-line bg-field px-4 py-2 text-sm font-semibold text-muted">
+            Checkout paused
+          </p>
+          <p className="mt-2 text-xs leading-5 text-muted">One-time report checkout is temporarily unavailable.</p>
+        </div>
+      ) : (
+        <a href={fullReportUpgradeHref(scan, checkoutAvailability, signal)} className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+          {checkoutAvailability === "available" ? "Buy Full Report" : "Request Full Pipeline"}
+        </a>
+      )}
     </article>
   );
 }
 
-function UnlockCTA({ scan }: { scan: ScanRecord }) {
+function UnlockCTA({
+  scan,
+  checkoutAvailability
+}: {
+  scan: ScanRecord;
+  checkoutAvailability: ReportCheckoutAvailability;
+}) {
   const items = [
     "all prioritized opportunities",
     "buyer/partner targets",
@@ -1058,9 +1090,20 @@ function UnlockCTA({ scan }: { scan: ScanRecord }) {
         <div className="w-full rounded-lg border border-cyan-100 bg-white p-4 text-center sm:w-auto">
           <p className="text-sm font-semibold uppercase tracking-wide text-muted">Full report</p>
           <p className="mt-1 text-2xl font-semibold text-ink">$49 one-time</p>
-          <a href={fullReportUpgradeHref(scan)} className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
-            {reportCheckoutIsConfigured() ? "Buy Full Report" : "Request Full Report"}
-          </a>
+          {checkoutAvailability === "paused" ? (
+            <div className="mt-3">
+              <p aria-disabled="true" className="inline-flex rounded-md border border-line bg-field px-4 py-3 text-sm font-semibold text-muted">
+                Checkout paused
+              </p>
+              <p className="mt-2 max-w-xs text-xs leading-5 text-muted">
+                One-time report checkout is temporarily unavailable. Your free preview remains available.
+              </p>
+            </div>
+          ) : (
+            <a href={fullReportUpgradeHref(scan, checkoutAvailability)} className="mt-3 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+              {checkoutAvailability === "available" ? "Buy Full Report" : "Request Full Report"}
+            </a>
+          )}
         </div>
       </div>
     </section>
@@ -1427,6 +1470,13 @@ export default async function ReportPage({
     scan,
     customerSession?.user.id
   );
+  const checkoutHandoffFailed =
+    searchParams?.checkout === "success" && !checkoutHandoffFulfilled && !isPaid;
+  const checkoutRetryHref =
+    searchParams?.session_id?.startsWith("cs_") && searchParams.session_id.length <= 255
+      ? `/reports/${encodeURIComponent(scan.id)}?checkout=success&session_id=${encodeURIComponent(searchParams.session_id)}`
+      : null;
+  const checkoutAvailability = reportCheckoutAvailability();
 
   const profileRecord = await getCompanyProfile(scan.id);
   const profile = profileRecord ? ensureProfileRefinementFields(profileRecord.profile_json) : undefined;
@@ -1443,6 +1493,12 @@ export default async function ReportPage({
   const visibleCount = isPaid ? reportSignals.length : visibleSignalCount(reportSignals.length);
   const displayedSignals = reportSignals.slice(0, visibleCount);
   const lockedSignals = reportSignals.slice(visibleCount);
+  const reportCounts = {
+    sourceMatches: signals.length,
+    actionTableRows: reportSignals.length,
+    shownRows: displayedSignals.length,
+    lockedRows: lockedSignals.length
+  };
   const showReportMonitorUpsell =
     isPaid &&
     !isAdminView &&
@@ -1471,9 +1527,10 @@ export default async function ReportPage({
         <ReportHeader
           scan={scan}
           profile={profile}
-          totalSignals={signals.length}
-          visibleSignals={displayedSignals.length}
-          lockedSignals={lockedSignals.length}
+          sourceMatches={reportCounts.sourceMatches}
+          actionTableRows={reportCounts.actionTableRows}
+          shownRows={reportCounts.shownRows}
+          lockedRows={reportCounts.lockedRows}
           isPaid={isPaid}
           access={searchParams?.access}
           comparisonHref={comparisonHref}
@@ -1510,10 +1567,10 @@ export default async function ReportPage({
             aria-live="polite"
             className="rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-ink"
           >
-            <h2 className="text-base font-semibold text-ink">No charge was made</h2>
+            <h2 className="text-base font-semibold text-ink">Checkout was canceled</h2>
             <p className="mt-1 text-slate-700">
-              Your report preview is still here. You can keep reviewing it or return to secure
-              checkout when you are ready.
+              Your report preview is still here. You can keep reviewing it or return to checkout
+              when you are ready.
             </p>
             <a
               href={`/pricing?source=checkout_return&scanId=${encodeURIComponent(scan.id)}`}
@@ -1521,6 +1578,33 @@ export default async function ReportPage({
             >
               Return to report checkout
             </a>
+          </section>
+        ) : null}
+
+        {checkoutHandoffFailed ? (
+          <section
+            id="checkout-return"
+            role="alert"
+            className="rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-ink"
+          >
+            <h2 className="text-base font-semibold text-ink">Checkout return needs verification</h2>
+            <p className="mt-1 text-slate-700">
+              This return did not unlock the report. Retry verification if a checkout session was
+              provided, or contact support if Stripe confirmed the payment.
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              {checkoutRetryHref ? (
+                <a href={checkoutRetryHref} className="rounded-md bg-ink px-3 py-2 font-semibold text-white hover:bg-accent">
+                  Retry verification
+                </a>
+              ) : null}
+              <a
+                href={paidReportClaimSupportHref(scan.id)}
+                className="font-semibold text-accent underline decoration-accent/30 underline-offset-4"
+              >
+                Contact support
+              </a>
+            </div>
           </section>
         ) : null}
 
@@ -1637,13 +1721,22 @@ export default async function ReportPage({
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               {lockedSignals.slice(0, 4).map((signal) => (
-                  <LockedOpportunityCard key={signal.id} scan={scan} signal={signal} profile={profile} />
+                  <LockedOpportunityCard
+                    key={signal.id}
+                    scan={scan}
+                    signal={signal}
+                    profile={profile}
+                    checkoutAvailability={checkoutAvailability}
+                    checkoutHandoffFailed={checkoutHandoffFailed}
+                  />
               ))}
             </div>
           </section>
         ) : null}
 
-        {!isPaid ? <UnlockCTA scan={scan} /> : null}
+        {!isPaid && !checkoutHandoffFailed ? (
+          <UnlockCTA scan={scan} checkoutAvailability={checkoutAvailability} />
+        ) : null}
 
         {isPaid ? (
           <>

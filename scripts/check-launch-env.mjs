@@ -34,9 +34,7 @@ const required = [
   "OPPORTUNITY_SCANNER_CONTACT_EMAIL",
   "ALERT_UNSUBSCRIBE_SECRET",
   "NURTURE_UNSUBSCRIBE_SECRET",
-  "SCAN_RATE_LIMIT_HASH_SECRET",
-  "NEXT_PUBLIC_POSTHOG_KEY",
-  "NEXT_PUBLIC_POSTHOG_HOST"
+  "SCAN_RATE_LIMIT_HASH_SECRET"
 ];
 
 const recommended = [
@@ -78,6 +76,26 @@ if (!process.env.STRIPE_SECRET_KEY?.trim().startsWith("sk_live_")) {
   safetyErrors.push("STRIPE_SECRET_KEY must use an sk_live_* key for production launch.");
 }
 
+const vercelAnalyticsFlagName = "VERCEL_WEB_ANALYTICS_ENABLED";
+const vercelAnalyticsFlagValue = process.env[vercelAnalyticsFlagName]?.trim();
+const postHogNames = ["NEXT_PUBLIC_POSTHOG_KEY", "NEXT_PUBLIC_POSTHOG_HOST"];
+const configuredPostHogNames = postHogNames.filter(configured);
+if (vercelAnalyticsFlagValue && vercelAnalyticsFlagValue !== "true" && vercelAnalyticsFlagValue !== "false") {
+  safetyErrors.push(`${vercelAnalyticsFlagName} must be exactly true or false.`);
+}
+if (configuredPostHogNames.length > 0 && configuredPostHogNames.length < postHogNames.length) {
+  safetyErrors.push("PostHog analytics requires both NEXT_PUBLIC_POSTHOG_KEY and NEXT_PUBLIC_POSTHOG_HOST.");
+}
+if (vercelAnalyticsFlagValue !== "true" && configuredPostHogNames.length !== postHogNames.length) {
+  safetyErrors.push(
+    "Production analytics requires VERCEL_WEB_ANALYTICS_ENABLED=true or both PostHog variables."
+  );
+} else if (vercelAnalyticsFlagValue === "true") {
+  console.log("Notice: Vercel Web Analytics is the verified production analytics provider.");
+} else {
+  console.log("Notice: PostHog is the verified production analytics provider.");
+}
+
 if (reportCheckoutFlagValue && reportCheckoutFlagValue !== "true" && reportCheckoutFlagValue !== "false") {
   safetyErrors.push(`${reportCheckoutFlagName} must be exactly true or false.`);
 } else if (reportCheckoutFlagValue === "true") {
@@ -88,6 +106,15 @@ if (reportCheckoutFlagValue && reportCheckoutFlagValue !== "true" && reportCheck
 
 const subscriptionFlagName = "ENABLE_SUBSCRIPTION_CHECKOUT";
 const subscriptionFlagValue = process.env[subscriptionFlagName]?.trim();
+const monitoringSchedulerFlagName = "MONITORING_SCHEDULER_READY";
+const monitoringSchedulerFlagValue = process.env[monitoringSchedulerFlagName]?.trim();
+if (
+  monitoringSchedulerFlagValue
+  && monitoringSchedulerFlagValue !== "true"
+  && monitoringSchedulerFlagValue !== "false"
+) {
+  safetyErrors.push(`${monitoringSchedulerFlagName} must be exactly true or false.`);
+}
 if (subscriptionFlagValue && subscriptionFlagValue !== "true" && subscriptionFlagValue !== "false") {
   safetyErrors.push(`${subscriptionFlagName} must be exactly true or false.`);
 } else if (subscriptionFlagValue === "true") {
@@ -95,6 +122,11 @@ if (subscriptionFlagValue && subscriptionFlagValue !== "true" && subscriptionFla
   if (missingSubscriptionPrices.length > 0) {
     safetyErrors.push(
       `${subscriptionFlagName}=true requires all Monitor and Growth Stripe Price IDs.`
+    );
+  }
+  if (monitoringSchedulerFlagValue !== "true") {
+    safetyErrors.push(
+      `${subscriptionFlagName}=true requires ${monitoringSchedulerFlagName}=true after a documented capacity proof.`
     );
   }
 } else {

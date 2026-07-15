@@ -1,6 +1,6 @@
 export type NurtureTouch = {
   number: 1 | 2 | 3 | 4 | 5;
-  dayOffset: 0 | 2 | 4 | 7 | 10;
+  dayOffset: 1 | 2 | 4 | 7 | 10;
   subject: (companyName?: string | null) => string;
   heading: string;
   body: string[];
@@ -15,14 +15,14 @@ function companyLabel(companyName?: string | null): string {
 export const SCAN_NURTURE_TOUCHES: readonly NurtureTouch[] = [
   {
     number: 1,
-    dayOffset: 0,
-    subject: (companyName) => `Your Opportunity Scanner report for ${companyLabel(companyName)}`,
-    heading: "Your opportunity scan is ready",
+    dayOffset: 1,
+    subject: (companyName) => `Three ways to use ${companyLabel(companyName)}'s opportunity report`,
+    heading: "Put your opportunity report to work",
     body: [
-      "Your report turns public-sector signals into buyer paths, revenue motions, and concrete next actions.",
-      "Start with the highest-actionability signal and verify its source, timing, and fit before you pursue it."
+      "Start by comparing the highest-actionability signals, opening their source records, and choosing the one with the strongest timing and fit.",
+      "Then use its revenue motion to choose a pursuit path, follow the recommended contact route, and assign the next action to an owner."
     ],
-    ctaLabel: "Review your report",
+    ctaLabel: "Choose your first action",
     destination: "report"
   },
   {

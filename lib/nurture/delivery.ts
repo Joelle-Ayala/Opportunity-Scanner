@@ -64,7 +64,12 @@ export async function sendNurtureEmail(
 
   const touch = getNurtureTouch(job.touch_number);
   const reportUrl = `${config.appUrl}/reports/${encodeURIComponent(job.scan_id)}`;
-  const pricingUrl = `${config.appUrl}/pricing?source=nurture&scanId=${encodeURIComponent(job.scan_id)}`;
+  const pricingParams = new URLSearchParams({
+    source: "nurture",
+    scanId: job.scan_id
+  });
+  if (touch.number === 5) pricingParams.set("billing_interval", "annual");
+  const pricingUrl = `${config.appUrl}/pricing?${pricingParams.toString()}`;
   const destinationUrl = touch.destination === "report" ? reportUrl : pricingUrl;
   const unsubscribeUrl = nurtureUnsubscribeUrl(config, job.subscriber_id);
   const oneClickUnsubscribeUrl = nurtureOneClickUnsubscribeUrl(config, job.subscriber_id);

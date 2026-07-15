@@ -68,9 +68,6 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
             The goal is not to flood the report with data. The goal is to identify signals that can
             become a revenue motion, contact path, or next action.
           </p>
-          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted">
-            Search intent: {industry.searchIntent}
-          </p>
         </SectionIntro>
         <div className="grid gap-3 sm:grid-cols-2">
           {industry.signals.map((signal) => (

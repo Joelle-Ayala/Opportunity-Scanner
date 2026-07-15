@@ -67,6 +67,17 @@ export function claimActiveReportPurchaseByEmail(input: {
   });
 }
 
+export function claimActiveReportPurchasesByVerifiedEmail(input: {
+  authUserId: string;
+  accountId: string;
+}): Promise<number> {
+  return billingRpc<number>("claim_active_report_purchases_by_verified_email", {
+    p_auth_user_id: input.authUserId,
+    p_customer_account_id: input.accountId,
+    p_scan_id: null
+  });
+}
+
 export type ReportCheckoutEligibility =
   | { ok: true }
   | {

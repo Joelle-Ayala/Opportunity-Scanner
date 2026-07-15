@@ -21,7 +21,10 @@ assert.match(checkoutButton, /Resume Secure Checkout/);
 assert.match(pricingPage, /searchParams\?\.checkout !== "resume"/);
 assert.match(pricingPage, /searchParams\.plan !== "monitor" && searchParams\.plan !== "growth"/);
 assert.match(pricingPage, /searchParams\.billing_interval !== "monthly" && searchParams\.billing_interval !== "annual"/);
-assert.match(pricingPage, /initialBillingInterval=\{[\s\S]*resumeCheckout\?\.plan === checkoutPlan \? resumeCheckout\.billingInterval : undefined[\s\S]*\}/);
+assert.match(
+  pricingPage,
+  /initialBillingInterval=\{resumeCheckout[\s\S]*resumeCheckout\.plan === checkoutPlan[\s\S]*\? resumeCheckout\.billingInterval[\s\S]*: undefined[\s\S]*: nurtureBillingIntent\(searchParams\)\}/
+);
 assert.match(pricingPage, /resumeCheckout=\{resumeCheckout\?\.plan === checkoutPlan\}/);
 assert.match(pricingPage, /id=\{`\$\{checkoutPlan\}-checkout`\}/);
 

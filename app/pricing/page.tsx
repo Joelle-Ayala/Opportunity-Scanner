@@ -100,6 +100,22 @@ type PricingSearchParams = {
   scanId?: string;
 };
 
+type PricingAnalyticsSource = Parameters<typeof PricingAnalytics>[0]["source"];
+
+function pricingAnalyticsSource(searchParams?: PricingSearchParams): PricingAnalyticsSource {
+  if (searchParams?.checkout) return "checkout_return";
+  if (searchParams?.source === "report_gate") return "report_gate";
+  if (searchParams?.source === "navigation") return "navigation";
+  if (searchParams?.source === "nurture") return "nurture";
+  return "unknown";
+}
+
+function nurtureBillingIntent(searchParams?: PricingSearchParams): BillingInterval | undefined {
+  return searchParams?.source === "nurture" && searchParams.billing_interval === "annual"
+    ? "annual"
+    : undefined;
+}
+
 function resumableSubscriptionCheckout(searchParams?: PricingSearchParams): {
   plan: "monitor" | "growth";
   billingInterval: BillingInterval;
@@ -147,13 +163,7 @@ export default function PricingPage({
   const reportScanId = searchParams?.source === "report_gate" || searchParams?.source === "checkout_return"
     ? searchParams.scanId
     : undefined;
-  const analyticsSource = searchParams?.checkout
-    ? "checkout_return"
-    : searchParams?.source === "report_gate"
-      ? "report_gate"
-      : searchParams?.source === "navigation"
-        ? "navigation"
-        : "unknown";
+  const analyticsSource = pricingAnalyticsSource(searchParams);
 
   return (
     <main className="min-h-screen bg-field">
@@ -262,9 +272,11 @@ export default function PricingPage({
                   checkoutEnabled={checkoutEnabled}
                   featured={featured}
                   scanId={plan.name === "Report" ? reportScanId : undefined}
-                  initialBillingInterval={
-                    resumeCheckout?.plan === checkoutPlan ? resumeCheckout.billingInterval : undefined
-                  }
+                  initialBillingInterval={resumeCheckout
+                    ? resumeCheckout.plan === checkoutPlan
+                      ? resumeCheckout.billingInterval
+                      : undefined
+                    : nurtureBillingIntent(searchParams)}
                   resumeCheckout={resumeCheckout?.plan === checkoutPlan}
                 />
               </article>

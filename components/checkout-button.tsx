@@ -84,7 +84,7 @@ export function CheckoutButton({
     }
   }, [initialBillingInterval, plan, resumeCheckout]);
 
-  if (!checkoutEnabled && plan !== "report") {
+  if (!checkoutEnabled) {
     return (
       <div className="mt-5 border-t border-current/15 pt-4">
         <p
@@ -95,10 +95,12 @@ export function CheckoutButton({
               : "border-line bg-white/70 text-muted"
           }`}
         >
-          Not Available Yet
+          {plan === "report" ? "Checkout Paused" : "Not Available Yet"}
         </p>
         <p className={`mt-2 text-center text-xs leading-5 ${featured ? "text-slate-300" : "text-muted"}`}>
-          Subscription checkout will open after monitoring readiness is verified.
+          {plan === "report"
+            ? "One-time Report checkout is temporarily unavailable. Your free preview remains available."
+            : "Subscription checkout will open after monitoring readiness is verified."}
         </p>
       </div>
     );
@@ -292,6 +294,15 @@ export function CheckoutButton({
               ? "Resume Secure Checkout"
               : "Continue to Secure Checkout"}
       </button>
+
+      {plan === "report" ? (
+        <p className={`mt-3 text-xs leading-5 ${featured ? "text-slate-300" : "text-muted"}`}>
+          This is a one-time purchase. Full report access is delivered after payment confirmation.
+          Fees are non-refundable except where required by law. See the{" "}
+          <a href="/terms" className="font-semibold underline underline-offset-2">Terms</a> and{" "}
+          <a href="/privacy" className="font-semibold underline underline-offset-2">Privacy Notice</a>.
+        </p>
+      ) : null}
 
       <div aria-live="polite" aria-atomic="true" className="min-h-6">
         {error ? (
