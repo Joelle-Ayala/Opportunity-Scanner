@@ -75,6 +75,7 @@ try {
     [...required, ...recommended].map((name, index) => [name, `private-value-${index}`])
   );
   configuredValues.STRIPE_SECRET_KEY = "sk_live_growth_hardening";
+  configuredValues.OPPORTUNITY_SCANNER_CONTACT_EMAIL = "support@opportunityscanner.ai";
   configuredValues.VERCEL_WEB_ANALYTICS_ENABLED = "true";
   const configured = runPreflight(configuredValues);
   assert.equal(configured.status, 0, `Preflight should pass with required variables configured: ${configured.stderr}`);

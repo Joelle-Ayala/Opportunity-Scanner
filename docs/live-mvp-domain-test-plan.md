@@ -23,7 +23,7 @@ This is a controlled paid-launch test, not a broad public launch. Use founder-ap
 - Production accepts only live Stripe credentials, live Checkout sessions, and live webhook objects.
 - Paid access is resolved server-side from account ownership, report grants, or active monitoring entitlement. Legacy URL access codes are disabled in production unless the explicit emergency override is enabled.
 - If Stripe is incomplete, the product keeps the free scan available and presents paid checkout as temporarily unavailable.
-- Production defaults to Report-only checkout. Monitor and Growth must remain unavailable unless `ENABLE_SUBSCRIPTION_CHECKOUT=true` and all four subscription Price IDs are configured.
+- Production defaults to Report-only checkout. Monitor and Growth must remain unavailable unless `ENABLE_SUBSCRIPTION_CHECKOUT=true`, `MONITORING_SCHEDULER_READY=true`, and all four subscription Price IDs are configured.
 
 ## Entry Gates
 

@@ -147,6 +147,10 @@ assert.deepEqual(snapshot.mrrScorecard, {
     monthly: { activeSubscriptions: 1, normalizedMrr: 99, subscriptionShare: 33.3 },
     annual: { activeSubscriptions: 2, normalizedMrr: 290, subscriptionShare: 66.7 }
   },
+  productMix: {
+    monitor: { activeSubscriptions: 2, normalizedMrr: 181.5, subscriptionShare: 66.7 },
+    growth: { activeSubscriptions: 1, normalizedMrr: 207.5, subscriptionShare: 33.3 }
+  },
   newSubscriptions: 5,
   canceledSubscriptions: 1,
   pastDueSubscriptions: 1,

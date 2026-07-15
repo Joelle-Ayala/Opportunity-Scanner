@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "fs";
+import { isBrandedSupportEmail } from "../lib/support.ts";
 
 function loadLocalEnv() {
   if (!existsSync(".env.local")) return;
@@ -74,6 +75,14 @@ reportGroup("Recommended", recommended);
 const safetyErrors = [];
 if (!process.env.STRIPE_SECRET_KEY?.trim().startsWith("sk_live_")) {
   safetyErrors.push("STRIPE_SECRET_KEY must use an sk_live_* key for production launch.");
+}
+if (
+  configured("OPPORTUNITY_SCANNER_CONTACT_EMAIL")
+  && !isBrandedSupportEmail(process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL)
+) {
+  safetyErrors.push(
+    "OPPORTUNITY_SCANNER_CONTACT_EMAIL must use the opportunityscanner.ai support domain."
+  );
 }
 
 const vercelAnalyticsFlagName = "VERCEL_WEB_ANALYTICS_ENABLED";

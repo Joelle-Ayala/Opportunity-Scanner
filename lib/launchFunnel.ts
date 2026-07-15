@@ -56,6 +56,7 @@ export type LaunchFunnelMrrScorecard = {
   progressToTarget: number;
   activeSubscriptions: number;
   planMix: Record<BillingInterval, LaunchFunnelPlanMix>;
+  productMix: Record<Exclude<PaymentPlan, "report">, LaunchFunnelPlanMix>;
   newSubscriptions: number;
   canceledSubscriptions: number;
   pastDueSubscriptions: number;
@@ -176,6 +177,10 @@ function buildMrrScorecard(input: {
     monthly: { activeSubscriptions: 0, normalizedMrr: 0, subscriptionShare: 0 },
     annual: { activeSubscriptions: 0, normalizedMrr: 0, subscriptionShare: 0 }
   };
+  const productMix: Record<Exclude<PaymentPlan, "report">, LaunchFunnelPlanMix> = {
+    monitor: { activeSubscriptions: 0, normalizedMrr: 0, subscriptionShare: 0 },
+    growth: { activeSubscriptions: 0, normalizedMrr: 0, subscriptionShare: 0 }
+  };
   let newSubscriptions = 0;
   let canceledSubscriptions = 0;
   let pastDueSubscriptions = 0;
@@ -210,6 +215,9 @@ function buildMrrScorecard(input: {
     planMix[catalogEntry.interval].activeSubscriptions += 1;
     planMix[catalogEntry.interval].normalizedMrr +=
       catalogEntry.contractValue / (catalogEntry.interval === "annual" ? 12 : 1);
+    productMix[catalogEntry.product].activeSubscriptions += 1;
+    productMix[catalogEntry.product].normalizedMrr +=
+      catalogEntry.contractValue / (catalogEntry.interval === "annual" ? 12 : 1);
   }
 
   const activeSubscriptions = planMix.monthly.activeSubscriptions + planMix.annual.activeSubscriptions;
@@ -217,6 +225,10 @@ function buildMrrScorecard(input: {
   for (const interval of ["monthly", "annual"] as const) {
     planMix[interval].normalizedMrr = currency(planMix[interval].normalizedMrr);
     planMix[interval].subscriptionShare = percentage(planMix[interval].activeSubscriptions, activeSubscriptions);
+  }
+  for (const product of ["monitor", "growth"] as const) {
+    productMix[product].normalizedMrr = currency(productMix[product].normalizedMrr);
+    productMix[product].subscriptionShare = percentage(productMix[product].activeSubscriptions, activeSubscriptions);
   }
 
   return {
@@ -227,6 +239,7 @@ function buildMrrScorecard(input: {
     progressToTarget: percentage(activeNormalizedMrr, MRR_TARGET),
     activeSubscriptions,
     planMix,
+    productMix,
     newSubscriptions,
     canceledSubscriptions,
     pastDueSubscriptions,

@@ -24,6 +24,7 @@ const ENV_NAMES = [
   "STRIPE_PRICE_GROWTH_MONTHLY",
   "STRIPE_PRICE_GROWTH_ANNUAL",
   "ENABLE_SUBSCRIPTION_CHECKOUT",
+  "MONITORING_SCHEDULER_READY",
   "ENABLE_PAID_REPORT_CHECKOUT",
   "SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY",
@@ -42,6 +43,7 @@ function installTestEnv() {
     STRIPE_PRICE_GROWTH_MONTHLY: "price_growth_monthly_server",
     STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual_server",
     ENABLE_SUBSCRIPTION_CHECKOUT: "true",
+    MONITORING_SCHEDULER_READY: "true",
     ENABLE_PAID_REPORT_CHECKOUT: "true"
   });
 }
@@ -97,6 +99,16 @@ test("allows Report-only configuration while subscription checkout defaults clos
   assert.throws(() => priceFor(config, "monitor", "monthly"), /Subscription checkout is disabled/);
 });
 
+test("keeps subscription checkout closed until scheduler readiness is proven", () => {
+  installTestEnv();
+  process.env.MONITORING_SCHEDULER_READY = "false";
+
+  const config = getStripeServerConfig();
+  assert.equal(config.subscriptionCheckoutEnabled, false);
+  assert.equal(priceFor(config, "report", null), "price_report_server");
+  assert.throws(() => priceFor(config, "growth", "monthly"), /Subscription checkout is disabled/);
+});
+
 test("requires live Stripe credentials only in production", () => {
   const originalNodeEnv = process.env.NODE_ENV;
   try {
@@ -136,7 +148,7 @@ test("launch environment rejects test credentials without requiring legacy URL c
     CRON_SECRET: "cron-launch-test",
     RESEND_API_KEY: "resend-launch-test",
     RESEND_FROM_EMAIL: "scanner@example.test",
-    OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@example.test",
+    OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@opportunityscanner.ai",
     ALERT_UNSUBSCRIBE_SECRET: "alert-launch-test",
     NURTURE_UNSUBSCRIBE_SECRET: "nurture-launch-test",
     SCAN_RATE_LIMIT_HASH_SECRET: "rate-limit-launch-test",
@@ -389,26 +401,31 @@ test("rejects Report checkout before Stripe when the paid launch flag is closed"
   assert.equal(checkoutSessions, 0);
 });
 
-test("rejects subscription checkout before auth or Stripe when the launch flag is closed", async () => {
-  installTestEnv();
-  process.env.ENABLE_SUBSCRIPTION_CHECKOUT = "false";
-  let checkoutSessions = 0;
-  const request = new Request("https://scanner.example.test/api/checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(checkout({ plan: "growth", billingInterval: "annual", scanId: undefined }))
-  });
-  const response = await dispatchCheckoutWithEligibility(request, "growth", null, null, {
-    checkout: async () => {
-      checkoutSessions += 1;
-      return Response.json({ ok: true }, { status: 201 });
-    },
-    billingPortal: async () => Response.json({ ok: true }, { status: 201 })
-  });
+test("rejects subscription checkout before auth or Stripe when either operations gate is closed", async () => {
+  for (const environment of [
+    { ENABLE_SUBSCRIPTION_CHECKOUT: "false", MONITORING_SCHEDULER_READY: "true" },
+    { ENABLE_SUBSCRIPTION_CHECKOUT: "true", MONITORING_SCHEDULER_READY: "false" }
+  ]) {
+    installTestEnv();
+    Object.assign(process.env, environment);
+    let checkoutSessions = 0;
+    const request = new Request("https://scanner.example.test/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(checkout({ plan: "growth", billingInterval: "annual", scanId: undefined }))
+    });
+    const response = await dispatchCheckoutWithEligibility(request, "growth", null, null, {
+      checkout: async () => {
+        checkoutSessions += 1;
+        return Response.json({ ok: true }, { status: 201 });
+      },
+      billingPortal: async () => Response.json({ ok: true }, { status: 201 })
+    });
 
-  assert.equal(response.status, 403);
-  assert.equal((await response.json()).error.code, "PLAN_UNAVAILABLE");
-  assert.equal(checkoutSessions, 0);
+    assert.equal(response.status, 403);
+    assert.equal((await response.json()).error.code, "PLAN_UNAVAILABLE");
+    assert.equal(checkoutSessions, 0);
+  }
 });
 
 test("sends active and trialing subscribers to billing management without creating another Checkout Session", async () => {

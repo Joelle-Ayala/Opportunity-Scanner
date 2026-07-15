@@ -223,6 +223,14 @@
       "prerequisites": ["v0019"],
       "sha256": "924d7890309477452474fbe37d347bf5a4fb9c04a88de23f579678994615b36a",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0028",
+      "file": "db/monitoring-scheduler-heartbeats.sql",
+      "description": "Aggregate-only scheduler heartbeats, 90-day retention, and service-only soak and capacity evidence.",
+      "prerequisites": ["v0025"],
+      "sha256": "c492c45bd551d6dfbdf472b4eb2078f3aa26751544fc1f8eb5e51ad8ea320e4b",
+      "requiredInProduction": true
     }
   ]
 }

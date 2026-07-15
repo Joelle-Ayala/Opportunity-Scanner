@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import { getDeadlineEmailConfig, sendDeadlineAlertEmail } from "@/lib/deadlineAlerts/delivery";
 import {
   claimPendingDeadlineAlerts,
@@ -17,13 +17,15 @@ import {
   failMonitoringRun,
   getMonitoringQueueHealth,
   markMonitoringAlertSent,
+  recordMonitoringSchedulerHeartbeat,
   releaseMonitoringProfileClaim,
   releaseMonitoringAlert,
   startMonitoringRun,
   type ClaimedMonitoringAlert,
   type MonitoredProfileRecord,
   type MonitoringQueueHealth,
-  type MonitoringRunRecord
+  type MonitoringRunRecord,
+  type MonitoringSchedulerOutcome
 } from "@/lib/monitoring/storage";
 import { executeScanPipeline } from "@/lib/scanPipeline";
 import {
@@ -57,7 +59,7 @@ type MonitoringResult = {
 
 type MonitoringCronSummary = {
   ok: boolean;
-  outcome: "completed" | "configuration_error" | "storage_error" | "delivery_failed" | "run_failed";
+  outcome: MonitoringSchedulerOutcome;
   claimed: number;
   completed: number;
   failed: number;
@@ -89,7 +91,59 @@ type MonitoringCronSummary = {
   durationMs: number;
 };
 
-function respondWithSummary(summary: MonitoringCronSummary, status: number): Response {
+async function respondWithSummary(
+  summary: MonitoringCronSummary,
+  status: number,
+  invocation: { id: string; startedAt: number }
+): Promise<Response> {
+  const completedAt = invocation.startedAt + summary.durationMs;
+  const configurationFailureCount = Number(!summary.delivery.configured)
+    + Number(!summary.delivery.deadlines.configured);
+  const detectedStorageFailureCount = Number(summary.delivery.claimFailed)
+    + summary.delivery.releaseFailed
+    + Number(summary.delivery.deadlines.enqueueFailed)
+    + Number(summary.delivery.deadlines.claimFailed)
+    + summary.delivery.deadlines.releaseFailed;
+  const storageFailureCount = Math.max(
+    detectedStorageFailureCount,
+    summary.outcome === "storage_error" ? 1 : 0
+  );
+
+  try {
+    await recordMonitoringSchedulerHeartbeat({
+      invocationId: invocation.id,
+      startedAt: new Date(invocation.startedAt).toISOString(),
+      completedAt: new Date(completedAt).toISOString(),
+      durationMs: summary.durationMs,
+      httpStatus: status,
+      outcome: summary.outcome,
+      profilesClaimed: summary.claimed,
+      profilesCompleted: summary.completed,
+      profilesFailed: summary.failed,
+      profilesDeferred: summary.deferred,
+      monitoringAlertsClaimed: summary.delivery.claimed,
+      monitoringAlertsDelivered: summary.delivery.delivered,
+      monitoringAlertsFailed: summary.delivery.failed,
+      monitoringAlertsRetried: summary.delivery.retried,
+      monitoringAlertsDeadLettered: summary.delivery.deadLettered,
+      deadlineAlertsEnqueued: summary.delivery.deadlines.enqueued,
+      deadlineAlertsClaimed: summary.delivery.deadlines.claimed,
+      deadlineAlertsDelivered: summary.delivery.deadlines.delivered,
+      deadlineAlertsFailed: summary.delivery.deadlines.failed,
+      deadlineAlertsRetried: summary.delivery.deadlines.retried,
+      deadlineAlertsDeadLettered: summary.delivery.deadlines.deadLettered,
+      configurationFailureCount,
+      storageFailureCount,
+      queueHealth: summary.health
+    });
+  } catch (cause) {
+    console.error("Unable to record monitoring scheduler heartbeat", {
+      invocationId: invocation.id,
+      outcome: summary.outcome,
+      error: cause instanceof Error ? cause.message : "Unknown monitoring heartbeat error"
+    });
+  }
+
   const log = { event: "cron.monitoring.summary", httpStatus: status, ...summary };
   if (summary.ok) console.info(log);
   else console.error(log);
@@ -226,6 +280,7 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   const startedAt = Date.now();
+  const invocationId = randomUUID();
   const emailConfig = getMonitoringEmailConfig();
   const deadlineEmailConfig = getDeadlineEmailConfig();
   let alertsClaimed = 0;
@@ -289,7 +344,7 @@ export async function GET(request: Request): Promise<Response> {
       },
       results: [],
       durationMs: Date.now() - startedAt
-    }, 503);
+    }, 503, { id: invocationId, startedAt });
   }
 
   const results = await processClaimedProfiles(profiles, startedAt);
@@ -446,5 +501,5 @@ export async function GET(request: Request): Promise<Response> {
     },
     results,
     durationMs: Date.now() - startedAt
-  }, status);
+  }, status, { id: invocationId, startedAt });
 }

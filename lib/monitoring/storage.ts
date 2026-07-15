@@ -1,4 +1,4 @@
-import { supabaseRpc, supabaseUpdate } from "../supabaseRest.ts";
+import { supabaseRpc, supabaseUpdate, withSupabaseRequestBudget } from "../supabaseRest.ts";
 import type { StoredOpportunitySignal } from "../types.ts";
 import {
   monitoringOpportunityKey,
@@ -62,6 +62,76 @@ export type MonitoringQueueHealth = {
   retrying_count: number;
   dead_letter_count: number;
   last_success_at?: string | null;
+};
+
+export type MonitoringSchedulerOutcome =
+  | "completed"
+  | "configuration_error"
+  | "storage_error"
+  | "delivery_failed"
+  | "run_failed";
+
+export type MonitoringSchedulerHeartbeat = {
+  invocationId: string;
+  startedAt: string;
+  completedAt: string;
+  durationMs: number;
+  httpStatus: number;
+  outcome: MonitoringSchedulerOutcome;
+  profilesClaimed: number;
+  profilesCompleted: number;
+  profilesFailed: number;
+  profilesDeferred: number;
+  monitoringAlertsClaimed: number;
+  monitoringAlertsDelivered: number;
+  monitoringAlertsFailed: number;
+  monitoringAlertsRetried: number;
+  monitoringAlertsDeadLettered: number;
+  deadlineAlertsEnqueued: number;
+  deadlineAlertsClaimed: number;
+  deadlineAlertsDelivered: number;
+  deadlineAlertsFailed: number;
+  deadlineAlertsRetried: number;
+  deadlineAlertsDeadLettered: number;
+  configurationFailureCount: number;
+  storageFailureCount: number;
+  queueHealth: MonitoringQueueHealth | null;
+};
+
+export type MonitoringSchedulerEvidence = {
+  invocation_id: string;
+  started_at: string;
+  completed_at: string;
+  duration_ms: number;
+  interval_since_previous_seconds?: number | null;
+  http_status: number;
+  outcome: MonitoringSchedulerOutcome;
+  profiles_claimed: number;
+  profiles_completed: number;
+  profiles_failed: number;
+  profiles_deferred: number;
+  completed_profiles_per_minute?: number | null;
+  monitoring_alerts_claimed: number;
+  monitoring_alerts_delivered: number;
+  monitoring_alerts_failed: number;
+  monitoring_alerts_retried: number;
+  monitoring_alerts_dead_lettered: number;
+  deadline_alerts_enqueued: number;
+  deadline_alerts_claimed: number;
+  deadline_alerts_delivered: number;
+  deadline_alerts_failed: number;
+  deadline_alerts_retried: number;
+  deadline_alerts_dead_lettered: number;
+  configuration_failure_count: number;
+  storage_failure_count: number;
+  queue_health_available: boolean;
+  queue_backlog_count?: number | null;
+  queue_oldest_due_age_seconds?: number | null;
+  queue_leased_count?: number | null;
+  queue_stale_lease_count?: number | null;
+  queue_retrying_count?: number | null;
+  queue_dead_letter_count?: number | null;
+  recorded_at: string;
 };
 
 type MonitoringFailureResult = {
@@ -232,4 +302,54 @@ export async function getMonitoringQueueHealth(): Promise<MonitoringQueueHealth>
   const health = rows[0];
   if (!health) throw new Error("Monitoring queue health was unavailable.");
   return health;
+}
+
+export async function recordMonitoringSchedulerHeartbeat(
+  heartbeat: MonitoringSchedulerHeartbeat
+): Promise<void> {
+  const queueHealth = heartbeat.queueHealth;
+  await withSupabaseRequestBudget({ timeoutMs: 3_000 }, () =>
+    supabaseRpc<null>("record_monitoring_scheduler_run", {
+      p_invocation_id: heartbeat.invocationId,
+      p_started_at: heartbeat.startedAt,
+      p_completed_at: heartbeat.completedAt,
+      p_duration_ms: heartbeat.durationMs,
+      p_http_status: heartbeat.httpStatus,
+      p_outcome: heartbeat.outcome,
+      p_profiles_claimed: heartbeat.profilesClaimed,
+      p_profiles_completed: heartbeat.profilesCompleted,
+      p_profiles_failed: heartbeat.profilesFailed,
+      p_profiles_deferred: heartbeat.profilesDeferred,
+      p_monitoring_alerts_claimed: heartbeat.monitoringAlertsClaimed,
+      p_monitoring_alerts_delivered: heartbeat.monitoringAlertsDelivered,
+      p_monitoring_alerts_failed: heartbeat.monitoringAlertsFailed,
+      p_monitoring_alerts_retried: heartbeat.monitoringAlertsRetried,
+      p_monitoring_alerts_dead_lettered: heartbeat.monitoringAlertsDeadLettered,
+      p_deadline_alerts_enqueued: heartbeat.deadlineAlertsEnqueued,
+      p_deadline_alerts_claimed: heartbeat.deadlineAlertsClaimed,
+      p_deadline_alerts_delivered: heartbeat.deadlineAlertsDelivered,
+      p_deadline_alerts_failed: heartbeat.deadlineAlertsFailed,
+      p_deadline_alerts_retried: heartbeat.deadlineAlertsRetried,
+      p_deadline_alerts_dead_lettered: heartbeat.deadlineAlertsDeadLettered,
+      p_configuration_failure_count: heartbeat.configurationFailureCount,
+      p_storage_failure_count: heartbeat.storageFailureCount,
+      p_queue_health_available: Boolean(queueHealth),
+      p_queue_backlog_count: queueHealth?.backlog_count ?? null,
+      p_queue_oldest_due_age_seconds: queueHealth?.oldest_due_age_seconds ?? null,
+      p_queue_leased_count: queueHealth?.leased_count ?? null,
+      p_queue_stale_lease_count: queueHealth?.stale_lease_count ?? null,
+      p_queue_retrying_count: queueHealth?.retrying_count ?? null,
+      p_queue_dead_letter_count: queueHealth?.dead_letter_count ?? null
+    })
+  );
+}
+
+export async function getMonitoringSchedulerEvidence(
+  since = new Date(Date.now() - 48 * 60 * 60_000),
+  limit = 500
+): Promise<MonitoringSchedulerEvidence[]> {
+  return supabaseRpc<MonitoringSchedulerEvidence[]>("get_monitoring_scheduler_evidence", {
+    p_since: since.toISOString(),
+    p_limit: limit
+  });
 }

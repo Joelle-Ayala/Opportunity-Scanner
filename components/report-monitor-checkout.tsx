@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { secureStripeBillingPortalUrl } from "@/components/billing-management-state";
+import type { BillingInterval } from "@/lib/payments/contract";
 import { trackProductEvent } from "@/lib/productAnalytics";
 
 type ReportMonitorCheckoutProps = {
@@ -18,6 +19,33 @@ type CheckoutResponse = {
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type SubscriptionPlan = "monitor" | "growth";
+
+const SUBSCRIPTION_OPTIONS: Record<SubscriptionPlan, {
+  name: string;
+  cadence: string;
+  profiles: string;
+  monthlyPrice: number;
+  annualPrice: number;
+  benefits: string[];
+}> = {
+  monitor: {
+    name: "Monitor",
+    cadence: "Weekly monitoring",
+    profiles: "1 company profile",
+    monthlyPrice: 99,
+    annualPrice: 990,
+    benefits: ["Weekly opportunity scans", "New opportunity alerts", "Full action layer on every included scan"]
+  },
+  growth: {
+    name: "Growth",
+    cadence: "Daily monitoring",
+    profiles: "Up to 3 company profiles",
+    monthlyPrice: 249,
+    annualPrice: 2_490,
+    benefits: ["Daily opportunity scans", "30 monthly contact-enrichment credits", "CRM and webhook workflows"]
+  }
+};
 
 function secureStripeCheckoutUrl(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -36,9 +64,15 @@ export function ReportMonitorCheckout({
 }: ReportMonitorCheckoutProps) {
   const accountEmail = defaultEmail?.trim().toLowerCase() ?? "";
   const [email, setEmail] = useState(accountEmail);
+  const [plan, setPlan] = useState<SubscriptionPlan>("monitor");
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>("monthly");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const needsEmail = !EMAIL_PATTERN.test(accountEmail);
+  const selectedOption = SUBSCRIPTION_OPTIONS[plan];
+  const displayedPrice = billingInterval === "annual"
+    ? selectedOption.annualPrice
+    : selectedOption.monthlyPrice;
 
   async function startCheckout(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,8 +87,8 @@ export function ReportMonitorCheckout({
     setError("");
     setLoading(true);
     trackProductEvent("checkout_started", {
-      plan: "subscription",
-      billing_period: "monthly"
+      plan,
+      billing_period: billingInterval
     });
 
     try {
@@ -62,8 +96,8 @@ export function ReportMonitorCheckout({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          plan: "monitor",
-          billingInterval: "monthly",
+          plan,
+          billingInterval,
           customerEmail,
           requestId: crypto.randomUUID(),
           scanId
@@ -89,22 +123,18 @@ export function ReportMonitorCheckout({
 
   return (
     <section aria-labelledby="monitor-report-heading" className="overflow-hidden rounded-lg border border-accent bg-white shadow-sm">
-      <div className="grid lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="p-5 sm:p-6">
           <p className="text-xs font-semibold uppercase text-accent">Keep this pipeline current</p>
           <h2 id="monitor-report-heading" className="mt-2 text-xl font-semibold text-ink sm:text-2xl">
             New opportunities will not wait for your next report.
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-700">
-            Monitor {companyName} weekly for newly found public-sector opportunities. This report
-            will already be selected when you finish secure checkout and continue setup.
+            Keep {companyName} current with repeat scans and newly found public-sector
+            opportunities. This report will already be selected when you finish secure checkout.
           </p>
           <ul className="mt-4 grid gap-2 text-sm text-slate-700 sm:grid-cols-3">
-            {[
-              "Weekly opportunity scans",
-              "New opportunity alerts",
-              "Full action layer on monitored scans"
-            ].map((benefit) => (
+            {selectedOption.benefits.map((benefit) => (
               <li key={benefit} className="flex items-start gap-2">
                 <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-signal" />
                 <span>{benefit}</span>
@@ -114,11 +144,65 @@ export function ReportMonitorCheckout({
         </div>
 
         <div className="border-t border-line bg-mist p-5 sm:p-6 lg:border-l lg:border-t-0">
+          <fieldset>
+            <legend className="text-xs font-semibold text-slate-700">Monitoring plan</legend>
+            <div className="mt-2 grid grid-cols-2 rounded-md border border-line bg-white p-1">
+              {(["monitor", "growth"] as const).map((optionPlan) => {
+                const option = SUBSCRIPTION_OPTIONS[optionPlan];
+                const selected = plan === optionPlan;
+                return (
+                  <button
+                    key={optionPlan}
+                    type="button"
+                    aria-pressed={selected}
+                    disabled={loading}
+                    onClick={() => setPlan(optionPlan)}
+                    className={`min-h-12 rounded px-2 py-2 text-left text-xs disabled:cursor-wait disabled:opacity-70 ${
+                      selected ? "bg-ink text-white shadow-sm" : "text-slate-600 hover:bg-field"
+                    }`}
+                  >
+                    <span className="block font-semibold">{option.name}</span>
+                    <span className={`mt-0.5 block ${selected ? "text-slate-300" : "text-muted"}`}>
+                      {option.cadence}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <fieldset className="mt-4">
+            <legend className="text-xs font-semibold text-slate-700">Billing schedule</legend>
+            <div className="mt-2 grid grid-cols-2 rounded-md border border-line bg-white p-1">
+              {(["monthly", "annual"] as const).map((interval) => {
+                const selected = billingInterval === interval;
+                return (
+                  <button
+                    key={interval}
+                    type="button"
+                    aria-pressed={selected}
+                    disabled={loading}
+                    onClick={() => setBillingInterval(interval)}
+                    className={`min-h-9 rounded px-2 py-2 text-xs font-semibold capitalize disabled:cursor-wait disabled:opacity-70 ${
+                      selected ? "bg-white text-ink shadow-sm ring-1 ring-ink" : "text-slate-600 hover:bg-field"
+                    }`}
+                  >
+                    {interval}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
           <div className="flex items-end gap-2">
-            <p className="text-3xl font-semibold text-ink">$99</p>
-            <p className="pb-1 text-sm text-muted">per month</p>
+            <p className="mt-5 text-3xl font-semibold text-ink">
+              ${displayedPrice.toLocaleString("en-US")}
+            </p>
+            <p className="pb-1 text-sm text-muted">per {billingInterval === "annual" ? "year" : "month"}</p>
           </div>
-          <p className="mt-2 text-xs leading-5 text-muted">One company profile. Cancel future renewals anytime.</p>
+          <p className="mt-2 text-xs leading-5 text-muted">
+            {selectedOption.profiles}. {billingInterval === "annual" ? "12 months for the price of 10." : "Cancel future renewals anytime."}
+          </p>
 
           <form onSubmit={startCheckout} className="mt-4" noValidate>
             {needsEmail ? (
@@ -151,7 +235,7 @@ export function ReportMonitorCheckout({
               disabled={loading}
               className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] disabled:cursor-wait disabled:opacity-70"
             >
-              {loading ? "Opening Secure Checkout..." : "Continue With This Report"}
+              {loading ? "Opening Secure Checkout..." : `Start ${selectedOption.name} With This Report`}
             </button>
 
             <div aria-live="polite" aria-atomic="true" className="min-h-6">

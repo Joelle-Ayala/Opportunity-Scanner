@@ -97,7 +97,7 @@ export default async function MonitoringOnboardingPage({
       <MonitoringOnboardingAnalytics subscriptionPlan={subscription.product} state={onboardingState} />
       {searchParams?.checkout === "success" ? (
         <PurchaseCompletedAnalytics
-          plan="subscription"
+          plan={subscription.product}
           billingPeriod={subscription.billingInterval === "annual" ? "annual" : "monthly"}
           eventKey={`subscription:${subscription.id}`}
         />

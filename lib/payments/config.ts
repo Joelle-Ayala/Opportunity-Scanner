@@ -35,6 +35,7 @@ const SUBSCRIPTION_PRICE_ENV = [
 ] as const;
 
 export const SUBSCRIPTION_CHECKOUT_FLAG = "ENABLE_SUBSCRIPTION_CHECKOUT";
+export const MONITORING_SCHEDULER_READY_FLAG = "MONITORING_SCHEDULER_READY";
 export const REPORT_CHECKOUT_FLAG = "ENABLE_PAID_REPORT_CHECKOUT";
 
 function requiredEnvironment(names: readonly string[]): Record<string, string> {
@@ -65,8 +66,13 @@ export function requiresLiveStripeObjects(): boolean {
   return process.env.NODE_ENV === "production";
 }
 
+export function monitoringSchedulerIsReady(): boolean {
+  return process.env[MONITORING_SCHEDULER_READY_FLAG]?.trim() === "true";
+}
+
 export function subscriptionCheckoutIsEnabled(): boolean {
-  return process.env[SUBSCRIPTION_CHECKOUT_FLAG]?.trim() === "true";
+  return process.env[SUBSCRIPTION_CHECKOUT_FLAG]?.trim() === "true"
+    && monitoringSchedulerIsReady();
 }
 
 export function reportCheckoutIsEnabled(): boolean {

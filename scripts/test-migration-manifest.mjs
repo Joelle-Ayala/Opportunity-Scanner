@@ -238,7 +238,8 @@ const expectedOrder = [
   "db/stripe-report-full-refund-guard.sql",
   "db/monitoring-throughput-reliability.sql",
   "db/repeat-report-purchase-recovery.sql",
-  "db/scan-nurture-first-touch-delay.sql"
+  "db/scan-nurture-first-touch-delay.sql",
+  "db/monitoring-scheduler-heartbeats.sql"
 ];
 
 const requiredDependencies = {
@@ -310,6 +311,9 @@ const requiredDependencies = {
   ],
   "db/scan-nurture-first-touch-delay.sql": [
     "db/scan-nurture-enrollment-ambiguity-fix.sql"
+  ],
+  "db/monitoring-scheduler-heartbeats.sql": [
+    "db/monitoring-throughput-reliability.sql"
   ]
 };
 

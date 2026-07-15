@@ -87,7 +87,8 @@ Confirm currency, tax behavior, receipt settings, customer statement text, and b
 ## 5. Configure Customer Email
 
 - Verify the sending domain in Resend and set `RESEND_FROM_EMAIL` to an approved address on that domain.
-- Configure working MX records for `support@opportunityscanner.ai` and prove the support inbox can receive customer replies.
+- Use Google Workspace Business Starter for the monitored `support@opportunityscanner.ai` mailbox. Configure the exact Google-issued MX, SPF, and DKIM records in GoDaddy, then prove the inbox can send and receive customer replies.
+- Keep Resend on its provider-issued sending subdomain records for transactional product email. Do not place Resend inbound MX records at the root domain.
 - Configure `RESEND_API_KEY`, `ALERT_UNSUBSCRIBE_SECRET`, and `NURTURE_UNSUBSCRIBE_SECRET` in production.
 - Send one monitoring/deadline alert to the founder test inbox and verify subject, report link, sender identity, and delivery status.
 - Send nurture email only for a consent-eligible test record. Verify one-click and visible unsubscribe links, then confirm suppression prevents future sends.
@@ -101,6 +102,7 @@ No-go if required customer email is landing in spam, the sender is unverified, o
 - With Vercel Analytics, confirm production pageviews, referrers, and UTM parameters arrive. Reconcile scan first-touch attribution with Stripe and Supabase for conversion reporting.
 - When PostHog is configured, also confirm `pricing_viewed`, `checkout_started`, `purchase_completed`, `dashboard_viewed`, `monitoring_onboarding_viewed`, and `monitoring_onboarding_completed` arrive when their steps occur.
 - Review the aggregate 7-day and 90-day launch-funnel snapshot by first-touch source, medium, and campaign; confirm it excludes emails, company URLs, report IDs, and full referrers.
+- Review normalized MRR by both product (Monitor/Growth) and billing schedule (monthly/annual), including subscription count, MRR contribution, and mix share against the $10,000 target.
 - Confirm events contain only the allowlisted plan, billing period, source, state, and aggregate status fields.
 - Confirm email addresses, scan IDs, Stripe IDs, auth tokens, and URL query strings are absent.
 - If PostHog is used, keep autocapture, pageview capture, session replay, and persistent anonymous profiling disabled.
@@ -116,12 +118,13 @@ Customer plan limits:
 
 Current operating capacity:
 
-- The scheduled monitoring route claims one due profile per invocation.
+- The worker supports a bounded batch of 1-10 due profiles per invocation, defaults to five, and processes up to three profiles concurrently by default.
 - The production cron is scheduled once daily at `12:17 UTC`.
 - One invocation attempts up to five monitoring alerts and five deadline alerts after the scan work.
 - A failed monitoring scan is scheduled for retry after 15 minutes, but a retry still needs another invocation.
+- Migration `v0028` records service-only, aggregate scheduler heartbeats for authorized invocations, including zero-work and failure outcomes. It records no customer, profile, report, company, or email identifiers and prunes evidence older than 90 days during scheduler writes.
 
-Before selling subscriptions, calculate the maximum due profiles in the busiest day and prove enough authenticated invocations can complete them within the 60-second route limit. Record claimed, completed, failed, overdue, and alert-queue counts. A single daily invocation is not sufficient for a fully used Growth plan with three daily profiles.
+Before selling subscriptions, upgrade the project to Vercel Pro and schedule the monitoring route every 15 minutes. Run it for at least 48 hours, then query `get_monitoring_scheduler_evidence` and prove the schedule interval, successful/zero-work outcomes, throughput, backlog age, retries, dead letters, and alert delivery stay within plan capacity and the 60-second route limit. A single daily invocation is not sufficient for a fully used Growth plan with three daily profiles.
 
 Set `MONITORING_SCHEDULER_READY=true` only after that evidence is recorded. Subscription checkout remains fail-closed without it even when all plan Price IDs are configured.
 

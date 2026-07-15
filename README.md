@@ -137,7 +137,7 @@ pnpm run verify:launch
 
 `check:launch-env` requires the production scan, Supabase Auth, Stripe live payment, monitoring cron, Resend, unsubscribe, and rate-limit configuration. `verify:launch` runs the launch contract suite, report regressions, typecheck, and production build. Use `GET /api/health` on the deployed release to distinguish demo readiness from real paid-signup readiness without exposing configuration values. Paid Report readiness also requires configured customer email delivery and product analytics. The health route checks configuration and Stripe mode only; it does not query production migration-manifest/ledger parity, which remains a separate launch-runbook check.
 
-Production access is account- and purchase-based. A customer buys a one-time full report from an existing free report. Monitor and Growth remain unavailable unless `ENABLE_SUBSCRIPTION_CHECKOUT=true`; when enabled, a customer signs in with a Supabase magic link before buying either subscription. Legacy `?access=` report and admin codes are local-development tools only unless the explicit emergency production override is enabled.
+Production access is account- and purchase-based. A customer buys a one-time full report from an existing free report. Monitor and Growth remain unavailable unless both `ENABLE_SUBSCRIPTION_CHECKOUT=true` and `MONITORING_SCHEDULER_READY=true`; when enabled, a customer signs in with a Supabase magic link before buying either subscription. Legacy `?access=` report and admin codes are local-development tools only unless the explicit emergency production override is enabled.
 
 ## Environment
 
@@ -147,7 +147,7 @@ Copy `.env.example` to `.env.local`.
 - `SAM_API_KEY` enables SAM.gov active opportunity search.
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` enable production storage and customer magic-link authentication.
 - `APP_URL`, the Stripe live secret and webhook secret, and `STRIPE_PRICE_REPORT` enable one-time Report checkout.
-- `ENABLE_SUBSCRIPTION_CHECKOUT=true` plus all four Monitor/Growth Stripe Price IDs explicitly enables subscription checkout. Any other value keeps subscriptions unavailable.
+- `ENABLE_SUBSCRIPTION_CHECKOUT=true`, `MONITORING_SCHEDULER_READY=true`, and all four Monitor/Growth Stripe Price IDs explicitly enable subscription checkout. Any other state keeps subscriptions unavailable.
 - `CRON_SECRET` enables authenticated monitoring and nurture jobs.
 - `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and the alert/nurture unsubscribe secrets enable customer email delivery.
 - Enable Vercel Web Analytics and set `VERCEL_WEB_ANALYTICS_ENABLED=true` for privacy-friendly traffic and UTM reporting. `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` optionally add privacy-limited product events.

@@ -140,7 +140,7 @@ export function CheckoutButton({
       marketing_consent: false
     });
     trackProductEvent("checkout_started", {
-      plan: plan === "report" ? "full_report" : "subscription",
+      plan: plan === "report" ? "full_report" : plan,
       billing_period: billingPeriod
     });
 

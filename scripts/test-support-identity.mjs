@@ -35,10 +35,13 @@ const publicSupportSources = await Promise.all([
   "../app/reports/error.tsx",
   "../lib/transactionalEmail/scanLifecycle.ts"
 ].map((path) => readFile(new URL(path, import.meta.url), "utf8")));
+const launchPreflight = await readFile(new URL("./check-launch-env.mjs", import.meta.url), "utf8");
 
 for (const source of publicSupportSources) {
   assert.doesNotMatch(source, /hello@opportunitysystems\.ai|joelleayala\.com|Hi Opportunity Systems/);
   assert.match(source, /configuredSupportEmail/);
 }
+assert.match(launchPreflight, /isBrandedSupportEmail/);
+assert.match(launchPreflight, /must use the opportunityscanner\.ai support domain/);
 
 console.log("Customer support identity checks passed.");

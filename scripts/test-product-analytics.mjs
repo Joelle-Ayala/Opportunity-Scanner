@@ -24,7 +24,7 @@ const validEvents = [
   ["email_captured", { surface: "scan", marketing_consent: false }],
   ["pricing_viewed", { source: "report_gate" }],
   ["checkout_started", { plan: "full_report", billing_period: "one_time" }],
-  ["purchase_completed", { plan: "subscription", billing_period: "annual" }]
+  ["purchase_completed", { plan: "growth", billing_period: "annual" }]
 ];
 
 for (const [name, properties] of validEvents) {
