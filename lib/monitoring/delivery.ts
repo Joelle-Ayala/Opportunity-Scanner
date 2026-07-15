@@ -3,6 +3,8 @@ import { createAlertUnsubscribeToken } from "../deadlineAlerts/token.ts";
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DEFAULT_RESEND_TIMEOUT_MS = 10_000;
+const MAX_RESEND_TIMEOUT_MS = 30_000;
 
 export type MonitoringEmailConfig = {
   apiKey: string;
@@ -15,6 +17,72 @@ type ResendResponse = {
   id?: string;
   message?: string;
 };
+
+export type ResendRequestOptions = {
+  signal?: AbortSignal;
+  timeoutMs?: number;
+};
+
+function resendTimeoutMs(value?: number): number {
+  if (value === undefined || !Number.isFinite(value)) return DEFAULT_RESEND_TIMEOUT_MS;
+  return Math.min(Math.max(Math.trunc(value), 1), MAX_RESEND_TIMEOUT_MS);
+}
+
+export async function sendResendEmailRequest(
+  input: {
+    apiKey: string;
+    idempotencyKey: string;
+    body: Record<string, unknown>;
+    failureLabel: string;
+  },
+  fetchImpl: typeof fetch = fetch,
+  options: ResendRequestOptions = {}
+): Promise<string> {
+  const timeoutMs = resendTimeoutMs(options.timeoutMs);
+  const controller = new AbortController();
+  let timedOut = false;
+  let listeningForCallerAbort = false;
+  const forwardCallerAbort = () => controller.abort(options.signal?.reason);
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    controller.abort(new Error(`${input.failureLabel} timed out.`));
+  }, timeoutMs);
+
+  if (options.signal?.aborted) {
+    forwardCallerAbort();
+  } else if (options.signal) {
+    options.signal.addEventListener("abort", forwardCallerAbort, { once: true });
+    listeningForCallerAbort = true;
+  }
+
+  try {
+    const response = await fetchImpl(RESEND_ENDPOINT, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${input.apiKey}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": input.idempotencyKey
+      },
+      body: JSON.stringify(input.body),
+      signal: controller.signal
+    });
+    const payload = (await response.json().catch(() => ({}))) as ResendResponse;
+    if (!response.ok || !payload.id) {
+      throw new Error(payload.message?.slice(0, 450) || `${input.failureLabel} failed with status ${response.status}.`);
+    }
+    return payload.id;
+  } catch (cause) {
+    if (timedOut) {
+      throw new Error(`${input.failureLabel} timed out after ${timeoutMs}ms.`, { cause });
+    }
+    throw cause;
+  } finally {
+    clearTimeout(timeout);
+    if (listeningForCallerAbort && options.signal) {
+      options.signal.removeEventListener("abort", forwardCallerAbort);
+    }
+  }
+}
 
 export function getMonitoringEmailConfig(
   env: NodeJS.ProcessEnv = process.env
@@ -59,7 +127,8 @@ export function monitoringReportUrl(config: MonitoringEmailConfig, scanId: strin
 export async function sendMonitoringAlertEmail(
   config: MonitoringEmailConfig,
   alert: ClaimedMonitoringAlert,
-  fetchImpl: typeof fetch = fetch
+  fetchImpl: typeof fetch = fetch,
+  options: ResendRequestOptions = {}
 ): Promise<string> {
   const reportUrl = monitoringReportUrl(config, alert.scan_id);
   const agency = alert.agency_or_funder?.trim();
@@ -80,14 +149,11 @@ export async function sendMonitoringAlertEmail(
     ? `${config.appUrl}/api/deadline-alerts/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`
     : null;
 
-  const response = await fetchImpl(RESEND_ENDPOINT, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": `monitoring-alert/${alert.alert_id}`
-    },
-    body: JSON.stringify({
+  return sendResendEmailRequest({
+    apiKey: config.apiKey,
+    idempotencyKey: `monitoring-alert/${alert.alert_id}`,
+    failureLabel: "Resend delivery",
+    body: {
       from: `Opportunity Scanner <${config.fromEmail}>`,
       to: [alert.recipient_email],
       subject: `New opportunity: ${alert.opportunity_title.slice(0, 120)}`,
@@ -108,12 +174,6 @@ export async function sendMonitoringAlertEmail(
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
         }
       } : {})
-    })
-  });
-
-  const payload = (await response.json().catch(() => ({}))) as ResendResponse;
-  if (!response.ok || !payload.id) {
-    throw new Error(payload.message?.slice(0, 450) || `Resend delivery failed with status ${response.status}.`);
-  }
-  return payload.id;
+    }
+  }, fetchImpl, options);
 }

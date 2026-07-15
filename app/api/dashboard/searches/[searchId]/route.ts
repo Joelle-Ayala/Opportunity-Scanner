@@ -105,18 +105,14 @@ export async function POST(request: Request, { params }: { params: { searchId: s
     }
 
     if (action === "run") {
-      const profileId = await requestSavedSearchRunNow(session.user.id, params.searchId);
-      const cronSecret = process.env.CRON_SECRET;
-      if (cronSecret) {
-        const runUrl = new URL("/api/cron/monitoring", request.url);
-        runUrl.searchParams.set("profileId", profileId);
-        const response = await fetch(runUrl, {
-          headers: { Authorization: `Bearer ${cronSecret}` },
-          cache: "no-store"
-        });
-        if (!response.ok) throw new Error("The monitoring run could not start. It remains queued for the next scheduled check.");
-      }
-      return dashboardRedirect(request, "searchNotice", "Monitoring run completed. Review the latest results and changes below.");
+      const result = await requestSavedSearchRunNow(session.user.id, params.searchId);
+      return dashboardRedirect(
+        request,
+        "searchNotice",
+        result.enqueued
+          ? "Monitoring run queued for the next scheduled check."
+          : "A monitoring run is already queued or this profile is in its cooldown window."
+      );
     }
 
     return dashboardRedirect(request, "searchError", "Choose a valid saved-search action.");

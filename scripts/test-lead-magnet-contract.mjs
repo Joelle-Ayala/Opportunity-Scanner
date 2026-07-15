@@ -87,6 +87,18 @@ test("catalog contains the flagship and one guide per industry with safe local p
   }
 });
 
+test("the append-only database constraint accepts every published guide", async () => {
+  const migration = await readFile(
+    new URL("../db/lead-magnet-marketing-expansion.sql", import.meta.url),
+    "utf8"
+  );
+  for (const slug of [PLAYBOOK_SLUG, ...INDUSTRY_SLUGS]) {
+    assert.match(migration, new RegExp(`'${slug}'`));
+  }
+  assert.match(migration, /drop constraint if exists lead_magnet_captures_lead_magnet_slug_check/);
+  assert.match(migration, /add constraint lead_magnet_captures_lead_magnet_slug_check/);
+});
+
 test("rejects malformed and non-object JSON before persistence", async () => {
   for (const body of ["{", "null", "[]"]) {
     const state = harness();

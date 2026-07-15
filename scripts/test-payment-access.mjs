@@ -4,6 +4,7 @@ import {
   isMatchingPaidReportSession,
   resolveStoredReportAccess
 } from "../lib/payments/accessContract.ts";
+import { fulfillVerifiedReportCheckout } from "../lib/payments/persistence.ts";
 
 const SCAN_ID = "91a3e66c-2c07-46cf-ab0c-3768375e050a";
 const PRICE_ID = "price_report_server";
@@ -126,20 +127,24 @@ test("paid pages and APIs await the same server-side scan access guard", async (
 });
 
 test("handoff is report-scoped, fulfilled server-side, and not propagated as an API access code", async () => {
-  const [reportPage, paymentAccess, accessContract, persistence, stripeApi, handoffSql] = await Promise.all([
+  const [reportPage, paymentAccess, accessContract, persistence, stripeApi, handoffSql, ownershipSql] = await Promise.all([
     readFile(new URL("../app/reports/[id]/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../lib/payments/access.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/payments/accessContract.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/payments/persistence.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/payments/stripeApi.ts", import.meta.url), "utf8"),
-    readFile(new URL("../db/stripe-report-access-handoff.sql", import.meta.url), "utf8")
+    readFile(new URL("../db/stripe-report-access-handoff.sql", import.meta.url), "utf8"),
+    readFile(new URL("../db/customer-report-checkout-ownership.sql", import.meta.url), "utf8")
   ]);
-  assert.match(reportPage, /verifyReportCheckoutHandoff\(scan\.id, searchParams\.session_id\)/);
+  assert.match(
+    reportPage,
+    /verifyReportCheckoutHandoff\([\s\S]*scan\.id,[\s\S]*searchParams\.session_id,[\s\S]*authUserId: customerSession!\.user\.id,[\s\S]*accountId: customerAccount\.id/
+  );
   assert.match(reportPage, /redirect\(reportAccessHref\(`\/reports\/\$\{scan\.id\}`/);
   assert.match(reportPage, /if \(checkoutHandoffFulfilled\)[\s\S]*redirect/);
   assert.doesNotMatch(reportPage, /access=\$\{[^}]*session_id/);
   assert.match(paymentAccess, /isMatchingPaidReportSession\(session, scanId, config\.prices\.report\)/);
-  assert.match(paymentAccess, /await dependencies\.fulfillCheckout\(scanId, session\)/);
+  assert.match(paymentAccess, /await dependencies\.fulfillCheckout\(scanId, session, owner\)/);
   assert.match(accessContract, /session\.metadata\?\.scan_id === scanId/);
   assert.doesNotMatch(accessContract, /amount_total === 4900/);
   assert.match(accessContract, /latestCharge\.refunded === false/);
@@ -147,13 +152,63 @@ test("handoff is report-scoped, fulfilled server-side, and not propagated as an 
   assert.match(stripeApi, /"payment_intent\.latest_charge"/);
   assert.match(persistence, /p_customer_email: customerEmail/);
   assert.match(persistence, /SUPABASE_SERVICE_ROLE_KEY|databaseHeaders/);
-  assert.match(persistence, /rpc\/fulfill_verified_report_checkout/);
+  assert.match(persistence, /"fulfill_verified_customer_report_checkout"/);
+  assert.match(persistence, /p_auth_user_id: account!\.authUserId/);
+  assert.match(persistence, /p_customer_account_id: account!\.accountId/);
   assert.match(handoffSql, /on conflict \(stripe_checkout_session_id\) do nothing/);
   assert.match(handoffSql, /p_customer_email text/);
   assert.match(handoffSql, /drop function if exists fulfill_verified_report_checkout\(uuid, text, text, text, timestamptz, boolean\)/);
   assert.match(handoffSql, /and status = 'active'/);
   assert.match(handoffSql, /security definer/);
   assert.match(handoffSql, /grant execute[\s\S]*to service_role/);
+  assert.match(ownershipSql, /id = p_customer_account_id[\s\S]*auth_user_id = p_auth_user_id/);
+  assert.match(ownershipSql, /insert into customer_report_grant_ownership/);
+  assert.match(ownershipSql, /insert into customer_scan_ownership/);
+  assert.match(ownershipSql, /on conflict \(scan_id\) do update set[\s\S]*customer_scan_ownership\.customer_account_id = excluded\.customer_account_id/);
+  assert.match(ownershipSql, /grant execute on function fulfill_verified_customer_report_checkout[\s\S]*to service_role/);
+});
+
+test("verified account handoff sends authenticated ownership to the account-scoped RPC", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalUrl = process.env.SUPABASE_URL;
+  const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  let request;
+  process.env.SUPABASE_URL = "https://database.example.com";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-test";
+  globalThis.fetch = async (url, init) => {
+    request = { url: String(url), init };
+    return new Response("true", { status: 200, headers: { "Content-Type": "application/json" } });
+  };
+
+  try {
+    const fulfilled = await fulfillVerifiedReportCheckout(SCAN_ID, paidSession(), {
+      authUserId: "f018c793-41fc-4df7-ab85-8f7dd684f8ef",
+      accountId: "7582979b-7a9f-4ae9-9ddd-b7ddcc79d830"
+    });
+    assert.equal(fulfilled, true);
+    assert.match(request.url, /\/rest\/v1\/rpc\/fulfill_verified_customer_report_checkout$/);
+    const body = JSON.parse(request.init.body);
+    assert.equal(body.p_auth_user_id, "f018c793-41fc-4df7-ab85-8f7dd684f8ef");
+    assert.equal(body.p_customer_account_id, "7582979b-7a9f-4ae9-9ddd-b7ddcc79d830");
+    assert.equal(body.p_scan_id, SCAN_ID);
+    assert.equal(body.p_customer_email, "buyer@example.com");
+
+    request = undefined;
+    assert.equal(
+      await fulfillVerifiedReportCheckout(SCAN_ID, paidSession(), {
+        authUserId: "not-a-user",
+        accountId: "7582979b-7a9f-4ae9-9ddd-b7ddcc79d830"
+      }),
+      false
+    );
+    assert.equal(request, undefined);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalUrl === undefined) delete process.env.SUPABASE_URL;
+    else process.env.SUPABASE_URL = originalUrl;
+    if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+    else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey;
+  }
 });
 
 let passed = 0;

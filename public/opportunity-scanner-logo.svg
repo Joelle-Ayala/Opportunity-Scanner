@@ -5,5 +5,5 @@
   <circle cx="150" cy="362" r="34" fill="#D95D39"/>
   <circle cx="362" cy="362" r="34" fill="#0E7C86"/>
   <path d="M150 150H362M150 150L362 362M150 362H362M362 150L150 362" stroke="#E9F4F3" stroke-width="18" stroke-linecap="round" opacity="0.42"/>
-  <text x="256" y="285" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="116" font-weight="800" fill="white" letter-spacing="-4">OS</text>
+  <text x="256" y="285" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="116" font-weight="800" fill="white" letter-spacing="0">OS</text>
 </svg>

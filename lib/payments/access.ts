@@ -7,11 +7,16 @@ import { retrieveCheckoutSession, type StripeCheckoutSession } from "./stripeApi
 import { hasActiveCustomerMonitoringEntitlement, hasActiveCustomerReportGrant } from "./customerEntitlement";
 
 type ReportAccessScan = Pick<ScanRecord, "id" | "report_access">;
+type ReportCheckoutOwner = { authUserId: string; accountId: string };
 
 export type ReportPaymentAccessDependencies = {
   hasActiveGrant: (authUserId: string, scanId: string) => Promise<boolean>;
   retrieveSession: (secretKey: string, sessionId: string) => Promise<StripeCheckoutSession>;
-  fulfillCheckout: (scanId: string, session: StripeCheckoutSession) => Promise<boolean>;
+  fulfillCheckout: (
+    scanId: string,
+    session: StripeCheckoutSession,
+    owner?: ReportCheckoutOwner
+  ) => Promise<boolean>;
 };
 
 const defaultDependencies: ReportPaymentAccessDependencies = {
@@ -47,6 +52,7 @@ export async function hasCustomerServerReportAccess(
 export async function verifyReportCheckoutHandoff(
   scanId: string,
   sessionId: string | undefined,
+  owner?: ReportCheckoutOwner,
   dependencies: Pick<ReportPaymentAccessDependencies, "retrieveSession" | "fulfillCheckout"> = defaultDependencies
 ): Promise<boolean> {
   if (!sessionId || !/^cs_(test_|live_)?[A-Za-z0-9]+$/.test(sessionId) || sessionId.length > 255) return false;
@@ -54,7 +60,7 @@ export async function verifyReportCheckoutHandoff(
     const config = getStripeServerConfig();
     const session = await dependencies.retrieveSession(config.secretKey, sessionId);
     if (!isMatchingPaidReportSession(session, scanId, config.prices.report)) return false;
-    return await dependencies.fulfillCheckout(scanId, session);
+    return await dependencies.fulfillCheckout(scanId, session, owner);
   } catch {
     return false;
   }

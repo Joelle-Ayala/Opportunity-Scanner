@@ -11,7 +11,7 @@ export interface BillingInvoiceRow {
 
 export interface BillingSummaryProps {
   planName: string;
-  subscriptionStatus: "active" | "trialing" | "none";
+  subscriptionStatus: "active" | "trialing" | "canceling" | "past_due" | "incomplete" | "canceled" | "none";
   planIntervalLabel?: string;
   renewalLabel?: string;
   paymentMethodLabel?: string;
@@ -32,8 +32,44 @@ export function BillingSummary({
   manageAction,
   upgradeAction
 }: BillingSummaryProps) {
-  const hasSubscription = subscriptionStatus === "active" || subscriptionStatus === "trialing";
-  const statusLabel = subscriptionStatus === "trialing" ? "Trial" : hasSubscription ? "Active" : "No subscription";
+  const status = {
+    active: {
+      label: "Active",
+      tone: "success" as const,
+      description: renewalLabel || "Recurring monitoring is enabled."
+    },
+    trialing: {
+      label: "Trial",
+      tone: "success" as const,
+      description: renewalLabel || "Recurring monitoring is enabled during your trial."
+    },
+    canceling: {
+      label: "Cancels at period end",
+      tone: "warning" as const,
+      description: renewalLabel || "Monitoring remains available until the current billing period ends."
+    },
+    past_due: {
+      label: "Past due",
+      tone: "danger" as const,
+      description: "Monitoring is paused until the payment issue is resolved."
+    },
+    incomplete: {
+      label: "Activation pending",
+      tone: "warning" as const,
+      description: "Complete billing setup before monitoring can begin."
+    },
+    canceled: {
+      label: "Canceled",
+      tone: "neutral" as const,
+      description: "This subscription is canceled and monitoring is not active."
+    },
+    none: {
+      label: "No subscription",
+      tone: "neutral" as const,
+      description: "No recurring monitoring plan is active."
+    }
+  }[subscriptionStatus];
+  const hasPlanRecord = subscriptionStatus !== "none";
   const hasPaymentMethodData = Boolean(paymentMethodLabel || paymentMethodDetail);
 
   return (
@@ -43,14 +79,12 @@ export function BillingSummary({
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-xs font-semibold uppercase text-muted">Subscription</p>
-              <DashboardStatusBadge tone={hasSubscription ? "success" : "neutral"}>{statusLabel}</DashboardStatusBadge>
+              <DashboardStatusBadge tone={status.tone}>{status.label}</DashboardStatusBadge>
             </div>
             <h2 id="billing-plan-title" className="mt-2 text-xl font-semibold text-ink">{planName}</h2>
-            <p className="mt-1 text-sm text-muted">
-              {hasSubscription ? renewalLabel || "Recurring monitoring is enabled." : "No recurring monitoring plan is active."}
-            </p>
+            <p className="mt-1 text-sm text-muted">{status.description}</p>
           </div>
-          {hasSubscription && planIntervalLabel ? <p className="text-sm font-semibold capitalize text-steel">{planIntervalLabel} billing</p> : null}
+          {hasPlanRecord && planIntervalLabel ? <p className="text-sm font-semibold capitalize text-steel">{planIntervalLabel} billing</p> : null}
         </div>
         {hasPaymentMethodData || manageAction || upgradeAction ? <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
           {hasPaymentMethodData ? <div>

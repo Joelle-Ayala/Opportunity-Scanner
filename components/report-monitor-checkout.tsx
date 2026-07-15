@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { secureStripeBillingPortalUrl } from "@/components/billing-management-state";
 import { trackProductEvent } from "@/lib/productAnalytics";
 
 type ReportMonitorCheckoutProps = {
@@ -11,6 +12,7 @@ type ReportMonitorCheckoutProps = {
 type CheckoutResponse = {
   ok?: boolean;
   checkoutUrl?: unknown;
+  portalUrl?: unknown;
   error?: { message?: unknown };
 };
 
@@ -67,15 +69,16 @@ export function ReportMonitorCheckout({
       });
       const body = (await response.json().catch(() => null)) as CheckoutResponse | null;
       const checkoutUrl = secureStripeCheckoutUrl(body?.checkoutUrl);
+      const portalUrl = secureStripeBillingPortalUrl(body?.portalUrl);
 
-      if (!response.ok || !body?.ok || !checkoutUrl) {
+      if (!response.ok || !body?.ok || (!checkoutUrl && !portalUrl)) {
         const message = typeof body?.error?.message === "string"
           ? body.error.message
           : "Checkout could not be started. Please try again.";
         throw new Error(message);
       }
 
-      window.location.assign(checkoutUrl);
+      window.location.assign(checkoutUrl || portalUrl!);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Checkout could not be started. Please try again.");
       setLoading(false);
@@ -91,14 +94,14 @@ export function ReportMonitorCheckout({
             New opportunities will not wait for your next report.
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-700">
-            Monitor {companyName} weekly for new public-sector opportunities and changes to the
-            signals in this report. Start from this paid report, then confirm the search in onboarding.
+            Monitor {companyName} weekly for newly found public-sector opportunities. Start from
+            this paid report, then confirm the search in onboarding.
           </p>
           <ul className="mt-4 grid gap-2 text-sm text-slate-700 sm:grid-cols-3">
             {[
               "Weekly opportunity scans",
-              "New and changed signal alerts",
-              "Full action layer on every update"
+              "New opportunity alerts",
+              "Full action layer on monitored scans"
             ].map((benefit) => (
               <li key={benefit} className="flex items-start gap-2">
                 <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-signal" />

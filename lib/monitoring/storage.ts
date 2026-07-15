@@ -1,10 +1,16 @@
-import { supabaseInsert, supabaseRpc, supabaseUpdate } from "../supabaseRest";
-import type { StoredOpportunitySignal } from "../types";
+import { supabaseInsert, supabaseRpc, supabaseUpdate } from "../supabaseRest.ts";
+import type { StoredOpportunitySignal } from "../types.ts";
 import {
   monitoringOpportunityKey,
   nextMonitoringRunAt,
   type MonitoringCadence
-} from "./core";
+} from "./core.ts";
+
+export const MONITORING_FAILURE_RETRY_MS = 15 * 60_000;
+
+export function nextMonitoringFailureRetryAt(failedAt = new Date()): Date {
+  return new Date(failedAt.getTime() + MONITORING_FAILURE_RETRY_MS);
+}
 
 export type MonitoredProfileRecord = {
   id: string;
@@ -100,6 +106,15 @@ export async function completeMonitoringRun(input: {
     lease_expires_at: null,
     updated_at: completedAt.toISOString()
   });
+
+  console.info("monitoring.run_summary", {
+    profileId: input.profile.id,
+    runId: input.run.id,
+    status: "completed",
+    newOpportunityCount: input.newSignals.length,
+    completedAt: completedAt.toISOString(),
+    nextRunAt: nextMonitoringRunAt(input.profile.cadence, completedAt).toISOString()
+  });
 }
 
 export async function claimPendingMonitoringAlerts(limit = 5): Promise<ClaimedMonitoringAlert[]> {
@@ -150,6 +165,7 @@ export async function failMonitoringRun(input: {
 }): Promise<void> {
   const failedAt = input.failedAt ?? new Date();
   const message = input.message.trim().slice(0, 500) || "Monitoring run failed.";
+  const retryAt = nextMonitoringFailureRetryAt(failedAt);
 
   if (input.run) {
     await supabaseUpdate<MonitoringRunRecord>("monitoring_runs", input.run.id, {
@@ -160,8 +176,17 @@ export async function failMonitoringRun(input: {
   }
 
   await supabaseUpdate<MonitoredProfileRecord>("monitored_profiles", input.profile.id, {
-    next_run_at: nextMonitoringRunAt(input.profile.cadence, failedAt).toISOString(),
+    next_run_at: retryAt.toISOString(),
     lease_expires_at: null,
     updated_at: failedAt.toISOString()
+  });
+
+  console.info("monitoring.run_summary", {
+    profileId: input.profile.id,
+    runId: input.run?.id ?? null,
+    status: "failed",
+    failedAt: failedAt.toISOString(),
+    retryAt: retryAt.toISOString(),
+    error: message
   });
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { secureStripeBillingPortalUrl } from "@/components/billing-management-state";
 import type { BillingInterval, PaymentPlan } from "@/lib/payments/contract";
 import { trackProductEvent } from "@/lib/productAnalytics";
 
@@ -14,6 +15,7 @@ type CheckoutButtonProps = {
 type CheckoutResponse = {
   ok?: boolean;
   checkoutUrl?: unknown;
+  portalUrl?: unknown;
   error?: { message?: unknown };
 };
 
@@ -94,15 +96,16 @@ export function CheckoutButton({
       });
       const body = (await response.json().catch(() => null)) as CheckoutResponse | null;
       const checkoutUrl = secureStripeCheckoutUrl(body?.checkoutUrl);
+      const portalUrl = secureStripeBillingPortalUrl(body?.portalUrl);
 
-      if (!response.ok || !body?.ok || !checkoutUrl) {
+      if (!response.ok || !body?.ok || (!checkoutUrl && !portalUrl)) {
         const message = typeof body?.error?.message === "string"
           ? body.error.message
           : "Checkout could not be started. Please try again.";
         throw new Error(message);
       }
 
-      window.location.assign(checkoutUrl);
+      window.location.assign(checkoutUrl || portalUrl!);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Checkout could not be started. Please try again.");
       setLoading(false);

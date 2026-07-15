@@ -225,7 +225,9 @@ const expectedOrder = [
   "db/enrichment-credits.sql",
   "db/monitoring-report-ownership.sql",
   "db/customer-owned-report-access.sql",
-  "db/deadline-alerts.sql"
+  "db/deadline-alerts.sql",
+  "db/customer-report-checkout-ownership.sql",
+  "db/lead-magnet-marketing-expansion.sql"
 ];
 
 const requiredDependencies = {
@@ -261,7 +263,12 @@ const requiredDependencies = {
     "db/monitoring.sql",
     "db/monitoring-alert-delivery.sql",
     "db/customer-dashboard.sql"
-  ]
+  ],
+  "db/customer-report-checkout-ownership.sql": [
+    "db/stripe-report-access-handoff.sql",
+    "db/customer-owned-report-access.sql"
+  ],
+  "db/lead-magnet-marketing-expansion.sql": ["db/lead-magnet-industry-expansion.sql"]
 };
 
 const [manifestSource, readme, workflow] = await Promise.all([

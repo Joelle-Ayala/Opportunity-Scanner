@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CustomerDashboard, type DashboardReportRow, type MonitoredSearchRow } from "@/components/dashboard";
 import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
+import type { BillingSummaryProps } from "@/components/dashboard/billing-summary";
 import { DashboardAnalytics } from "@/components/page-analytics";
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
 import {
@@ -43,6 +44,31 @@ function configurationValue(configuration: Record<string, unknown> | undefined, 
   return typeof value === "string" ? value : "";
 }
 
+type BillingSubscription = {
+  product: "monitor" | "growth" | null;
+  status: string;
+  cancelAtPeriodEnd: boolean;
+};
+
+function billingStatusFor(subscription?: BillingSubscription): BillingSummaryProps["subscriptionStatus"] {
+  if (!subscription) return "none";
+  if (["active", "trialing"].includes(subscription.status) && subscription.cancelAtPeriodEnd) return "canceling";
+  if (subscription.status === "active" || subscription.status === "trialing") return subscription.status;
+  if (subscription.status === "past_due" || subscription.status === "unpaid") return "past_due";
+  if (subscription.status === "incomplete" || subscription.status === "paused") return "incomplete";
+  return "canceled";
+}
+
+function planDescriptionFor(status: BillingSummaryProps["subscriptionStatus"]): string {
+  if (status === "active") return "Ongoing opportunity monitoring";
+  if (status === "trialing") return "Opportunity monitoring is active during your trial.";
+  if (status === "canceling") return "Monitoring remains available until the current billing period ends.";
+  if (status === "past_due") return "Monitoring is paused until the payment issue is resolved.";
+  if (status === "incomplete") return "Complete billing setup before monitoring can begin.";
+  if (status === "canceled") return "This monitoring subscription is canceled.";
+  return "Buy reports individually or add monitoring.";
+}
+
 export default async function DashboardPage({ searchParams }: { searchParams?: DashboardSearchParams }) {
   let session;
   try {
@@ -60,14 +86,17 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     loadDashboardMonitoringRuns(session.user.id, { limit: 20 }),
     loadCustomerAlertPreferences(session.user.id)
   ]);
-  const subscription = summary.billing.subscriptions.find((item) =>
-    ["active", "trialing"].includes(item.status) && (item.product === "monitor" || item.product === "growth")
+  const monitoringSubscriptions = summary.billing.subscriptions.filter(
+    (item) => item.product === "monitor" || item.product === "growth"
   );
+  const subscription = monitoringSubscriptions.find((item) => ["active", "trialing"].includes(item.status));
+  const billingSubscription = subscription || monitoringSubscriptions[0];
+  const subscriptionStatus = billingStatusFor(billingSubscription);
+  const activeMonitorCount = subscription ? summary.activeMonitorCount : 0;
   if (subscription && searches.length === 0) redirect("/dashboard/onboarding");
 
   const subscriptionPlan = subscription?.product === "growth" ? "growth" : subscription?.product === "monitor" ? "monitor" : "none";
-  const subscriptionStatus = subscription?.status === "trialing" ? "trialing" : subscription ? "active" : "none";
-  const planName = subscription?.product === "growth" ? "Growth" : subscription?.product === "monitor" ? "Monitor" : "Report access";
+  const planName = billingSubscription?.product === "growth" ? "Growth" : billingSubscription?.product === "monitor" ? "Monitor" : "Report access";
   const profileLimit = subscription?.product === "growth" ? 3 : subscription?.product === "monitor" ? 1 : 0;
   const monitoredScanIds = new Set([
     ...runs.map((run) => run.scanId),
@@ -81,7 +110,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     companyUrl: report.companyUrl,
     createdLabel: dateLabel(report.completedAt || report.createdAt),
     status: reportStatus(report.status),
-    reportType: report.hasActiveGrant || report.reportAccess === "paid" || (subscription && monitoredScanIds.has(report.scanId)) ? "Full report" : "Free report",
+    reportType: report.hasFullAccountAccess || report.hasActiveGrant || report.reportAccess === "paid" || (subscription && monitoredScanIds.has(report.scanId)) ? "Full report" : "Free report",
     href: `/reports/${report.scanId}`
   }));
   const searchRows: MonitoredSearchRow[] = searches.map((search) => ({
@@ -89,9 +118,17 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     name: search.name,
     querySummary: String(search.currentVersion?.configuration.opportunityFocus || search.currentVersion?.configuration.companyUrl || "Public-sector opportunity monitoring"),
     cadence: search.monitoredProfile?.cadence === "daily" ? "Daily" : "Weekly",
-    status: search.status === "archived" ? "archived" : search.monitoredProfile?.status === "paused" || search.status === "paused" ? "paused" : search.monitoredProfile ? "active" : "attention",
+    status: search.status === "archived"
+      ? "archived"
+      : search.monitoredProfile?.status === "paused" || search.status === "paused"
+        ? "paused"
+        : search.monitoredProfile?.status === "active" && subscription
+          ? "active"
+          : "attention",
     lastRunLabel: search.monitoredProfile?.lastRunAt ? `Last run ${dateLabel(search.monitoredProfile.lastRunAt)}` : undefined,
-    nextRunLabel: search.monitoredProfile?.nextRunAt ? `Next run ${dateLabel(search.monitoredProfile.nextRunAt)}` : undefined,
+    nextRunLabel: subscription && search.monitoredProfile?.status === "active" && search.monitoredProfile.nextRunAt
+      ? `Next run ${dateLabel(search.monitoredProfile.nextRunAt)}`
+      : undefined,
     currentVersion: search.currentVersion?.version,
     criteria: {
       companyUrl: configurationValue(search.currentVersion?.configuration, "companyUrl"),
@@ -103,8 +140,8 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
       excludeTerms: configurationValue(search.currentVersion?.configuration, "excludeTerms")
     }
   }));
-  const renewal = subscription?.currentPeriodEnd
-    ? `${subscription.cancelAtPeriodEnd ? "Access ends" : "Renews"} ${dateLabel(subscription.currentPeriodEnd)}`
+  const renewal = billingSubscription?.currentPeriodEnd && ["active", "trialing", "canceling"].includes(subscriptionStatus)
+    ? `${subscriptionStatus === "canceling" ? "Access ends" : "Renews"} ${dateLabel(billingSubscription.currentPeriodEnd)}`
     : undefined;
   const sourceScanByProfile = new Map(
     searches.flatMap((search) => search.monitoredProfile
@@ -129,10 +166,10 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     <main className="min-h-screen bg-field">
       <DashboardAnalytics
         subscriptionPlan={subscriptionPlan}
-        hasActiveMonitoring={summary.activeMonitorCount > 0}
+        hasActiveMonitoring={activeMonitorCount > 0}
         onboardingCompleted={searchParams?.setup === "complete"}
       />
-      {searchParams?.checkout === "success" ? <div className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">Your plan is active. Choose or create a report to begin monitoring.</div> : null}
+      {searchParams?.checkout === "success" ? <div className="border-b border-cyan-200 bg-cyan-50 px-5 py-3 text-center text-sm font-semibold text-cyan-900">{subscription ? "Your plan is active. Choose or create a report to begin monitoring." : "Billing setup was received. Review the status below before starting monitoring."}</div> : null}
       {searchParams?.searchNotice ? <div role="status" aria-live="polite" className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">{searchParams.searchNotice}</div> : null}
       {searchParams?.searchError ? <div role="alert" className="border-b border-red-200 bg-red-50 px-5 py-3 text-center text-sm font-semibold text-red-800">{searchParams.searchError}</div> : null}
       {searchParams?.alertNotice ? <div role="status" aria-live="polite" className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">{searchParams.alertNotice}</div> : null}
@@ -147,14 +184,14 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           metrics: [
             { id: "reports", label: "Reports", value: summary.reportCount },
             { id: "searches", label: "Saved searches", value: summary.activeSavedSearchCount },
-            { id: "monitors", label: "Active monitors", value: summary.activeMonitorCount, tone: "positive" },
+            { id: "monitors", label: "Active monitors", value: activeMonitorCount, tone: activeMonitorCount ? "positive" : "default" },
             { id: "new", label: "New opportunities", value: summary.newOpportunityCount, tone: summary.newOpportunityCount ? "positive" : "default" }
           ],
           planName,
-          planDescription: subscription ? "Ongoing opportunity monitoring" : "Buy reports individually or add monitoring.",
+          planDescription: planDescriptionFor(subscriptionStatus),
           renewalLabel: renewal,
           usage: [
-            { id: "profiles", label: "Monitored profiles", used: summary.activeMonitorCount, limit: profileLimit },
+            { id: "profiles", label: "Monitored profiles", used: activeMonitorCount, limit: profileLimit },
             { id: "reports", label: "Reports", used: summary.reportCount, limit: null },
             ...(summary.enrichmentCredits.entitled
               ? [{
@@ -174,7 +211,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
         reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <><a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Update preview</a>{comparableScanIds.has(report.id) ? <a href={`/dashboard/compare/${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Compare</a> : null}</> }}
         savedSearches={{ searches: searchRows, emptyAction: subscription ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Set up monitoring</a> : <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">View monitoring plans</a> }}
         alerts={{ preferences: alertPreferences, emailVerified: Boolean(session.user.email_confirmed_at) }}
-        billing={{ planName, subscriptionStatus, planIntervalLabel: subscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: subscription ? <BillingPortalButton /> : undefined, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">{subscription ? "Compare plans" : "View plans"}</a> }}
+        billing={{ planName, subscriptionStatus, planIntervalLabel: billingSubscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: summary.billing.stripeCustomerId ? <BillingPortalButton /> : undefined, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">{billingSubscription ? "Compare plans" : "View plans"}</a> }}
       />
     </main>
   );

@@ -119,6 +119,22 @@
       "prerequisites": ["v0001", "v0006", "v0007", "v0008", "v0009"],
       "sha256": "4e27fd6a8012800a906fb170297c9efc5121adc363c47d7ffed484bacaf9541d",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0015",
+      "file": "db/customer-report-checkout-ownership.sql",
+      "description": "Authenticated account ownership and full access for verified one-time report purchases.",
+      "prerequisites": ["v0010", "v0013"],
+      "sha256": "7f363f4671d522a12a6f5a187db2d3c580a7afd7a3e94843a84981b5fff10fdc",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0016",
+      "file": "db/lead-magnet-marketing-expansion.sql",
+      "description": "Lead capture support for the marketing, advertising, content, and web services industry guide.",
+      "prerequisites": ["v0003"],
+      "sha256": "12ee49cfba04f116dda4e88c87282c6bc08127d765b89b28e98475d8839f044a",
+      "requiredInProduction": true
     }
   ]
 }

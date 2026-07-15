@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { getEventListeners } from "node:events";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
@@ -12,6 +13,10 @@ import {
   monitoringReportUrl,
   sendMonitoringAlertEmail
 } from "../lib/monitoring/delivery.ts";
+import {
+  MONITORING_FAILURE_RETRY_MS,
+  nextMonitoringFailureRetryAt
+} from "../lib/monitoring/storage.ts";
 
 function signal(overrides = {}) {
   return {
@@ -29,6 +34,16 @@ test("calculates daily and weekly monitoring schedules", () => {
   const start = new Date("2026-07-12T12:00:00.000Z");
   assert.equal(nextMonitoringRunAt("daily", start).toISOString(), "2026-07-13T12:00:00.000Z");
   assert.equal(nextMonitoringRunAt("weekly", start).toISOString(), "2026-07-19T12:00:00.000Z");
+});
+
+test("failed monitoring scans retry shortly instead of skipping the cadence", async () => {
+  const failedAt = new Date("2026-07-12T12:00:00.000Z");
+  assert.equal(MONITORING_FAILURE_RETRY_MS, 15 * 60_000);
+  assert.equal(nextMonitoringFailureRetryAt(failedAt).toISOString(), "2026-07-12T12:15:00.000Z");
+
+  const storage = await readFile(new URL("../lib/monitoring/storage.ts", import.meta.url), "utf8");
+  assert.match(storage, /const retryAt = nextMonitoringFailureRetryAt\(failedAt\)/);
+  assert.match(storage, /next_run_at: retryAt\.toISOString\(\)/);
 });
 
 test("normalizes source URLs before comparing opportunities", () => {
@@ -87,6 +102,41 @@ test("cron monitoring is secret-protected and writes durable run outcomes", asyn
   assert.match(storage, /provider_message_id/);
   assert.match(storage, /nextMonitoringRunAt/);
   assert.match(storage, /lease_expires_at: null/);
+});
+
+test("repeated manual runs collapse into one cooldown-protected queue request", async () => {
+  const [route, repository] = await Promise.all([
+    readFile(new URL("../app/api/dashboard/searches/[searchId]/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/dashboard/repository.ts", import.meta.url), "utf8")
+  ]);
+  const requestFunction = repository.slice(
+    repository.indexOf("export async function requestSavedSearchRunNow"),
+    repository.indexOf("async function requireAccount")
+  );
+
+  assert.doesNotMatch(route, /CRON_SECRET|\/api\/cron\/monitoring|fetch\(runUrl/);
+  assert.doesNotMatch(route, /Monitoring run completed/);
+  assert.match(route, /Monitoring run queued for the next scheduled check/);
+  assert.match(requestFunction, /next_run_at: `gt\.\$\{requestedAt\.toISOString\(\)\}`/);
+  assert.match(requestFunction, /updated_at: `lt\.\$\{cooldownCutoff\.toISOString\(\)\}`/);
+  assert.match(requestFunction, /const enqueued = Boolean\(updated\)/);
+  assert.doesNotMatch(requestFunction, /lease_expires_at/);
+
+  const requestedAt = new Date("2026-07-12T12:00:00.000Z");
+  const cooldownCutoff = new Date(requestedAt.getTime() - 5 * 60_000);
+  const profile = {
+    status: "active",
+    nextRunAt: new Date("2026-07-13T12:00:00.000Z"),
+    updatedAt: new Date("2026-07-12T11:00:00.000Z")
+  };
+  const canEnqueue = () => profile.status === "active"
+    && profile.nextRunAt > requestedAt
+    && profile.updatedAt < cooldownCutoff;
+
+  assert.equal(canEnqueue(), true);
+  profile.nextRunAt = requestedAt;
+  profile.updatedAt = requestedAt;
+  assert.equal(canEnqueue(), false, "the same profile cannot be enqueued twice during cooldown");
 });
 
 test("Hobby-compatible Vercel cron runs monitoring once per day", async () => {
@@ -168,11 +218,73 @@ test("Resend REST delivery is concise, idempotent, and links to the report", asy
 
   assert.equal(providerId, "email-123");
   assert.equal(request.url, "https://api.resend.com/emails");
+  assert.ok(request.init.signal instanceof AbortSignal);
   assert.equal(request.init.headers["Idempotency-Key"], "monitoring-alert/alert-123");
   assert.deepEqual(request.body.to, ["customer@example.test"]);
   assert.match(request.body.subject, /City arts grant/);
   assert.match(request.body.text, /https:\/\/scanner\.example\.test\/reports\/scan-123/);
   assert.equal(monitoringReportUrl(config, "scan/123"), "https://scanner.example.test/reports/scan%2F123");
+});
+
+test("hung Resend delivery aborts within the bounded timeout", async () => {
+  const config = {
+    apiKey: "re_test",
+    fromEmail: "alerts@example.test",
+    appUrl: "https://scanner.example.test"
+  };
+  const alert = {
+    alert_id: "alert-timeout",
+    monitoring_run_id: "run-timeout",
+    customer_account_id: "account-timeout",
+    scan_id: "scan-timeout",
+    recipient_email: "customer@example.test",
+    opportunity_title: "Hung delivery test",
+    attempt_count: 1
+  };
+  let observedAbort = false;
+  const hungFetch = async (_url, init) => new Promise((_resolve, reject) => {
+    const signal = init?.signal;
+    assert.ok(signal instanceof AbortSignal);
+    const abort = () => {
+      observedAbort = true;
+      reject(signal.reason);
+    };
+    if (signal.aborted) abort();
+    else signal.addEventListener("abort", abort, { once: true });
+  });
+
+  await assert.rejects(
+    sendMonitoringAlertEmail(config, alert, hungFetch, { timeoutMs: 20 }),
+    /Resend delivery timed out after 20ms/
+  );
+  assert.equal(observedAbort, true);
+});
+
+test("Resend delivery removes caller abort listeners after completion", async () => {
+  const controller = new AbortController();
+  const config = {
+    apiKey: "re_test",
+    fromEmail: "alerts@example.test",
+    appUrl: "https://scanner.example.test"
+  };
+  const alert = {
+    alert_id: "alert-cleanup",
+    monitoring_run_id: "run-cleanup",
+    customer_account_id: "account-cleanup",
+    scan_id: "scan-cleanup",
+    recipient_email: "customer@example.test",
+    opportunity_title: "Listener cleanup test",
+    attempt_count: 1
+  };
+
+  await sendMonitoringAlertEmail(
+    config,
+    alert,
+    async () => Response.json({ id: "email-cleanup" }),
+    { signal: controller.signal, timeoutMs: 100 }
+  );
+
+  assert.equal(getEventListeners(controller.signal, "abort").length, 0);
 });
 
 test("monitoring env example documents delivery names without values", async () => {

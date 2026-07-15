@@ -12,7 +12,7 @@ import type {
   SavedSearchConfiguration
 } from "./types";
 
-type ScanOwnershipRow = { scan_id: string };
+type ScanOwnershipRow = { scan_id: string; access_level: "free" | "full" };
 type ScanRow = {
   id: string;
   company_name: string | null;
@@ -79,6 +79,7 @@ type SubscriptionRow = {
 };
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+export const MONITORING_MANUAL_RUN_COOLDOWN_MS = 5 * 60_000;
 
 export async function ensureCustomerAccount(authUserId: string, emailValue: string): Promise<CustomerAccountRecord> {
   if (!UUID_PATTERN.test(authUserId)) throw new Error("A valid authenticated user ID is required.");
@@ -328,17 +329,35 @@ export async function setSavedSearchStatus(
   }
 }
 
-export async function requestSavedSearchRunNow(authUserId: string, savedSearchId: string): Promise<string> {
+export async function requestSavedSearchRunNow(
+  authUserId: string,
+  savedSearchId: string
+): Promise<{ profileId: string; enqueued: boolean }> {
   const owned = await requireOwnedSavedSearch(authUserId, savedSearchId);
   if (!owned.profile || owned.profile.status !== "active") {
     throw new Error("Resume this saved search before running it.");
   }
-  await dashboardUpdate("monitored_profiles", { id: `eq.${owned.profile.id}` }, {
-    next_run_at: new Date().toISOString(),
-    lease_expires_at: null,
-    updated_at: new Date().toISOString()
+  const requestedAt = new Date();
+  const cooldownCutoff = new Date(requestedAt.getTime() - MONITORING_MANUAL_RUN_COOLDOWN_MS);
+  const updated = await dashboardUpdate<{ id: string }>(
+    "monitored_profiles",
+    {
+      id: `eq.${owned.profile.id}`,
+      status: "eq.active",
+      next_run_at: `gt.${requestedAt.toISOString()}`,
+      updated_at: `lt.${cooldownCutoff.toISOString()}`
+    },
+    {
+      next_run_at: requestedAt.toISOString(),
+      updated_at: requestedAt.toISOString()
+    }
+  );
+  const enqueued = Boolean(updated);
+  console.info("monitoring.run_request", {
+    profileId: owned.profile.id,
+    outcome: enqueued ? "queued" : "already_queued_or_cooldown"
   });
-  return owned.profile.id;
+  return { profileId: owned.profile.id, enqueued };
 }
 
 async function requireAccount(authUserId: string): Promise<CustomerAccountRecord> {
@@ -351,11 +370,15 @@ async function requireAccount(authUserId: string): Promise<CustomerAccountRecord
   return account;
 }
 
-async function ownedScanIds(accountId: string): Promise<string[]> {
-  const rows = await dashboardSelect<ScanOwnershipRow>("customer_scan_ownership", {
-    select: "scan_id",
+async function ownedScans(accountId: string): Promise<ScanOwnershipRow[]> {
+  return dashboardSelect<ScanOwnershipRow>("customer_scan_ownership", {
+    select: "scan_id,access_level",
     customer_account_id: `eq.${accountId}`
   });
+}
+
+async function ownedScanIds(accountId: string): Promise<string[]> {
+  const rows = await ownedScans(accountId);
   return rows.map((row) => row.scan_id);
 }
 
@@ -364,8 +387,12 @@ export async function loadDashboardReports(
   options: DashboardPageOptions = {}
 ): Promise<DashboardReport[]> {
   const account = await requireAccount(authUserId);
-  const scanIds = await ownedScanIds(account.id);
+  const ownership = await ownedScans(account.id);
+  const scanIds = ownership.map((row) => row.scan_id);
   if (scanIds.length === 0) return [];
+  const fullAccessScanIds = new Set(
+    ownership.filter((row) => row.access_level === "full").map((row) => row.scan_id)
+  );
 
   const page = pageParameters(options);
   const scans = await dashboardSelect<ScanRow>("scans", {
@@ -426,6 +453,7 @@ export async function loadDashboardReports(
       reportCreatedAt: report?.created_at ?? null,
       pdfUrl: report?.report_pdf_url ?? null,
       hasActiveGrant: activeGrantScans.has(scan.id),
+      hasFullAccountAccess: fullAccessScanIds.has(scan.id),
       savedSearchVersionId: versionByScan.get(scan.id) ?? null
     };
   });

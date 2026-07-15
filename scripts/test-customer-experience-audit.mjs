@@ -19,8 +19,12 @@ assert.match(dashboard, />Set up monitoring<\/a>/);
 assert.match(dashboard, />View monitoring plans<\/a>/);
 
 assert.match(dashboard, /subscriptionStatus/);
-assert.match(billing, /subscriptionStatus: "active" \| "trialing" \| "none"/);
-assert.match(billing, /hasSubscription \? "success" : "neutral"/);
+assert.match(billing, /subscriptionStatus: "active" \| "trialing" \| "canceling" \| "past_due" \| "incomplete" \| "canceled" \| "none"/);
+assert.match(billing, /label: "Past due"/);
+assert.match(billing, /label: "Activation pending"/);
+assert.match(billing, /label: "Cancels at period end"/);
+assert.match(billing, /DashboardStatusBadge tone=\{status\.tone\}/);
+assert.match(dashboard, /summary\.billing\.stripeCustomerId \? <BillingPortalButton \/>/);
 assert.match(billing, /hasPaymentMethodData/);
 assert.match(billing, /invoices !== undefined/);
 assert.doesNotMatch(billing, /No payment method on file/);

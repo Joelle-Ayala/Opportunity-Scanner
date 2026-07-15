@@ -67,11 +67,13 @@ assert.equal(
   "the checkout and subscription Prices must match exactly"
 );
 
-const [onboarding, handoff, persistence, sql] = await Promise.all([
+const [onboarding, handoff, persistence, sql, pricingCheckout, reportCheckout] = await Promise.all([
   readFile(new URL("../app/dashboard/onboarding/page.tsx", import.meta.url), "utf8"),
   readFile(new URL("../lib/payments/subscriptionHandoff.ts", import.meta.url), "utf8"),
   readFile(new URL("../lib/payments/persistence.ts", import.meta.url), "utf8"),
-  readFile(new URL("../db/stripe-report-access-handoff.sql", import.meta.url), "utf8")
+  readFile(new URL("../db/stripe-report-access-handoff.sql", import.meta.url), "utf8"),
+  readFile(new URL("../components/checkout-button.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../components/report-monitor-checkout.tsx", import.meta.url), "utf8")
 ]);
 
 assert.match(onboarding, /verifySubscriptionCheckoutHandoff/);
@@ -83,5 +85,10 @@ assert.match(sql, /auth_user_id = p_auth_user_id/);
 assert.match(sql, /stripe_customer_id is null or stripe_customer_id = p_customer_id/);
 assert.match(sql, /status in \('active', 'trialing'\)/);
 assert.match(sql, /grant execute on function fulfill_verified_subscription_checkout[\s\S]*to service_role/);
+for (const checkout of [pricingCheckout, reportCheckout]) {
+  assert.match(checkout, /secureStripeBillingPortalUrl/);
+  assert.match(checkout, /\(!checkoutUrl && !portalUrl\)/);
+  assert.match(checkout, /checkoutUrl \|\| portalUrl!/);
+}
 
 console.log("Subscription checkout handoff checks passed.");

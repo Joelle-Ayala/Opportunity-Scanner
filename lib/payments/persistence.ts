@@ -23,7 +23,8 @@ export async function reportScanExists(scanId: string): Promise<boolean> {
 
 export async function fulfillVerifiedReportCheckout(
   scanId: string,
-  session: StripeCheckoutSession
+  session: StripeCheckoutSession,
+  account?: { authUserId: string; accountId: string }
 ): Promise<boolean> {
   const config = getBillingDatabaseConfig();
   const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
@@ -41,13 +42,26 @@ export async function fulfillVerifiedReportCheckout(
     return false;
   }
 
-  const response = await fetch(`${config.url}/rest/v1/rpc/fulfill_verified_report_checkout`, {
+  const hasVerifiedAccount = Boolean(
+    account &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(account.authUserId) &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(account.accountId)
+  );
+  if (account && !hasVerifiedAccount) return false;
+  const rpc = hasVerifiedAccount
+    ? "fulfill_verified_customer_report_checkout"
+    : "fulfill_verified_report_checkout";
+  const response = await fetch(`${config.url}/rest/v1/rpc/${rpc}`, {
     method: "POST",
     headers: {
       ...databaseHeaders(config),
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
+      ...(hasVerifiedAccount ? {
+        p_auth_user_id: account!.authUserId,
+        p_customer_account_id: account!.accountId
+      } : {}),
       p_scan_id: scanId,
       p_customer_id: customerId,
       p_customer_email: customerEmail,

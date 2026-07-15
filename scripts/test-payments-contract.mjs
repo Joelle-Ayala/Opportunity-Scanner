@@ -3,6 +3,11 @@ import { createHmac } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { getStripeServerConfig, priceFor } from "../lib/payments/config.ts";
 import { validateCheckoutInput } from "../lib/payments/contract.ts";
+import {
+  dispatchCheckoutWithEligibility,
+  findActiveCheckoutSubscription,
+  inspectedCheckoutPlan
+} from "../lib/payments/checkoutEligibility.ts";
 import { handleBillingPortal, handleCheckout } from "../lib/payments/handlers.ts";
 import { verifyStripeSignature } from "../lib/payments/signature.ts";
 import { createCheckoutSession } from "../lib/payments/stripeApi.ts";
@@ -15,7 +20,9 @@ const ENV_NAMES = [
   "STRIPE_PRICE_MONITOR_MONTHLY",
   "STRIPE_PRICE_MONITOR_ANNUAL",
   "STRIPE_PRICE_GROWTH_MONTHLY",
-  "STRIPE_PRICE_GROWTH_ANNUAL"
+  "STRIPE_PRICE_GROWTH_ANNUAL",
+  "SUPABASE_URL",
+  "SUPABASE_SERVICE_ROLE_KEY"
 ];
 const originalEnv = Object.fromEntries(ENV_NAMES.map((name) => [name, process.env[name]]));
 
@@ -142,6 +149,94 @@ test("checkout handler uses verified account identity and sends anonymous Report
   );
 });
 
+test("rejects anonymous subscription checkout before creating a Stripe session", async () => {
+  installTestEnv();
+  let checkoutSessions = 0;
+  const request = new Request("https://scanner.example.test/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(checkout({ plan: "monitor", billingInterval: "monthly", scanId: undefined }))
+  });
+  const plan = await inspectedCheckoutPlan(request);
+  assert.equal(plan, "monitor");
+  const response = await dispatchCheckoutWithEligibility(request, plan, null, null, {
+    checkout: async () => {
+      checkoutSessions += 1;
+      return Response.json({ ok: true }, { status: 201 });
+    },
+    billingPortal: async () => Response.json({ ok: true, portalUrl: "https://billing.stripe.com/p/unused" })
+  });
+
+  assert.equal(response.status, 401);
+  assert.equal((await response.json()).error.code, "AUTHENTICATION_REQUIRED");
+  assert.equal(checkoutSessions, 0);
+});
+
+test("sends active and trialing subscribers to billing management without creating another Checkout Session", async () => {
+  installTestEnv();
+  let checkoutSessions = 0;
+  const portalCustomers = [];
+  for (const status of ["active", "trialing"]) {
+    const request = new Request("https://scanner.example.test/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(checkout({ plan: "growth", billingInterval: "annual", scanId: undefined }))
+    });
+    const plan = await inspectedCheckoutPlan(request);
+    assert.equal(plan, "growth");
+    const response = await dispatchCheckoutWithEligibility(request, plan, {
+      verifiedEmail: "verified@example.com",
+      ownedCustomerId: "cus_ownedBuyer"
+    }, {
+      stripeSubscriptionId: `sub_${status}`,
+      product: "monitor",
+      status
+    }, {
+      checkout: async () => {
+        checkoutSessions += 1;
+        return Response.json({ ok: true }, { status: 201 });
+      },
+      billingPortal: async ({ ownedCustomerId }) => {
+        portalCustomers.push(ownedCustomerId);
+        return Response.json({
+          ok: true,
+          portalUrl: "https://billing.stripe.com/p/session/existing"
+        }, { status: 201 });
+      }
+    });
+
+    assert.equal(response.status, 201);
+    assert.deepEqual(await response.json(), {
+      ok: true,
+      portalUrl: "https://billing.stripe.com/p/session/existing"
+    });
+  }
+
+  assert.deepEqual(portalCustomers, ["cus_ownedBuyer", "cus_ownedBuyer"]);
+  assert.equal(checkoutSessions, 0);
+});
+
+test("fails closed when subscription eligibility cannot be verified from account billing data", async () => {
+  process.env.SUPABASE_URL = "https://database.example.test";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-test";
+  const originalFetch = globalThis.fetch;
+  let lookupUrl = "";
+  globalThis.fetch = async (url) => {
+    lookupUrl = String(url);
+    return new Response("temporarily unavailable", { status: 503 });
+  };
+  try {
+    await assert.rejects(
+      findActiveCheckoutSubscription("cus_ownedBuyer"),
+      /stripe_subscriptions lookup failed \(503\)/
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+  assert.match(lookupUrl, /stripe_subscriptions/);
+  assert.match(lookupUrl, /status=in\.%28active%2Ctrialing%29/);
+});
+
 test("Stripe form creates an isolated payment customer unless an owned customer is supplied", async () => {
   const originalFetch = globalThis.fetch;
   const forms = [];
@@ -226,7 +321,9 @@ test("routes are Node-only wrappers and the Stripe API contract owns redirects a
   assert.match(handlers, /reportScanExists/);
   assert.match(checkoutRoute, /session\.user\.email_confirmed_at/);
   assert.match(checkoutRoute, /ownedCustomerId: account\.stripe_customer_id/);
+  assert.match(checkoutRoute, /findActiveCheckoutSubscription\(account\.stripe_customer_id\)/);
   assert.match(checkoutRoute, /code: "CHECKOUT_IDENTITY_UNAVAILABLE"/);
+  assert.match(checkoutRoute, /dispatchCheckoutWithEligibility\(request, plan, null, null\)/);
   assert.doesNotMatch(checkoutRoute, /resolveCustomerSession[\s\S]*\.catch\(\(\) => null\)/);
   assert.doesNotMatch(portalRoute, /checkoutSessionId|retrieveCheckoutSession/);
 });

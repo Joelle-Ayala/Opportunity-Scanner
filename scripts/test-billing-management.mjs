@@ -40,9 +40,11 @@ for (const value of [
   assert.equal(secureStripeBillingPortalUrl(value), null);
 }
 
-const [component, pricingPage] = await Promise.all([
+const [component, pricingPage, dashboardPage, billingSummary] = await Promise.all([
   readFile(new URL("../components/billing-management.tsx", import.meta.url), "utf8"),
-  readFile(new URL("../app/pricing/page.tsx", import.meta.url), "utf8")
+  readFile(new URL("../app/pricing/page.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../app/dashboard/page.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../components/dashboard/billing-summary.tsx", import.meta.url), "utf8")
 ]);
 
 assert.match(component, /fetch\("\/api\/billing-portal"/);
@@ -53,5 +55,21 @@ assert.match(component, /aria-live="polite"/);
 assert.match(component, /role="alert"/);
 assert.doesNotMatch(component, /\{sessionId\}/);
 assert.match(pricingPage, /checkoutSessionId=\{searchParams\?\.session_id\}/);
+
+for (const state of ["past_due", "incomplete", "canceling", "canceled"]) {
+  assert.match(billingSummary, new RegExp(`${state}:`), `billing summary must render ${state}`);
+}
+assert.match(billingSummary, /label: "Past due"/);
+assert.match(billingSummary, /label: "Activation pending"/);
+assert.match(billingSummary, /label: "Cancels at period end"/);
+assert.match(billingSummary, /label: "Canceled"/);
+assert.match(billingSummary, /Monitoring is paused until the payment issue is resolved/);
+assert.match(dashboardPage, /subscription\.status === "past_due" \|\| subscription\.status === "unpaid"/);
+assert.match(dashboardPage, /subscription\.status === "incomplete" \|\| subscription\.status === "paused"/);
+assert.match(dashboardPage, /\["active", "trialing"\]\.includes\(subscription\.status\) && subscription\.cancelAtPeriodEnd/);
+assert.match(dashboardPage, /const activeMonitorCount = subscription \? summary\.activeMonitorCount : 0/);
+assert.match(dashboardPage, /search\.monitoredProfile\?\.status === "active" && subscription/);
+assert.match(dashboardPage, /manageAction: summary\.billing\.stripeCustomerId \? <BillingPortalButton \/>/);
+assert.doesNotMatch(dashboardPage, /manageAction: subscription \?/);
 
 console.log("Billing management tests passed.");

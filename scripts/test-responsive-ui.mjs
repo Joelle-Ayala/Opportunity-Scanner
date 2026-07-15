@@ -4,9 +4,11 @@ import { readFile } from "node:fs/promises";
 const ROOT = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, ROOT), "utf8");
 
-const [brand, marketingContent, reportPage, articleCharts, sampleReport, dashboardShell, workflow] = await Promise.all([
+const [brand, homepage, marketingContent, sampleReports, reportPage, articleCharts, sampleReport, dashboardShell, workflow] = await Promise.all([
   source("components/brand.tsx"),
+  source("app/page.tsx"),
   source("lib/marketingContent.ts"),
+  source("lib/sampleReports.ts"),
   source("app/reports/[id]/page.tsx"),
   source("components/resources/article-charts.tsx"),
   source("components/sample-report.tsx"),
@@ -27,13 +29,19 @@ for (const slug of industrySlugs) {
 assert.match(brand, /aria-label="Mobile navigation"/);
 assert.match(brand, /max-h-\[calc\(100dvh-5rem\)\]/);
 assert.match(brand, /Customer Dashboard/);
+assert.match(brand, /src="\/opportunity-scanner-logo\.svg"/);
+assert.match(homepage, /fictional CivicStage example/i);
+assert.match(sampleReports, /fictionalClient: "CivicStage Talent Network"/);
+assert.doesNotMatch(homepage, /Jammcard/i);
+assert.doesNotMatch(sampleReports, /Jammcard/i);
 
 const mobileCardStart = reportPage.indexOf("function OpportunitySignalCard");
 const mobileCardEnd = reportPage.indexOf("function LockedOpportunityCard", mobileCardStart);
 const mobileCard = reportPage.slice(mobileCardStart, mobileCardEnd);
 assert.match(mobileCard, /PrimaryActionButton/);
 assert.match(mobileCard, /SendToWorkflowModal/);
-assert.match(mobileCard, /FindContactsButton/);
+assert.match(mobileCard, /GrowthContactLookupControl/);
+assert.match(mobileCard, /lookupAccess=\{lookupAccess\}/);
 assert.ok(
   reportPage.indexOf("<OpportunitySignalCard", reportPage.indexOf("<ExecutiveSummaryCard"))
     < reportPage.indexOf("<OpportunityProfileModule", reportPage.indexOf("<ExecutiveSummaryCard")),

@@ -20,6 +20,7 @@ export type DashboardReport = {
   reportCreatedAt: string | null;
   pdfUrl: string | null;
   hasActiveGrant: boolean;
+  hasFullAccountAccess: boolean;
   savedSearchVersionId: string | null;
 };
 

@@ -52,13 +52,12 @@ const navGroups = [
 export function OpportunityScannerLogo({ compact = false }: { compact?: boolean }) {
   return (
     <a href="/" className="flex min-w-0 items-center gap-3" aria-label="Opportunity Scanner home">
-      <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-ink text-sm font-bold text-white shadow-lift sm:h-11 sm:w-11">
-        <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-signal" />
-        <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-review" />
-        <span className="absolute bottom-2 left-2 h-2 w-2 rounded-full bg-ember" />
-        <span className="absolute bottom-2 right-2 h-2 w-2 rounded-full bg-accent" />
-        <span className="relative">OS</span>
-      </span>
+      <img
+        src="/opportunity-scanner-logo.svg"
+        alt=""
+        aria-hidden="true"
+        className="h-10 w-10 shrink-0 rounded-lg shadow-lift sm:h-11 sm:w-11"
+      />
       {!compact ? (
         <span className="min-w-0 leading-tight">
           <span className="block truncate text-sm font-semibold text-ink sm:text-base">Opportunity Scanner</span>

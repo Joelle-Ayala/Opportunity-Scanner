@@ -69,6 +69,24 @@ test("preserves legacy and one-time report access before subscription lookup", a
   assert.match(access, /catch \{\s*return false;\s*\}/);
 });
 
+test("verified one-time checkout assigns access to the authenticated buyer without stealing scans", async () => {
+  const [persistence, migration] = await Promise.all([
+    source("lib/payments/persistence.ts"),
+    source("db/customer-report-checkout-ownership.sql")
+  ]);
+
+  assert.match(persistence, /account\?: \{ authUserId: string; accountId: string \}/);
+  assert.match(persistence, /fulfill_verified_customer_report_checkout/);
+  assert.match(migration, /id = p_customer_account_id[\s\S]*auth_user_id = p_auth_user_id/);
+  assert.match(migration, /lower\(email\) = p_customer_email/);
+  assert.match(migration, /customer_account_id <> p_customer_account_id[\s\S]*Report checkout grant is already owned by another account/);
+  assert.match(migration, /customer_report_grant_ownership[\s\S]*p_customer_account_id[\s\S]*v_grant_id/);
+  assert.match(migration, /ownership_kind,[\s\S]*access_level[\s\S]*'claimed',[\s\S]*'full'/);
+  assert.match(migration, /on conflict \(scan_id\) do update set[\s\S]*where customer_scan_ownership\.customer_account_id = excluded\.customer_account_id/);
+  assert.doesNotMatch(migration, /delete from customer_scan_ownership/);
+  assert.doesNotMatch(migration, /set customer_account_id = excluded\.customer_account_id/);
+});
+
 test("derives customer identity from the server session and fails closed", async () => {
   const requestAccess = await source("lib/payments/requestAccess.ts");
 
@@ -99,6 +117,20 @@ test("all paid report surfaces use the request-authenticated entitlement guard",
       `${path} must authorize through the authenticated customer entitlement guard`
     );
   }
+});
+
+test("dashboard labels account-scoped full report ownership truthfully", async () => {
+  const [repository, dashboard, types] = await Promise.all([
+    source("lib/dashboard/repository.ts"),
+    source("app/dashboard/page.tsx"),
+    source("lib/dashboard/types.ts")
+  ]);
+
+  assert.match(repository, /select: "scan_id,access_level"/);
+  assert.match(repository, /row\.access_level === "full"/);
+  assert.match(repository, /hasFullAccountAccess: fullAccessScanIds\.has\(scan\.id\)/);
+  assert.match(types, /hasFullAccountAccess: boolean/);
+  assert.match(dashboard, /report\.hasFullAccountAccess \|\| report\.hasActiveGrant/);
 });
 
 let passed = 0;

@@ -1,13 +1,14 @@
 import { deadlineReminderLabel } from "./core.ts";
 import type { ClaimedDeadlineAlert } from "./storage.ts";
 import { createAlertUnsubscribeToken, getAlertUnsubscribeSecret } from "./token.ts";
-import { getMonitoringEmailConfig, type MonitoringEmailConfig } from "../monitoring/delivery.ts";
-
-const RESEND_ENDPOINT = "https://api.resend.com/emails";
+import {
+  getMonitoringEmailConfig,
+  sendResendEmailRequest,
+  type MonitoringEmailConfig,
+  type ResendRequestOptions
+} from "../monitoring/delivery.ts";
 
 export type DeadlineEmailConfig = MonitoringEmailConfig & { unsubscribeSecret: string };
-
-type ResendResponse = { id?: string; message?: string };
 
 export function getDeadlineEmailConfig(env: NodeJS.ProcessEnv = process.env): DeadlineEmailConfig | null {
   const base = getMonitoringEmailConfig(env);
@@ -37,7 +38,8 @@ export function deadlineAlertOneClickUnsubscribeUrl(config: DeadlineEmailConfig,
 export async function sendDeadlineAlertEmail(
   config: DeadlineEmailConfig,
   alert: ClaimedDeadlineAlert,
-  fetchImpl: typeof fetch = fetch
+  fetchImpl: typeof fetch = fetch,
+  options: ResendRequestOptions = {}
 ): Promise<string> {
   const reportUrl = `${config.appUrl}/reports/${encodeURIComponent(alert.scan_id)}`;
   const preferencesUrl = `${config.appUrl}/dashboard?tab=alerts`;
@@ -51,14 +53,11 @@ export async function sendDeadlineAlertEmail(
     .join("\n");
   const subject = `${timeLeft} left: ${alert.opportunity_title}`.slice(0, 160);
 
-  const response = await fetchImpl(RESEND_ENDPOINT, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": `deadline-alert/${alert.alert_id}`
-    },
-    body: JSON.stringify({
+  return sendResendEmailRequest({
+    apiKey: config.apiKey,
+    idempotencyKey: `deadline-alert/${alert.alert_id}`,
+    failureLabel: "Resend deadline delivery",
+    body: {
       from: `Opportunity Scanner <${config.fromEmail}>`,
       to: [alert.recipient_email],
       subject,
@@ -77,12 +76,6 @@ export async function sendDeadlineAlertEmail(
         "List-Unsubscribe": `<${oneClickUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
       }
-    })
-  });
-
-  const payload = (await response.json().catch(() => ({}))) as ResendResponse;
-  if (!response.ok || !payload.id) {
-    throw new Error(payload.message?.slice(0, 450) || `Resend deadline delivery failed with status ${response.status}.`);
-  }
-  return payload.id;
+    }
+  }, fetchImpl, options);
 }

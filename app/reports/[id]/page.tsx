@@ -463,38 +463,85 @@ function ContactEnrichmentStatus({ signal }: { signal: StoredOpportunitySignal }
   );
 }
 
-function FindContactsButton({
+type ContactLookupAccess = {
+  hasGrowthPlan: boolean;
+  creditBalance: {
+    entitled: boolean;
+    limit: number;
+    remaining: number;
+  } | null;
+};
+
+function GrowthContactLookupControl({
   scanId,
   opportunityId,
-  locked = false,
+  eligible,
+  isPaid,
+  lookupAccess,
   access
 }: {
   scanId: string;
   opportunityId: string;
-  locked?: boolean;
+  eligible: boolean;
+  isPaid: boolean;
+  lookupAccess: ContactLookupAccess;
   access?: string;
 }) {
-  if (locked) {
+  if (!eligible) {
     return (
-      <button
-        disabled
-        className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-slate-500"
-      >
-        Find Contacts
-      </button>
+      <p className="rounded-md border border-line bg-field px-3 py-2 text-xs leading-5 text-muted">
+        Use the source-native contact path for this row. Person-level lookup is reserved for
+        eligible private-organization targets.
+      </p>
+    );
+  }
+
+  if (!isPaid || !lookupAccess.hasGrowthPlan) {
+    return (
+      <p className="rounded-md border border-line bg-field px-3 py-2 text-xs leading-5 text-muted">
+        <span className="font-semibold text-ink">Person-level contact lookup is Growth-only.</span>{" "}
+        Full report and Monitor access still include the source-native contact path, suggested
+        roles, and next action.
+      </p>
+    );
+  }
+
+  const creditBalance = lookupAccess.creditBalance;
+  if (!creditBalance || !creditBalance.entitled) {
+    return (
+      <p className="rounded-md border border-line bg-field px-3 py-2 text-xs leading-5 text-muted">
+        Growth contact credit balance is temporarily unavailable. No lookup can be submitted and
+        the source-native contact path remains available.
+      </p>
+    );
+  }
+
+  if (creditBalance.remaining <= 0) {
+    return (
+      <p className="rounded-md border border-line bg-field px-3 py-2 text-xs leading-5 text-muted">
+        <span className="font-semibold text-ink">Growth credits:</span> 0 of {creditBalance.limit}{" "}
+        remaining this billing month. The source-native contact path remains available.
+      </p>
     );
   }
 
   return (
-    <form action="/api/opportunities/enrich" method="post">
-      <input type="hidden" name="scanId" value={scanId} />
-      <input type="hidden" name="opportunityId" value={opportunityId} />
-      <input type="hidden" name="enrichmentType" value="find_contacts" />
-      {access ? <input type="hidden" name="access" value={access} /> : null}
-      <button className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent">
-        Find Contacts
-      </button>
-    </form>
+    <div className="rounded-md border border-line bg-field p-3">
+      <p className="text-xs leading-5 text-muted">
+        <span className="font-semibold text-ink">Growth credits:</span> {creditBalance.remaining} of{" "}
+        {creditBalance.limit} remaining this billing month. This person-level lookup can use one
+        credit and may not return a verified contact.
+      </p>
+      <form action="/api/opportunities/enrich" method="post" className="mt-2">
+        <input type="hidden" name="scanId" value={scanId} />
+        <input type="hidden" name="opportunityId" value={opportunityId} />
+        <input type="hidden" name="enrichmentType" value="find_contacts" />
+        {access ? <input type="hidden" name="access" value={access} /> : null}
+        <button className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent">
+          Run Growth Contact Lookup
+        </button>
+      </form>
+    </div>
   );
 }
 
@@ -631,12 +678,14 @@ function OpportunityDetail({
   signal,
   isPaid,
   profile,
+  lookupAccess,
   access
 }: {
   scanId: string;
   signal: StoredOpportunitySignal;
   isPaid: boolean;
   profile?: CompanyProfile;
+  lookupAccess: ContactLookupAccess;
   access?: string;
 }) {
   const classification = opportunityActionFor(signal, profile);
@@ -695,10 +744,12 @@ function OpportunityDetail({
               locked={!isPaid}
               access={access}
             />
-            <FindContactsButton
+            <GrowthContactLookupControl
               scanId={scanId}
               opportunityId={signal.id}
-              locked={!isPaid || !["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+              eligible={["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+              isPaid={isPaid}
+              lookupAccess={lookupAccess}
               access={access}
             />
           </div>
@@ -713,12 +764,14 @@ function OpportunityActionTable({
   signals,
   isPaid,
   profile,
+  lookupAccess,
   access
 }: {
   scanId: string;
   signals: StoredOpportunitySignal[];
   isPaid: boolean;
   profile?: CompanyProfile;
+  lookupAccess: ContactLookupAccess;
   access?: string;
 }) {
   return (
@@ -763,6 +816,7 @@ function OpportunityActionTable({
                           signal={signal}
                           isPaid={isPaid}
                           profile={profile}
+                          lookupAccess={lookupAccess}
                           access={access}
                         />
                       </div>
@@ -811,10 +865,12 @@ function OpportunityActionTable({
                         locked={!isPaid}
                         access={access}
                       />
-                      <FindContactsButton
+                      <GrowthContactLookupControl
                         scanId={scanId}
                         opportunityId={signal.id}
-                        locked={!isPaid || !["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+                        eligible={["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+                        isPaid={isPaid}
+                        lookupAccess={lookupAccess}
                         access={access}
                       />
                       <p className="text-xs leading-5 text-muted">
@@ -843,12 +899,14 @@ function OpportunitySignalCard({
   signal,
   isPaid,
   profile,
+  lookupAccess,
   access
 }: {
   scanId: string;
   signal: StoredOpportunitySignal;
   isPaid: boolean;
   profile?: CompanyProfile;
+  lookupAccess: ContactLookupAccess;
   access?: string;
 }) {
   const classification = opportunityActionFor(signal, profile);
@@ -899,10 +957,12 @@ function OpportunitySignalCard({
           locked={!isPaid}
           access={access}
         />
-        <FindContactsButton
+        <GrowthContactLookupControl
           scanId={scanId}
           opportunityId={signal.id}
-          locked={!isPaid || !["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+          eligible={["enrich_company_domain", "contact_award_recipient"].includes(classification.contact_strategy)}
+          isPaid={isPaid}
+          lookupAccess={lookupAccess}
           access={access}
         />
       </div>
@@ -1026,7 +1086,7 @@ function ActionPlan({ signals }: { signals: StoredOpportunitySignal[] }) {
           <span className="font-semibold text-ink">1. Prioritize the highest actionability rows.</span> Start with opportunities that have a clear buyer, source evidence, and near-term timing.
         </li>
         <li className="rounded-md border border-line bg-field p-4">
-          <span className="font-semibold text-ink">2. Validate contact paths.</span> Use source-native contacts first, then enrich program, procurement, vendor relations, or partnership roles.
+          <span className="font-semibold text-ink">2. Validate contact paths.</span> Use source-native contacts first. Growth-only person lookup can support eligible private-organization targets after the route and roles are verified.
         </li>
         <li className="rounded-md border border-line bg-field p-4">
           <span className="font-semibold text-ink">3. Push selected opportunities to workflow.</span> Create CRM deals, account research tasks, or outreach queues from the workflow-ready row.
@@ -1271,27 +1331,35 @@ export default async function ReportPage({
     return <ReportScanState scan={scan} isAdminView={isAdminView} />;
   }
 
-  const storedAccess = await hasServerReportAccess(searchParams?.access, scan);
-  if (storedAccess && searchParams?.session_id) {
-    redirect(reportAccessHref(`/reports/${scan.id}`, searchParams.access));
-  }
-  const checkoutHandoffFulfilled =
-    !storedAccess && searchParams?.checkout === "success"
-      ? await verifyReportCheckoutHandoff(scan.id, searchParams.session_id)
-      : false;
-  if (checkoutHandoffFulfilled) {
-    redirect(reportAccessHref(`/reports/${scan.id}?purchase=report`, searchParams?.access));
-  }
-  let comparisonHref: string | null = null;
-  let hasActiveMonitoringPlan = false;
   let customerSession: Awaited<ReturnType<typeof resolveCustomerSession>> = null;
   try {
     customerSession = await resolveCustomerSession(getCustomerAuthConfig(), cookies());
   } catch {
     customerSession = null;
   }
+  const customerAccount = customerSession?.user.email && customerSession.user.email_confirmed_at
+    ? await ensureCustomerAccount(customerSession.user.id, customerSession.user.email).catch(() => null)
+    : null;
+  const storedAccess = await hasServerReportAccess(searchParams?.access, scan);
+  if (storedAccess && searchParams?.session_id) {
+    redirect(reportAccessHref(`/reports/${scan.id}`, searchParams.access));
+  }
+  const checkoutHandoffFulfilled =
+    !storedAccess && searchParams?.checkout === "success"
+      ? await verifyReportCheckoutHandoff(
+          scan.id,
+          searchParams.session_id,
+          customerAccount ? { authUserId: customerSession!.user.id, accountId: customerAccount.id } : undefined
+        )
+      : false;
+  if (checkoutHandoffFulfilled) {
+    redirect(reportAccessHref(`/reports/${scan.id}?purchase=report`, searchParams?.access));
+  }
+  let comparisonHref: string | null = null;
+  let hasActiveMonitoringPlan = false;
+  let hasActiveGrowthPlan = false;
+  let growthCreditBalance: ContactLookupAccess["creditBalance"] = null;
   if (customerSession?.user.email) {
-    await ensureCustomerAccount(customerSession.user.id, customerSession.user.email).catch(() => null);
     const [pair, dashboardSummary] = await Promise.all([
       loadOwnedMonitoringComparisonPair(customerSession.user.id, scan.id).catch(() => null),
       loadDashboardSummary(customerSession.user.id).catch(() => null)
@@ -1304,6 +1372,15 @@ export default async function ReportPage({
           ["active", "trialing"].includes(subscription.status)
       )
     );
+    hasActiveGrowthPlan = Boolean(
+      dashboardSummary?.billing.subscriptions.some(
+        (subscription) =>
+          subscription.product === "growth" && ["active", "trialing"].includes(subscription.status)
+      )
+    );
+    if (hasActiveGrowthPlan && dashboardSummary) {
+      growthCreditBalance = dashboardSummary.enrichmentCredits;
+    }
   }
   const isPaid = storedAccess || await hasCustomerServerReportAccess(
     searchParams?.access,
@@ -1332,6 +1409,10 @@ export default async function ReportPage({
     !hasActiveMonitoringPlan &&
     reportCheckoutIsConfigured();
   const reportCompanyName = profile?.company_name || scan.company_name || hostname(scan.company_url);
+  const contactLookupAccess: ContactLookupAccess = {
+    hasGrowthPlan: hasActiveGrowthPlan,
+    creditBalance: growthCreditBalance
+  };
 
   return (
     <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
@@ -1382,6 +1463,7 @@ export default async function ReportPage({
               signals={displayedSignals}
               isPaid={isPaid}
               profile={profile}
+              lookupAccess={contactLookupAccess}
               access={searchParams?.access}
             />
             <section className="grid gap-4 md:hidden">
@@ -1397,6 +1479,7 @@ export default async function ReportPage({
                     signal={signal}
                     isPaid={isPaid}
                     profile={profile}
+                    lookupAccess={contactLookupAccess}
                     access={searchParams?.access}
                   />
                 ))}
