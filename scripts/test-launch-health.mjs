@@ -36,6 +36,26 @@ assert.equal(reportOnly.ready.subscriptionCheckout, false);
 assert.equal(reportOnly.services.email, true);
 assert.equal(reportOnly.services.support, true);
 assert.equal(reportOnly.services.analytics, true);
+assert.equal(reportOnly.services.reportCatalog, "unverified");
+
+const invalidReportCatalog = evaluateLaunchHealth(reportReadyEnvironment, {
+  ok: false,
+  reason: "The configured Report price must be USD $49.00.",
+  checkedAt: "2026-07-14T12:00:00.000Z"
+});
+assert.equal(invalidReportCatalog.ok, true, "catalog failure must not make core demo health fragile");
+assert.equal(invalidReportCatalog.ready.paidSignup, false);
+assert.equal(invalidReportCatalog.ready.reportCheckout, false);
+assert.equal(invalidReportCatalog.services.reportCatalog, "invalid");
+assert.equal(invalidReportCatalog.services.reportCatalogReason, "The configured Report price must be USD $49.00.");
+
+const verifiedReportCatalog = evaluateLaunchHealth(reportReadyEnvironment, {
+  ok: true,
+  reason: "Configured Report price verified.",
+  checkedAt: "2026-07-14T12:00:00.000Z"
+});
+assert.equal(verifiedReportCatalog.ready.reportCheckout, true);
+assert.equal(verifiedReportCatalog.services.reportCatalog, "verified");
 
 for (const missing of ["RESEND_API_KEY", "RESEND_FROM_EMAIL"]) {
   const environment = { ...reportReadyEnvironment, [missing]: "" };
@@ -98,9 +118,12 @@ assert.equal(
   true
 );
 
-assert.match(healthEvaluator, /mode === "live" && email && support && analytics/);
+assert.match(healthEvaluator, /mode === "live" && email && support && analytics && reportCatalogVerified/);
 assert.match(healthEvaluator, /subscriptionsEnabled && subscriptionPrices/);
 assert.match(route, /evaluateLaunchHealth\(process\.env\)/);
+assert.match(route, /verifyReportCatalogCached\(getStripeServerConfig\(\)\)/);
+assert.match(route, /REPORT_CATALOG_HEALTH_TIMEOUT_MS = 1_500/);
+assert.match(route, /status: health\.ready\.demo \? 200 : 503/);
 assert.match(route, /VERCEL_GIT_COMMIT_SHA\?\.slice\(0, 12\)/);
 assert.match(route, /"Cache-Control": "no-store"/);
 assert.doesNotMatch(healthEvaluator, /STRIPE_SECRET_KEY[^\n]*(?:return|json)/i);

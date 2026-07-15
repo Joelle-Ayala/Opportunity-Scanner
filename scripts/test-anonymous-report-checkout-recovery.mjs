@@ -36,6 +36,12 @@ const response = await handleCheckout(
       }
     }),
     scanExists: async (scanId) => scanId === SCAN_ID,
+    verifyReportCatalog: async () => ({
+      ok: true,
+      code: "VERIFIED",
+      reason: "Configured Report price verified.",
+      checkedAt: "2026-07-14T12:00:00.000Z"
+    }),
     createSession: async (input) => {
       captured.push(input);
       return { id: "cs_test_recovery", url: "https://checkout.stripe.com/c/pay/recovery" };
@@ -49,15 +55,22 @@ assert.equal(
   captured[0].successUrl,
   `${APP_URL}/auth/sign-in?next=%2Freports%2F${SCAN_ID}%3Fcheckout%3Dsuccess%26session_id%3D{CHECKOUT_SESSION_ID}`
 );
-assert.equal(captured[0].cancelUrl, `${APP_URL}/reports/${SCAN_ID}?checkout=cancelled`);
+assert.equal(
+  captured[0].cancelUrl,
+  `${APP_URL}/reports/${SCAN_ID}?checkout=cancelled#checkout-return`
+);
 assert.doesNotMatch(captured[0].successUrl, /buyer%40example\.com|buyer@example\.com/);
 
-const [access, signIn] = await Promise.all([
+const [access, signIn, report] = await Promise.all([
   readFile(new URL("../lib/payments/access.ts", import.meta.url), "utf8"),
-  readFile(new URL("../app/auth/sign-in/page.tsx", import.meta.url), "utf8")
+  readFile(new URL("../app/auth/sign-in/page.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../app/reports/[id]/page.tsx", import.meta.url), "utf8")
 ]);
 
 assert.match(access, /resolveVerifiedReportCheckoutSignIn/);
+assert.match(report, /searchParams\?\.checkout === "cancelled"/);
+assert.match(report, /No charge was made/);
+assert.match(report, /source=checkout_return&scanId=/);
 assert.match(access, /isMatchingPaidReportSession\(session, checkoutReturn\.scanId, config\.prices\.report\)/);
 assert.match(access, /hasOnlyExpectedParams/);
 assert.match(access, /checkoutStates\[0\] !== "success"/);

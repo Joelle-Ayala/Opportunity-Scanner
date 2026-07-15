@@ -1,8 +1,10 @@
 import { getStripeServerConfig, priceFor } from "./config.ts";
 import { validateCheckoutInput } from "./contract.ts";
 import { persistStripeWebhookEvent, reportScanExists } from "./persistence.ts";
+import { verifyReportCatalogCached } from "./reportCatalogPreflight.ts";
 import { verifyStripeSignature } from "./signature.ts";
 import { createBillingPortalSession, createCheckoutSession } from "./stripeApi.ts";
+import { deliverPaidReportFulfillment } from "../transactionalEmail/paidReport.ts";
 
 const NO_STORE_HEADERS = { "Cache-Control": "no-store" };
 const MAX_REQUEST_BYTES = 8_192;
@@ -33,12 +35,14 @@ type CheckoutDependencies = {
   getConfig: typeof getStripeServerConfig;
   scanExists: typeof reportScanExists;
   createSession: typeof createCheckoutSession;
+  verifyReportCatalog: typeof verifyReportCatalogCached;
 };
 
 const checkoutDependencies: CheckoutDependencies = {
   getConfig: getStripeServerConfig,
   scanExists: reportScanExists,
-  createSession: createCheckoutSession
+  createSession: createCheckoutSession,
+  verifyReportCatalog: verifyReportCatalogCached
 };
 
 function reportSuccessUrl(appUrl: string, scanId: string, signedIn: boolean): string {
@@ -48,7 +52,7 @@ function reportSuccessUrl(appUrl: string, scanId: string, signedIn: boolean): st
 }
 
 function reportCancelUrl(appUrl: string, scanId: string): string {
-  return `${appUrl}/reports/${scanId}?checkout=cancelled`;
+  return `${appUrl}/reports/${scanId}?checkout=cancelled#checkout-return`;
 }
 
 export async function handleCheckout(
@@ -72,6 +76,13 @@ export async function handleCheckout(
     const input = validation.value;
     if (input.scanId && !(await dependencies.scanExists(input.scanId))) {
       return error(404, "SCAN_NOT_FOUND", "The report scan was not found.");
+    }
+    if (input.plan === "report") {
+      const catalog = await dependencies.verifyReportCatalog(config);
+      if (!catalog.ok) {
+        console.error("Stripe Report catalog preflight failed", { code: catalog.code });
+        return error(503, "REPORT_CATALOG_INVALID", catalog.reason);
+      }
     }
     const session = await dependencies.createSession({
       secretKey: config.secretKey,
@@ -162,6 +173,17 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
 
   try {
     const processed = await persistStripeWebhookEvent(event as Record<string, unknown>, config.prices);
+    const delivery = await deliverPaidReportFulfillment(event as Record<string, unknown>, config);
+    if (delivery.status === "failed") {
+      console.error("Paid Report fulfillment requires webhook retry", {
+        failureCode: delivery.failureCode
+      });
+      return error(
+        503,
+        "REPORT_DELIVERY_RETRY_REQUIRED",
+        "Paid Report fulfillment could not be completed yet."
+      );
+    }
     return json({ ok: true, received: true, duplicate: !processed });
   } catch (cause) {
     const record = event as Record<string, unknown>;

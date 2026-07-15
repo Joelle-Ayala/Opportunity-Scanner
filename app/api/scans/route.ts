@@ -1,8 +1,10 @@
+import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import {
   executeScanPipeline,
   persistScanFailure,
+  scanFailureTerminalStatePersisted,
   SCAN_EXECUTION_DEADLINE_MS,
   SCAN_TERMINAL_WRITE_TIMEOUT_MS
 } from "@/lib/scanPipeline";
@@ -16,12 +18,36 @@ import {
 } from "@/lib/supabaseRest";
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
 import { enqueueScanNurture } from "@/lib/nurture";
+import { deliverScanLifecycleEmailSafely } from "@/lib/transactionalEmail/scanLifecycle";
 import { CustomerType, ReportType, ScanInput } from "@/lib/types";
 import { normalizeCompanyUrl } from "@/lib/url";
+import {
+  FIRST_TOUCH_COOKIE_NAME,
+  landingPathFromUrl,
+  resolveFirstTouchAttribution
+} from "@/lib/acquisitionAttribution";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 const CUSTOMER_OWNERSHIP_TIMEOUT_MS = 1_000;
+const SCAN_LIFECYCLE_EMAIL_TIMEOUT_MS = 3_000;
+
+async function attemptScanLifecycleEmail(input: {
+  scanId: string;
+  recipientEmail?: string | null;
+  state: "completed" | "failed";
+}): Promise<void> {
+  try {
+    await deliverScanLifecycleEmailSafely(input, {
+      request: { timeoutMs: SCAN_LIFECYCLE_EMAIL_TIMEOUT_MS }
+    });
+  } catch {
+    console.error("Unexpected transactional scan email error", {
+      scanId: input.scanId,
+      state: input.state
+    });
+  }
+}
 
 function optionalString(value: FormDataEntryValue | null): string | undefined {
   if (typeof value !== "string") {
@@ -36,11 +62,6 @@ function optionalStringArray(values: FormDataEntryValue[]): string[] {
     .filter((value): value is string => typeof value === "string")
     .map((value) => value.trim())
     .filter(Boolean);
-}
-
-function optionalAttribution(value: FormDataEntryValue | null): string | undefined {
-  const normalized = optionalString(value)?.replace(/[\u0000-\u001F\u007F]/g, "").slice(0, 160);
-  return normalized || undefined;
 }
 
 async function attemptCustomerScanOwnership(
@@ -120,13 +141,29 @@ export async function POST(request: Request) {
   const terminalDeadlineAtMs = executionDeadlineAtMs + SCAN_TERMINAL_WRITE_TIMEOUT_MS;
   const formData = await request.formData();
   const marketingConsent = formData.get("marketingConsent") === "on";
-  const session = await resolveCustomerSession(getCustomerAuthConfig(request.url), cookies()).catch(() => null);
+  const cookieStore = cookies();
+  const session = await resolveCustomerSession(getCustomerAuthConfig(request.url), cookieStore).catch(() => null);
   let companyUrl: string;
   try {
     companyUrl = normalizeCompanyUrl(String(formData.get("companyUrl") ?? ""));
   } catch {
     redirect("/?error=invalid-url");
   }
+
+  const firstTouchAttribution = resolveFirstTouchAttribution({
+    cookieValue: cookieStore.get(FIRST_TOUCH_COOKIE_NAME)?.value,
+    nowMs: requestStartedAtMs,
+    fallback: {
+      firstTouchId: randomUUID(),
+      firstTouchedAt: new Date(requestStartedAtMs).toISOString(),
+      landingPath: landingPathFromUrl(request.headers.get("referer")),
+      utmSource: formData.get("utm_source"),
+      utmMedium: formData.get("utm_medium"),
+      utmCampaign: formData.get("utm_campaign"),
+      utmContent: formData.get("utm_content"),
+      utmTerm: formData.get("utm_term")
+    }
+  });
 
   const input: ScanInput = {
     companyUrl,
@@ -141,11 +178,7 @@ export async function POST(request: Request) {
     includeTerms: optionalString(formData.get("includeTerms")),
     excludeTerms: optionalString(formData.get("excludeTerms")),
     prioritySignals: optionalStringArray(formData.getAll("prioritySignals")),
-    utmSource: optionalAttribution(formData.get("utm_source")),
-    utmMedium: optionalAttribution(formData.get("utm_medium")),
-    utmCampaign: optionalAttribution(formData.get("utm_campaign")),
-    utmContent: optionalAttribution(formData.get("utm_content")),
-    utmTerm: optionalAttribution(formData.get("utm_term"))
+    firstTouchAttribution: firstTouchAttribution ?? undefined
   };
 
   const rateLimit = await claimScanRateLimit(request, input.email);
@@ -162,6 +195,12 @@ export async function POST(request: Request) {
     if (session?.user.email) {
       await attemptCustomerScanOwnership(session.user.id, scan.id, terminalDeadlineAtMs);
     }
+
+    await attemptScanLifecycleEmail({
+      scanId: scan.id,
+      recipientEmail: input.email,
+      state: "completed"
+    });
 
     if (input.email && marketingConsent) {
       const nurtureTimeoutMs = Math.max(0, terminalDeadlineAtMs - Date.now());
@@ -188,14 +227,27 @@ export async function POST(request: Request) {
       companyUrl: input.companyUrl,
       error: error instanceof Error ? error.message : "Unknown scan error"
     });
-    await persistScanFailure(scan.id, error, { deadlineAtMs: terminalDeadlineAtMs }).catch(
-      (terminalError) => {
-        console.error("Unable to persist scan failure after retry", {
-          scanId: scan.id,
-          error: terminalError instanceof Error ? terminalError.message : "Unknown persistence error"
+    let failurePersisted = scanFailureTerminalStatePersisted(error);
+    if (!failurePersisted) {
+      await persistScanFailure(scan.id, error, { deadlineAtMs: terminalDeadlineAtMs })
+        .then(() => {
+          failurePersisted = true;
+        })
+        .catch((terminalError) => {
+          console.error("Unable to persist scan failure after retry", {
+            scanId: scan.id,
+            error: terminalError instanceof Error ? terminalError.message : "Unknown persistence error"
+          });
         });
-      }
-    );
+    }
+
+    if (failurePersisted) {
+      await attemptScanLifecycleEmail({
+        scanId: scan.id,
+        recipientEmail: input.email,
+        state: "failed"
+      });
+    }
   }
 
   redirect(`/reports/${scan.id}`);

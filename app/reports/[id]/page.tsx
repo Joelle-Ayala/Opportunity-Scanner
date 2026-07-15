@@ -7,6 +7,7 @@ import { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "@/lib/types
 import { accessSuffix, hasAdminAccess, reportAccessHref } from "@/lib/access";
 import { hasCustomerServerReportAccess, hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
 import { getStripeServerConfig } from "@/lib/payments/config";
+import { claimActiveReportPurchaseByEmail } from "@/lib/payments/persistence";
 import { PurchaseCompletedAnalytics, ReportAnalytics } from "@/components/page-analytics";
 import { ReportMonitorCheckout } from "@/components/report-monitor-checkout";
 import { signalLane } from "@/lib/actionability";
@@ -24,6 +25,7 @@ import {
   revenueMotionLabel,
   sourceTypeLabel
 } from "@/lib/workflowPayload";
+import { configuredSupportEmail } from "@/lib/support";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -116,10 +118,10 @@ const IN_PROGRESS_SCAN_COPY: Record<
 };
 
 function scanSupportHref(scan: ScanRecord): string {
-  const email = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const email = configuredSupportEmail();
   const subject = "Help with an Opportunity Scanner scan";
   const body = [
-    "Hi Opportunity Systems,",
+    "Hi Opportunity Scanner support,",
     "",
     "I need help retrying an Opportunity Scanner scan.",
     "",
@@ -232,10 +234,10 @@ function ReportScanState({
 }
 
 function fullReportRequestHref(scan: ScanRecord, signal?: StoredOpportunitySignal): string {
-  const email = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const email = configuredSupportEmail();
   const subject = "Full Opportunity Scanner report request";
   const body = [
-    "Hi Opportunity Systems,",
+    "Hi Opportunity Scanner support,",
     "",
     "I would like full access to this Opportunity Scanner report.",
     "",
@@ -250,6 +252,18 @@ function fullReportRequestHref(scan: ScanRecord, signal?: StoredOpportunitySigna
     .join("\n");
 
   return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function paidReportClaimSupportHref(scanId: string): string {
+  const subject = "Help claiming a purchased Opportunity Scanner report";
+  const body = [
+    "Hi Opportunity Scanner support,",
+    "",
+    "I signed in with my purchase email but could not claim my full report.",
+    "",
+    `Report ID: ${scanId}`
+  ].join("\n");
+  return `mailto:${configuredSupportEmail()}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 function reportCheckoutIsConfigured(): boolean {
@@ -1329,7 +1343,14 @@ export default async function ReportPage({
   searchParams
 }: {
   params: { id: string };
-  searchParams?: { access?: string; unlock?: string; checkout?: string; session_id?: string; purchase?: string };
+  searchParams?: {
+    access?: string;
+    unlock?: string;
+    checkout?: string;
+    session_id?: string;
+    purchase?: string;
+    claim?: string;
+  };
 }) {
   const scan = await getScan(params.id);
   if (!scan) notFound();
@@ -1348,6 +1369,17 @@ export default async function ReportPage({
   const customerAccount = customerSession?.user.email && customerSession.user.email_confirmed_at
     ? await ensureCustomerAccount(customerSession.user.id, customerSession.user.email).catch(() => null)
     : null;
+  if (searchParams?.claim === "paid") {
+    if (!customerSession?.user.email || !customerAccount) {
+      redirect(`/auth/sign-in?next=${encodeURIComponent(`/reports/${scan.id}?claim=paid`)}`);
+    }
+    const claimed = await claimActiveReportPurchaseByEmail({
+      authUserId: customerSession.user.id,
+      accountId: customerAccount.id,
+      scanId: scan.id
+    }).catch(() => false);
+    redirect(`/reports/${scan.id}?${claimed ? "purchase=report" : "claim=failed"}`);
+  }
   const storedAccess = await hasServerReportAccess(searchParams?.access, scan);
   if (storedAccess && searchParams?.session_id) {
     redirect(reportAccessHref(`/reports/${scan.id}`, searchParams.access));
@@ -1446,6 +1478,45 @@ export default async function ReportPage({
           access={searchParams?.access}
           comparisonHref={comparisonHref}
         />
+
+        {searchParams?.checkout === "cancelled" ? (
+          <section
+            id="checkout-return"
+            aria-live="polite"
+            className="rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-ink"
+          >
+            <h2 className="text-base font-semibold text-ink">No charge was made</h2>
+            <p className="mt-1 text-slate-700">
+              Your report preview is still here. You can keep reviewing it or return to secure
+              checkout when you are ready.
+            </p>
+            <a
+              href={`/pricing?source=checkout_return&scanId=${encodeURIComponent(scan.id)}`}
+              className="mt-3 inline-flex font-semibold text-accent underline decoration-accent/30 underline-offset-4"
+            >
+              Return to report checkout
+            </a>
+          </section>
+        ) : null}
+
+        {searchParams?.claim === "failed" ? (
+          <section
+            aria-live="polite"
+            className="rounded-lg border border-red-200 bg-red-50 p-5 text-sm leading-6 text-ink"
+          >
+            <h2 className="text-base font-semibold text-ink">We could not match this purchase</h2>
+            <p className="mt-1 text-slate-700">
+              Sign in with the exact email used at checkout. If that address is already correct,
+              support can verify the purchase without asking you to send payment details.
+            </p>
+            <a
+              href={paidReportClaimSupportHref(scan.id)}
+              className="mt-3 inline-flex font-semibold text-accent underline decoration-accent/30 underline-offset-4"
+            >
+              Contact support
+            </a>
+          </section>
+        ) : null}
 
         {searchParams?.unlock === "placeholder" ? (
           <section className="rounded-lg border border-cyan-100 bg-mist p-5 text-sm leading-6 text-ink">

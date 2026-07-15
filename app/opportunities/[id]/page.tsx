@@ -15,6 +15,7 @@ import { enrichmentEligibilityForTarget, resolvePrimaryTargetForSignal } from "@
 import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { OpportunityEnrichmentRequestRecord, StoredOpportunitySignal } from "@/lib/types";
 import { resolveRequestReportAccess } from "@/lib/payments/requestAccess";
+import { configuredSupportEmail } from "@/lib/support";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -69,10 +70,10 @@ function actionabilityLabel(value: string): string {
 }
 
 function fullReportRequestHref(scanId: string, signal: StoredOpportunitySignal): string {
-  const email = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const email = configuredSupportEmail();
   const subject = "Full Opportunity Scanner report request";
   const body = [
-    "Hi Opportunity Systems,",
+    "Hi Opportunity Scanner support,",
     "",
     "I would like full access to this Opportunity Scanner opportunity workspace.",
     "",

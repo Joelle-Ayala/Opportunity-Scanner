@@ -212,6 +212,12 @@ test("checkout handler uses verified account identity and sends anonymous Report
   const dependencies = {
     getConfig: getStripeServerConfig,
     scanExists: async () => true,
+    verifyReportCatalog: async () => ({
+      ok: true,
+      code: "VERIFIED",
+      reason: "Configured Report price verified.",
+      checkedAt: "2026-07-14T12:00:00.000Z"
+    }),
     createSession: async (input) => {
       captured.push(input);
       return { id: `cs_test_${captured.length}`, url: "https://checkout.stripe.com/c/pay/test" };

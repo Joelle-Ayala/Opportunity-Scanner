@@ -17,6 +17,8 @@ export const SCAN_CONNECTOR_STATUS_WRITE_TIMEOUT_MS = 1_000;
 export const SCAN_SIGNAL_WRITE_TIMEOUT_MS = 5_000;
 export const SCAN_COMPLETION_WRITE_TIMEOUT_MS = 1_000;
 
+const persistedFailureErrors = new WeakSet<object>();
+
 const SCRAPING_STAGE_TIMEOUT_MS = 12_000;
 const PROFILING_STAGE_TIMEOUT_MS = 15_000;
 const STORAGE_STAGE_TIMEOUT_MS = 5_000;
@@ -152,6 +154,12 @@ export class ScanDiscoveryFailureError extends Error {
     super(`All attempted opportunity sources failed: ${sourceNames.join(", ")}.`);
     this.name = "ScanDiscoveryFailureError";
   }
+}
+
+export function scanFailureTerminalStatePersisted(error: unknown): boolean {
+  return (typeof error === "object" && error !== null) || typeof error === "function"
+    ? persistedFailureErrors.has(error)
+    : false;
 }
 
 export function allAttemptedSourcesFailed(runs: ConnectorRunStatus[]): boolean {
@@ -377,6 +385,9 @@ export async function executeScanPipeline(
         updateScan: dependencies.updateScan,
         now: dependencies.now
       });
+      if ((typeof error === "object" && error !== null) || typeof error === "function") {
+        persistedFailureErrors.add(error);
+      }
     } catch (terminalError) {
       console.error("Unable to persist failed scan terminal state", {
         scanId,

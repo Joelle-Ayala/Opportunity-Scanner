@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "@/components/brand";
+import { configuredSupportEmail } from "@/lib/support";
 
 const title = "Privacy Notice | Opportunity Scanner";
 const description = "How Opportunity Scanner handles scan and guide-request information.";
@@ -20,13 +21,13 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
-  const contactEmail = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const contactEmail = configuredSupportEmail();
 
   return (
     <main className="min-h-screen bg-field">
       <SiteHeader />
       <article className="mx-auto max-w-3xl px-6 py-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">Last reviewed July 11, 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">Last reviewed July 14, 2026</p>
         <h1 className="mt-4 text-4xl font-semibold text-ink">Privacy notice</h1>
         <p className="mt-5 text-base leading-8 text-slate-700">
           Opportunity Scanner collects only the information needed to run requested scans, provide requested guides, operate the beta, and understand which product and content experiences are useful.
@@ -50,6 +51,17 @@ export default function PrivacyPage() {
               not include form entries such as email addresses, company URLs, or free-text responses.
               These analytics providers process usage and technical data to provide and operate
               their services for us.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold text-ink">First-touch campaign attribution</h2>
+            <p className="mt-3">
+              Opportunity Scanner uses a same-site first-party cookie for up to 90 days to remember
+              how a visitor first reached the site. It contains a random anonymous identifier, the
+              landing-page path, referring hostname, timestamp, and standard UTM campaign fields.
+              It does not store an email address, company website, payment identifier, authentication
+              token, full landing-page query, or full referring URL. We use this information to
+              understand which campaigns lead to requested scans and purchased reports.
             </p>
           </section>
           <section>

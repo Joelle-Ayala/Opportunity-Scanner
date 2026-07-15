@@ -1,4 +1,5 @@
 import type { OrganizationTargetResolution } from "./organizationResolution";
+import type { FirstTouchAttribution } from "./acquisitionAttribution";
 
 export type CustomerType =
   | "B2B"
@@ -42,6 +43,7 @@ export type ScanInput = {
   includeTerms?: string;
   excludeTerms?: string;
   prioritySignals?: string[];
+  firstTouchAttribution?: FirstTouchAttribution;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
@@ -65,6 +67,10 @@ export type ScanRecord = {
   include_terms?: string | null;
   exclude_terms?: string | null;
   priority_signals?: string[] | null;
+  first_touch_id?: string | null;
+  first_touch_at?: string | null;
+  first_touch_landing_path?: string | null;
+  first_touch_referrer_host?: string | null;
   utm_source?: string | null;
   utm_medium?: string | null;
   utm_campaign?: string | null;

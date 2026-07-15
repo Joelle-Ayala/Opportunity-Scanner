@@ -1,5 +1,11 @@
 type LaunchHealthEnvironment = Record<string, string | undefined>;
 
+type ReportCatalogHealth = {
+  ok: boolean;
+  reason: string;
+  checkedAt: string;
+};
+
 function configured(env: LaunchHealthEnvironment, name: string): boolean {
   return Boolean(env[name]?.trim());
 }
@@ -15,7 +21,7 @@ function validEmail(value: string | undefined): boolean {
   return Boolean(value?.trim().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/));
 }
 
-export function evaluateLaunchHealth(env: LaunchHealthEnvironment) {
+export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog?: ReportCatalogHealth) {
   const database = configured(env, "SUPABASE_URL") && configured(env, "SUPABASE_SERVICE_ROLE_KEY");
   const auth = database && configured(env, "SUPABASE_ANON_KEY");
   const scans = database && configured(env, "OPENAI_API_KEY") && configured(env, "SCAN_RATE_LIMIT_HASH_SECRET");
@@ -34,7 +40,8 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment) {
   const monitoring = scans && configured(env, "CRON_SECRET");
   const analytics = configured(env, "NEXT_PUBLIC_POSTHOG_KEY") && configured(env, "NEXT_PUBLIC_POSTHOG_HOST");
   const demoReady = scans && auth;
-  const paidSignupReady = demoReady && payments && mode === "live" && email && support && analytics;
+  const reportCatalogVerified = reportCatalog?.ok ?? true;
+  const paidSignupReady = demoReady && payments && mode === "live" && email && support && analytics && reportCatalogVerified;
   const subscriptionCheckoutReady = paidSignupReady && subscriptionsEnabled && subscriptionPrices;
 
   return {
@@ -52,6 +59,9 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment) {
       payments,
       subscriptions: subscriptionCheckoutReady,
       stripeMode: mode,
+      reportCatalog: reportCatalog ? (reportCatalog.ok ? "verified" : "invalid") : "unverified",
+      reportCatalogReason: reportCatalog && !reportCatalog.ok ? reportCatalog.reason : null,
+      reportCatalogCheckedAt: reportCatalog?.checkedAt ?? null,
       email,
       support,
       monitoring,

@@ -137,7 +137,6 @@ export async function ensureCustomerAccount(authUserId: string, emailValue: stri
     auth_user_id: `eq.${authUserId}`
   });
   let linkableStripe: StripeCustomerRow | null = null;
-  const claimableStripeCustomers: StripeCustomerRow[] = [];
   for (const stripe of stripeCustomers) {
     const linkedAccount = await dashboardSelectOne<{ id: string }>("customer_accounts", {
       select: "id",
@@ -145,7 +144,6 @@ export async function ensureCustomerAccount(authUserId: string, emailValue: stri
     });
     if (!linkedAccount || linkedAccount.id === account?.id) {
       linkableStripe ??= stripe;
-      claimableStripeCustomers.push(stripe);
     }
   }
   if (!account) {
@@ -174,30 +172,11 @@ export async function ensureCustomerAccount(authUserId: string, emailValue: stri
       ownership_kind: "claimed"
     }, { onConflict: "scan_id", ignoreDuplicates: true });
   }
-  const customerIds = Array.from(new Set([
-    ...claimableStripeCustomers.map((stripe) => stripe.stripe_customer_id),
-    ...(account.stripe_customer_id ? [account.stripe_customer_id] : [])
-  ]));
-  if (customerIds.length > 0) {
-    const [grants, profiles] = await Promise.all([
-      dashboardSelect<{ id: string }>("stripe_report_access_grants", {
-        select: "id",
-        // A verified account may claim isolated guest purchases made with the same email.
-        stripe_customer_id: inFilter(customerIds)
-      }),
-      account.stripe_customer_id
-        ? dashboardSelect<{ id: string }>("monitored_profiles", {
-            select: "id",
-            stripe_customer_id: `eq.${account.stripe_customer_id}`
-          })
-        : Promise.resolve([])
-    ]);
-    for (const grant of grants) {
-      await dashboardInsert("customer_report_grant_ownership", {
-        customer_account_id: account.id,
-        report_access_grant_id: grant.id
-      }, { onConflict: "report_access_grant_id", ignoreDuplicates: true });
-    }
+  if (account.stripe_customer_id) {
+    const profiles = await dashboardSelect<{ id: string }>("monitored_profiles", {
+      select: "id",
+      stripe_customer_id: `eq.${account.stripe_customer_id}`
+    });
     for (const profile of profiles) {
       await dashboardInsert("customer_monitored_profile_ownership", {
         customer_account_id: account.id,

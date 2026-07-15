@@ -14,6 +14,7 @@ import {
   SCAN_FUNCTION_MAX_DURATION_MS,
   SCAN_SIGNAL_WRITE_TIMEOUT_MS,
   SCAN_TERMINAL_WRITE_TIMEOUT_MS,
+  scanFailureTerminalStatePersisted,
   ScanDiscoveryFailureError,
   ScanStageTimeoutError
 } from "../lib/scanPipeline.ts";
@@ -382,6 +383,7 @@ test("authenticated scan ownership is bounded, idempotent, and non-fatal", async
 
 test("ordinary pipeline errors persist a clear failed terminal status", async () => {
   const updates = [];
+  let pipelineError;
 
   await assert.rejects(
     executeScanPipeline("profile-error", input, {
@@ -397,10 +399,14 @@ test("ordinary pipeline errors persist a clear failed terminal status", async ()
         }
       })
     }),
-    /Profile provider unavailable/
+    (error) => {
+      pipelineError = error;
+      return /Profile provider unavailable/.test(error.message);
+    }
   );
 
   assert.equal(updates.at(-1)?.status, "failed");
   assert.equal(updates.at(-1)?.error_message, "Profile provider unavailable");
   assert.ok(updates.at(-1)?.completed_at);
+  assert.equal(scanFailureTerminalStatePersisted(pipelineError), true);
 });

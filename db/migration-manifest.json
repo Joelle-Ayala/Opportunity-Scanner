@@ -167,6 +167,22 @@
       "prerequisites": ["v0015"],
       "sha256": "7dfbab7e0a53387b76351149aa8531b335017a48cb66e8f708490c304b81ce97",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0021",
+      "file": "db/first-touch-acquisition-attribution.sql",
+      "description": "Durable privacy-bounded first-touch acquisition attribution for scans.",
+      "prerequisites": ["v0001", "v0002"],
+      "sha256": "efb9af2ff0c3cb0e43e9785daed0eaf6db0d5f445bb11c6cae52e567fe5e25e2",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0022",
+      "file": "db/paid-report-fulfillment-recovery.sql",
+      "description": "Durable paid Report delivery and verified-email close-tab purchase recovery.",
+      "prerequisites": ["v0006", "v0009", "v0015", "v0020"],
+      "sha256": "6163fefc305cb9d877a96a6392f5270787eaf286e4c6f8b7203f67780f5794e6",
+      "requiredInProduction": true
     }
   ]
 }

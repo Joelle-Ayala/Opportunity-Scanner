@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { OpportunityScannerLogo } from "@/components/brand";
 import { resolveVerifiedReportCheckoutSignIn } from "@/lib/payments/access";
+import { configuredSupportEmail } from "@/lib/support";
 
 export const dynamic = "force-dynamic";
 
@@ -19,10 +20,10 @@ const messages: Record<string, { tone: string; text: string }> = {
 };
 
 function purchaseSupportHref(scanId: string): string {
-  const supportEmail = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const supportEmail = configuredSupportEmail();
   const subject = "Help accessing a purchased Opportunity Scanner report";
   const body = [
-    "Hi Opportunity Systems,",
+    "Hi Opportunity Scanner support,",
     "",
     "The email shown for my Report purchase does not look right. Please help me recover access safely.",
     "",

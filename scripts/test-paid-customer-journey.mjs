@@ -91,9 +91,10 @@ test("monitoring APIs reject anonymous writes and derive ownership from the serv
 });
 
 test("dashboard data is account-scoped and browser database roles remain closed", async () => {
-  const [repository, schema] = await Promise.all([
+  const [repository, schema, recovery] = await Promise.all([
     source("lib/dashboard/repository.ts"),
-    source("db/customer-dashboard.sql")
+    source("db/customer-dashboard.sql"),
+    source("db/paid-report-fulfillment-recovery.sql")
   ]);
 
   assert.match(repository, /UUID_PATTERN\.test\(authUserId\)/);
@@ -102,8 +103,12 @@ test("dashboard data is account-scoped and browser database roles remain closed"
   assert.match(repository, /customer_report_grant_ownership[\s\S]*customer_account_id: `eq\.\$\{account\.id\}`/);
   assert.match(repository, /else if \(!account\.stripe_customer_id\)/);
   assert.match(repository, /stripe_customer_id: "is\.null"/);
-  assert.match(repository, /claimableStripeCustomers/);
-  assert.match(repository, /stripe_customer_id: inFilter\(customerIds\)/);
+  assert.doesNotMatch(repository, /claimableStripeCustomers/);
+  assert.doesNotMatch(repository, /stripe_customer_id: inFilter\(customerIds\)/);
+  assert.match(recovery, /claim_active_report_purchase_by_email/);
+  assert.match(recovery, /report_grant\.scan_id = p_scan_id/);
+  assert.match(recovery, /report_grant\.status = 'active'/);
+  assert.match(recovery, /lower\(stripe_customer\.email\) = v_account_email/);
   assert.match(repository, /customer_monitored_profile_ownership[\s\S]*customer_account_id: `eq\.\$\{accountId\}`/);
   assert.match(schema, /auth_user_id uuid not null unique references auth\.users/);
   assert.match(schema, /alter table customer_scan_ownership enable row level security/);

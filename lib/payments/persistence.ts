@@ -9,6 +9,64 @@ function databaseHeaders(config: ReturnType<typeof getBillingDatabaseConfig>): R
   };
 }
 
+export type PreparedPaidReportDelivery = {
+  delivery_id: string;
+  recipient_email: string;
+  attempt_number: number;
+};
+
+async function billingRpc<T>(functionName: string, payload: Record<string, unknown>): Promise<T> {
+  const config = getBillingDatabaseConfig();
+  const response = await fetch(`${config.url}/rest/v1/rpc/${functionName}`, {
+    method: "POST",
+    headers: {
+      ...databaseHeaders(config),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store"
+  });
+  if (!response.ok) throw new Error(`${functionName} failed with status ${response.status}.`);
+  return response.json() as Promise<T>;
+}
+
+export async function preparePaidReportDelivery(
+  scanId: string,
+  checkoutSessionId: string
+): Promise<PreparedPaidReportDelivery | null> {
+  const rows = await billingRpc<PreparedPaidReportDelivery[]>("prepare_paid_report_delivery", {
+    p_scan_id: scanId,
+    p_checkout_session_id: checkoutSessionId
+  });
+  return rows[0] ?? null;
+}
+
+export function recordPaidReportDelivery(input: {
+  deliveryId: string;
+  status: "delivered" | "failed";
+  providerMessageId?: string | null;
+  failureCode?: string | null;
+}): Promise<boolean> {
+  return billingRpc<boolean>("record_paid_report_delivery", {
+    p_delivery_id: input.deliveryId,
+    p_status: input.status,
+    p_provider_message_id: input.providerMessageId ?? null,
+    p_failure_code: input.failureCode ?? null
+  });
+}
+
+export function claimActiveReportPurchaseByEmail(input: {
+  authUserId: string;
+  accountId: string;
+  scanId: string;
+}): Promise<boolean> {
+  return billingRpc<boolean>("claim_active_report_purchase_by_email", {
+    p_auth_user_id: input.authUserId,
+    p_customer_account_id: input.accountId,
+    p_scan_id: input.scanId
+  });
+}
+
 export async function reportScanExists(scanId: string): Promise<boolean> {
   const config = getBillingDatabaseConfig();
   const query = new URLSearchParams({ select: "id", id: `eq.${scanId}`, limit: "1" });

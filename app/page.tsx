@@ -259,18 +259,19 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
           className="home-hero__product"
         />
         <div className="home-hero__veil" aria-hidden="true" />
+        <div className="home-hero__product-label" aria-hidden="true">
+          <span>Product view</span>
+          <strong>Fictional demo data</strong>
+        </div>
         <div className="home-hero__content mx-auto max-w-7xl px-6">
           <div className="home-hero__copy">
-            <div className="flex flex-wrap gap-2">
-              <Badge tone="blue">Public-sector intelligence</Badge>
-              <Badge tone="green">Source-backed</Badge>
-            </div>
+            <p className="home-hero__eyebrow">Public-sector opportunity intelligence</p>
             <h1 className="home-hero__title mt-5 font-semibold leading-tight text-ink">
-              Public-sector opportunities your team can actually pursue.
+              Find public-sector opportunities your team can actually pursue.
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              Find public-sector buyers, grants, funding signals, and procurement paths matched to
-              your offer, with evidence and a clear next action.
+              Turn your company website into a sourced pipeline of buyers, grants, funded partners,
+              and procurement paths, with evidence and a clear next action.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a href="#scan" className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
@@ -280,15 +281,15 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
                 See Sample Reports
               </a>
             </div>
-            <div className="home-hero__proof mt-8 hidden max-w-3xl border-y border-line sm:grid sm:grid-cols-3 sm:divide-x sm:divide-line">
+            <div className="home-hero__proof mt-9 max-w-3xl border-y border-line sm:grid sm:grid-cols-3 sm:divide-x sm:divide-line">
               {[
-                ["Evidence", "Official records linked to every signal"],
-                ["Revenue motion", "A clear path to the buyer or partner"],
-                ["Next action", "A step your team can route and own"]
+                ["Official evidence", "Source records linked to each signal"],
+                ["Commercial path", "The likely buyer, partner, or program"],
+                ["Next action", "A concrete step your team can own"]
               ].map(([label, copy]) => (
                 <div key={label} className="border-b border-line py-3 last:border-b-0 sm:border-b-0 sm:px-5 sm:first:pl-0">
-                  <p className="text-xs font-semibold text-ember">{label}</p>
-                  <p className="mt-1 text-sm font-semibold leading-5 text-ink">{copy}</p>
+                  <p className="text-xs font-semibold uppercase text-ember">{label}</p>
+                  <p className="mt-1 text-sm font-medium leading-5 text-ink">{copy}</p>
                 </div>
               ))}
             </div>
@@ -299,7 +300,7 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
       <section className="home-scan-section border-b border-line bg-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-16 lg:py-16">
           <div className="order-2 lg:order-1 lg:sticky lg:top-24">
-            <p className="text-xs font-semibold uppercase text-accent">Start here</p>
+            <p className="text-xs font-semibold uppercase text-accent">Your first report</p>
             <h2 className="mt-2 max-w-xl text-3xl font-semibold leading-tight text-ink">
               See whether public money is already creating demand for what you sell.
             </h2>
@@ -330,7 +331,7 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
 
       <section className="border-b border-line bg-white">
         <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
-          <SectionIntro title="A working pipeline, not another research memo" eyebrow="What teams get">
+          <SectionIntro title="A working opportunity pipeline, not another research memo" eyebrow="What teams get">
             <p>
               Opportunity Scanner gives founders, sales teams, and operators the context needed to
               decide what is worth pursuing and who should own the next step.

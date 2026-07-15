@@ -55,6 +55,23 @@ export type StripeCheckoutSession = {
   metadata?: Record<string, string> | null;
 };
 
+export type StripeCatalogProduct = {
+  id?: string;
+  active?: boolean;
+  livemode?: boolean;
+};
+
+export type StripeCatalogPrice = {
+  id?: string;
+  active?: boolean;
+  currency?: string;
+  livemode?: boolean;
+  product?: string | StripeCatalogProduct | null;
+  recurring?: { interval?: string } | null;
+  type?: string;
+  unit_amount?: number | null;
+};
+
 async function stripeRequest<T>(secretKey: string, path: string, options: StripeRequestOptions = {}): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), STRIPE_TIMEOUT_MS);
@@ -125,6 +142,14 @@ export async function createCheckoutSession(input: {
     form,
     idempotencyKey: `opportunity-scanner-checkout-${input.requestId}`
   });
+}
+
+export function retrieveStripePrice(secretKey: string, priceId: string): Promise<StripeCatalogPrice> {
+  const query = new URLSearchParams({ "expand[]": "product" });
+  return stripeRequest<StripeCatalogPrice>(
+    secretKey,
+    `/prices/${encodeURIComponent(priceId)}?${query.toString()}`
+  );
 }
 
 export function retrieveCheckoutSession(secretKey: string, sessionId: string): Promise<StripeCheckoutSession> {

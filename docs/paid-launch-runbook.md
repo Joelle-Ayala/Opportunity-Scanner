@@ -78,11 +78,13 @@ Confirm currency, tax behavior, receipt settings, customer statement text, and b
 - Put its signing secret in `STRIPE_WEBHOOK_SECRET`.
 - Subscribe to: `customer.created`, `customer.updated`, `customer.deleted`, `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.payment_action_required`, `charge.refunded`, and `charge.dispute.created`.
 - Confirm Stripe receives a `2xx` response, duplicate events are harmless, and failures can be retried.
+- Confirm paid Report fulfillment sends one idempotent sign-in-and-claim email when the buyer closes the Checkout success tab, and that it never exposes Stripe or auth tokens.
 - Keep webhook processing active during rollback so refunds, disputes, cancellations, and subscription status changes continue to update access.
 
 ## 5. Configure Customer Email
 
 - Verify the sending domain in Resend and set `RESEND_FROM_EMAIL` to an approved address on that domain.
+- Configure working MX records for `support@opportunityscanner.ai` and prove the support inbox can receive customer replies.
 - Configure `RESEND_API_KEY`, `ALERT_UNSUBSCRIBE_SECRET`, and `NURTURE_UNSUBSCRIBE_SECRET` in production.
 - Send one monitoring/deadline alert to the founder test inbox and verify subject, report link, sender identity, and delivery status.
 - Send nurture email only for a consent-eligible test record. Verify one-click and visible unsubscribe links, then confirm suppression prevents future sends.
@@ -94,6 +96,7 @@ No-go if required customer email is landing in spam, the sender is unverified, o
 
 - Set `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`.
 - Confirm `pricing_viewed`, `checkout_started`, `purchase_completed`, `dashboard_viewed`, `monitoring_onboarding_viewed`, and `monitoring_onboarding_completed` arrive when their steps occur.
+- Review the aggregate 7-day and 90-day launch-funnel snapshot by first-touch source, medium, and campaign; confirm it excludes emails, company URLs, report IDs, and full referrers.
 - Confirm events contain only the allowlisted plan, billing period, source, state, and aggregate status fields.
 - Confirm email addresses, scan IDs, Stripe IDs, auth tokens, and URL query strings are absent.
 - Keep PostHog autocapture, pageview capture, session replay, and persistent anonymous profiling disabled.
@@ -124,12 +127,13 @@ If capacity is not proven, choose **Go - Report only**.
 
 1. Approve one buyer email, real cardholder, maximum $49 charge, fresh scan, and test window.
 2. Start from that scan's free report and confirm the checkout summary is a one-time $49 Report purchase.
-3. Complete live Stripe Checkout.
-4. If prompted, use the same email to complete magic-link sign-in.
-5. Confirm return to the same report with the full action layer, export, opportunity workspace, and workflow access.
-6. Refresh, sign out, and sign back in. Confirm the same report stays unlocked and a different report stays locked.
-7. Reconcile the Stripe payment and receipt, successful webhook event, Supabase customer/account ownership and active report grant, and PostHog checkout/purchase events.
-8. Refund the test charge if that was pre-approved. Confirm the refund webhook revokes the report grant; otherwise document why the paid access intentionally remains active.
+3. Confirm `/api/health` reports the live Report catalog as valid: active Product, active one-time USD Price, exact $49 amount, and live mode.
+4. Complete live Stripe Checkout, then close the success tab before returning to the report.
+5. Confirm the buyer receives one private claim email and can use the same verified email to complete magic-link sign-in.
+6. Confirm return to the same report with the full action layer, export, opportunity workspace, and workflow access.
+7. Refresh, sign out, and sign back in. Confirm the same report stays unlocked and a different report stays locked.
+8. Reconcile the Stripe payment and receipt, successful webhook event, delivery attempt, Supabase customer/account ownership and active report grant, and PostHog checkout/purchase events.
+9. Refund the test charge if that was pre-approved. Confirm the refund webhook revokes the report grant; otherwise document why the paid access intentionally remains active.
 
 ### Subscription Proof
 

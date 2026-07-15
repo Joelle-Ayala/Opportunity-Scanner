@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FirstTouchAttributionCapture } from "@/components/first-touch-attribution";
 import { ProductAnalytics } from "@/components/product-analytics";
 import { StructuredData } from "@/components/structured-data";
 import "./globals.css";
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <FirstTouchAttributionCapture />
         <StructuredData />
         <ProductAnalytics />
         {children}
