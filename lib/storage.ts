@@ -725,17 +725,38 @@ export async function listProfileFeedbackForScan(scanId: string): Promise<Profil
     .sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
-export async function listProfileFeedbackForCompanyUrl(companyUrl: string): Promise<ProfileFeedbackRecord[]> {
+export async function listProfileFeedbackForCompanyUrl(
+  companyUrl: string,
+  customerEmail?: string
+): Promise<ProfileFeedbackRecord[]> {
+  const normalizedEmail = customerEmail?.trim().toLowerCase();
+  if (!normalizedEmail) return [];
+
   if (usesSupabase()) {
+    const scans = await supabaseSelectMany<Pick<ScanRecord, "id">>(
+      "scans",
+      `select=id&company_url=eq.${encodeURIComponent(companyUrl)}&email=eq.${encodeURIComponent(normalizedEmail)}&order=created_at.desc&limit=25`
+    );
+    const scanIds = scans.map((scan) => scan.id).filter(Boolean);
+    if (scanIds.length === 0) return [];
     return supabaseSelectMany<ProfileFeedbackRecord>(
       "profile_feedback",
-      `company_url=eq.${encodeURIComponent(companyUrl)}&order=created_at.asc`
+      `scan_id=in.(${scanIds.join(",")})&order=created_at.asc`
     );
   }
 
   const db = normalizeLocalDb(await readLocalDb());
+  const ownedScanIds = new Set(
+    db.scans
+      .filter(
+        (scan) =>
+          scan.company_url === companyUrl &&
+          scan.email?.trim().toLowerCase() === normalizedEmail
+      )
+      .map((scan) => scan.id)
+  );
   return db.profile_feedback
-    .filter((feedback) => feedback.company_url === companyUrl)
+    .filter((feedback) => ownedScanIds.has(feedback.scan_id))
     .sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 

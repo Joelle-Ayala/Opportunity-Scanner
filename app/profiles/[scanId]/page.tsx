@@ -28,22 +28,6 @@ function sourceIsActivated(sourceId: string, sourceName: string, activated: stri
   return normalized.includes(sourceId.toLowerCase()) || normalized.includes(sourceName.toLowerCase());
 }
 
-function enrichmentUseCase(sourceId: string): string {
-  const useCases: Record<string, string> = {
-    company_website: "Extracts what the company does, who it sells to, and the language to translate into public-sector demand.",
-    "usaspending.gov": "Checks historical money flows and funded buyers that may resemble future sales paths.",
-    federal_register: "Adds policy and regulatory demand context when it points to a buyer, program, or funded market.",
-    "sam.gov": "Adds live procurement and notice language that can turn a broad lane into a bid or outreach path.",
-    "grants.gov": "Adds open funding programs, agency contacts, and possible funded-buyer targets.",
-    state_local: "Adds local procurement, school district, arts, parks, tourism, and city/county buyer routes.",
-    snov: "Finds role-aligned contact candidates after the target organization/domain is verified.",
-    contact_providers: "Verifies people, emails, and company domains after a qualified buyer or partner is identified.",
-    clay: "Turns qualified opportunities and contacts into an exportable sales workflow."
-  };
-
-  return useCases[sourceId] ?? "Adds additional evidence for profile quality, search routing, or outreach planning.";
-}
-
 function AdminRequired() {
   return (
     <main className="min-h-screen bg-field px-4 py-5 sm:px-6 sm:py-8">
@@ -99,6 +83,7 @@ export default async function ProfilePage({
   const companyName = profile.company_name || scan.company_name || hostname(scan.company_url);
   const activatedSources = profile.activated_source_categories ?? [];
   const sources = sourceCatalog({ samGovConfigured: isSamGovConfigured() });
+  const companyEvidence = profile.company_evidence ?? [];
   const accessParam = `access=${encodeURIComponent(searchParams?.access ?? "")}`;
 
   return (
@@ -169,27 +154,42 @@ export default async function ProfilePage({
         </section>
 
         <section className="rounded-lg border border-line bg-white p-5">
-          <h2 className="text-lg font-semibold text-ink">Profile Enrichment Layers</h2>
+          <h2 className="text-lg font-semibold text-ink">Company Evidence Used</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-            These layers turn a website scan into a better search strategy before the scanner decides which opportunities are worth showing.
+            These source records support the company identity and market assumptions used to build the search strategy.
           </p>
-          <div className="mt-4 grid gap-3 lg:grid-cols-3">
-            {sources.slice(0, 9).map((source) => {
-              const activated = sourceIsActivated(source.id, source.name, activatedSources);
-              const status = activated ? "Used in profile" : source.status === "Active" ? "Available next" : source.status;
-              return (
-                <div key={source.id} className="rounded-md border border-line bg-field p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-sm font-semibold text-ink">{source.name}</h3>
-                    <Badge tone={activated ? "green" : source.status === "Active" ? "blue" : "slate"}>
-                      {status}
+          {companyEvidence.length > 0 ? (
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              {companyEvidence.slice(0, 12).map((evidence, index) => (
+                <div key={`${evidence.source_url}-${index}`} className="rounded-md border border-line bg-field p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h3 className="text-sm font-semibold text-ink">{evidence.source_name}</h3>
+                    <Badge tone={evidence.source_type === "official_registry" ? "blue" : "green"}>
+                      {Math.round(evidence.confidence * 100)}% confidence
                     </Badge>
                   </div>
-                  <p className="mt-2 text-xs leading-5 text-muted">{enrichmentUseCase(source.id)}</p>
+                  <p className="mt-2 text-sm leading-5 text-slate-700">{evidence.summary}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {evidence.fields.slice(0, 5).map((field) => (
+                      <Badge key={field} tone="slate">{field.replace(/_/g, " ")}</Badge>
+                    ))}
+                    <a
+                      href={evidence.source_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-semibold text-link hover:underline"
+                    >
+                      View source
+                    </a>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-4 rounded-md border border-line bg-field p-4 text-sm text-muted">
+              This profile predates source-backed company enrichment. Refresh the scan to add company evidence.
+            </p>
+          )}
         </section>
 
         <section className="rounded-lg border border-line bg-white p-5">

@@ -9,6 +9,18 @@ import type {
 } from "./types";
 import type { ConnectorRunStatus } from "./connectors/runtime";
 import type { ReportQualityEvaluation, ReportQualityTier } from "./reportQuality";
+import {
+  appendExternalCompanyEvidenceContext,
+  appendWebsiteEvidenceContext,
+  attachExternalCompanyEvidenceToProfile,
+  attachWebsiteEvidenceToProfile,
+  buildWebsiteProfileEvidence
+} from "./companyProfileEvidence";
+import type {
+  CompanyEnrichmentInput,
+  CompanyEnrichmentOptions,
+  CompanyEnrichmentResult
+} from "./companyEnrichment";
 
 export const SCAN_FUNCTION_MAX_DURATION_MS = 60_000;
 export const SCAN_EXECUTION_DEADLINE_MS = 50_000;
@@ -59,12 +71,19 @@ type ScanPipelineDependencies = {
     startUrl: string,
     options: ScanStageBudget
   ) => Promise<{ pages: ScrapedPage[]; rawText: string }>;
+  enrichCompany: (
+    input: CompanyEnrichmentInput,
+    options: CompanyEnrichmentOptions
+  ) => Promise<CompanyEnrichmentResult>;
   generateCompanyProfile: (
     input: ScanInput,
     rawText: string,
     options: ScanStageBudget
   ) => Promise<CompanyProfile>;
-  listProfileFeedbackForCompanyUrl: (companyUrl: string) => Promise<ProfileFeedbackRecord[]>;
+  listProfileFeedbackForCompanyUrl: (
+    companyUrl: string,
+    customerEmail?: string
+  ) => Promise<ProfileFeedbackRecord[]>;
   applyProfileFeedbackToProfile: (
     profile: CompanyProfile,
     feedback: ProfileFeedbackRecord[]
@@ -113,7 +132,8 @@ export type ScanPipelineOptions = {
 };
 
 async function loadDefaultDependencies(): Promise<ScanPipelineDependencies> {
-  const [discovery, opportunityAction, profile, quality, refinement, reportText, scraper, storage] = await Promise.all([
+  const [companyEnrichment, discovery, opportunityAction, profile, quality, refinement, reportText, scraper, storage] = await Promise.all([
+    import("./companyEnrichment"),
     import("./connectors/discover"),
     import("./opportunityAction"),
     import("./profile"),
@@ -127,6 +147,7 @@ async function loadDefaultDependencies(): Promise<ScanPipelineDependencies> {
   return {
     updateScan: storage.updateScan,
     scrapeCompanyWebsite: scraper.scrapeCompanyWebsite,
+    enrichCompany: companyEnrichment.enrichCompany,
     generateCompanyProfile: profile.generateCompanyProfile,
     listProfileFeedbackForCompanyUrl: storage.listProfileFeedbackForCompanyUrl,
     applyProfileFeedbackToProfile: refinement.applyProfileFeedbackToProfile,
@@ -159,6 +180,7 @@ function hasCompleteDependencies(
     dependencies &&
       dependencies.updateScan &&
       dependencies.scrapeCompanyWebsite &&
+      dependencies.enrichCompany &&
       dependencies.generateCompanyProfile &&
       dependencies.listProfileFeedbackForCompanyUrl &&
       dependencies.applyProfileFeedbackToProfile &&
@@ -336,12 +358,26 @@ export async function executeScanPipeline(
     await storageStage("starting", () =>
       dependencies.updateScan(scanId, { status: "scraping" })
     );
-    const scraped = await runStage(
+    const [scraped, externalCompanyEvidence] = await runStage(
       "scraping",
       deadlineAtMs,
       SCRAPING_STAGE_TIMEOUT_MS,
       dependencies.now,
-      (budget) => dependencies.scrapeCompanyWebsite(input.companyUrl, budget)
+      (budget) => Promise.all([
+        dependencies.scrapeCompanyWebsite(input.companyUrl, budget),
+        dependencies.enrichCompany(
+          { companyUrl: input.companyUrl, companyName: input.companyName },
+          budget
+        )
+      ])
+    );
+    const profileEvidence = buildWebsiteProfileEvidence(
+      scraped.pages,
+      new Date(dependencies.now()).toISOString()
+    );
+    const profileSourceText = appendExternalCompanyEvidenceContext(
+      appendWebsiteEvidenceContext(scraped.rawText, profileEvidence),
+      externalCompanyEvidence
     );
 
     await storageStage("profiling", () =>
@@ -352,15 +388,25 @@ export async function executeScanPipeline(
       deadlineAtMs,
       PROFILING_STAGE_TIMEOUT_MS,
       dependencies.now,
-      (budget) => dependencies.generateCompanyProfile(input, scraped.rawText, budget)
+      (budget) => dependencies.generateCompanyProfile(input, profileSourceText, budget)
+    );
+    const enrichedProfile = attachExternalCompanyEvidenceToProfile(
+      attachWebsiteEvidenceToProfile(
+        inferredProfile,
+        scraped.pages,
+        input.companyUrl,
+        profileEvidence,
+        new Date(dependencies.now()).toISOString()
+      ),
+      externalCompanyEvidence
     );
     const priorFeedback = await storageStage("profile feedback", () =>
-      dependencies.listProfileFeedbackForCompanyUrl(input.companyUrl)
+      dependencies.listProfileFeedbackForCompanyUrl(input.companyUrl, input.email)
     );
     const profile =
       priorFeedback.length > 0
-        ? dependencies.applyProfileFeedbackToProfile(inferredProfile, priorFeedback)
-        : inferredProfile;
+        ? dependencies.applyProfileFeedbackToProfile(enrichedProfile, priorFeedback)
+        : enrichedProfile;
 
     await storageStage("profile storage", () =>
       dependencies.updateScan(scanId, { selected_playbooks: profile.selected_playbooks })

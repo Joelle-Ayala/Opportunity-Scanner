@@ -59,6 +59,7 @@ function dependencies(overrides = {}) {
       pages: [{ url: input.companyUrl, title: "Example", text: "Example website text" }],
       rawText: "Example website text"
     }),
+    enrichCompany: async () => ({ evidence: [], providerRuns: [], context: "" }),
     generateCompanyProfile: async () => profile,
     listProfileFeedbackForCompanyUrl: async () => [],
     applyProfileFeedbackToProfile: (value) => value,
@@ -175,6 +176,52 @@ test("the default discovery path forwards the parent budget to every connector",
   );
   assert.match(discoverySource, /signal: budget\.signal/);
   assert.match(discoverySource, /deadlineAtMs: Number\.isFinite\(deadlineAtMs\)/);
+});
+
+test("company evidence reaches profiling and prior feedback stays customer-scoped", async () => {
+  let profileText = "";
+  let feedbackLookup = [];
+  await executeScanPipeline(
+    "company-evidence",
+    { ...input, email: "owner@example.com" },
+    {
+      dependencies: dependencies({
+        scrapeCompanyWebsite: async () => ({
+          pages: [{
+            url: input.companyUrl,
+            title: "Example",
+            text: "Example website text",
+            metadata: {
+              source_url: input.companyUrl,
+              organizations: [{
+                schema_type: "Corporation",
+                legal_name: "Example Learning, Inc."
+              }]
+            }
+          }],
+          rawText: "Example website text"
+        }),
+        enrichCompany: async () => ({
+          evidence: [],
+          providerRuns: [],
+          context: "GLEIF legal entity corroboration"
+        }),
+        generateCompanyProfile: async (_scanInput, rawText) => {
+          profileText = rawText;
+          return profile;
+        },
+        listProfileFeedbackForCompanyUrl: async (...args) => {
+          feedbackLookup = args;
+          return [];
+        }
+      })
+    }
+  );
+
+  assert.match(profileText, /VERIFIED FIRST-PARTY COMPANY METADATA/);
+  assert.match(profileText, /Example Learning, Inc\./);
+  assert.match(profileText, /GLEIF legal entity corroboration/);
+  assert.deepEqual(feedbackLookup, [input.companyUrl, "owner@example.com"]);
 });
 
 test("a pipeline deadline aborts and settles hanging connector work", async () => {

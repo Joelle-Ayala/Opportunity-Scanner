@@ -93,10 +93,78 @@ export type ScrapedPage = {
   url: string;
   title: string;
   text: string;
+  metadata?: CompanyWebsiteMetadata;
+};
+
+export type CompanyProfilePlatform =
+  | "linkedin_company"
+  | "crunchbase_organization"
+  | "github_organization"
+  | "facebook"
+  | "instagram"
+  | "x"
+  | "youtube";
+
+export type CompanyProfileUrl = {
+  platform: CompanyProfilePlatform;
+  url: string;
+};
+
+export type CompanyWebsiteAddress = {
+  street_address?: string;
+  locality?: string;
+  region?: string;
+  postal_code?: string;
+  country?: string;
+};
+
+export type CompanyOrganizationMetadata = {
+  schema_type: "Organization" | "Corporation" | "LocalBusiness";
+  name?: string;
+  description?: string;
+  legal_name?: string;
+  founding_date?: string;
+  industry?: string[];
+  address?: CompanyWebsiteAddress;
+  same_as?: CompanyProfileUrl[];
+};
+
+export type CompanyWebsiteMetadata = {
+  source_url: string;
+  meta_description?: string;
+  organizations?: CompanyOrganizationMetadata[];
+  company_profile_urls?: CompanyProfileUrl[];
+};
+
+export type CompanyProfileEvidence = {
+  source_type:
+    | "submitted_input"
+    | "website_structured_data"
+    | "official_registry"
+    | "licensed_provider";
+  source_name: string;
+  source_url: string;
+  retrieved_at: string;
+  fields: string[];
+  summary: string;
+  confidence: number;
+};
+
+export type CompanyProfileEnrichment = {
+  status: "completed" | "partial" | "skipped" | "failed";
+  canonical_domain: string;
+  sources_attempted: string[];
+  sources_used: string[];
+  generated_at: string;
+  warnings: string[];
 };
 
 export type CompanyProfile = {
+  profile_schema_version?: number;
+  canonical_domain?: string;
   company_name: string;
+  legal_name?: string;
+  founding_date?: string;
   website: string;
   summary: string;
   products_services: string[];
@@ -135,6 +203,9 @@ export type CompanyProfile = {
   likely_revenue_motions: string[];
   suggested_contact_roles: string[];
   report_guidance: string[];
+  company_profile_urls?: CompanyProfileUrl[];
+  company_evidence?: CompanyProfileEvidence[];
+  company_enrichment?: CompanyProfileEnrichment;
 };
 
 export type CompanyProfileRecord = {

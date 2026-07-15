@@ -547,6 +547,21 @@ export type ProfileGenerationOptions = {
 
 const DEFAULT_PROFILE_REQUEST_TIMEOUT_MS = 15_000;
 
+export function profileGenerationInput(input: ScanInput) {
+  return {
+    companyUrl: input.companyUrl,
+    companyName: input.companyName,
+    headquartersState: input.headquartersState,
+    targetStates: input.targetStates,
+    industry: input.industry,
+    customerType: input.customerType,
+    opportunityFocus: input.opportunityFocus,
+    includeTerms: input.includeTerms,
+    excludeTerms: input.excludeTerms,
+    prioritySignals: input.prioritySignals
+  };
+}
+
 async function generateWithOpenAi(
   input: ScanInput,
   rawText: string,
@@ -607,7 +622,7 @@ async function generateWithOpenAi(
           {
             role: "user",
             content: JSON.stringify({
-              scan_input: input,
+              scan_input: profileGenerationInput(input),
               required_schema: {
                 company_name: "",
                 website: "",

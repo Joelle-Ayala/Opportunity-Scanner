@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { generateCompanyProfile } from "../lib/profile.ts";
+import { generateCompanyProfile, profileGenerationInput } from "../lib/profile.ts";
 import { evaluateReportQuality } from "../lib/reportQuality.ts";
 import type { CompanyProfile, NormalizedOpportunityAction, OpportunitySignal } from "../lib/types.ts";
 
@@ -127,6 +127,30 @@ const jammcard = profile(
   ["live music", "artist booking", "public concert entertainment"],
   "music_arts_creative_economy"
 );
+
+test("company profile generation excludes customer identity and acquisition data", () => {
+  const safeInput = profileGenerationInput({
+    companyUrl: "https://example.com",
+    companyName: "Example",
+    email: "private@example.com",
+    reportType: "deep",
+    opportunityFocus: "Find public school district buyers for our recruiting platform.",
+    firstTouchAttribution: {
+      id: "private-attribution-id",
+      occurredAt: "2026-07-15T12:00:00.000Z",
+      landingPath: "/",
+      referrerHost: "private-referrer.example"
+    },
+    utmSource: "private-campaign"
+  });
+
+  assert.equal(safeInput.companyUrl, "https://example.com");
+  assert.equal(safeInput.opportunityFocus, "Find public school district buyers for our recruiting platform.");
+  assert.equal("email" in safeInput, false);
+  assert.equal("firstTouchAttribution" in safeInput, false);
+  assert.equal("utmSource" in safeInput, false);
+  assert.equal("reportType" in safeInput, false);
+});
 
 test("Reparel paid/full report passes with source-backed medical supply opportunities", () => {
   const result = evaluateReportQuality(reparel, [

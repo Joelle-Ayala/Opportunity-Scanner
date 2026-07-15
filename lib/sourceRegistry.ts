@@ -17,8 +17,16 @@ export function sourceCatalog({ samGovConfigured }: { samGovConfigured: boolean 
       name: "Company website",
       status: "Active",
       key: "None",
-      value: "Builds the company profile and search strategy.",
-      next: "Keep improving profile extraction and logo detection."
+      value: "Builds a source-backed company profile from visible pages and published structured organization data.",
+      next: "Use the extracted identity, offerings, industries, locations, and official profile links to improve search strategy."
+    },
+    {
+      id: "gleif",
+      name: "GLEIF legal entity data",
+      status: "Active",
+      key: "None",
+      value: "Corroborates legal name, LEI, registration status, jurisdiction, and registered address for exact-name matches.",
+      next: "Treat a missing match as normal because many smaller companies do not have an LEI."
     },
     {
       id: "usaspending.gov",
@@ -71,11 +79,11 @@ export function sourceCatalog({ samGovConfigured }: { samGovConfigured: boolean 
     },
     {
       id: "contact_providers",
-      name: "Apollo / Prospeo / People Data Labs / Hunter",
+      name: "Licensed enrichment providers",
       status: "Available",
-      key: "APOLLO_API_KEY / PROSPEO_API_KEY / PEOPLE_DATA_LABS_API_KEY / HUNTER_API_KEY",
-      value: "Adds additional contact discovery, email verification, and person/company enrichment options.",
-      next: "Use after role targeting and domain resolution so enrichment returns decision-makers, not random contacts."
+      key: "PEOPLE_DATA_LABS_API_KEY / PROSPEO_API_KEY / HUNTER_API_KEY",
+      value: "Adds licensed company or contact evidence only when first-party and official sources are incomplete.",
+      next: "Keep paid company enrichment disabled until domain-level caching and spend controls are active."
     },
     {
       id: "clay",
