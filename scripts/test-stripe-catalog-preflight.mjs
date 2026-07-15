@@ -157,7 +157,7 @@ try {
         appUrl: "https://scanner.example.test",
         subscriptionCheckoutEnabled: false
       }),
-      scanExists: async () => true,
+      inspectReport: async () => ({ ok: true }),
       verifyReportCatalog: async () => ({
         ok: false,
         code: "AMOUNT_MISMATCH",

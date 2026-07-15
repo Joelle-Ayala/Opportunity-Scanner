@@ -5,7 +5,7 @@ import { CheckoutButton } from "@/components/checkout-button";
 import { CTASection, SectionIntro } from "@/components/marketing";
 import { PricingAnalytics } from "@/components/page-analytics";
 import { PricingCheckoutNotice } from "@/components/pricing-checkout-notice";
-import { getStripeServerConfig } from "@/lib/payments/config";
+import { getStripeServerConfig, reportCheckoutIsEnabled } from "@/lib/payments/config";
 import type { BillingInterval } from "@/lib/payments/contract";
 
 export const dynamic = "force-dynamic";
@@ -82,7 +82,10 @@ const plans = [
 function checkoutAvailability(): { report: boolean; subscriptions: boolean } {
   try {
     const config = getStripeServerConfig();
-    return { report: true, subscriptions: config.subscriptionCheckoutEnabled };
+    return {
+      report: reportCheckoutIsEnabled(),
+      subscriptions: config.subscriptionCheckoutEnabled
+    };
   } catch {
     return { report: false, subscriptions: false };
   }
@@ -141,7 +144,9 @@ export default function PricingPage({
 }) {
   const checkout = checkoutAvailability();
   const resumeCheckout = checkout.subscriptions ? resumableSubscriptionCheckout(searchParams) : null;
-  const reportScanId = searchParams?.source === "report_gate" ? searchParams.scanId : undefined;
+  const reportScanId = searchParams?.source === "report_gate" || searchParams?.source === "checkout_return"
+    ? searchParams.scanId
+    : undefined;
   const analyticsSource = searchParams?.checkout
     ? "checkout_return"
     : searchParams?.source === "report_gate"

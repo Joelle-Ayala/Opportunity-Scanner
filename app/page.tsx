@@ -57,7 +57,7 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
   const errorMessage = searchParams?.error === "invalid-url" ? "Enter a valid company website URL." : null;
 
   return (
-    <form id="scan" action="/api/scans" method="post" className="home-scan-form rounded-lg border border-line bg-white p-5 sm:p-6">
+    <form id="scan" action="/api/scans" method="post" className="home-scan-form scroll-mt-24 rounded-lg border border-line bg-white p-5 sm:p-6">
       <input type="hidden" name="reportType" value="quick" />
       {(["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const).map((name) => {
         const value = searchParams?.[name]?.trim().slice(0, 160);
@@ -259,25 +259,21 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
           className="home-hero__product"
         />
         <div className="home-hero__veil" aria-hidden="true" />
-        <div className="home-hero__product-label" aria-hidden="true">
-          <span>Product view</span>
-          <strong>Fictional demo data</strong>
-        </div>
         <div className="home-hero__content mx-auto max-w-7xl px-6">
           <div className="home-hero__copy">
             <p className="home-hero__eyebrow">Public-sector opportunity intelligence</p>
             <h1 className="home-hero__title mt-5 font-semibold leading-tight text-ink">
               Find public-sector opportunities your team can actually pursue.
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+            <p className="home-hero__lede mt-5 max-w-2xl text-lg leading-8 text-slate-600">
               Turn your company website into a sourced pipeline of buyers, grants, funded partners,
               and procurement paths, with evidence and a clear next action.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <a href="#scan" className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+            <div className="home-hero__actions mt-7 flex flex-wrap gap-3">
+              <a href="#scan" className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
                 Run a Free Scan
               </a>
-              <a href="/examples" className="rounded-md border border-line bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:border-accent">
+              <a href="/examples" className="inline-flex items-center justify-center rounded-md border border-line bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
                 See Sample Reports
               </a>
             </div>
@@ -298,7 +294,7 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
       </section>
 
       <section className="home-scan-section border-b border-line bg-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-16 lg:py-16">
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-16 lg:py-16">
           <div className="order-2 lg:order-1 lg:sticky lg:top-24">
             <p className="text-xs font-semibold uppercase text-accent">Your first report</p>
             <h2 className="mt-2 max-w-xl text-3xl font-semibold leading-tight text-ink">

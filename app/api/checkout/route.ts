@@ -43,7 +43,8 @@ export async function POST(request: Request) {
       : null;
     return dispatchCheckoutWithEligibility(request, plan, {
       verifiedEmail,
-      ownedCustomerId: account.stripe_customer_id
+      ownedCustomerId: account.stripe_customer_id,
+      accountId: account.id
     }, activeSubscription);
   } catch {
     return Response.json(

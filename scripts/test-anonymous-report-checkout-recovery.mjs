@@ -35,7 +35,9 @@ const response = await handleCheckout(
         requireLivemode: false
       }
     }),
-    scanExists: async (scanId) => scanId === SCAN_ID,
+    inspectReport: async (scanId) => scanId === SCAN_ID
+      ? { ok: true }
+      : { ok: false, status: 404, code: "SCAN_NOT_FOUND", message: "The report scan was not found." },
     verifyReportCatalog: async () => ({
       ok: true,
       code: "VERIFIED",
@@ -61,16 +63,19 @@ assert.equal(
 );
 assert.doesNotMatch(captured[0].successUrl, /buyer%40example\.com|buyer@example\.com/);
 
-const [access, signIn, report] = await Promise.all([
+const [access, signIn, report, pricing] = await Promise.all([
   readFile(new URL("../lib/payments/access.ts", import.meta.url), "utf8"),
   readFile(new URL("../app/auth/sign-in/page.tsx", import.meta.url), "utf8"),
-  readFile(new URL("../app/reports/[id]/page.tsx", import.meta.url), "utf8")
+  readFile(new URL("../app/reports/[id]/page.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../app/pricing/page.tsx", import.meta.url), "utf8")
 ]);
 
 assert.match(access, /resolveVerifiedReportCheckoutSignIn/);
 assert.match(report, /searchParams\?\.checkout === "cancelled"/);
 assert.match(report, /No charge was made/);
 assert.match(report, /source=checkout_return&scanId=/);
+assert.match(pricing, /searchParams\?\.source === "report_gate" \|\| searchParams\?\.source === "checkout_return"/);
+assert.match(pricing, /scanId=\{plan\.name === "Report" \? reportScanId : undefined\}/);
 assert.match(access, /isMatchingPaidReportSession\(session, checkoutReturn\.scanId, config\.prices\.report\)/);
 assert.match(access, /hasOnlyExpectedParams/);
 assert.match(access, /checkoutStates\[0\] !== "success"/);

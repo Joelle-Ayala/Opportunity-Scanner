@@ -35,6 +35,7 @@ const SUBSCRIPTION_PRICE_ENV = [
 ] as const;
 
 export const SUBSCRIPTION_CHECKOUT_FLAG = "ENABLE_SUBSCRIPTION_CHECKOUT";
+export const REPORT_CHECKOUT_FLAG = "ENABLE_PAID_REPORT_CHECKOUT";
 
 function requiredEnvironment(names: readonly string[]): Record<string, string> {
   const values: Record<string, string> = {};
@@ -66,6 +67,10 @@ export function requiresLiveStripeObjects(): boolean {
 
 export function subscriptionCheckoutIsEnabled(): boolean {
   return process.env[SUBSCRIPTION_CHECKOUT_FLAG]?.trim() === "true";
+}
+
+export function reportCheckoutIsEnabled(): boolean {
+  return process.env[REPORT_CHECKOUT_FLAG]?.trim() === "true";
 }
 
 export function getStripeServerConfig(): StripeServerConfig {

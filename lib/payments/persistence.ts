@@ -67,16 +67,101 @@ export function claimActiveReportPurchaseByEmail(input: {
   });
 }
 
-export async function reportScanExists(scanId: string): Promise<boolean> {
+export type ReportCheckoutEligibility =
+  | { ok: true }
+  | {
+      ok: false;
+      status: 401 | 403 | 404 | 409;
+      code:
+        | "AUTHENTICATION_REQUIRED"
+        | "REPORT_ALREADY_UNLOCKED"
+        | "REPORT_NOT_READY"
+        | "REPORT_OWNERSHIP_CONFLICT"
+        | "SCAN_NOT_FOUND";
+      message: string;
+    };
+
+async function billingSelect<T>(table: string, query: URLSearchParams): Promise<T[]> {
   const config = getBillingDatabaseConfig();
-  const query = new URLSearchParams({ select: "id", id: `eq.${scanId}`, limit: "1" });
-  const response = await fetch(`${config.url}/rest/v1/scans?${query.toString()}`, {
+  const response = await fetch(`${config.url}/rest/v1/${table}?${query.toString()}`, {
     headers: databaseHeaders(config),
     cache: "no-store"
   });
-  if (!response.ok) throw new Error(`Report scan lookup failed with status ${response.status}.`);
-  const rows = (await response.json()) as Array<{ id?: string }>;
-  return rows[0]?.id === scanId;
+  if (!response.ok) throw new Error(`${table} lookup failed with status ${response.status}.`);
+  return response.json() as Promise<T[]>;
+}
+
+export async function inspectReportCheckoutEligibility(
+  scanId: string,
+  accountId: string | null
+): Promise<ReportCheckoutEligibility> {
+  const [scans, ownership, activeGrants] = await Promise.all([
+    billingSelect<{ id?: string; status?: string; report_access?: string }>(
+      "scans",
+      new URLSearchParams({
+        select: "id,status,report_access",
+        id: `eq.${scanId}`,
+        limit: "1"
+      })
+    ),
+    billingSelect<{ customer_account_id?: string; access_level?: string }>(
+      "customer_scan_ownership",
+      new URLSearchParams({
+        select: "customer_account_id,access_level",
+        scan_id: `eq.${scanId}`,
+        limit: "1"
+      })
+    ),
+    billingSelect<{ id?: string }>(
+      "stripe_report_access_grants",
+      new URLSearchParams({
+        select: "id",
+        scan_id: `eq.${scanId}`,
+        status: "eq.active",
+        limit: "1"
+      })
+    )
+  ]);
+
+  const scan = scans[0];
+  if (scan?.id !== scanId) {
+    return { ok: false, status: 404, code: "SCAN_NOT_FOUND", message: "The report scan was not found." };
+  }
+  if (scan.status !== "completed") {
+    return {
+      ok: false,
+      status: 409,
+      code: "REPORT_NOT_READY",
+      message: "This report is still being prepared. Try again after the scan is complete."
+    };
+  }
+
+  const owner = ownership[0];
+  if (["unlocked", "admin"].includes(scan.report_access ?? "") || owner?.access_level === "full" || activeGrants.length > 0) {
+    return {
+      ok: false,
+      status: 409,
+      code: "REPORT_ALREADY_UNLOCKED",
+      message: "This report is already unlocked. Sign in to view the full report."
+    };
+  }
+  if (owner?.customer_account_id && !accountId) {
+    return {
+      ok: false,
+      status: 401,
+      code: "AUTHENTICATION_REQUIRED",
+      message: "Sign in to purchase this account report."
+    };
+  }
+  if (owner?.customer_account_id && owner.customer_account_id !== accountId) {
+    return {
+      ok: false,
+      status: 403,
+      code: "REPORT_OWNERSHIP_CONFLICT",
+      message: "This report belongs to another account."
+    };
+  }
+  return { ok: true };
 }
 
 export async function fulfillVerifiedReportCheckout(

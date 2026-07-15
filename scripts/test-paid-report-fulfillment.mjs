@@ -162,6 +162,11 @@ assert.match(handler, /deliverPaidReportFulfillment/);
 assert.match(persistence, /claim_active_report_purchase_by_email/);
 assert.match(reportPage, /searchParams\?\.claim === "paid"/);
 assert.match(reportPage, /claimActiveReportPurchaseByEmail/);
+assert.match(reportPage, /Purchase complete - your full report is unlocked/);
+assert.match(reportPage, /href="#full-pipeline"/);
+assert.match(reportPage, /Sign out and use purchase email/);
+assert.match(reportPage, /action="\/api\/auth\/sign-out"/);
+assert.match(reportPage, /name="next"/);
 assert.match(reportPage, /claim=failed/);
 assert.doesNotMatch(reportPage, /claim=paid[^\n]{0,200}session_id/);
 

@@ -10,11 +10,11 @@ This is the current source of truth for launch status. It keeps deployed product
 
 **Demo-ready: GO. Paid signup: NO-GO. Subscriptions: NO-GO.**
 
-- Production is live on release `a953336` while the next verified release candidate awaits deployment.
+- The last independently verified production baseline is release `d011941`; read `/api/health` after every deployment for the current live release.
 - Production health reports `ready.demo: true`, `ready.paidSignup: false`, and Stripe in test mode.
-- The Reparel demo account for `joelle@reparel.com` has full access to its latest refreshed report and is ready for founder-led demos.
+- The Reparel demo account for `joelle@reparel.com` has account-scoped full access to scan `74de7c26-0978-48f4-af7a-be58c1623dd9`, refreshed July 14, 2026 with six sourced signals.
 - Launch verification passed 39/39 distinct checks, including the production build and 99 generated pages.
-- The homepage, examples, industries, lead magnets, and planned content surfaces are complete.
+- The homepage, fictional public examples, industries, lead magnets, and planned content surfaces are complete. Public example QA found no Jammcard name or logo in the presentation layer.
 - The `v0019` scan-nurture ambiguity repair was applied and rollback-tested.
 - The `v0020` refund-safe Report entitlement migration was applied and verified without changing Reparel demo access.
 - The `v0021` privacy-safe first-touch attribution migration and `v0022` paid Report fulfillment-recovery migration are applied, ledger-recorded, and rollback-tested.
@@ -24,8 +24,8 @@ This is the current source of truth for launch status. It keeps deployed product
 
 | Workstream | Status | Current evidence / decision | Next action |
 |---|---|---|---|
-| Production demo release | **Live / GO** | Release `a953336` is live; production is demo-ready. | Deploy the verified candidate, then recheck live health and the demo path. |
-| Reparel demo | **Live / GO** | `joelle@reparel.com` has full access to the latest refreshed Reparel report. | Complete the magic-link sign-in in the prepared browser tab, then use Reparel as the primary private demo path. |
+| Production demo release | **Live / GO** | Release `d011941` is the last recorded production baseline; production is demo-ready. | Deploy the verified candidate, then recheck live health and the demo path. |
+| Reparel demo | **Live / GO** | `joelle@reparel.com` owns full access to the July 14 Reparel report at `/reports/74de7c26-0978-48f4-af7a-be58c1623dd9`. The signed-out route returns a safe gated report. | Open the magic link sent to `joelle@reparel.com`, then use the dashboard and full report as the primary private demo path. |
 | Public acquisition surfaces | **Complete** | Homepage, examples, industry pages, lead magnets, and content are complete. | Shift effort from new surface creation to distribution, measurement, and conversion proof. |
 | Launch verification | **Passed** | Automated launch verification passed 39/39 distinct checks, including the production build and 99 generated pages. | Preserve the gate during deployment and live verification. |
 | Scan nurture repair | **Applied / rollback-tested** | Production database repair `v0019` resolves the nurture-enrollment ambiguity and has a tested rollback path. | Keep the migration ledger and repository record aligned before the next release. |
@@ -52,13 +52,13 @@ This is the current source of truth for launch status. It keeps deployed product
 
 ## Current evidence record
 
-- Live production release before this candidate: `a953336`.
+- Last recorded production baseline before this candidate: `d011941`.
 - Production readiness: demo `true`; paid signup `false`; Stripe test mode.
-- Live demo proof: Reparel demo account and report.
+- Live demo proof: Reparel Auth user `cfda4281-4662-4eba-b304-88ea42125cec`, customer account `1c65ed91-a079-46b3-9446-d607e91875ad`, and full-access scan `74de7c26-0978-48f4-af7a-be58c1623dd9`; signed-out report returned 200 with scan date July 14 and six sourced signals.
 - Automated verification: 39/39 distinct checks passed, including the production build and 99 generated pages.
 - Acquisition buildout: homepage, examples, industries, lead magnets, and content complete.
 - Database repairs: `v0019` and `v0020` remain verified; `v0021` and `v0022` are applied, ledger-recorded, and rollback-tested while Reparel retained full demo access.
-- Deployment boundary: the candidate is verified but is not part of production release `a953336` until Vercel reports the new deployment ready.
+- Deployment boundary: the current working candidate is not live until Vercel reports the new deployment ready and `/api/health` returns its release ID.
 
 ## Checkpoint rule
 

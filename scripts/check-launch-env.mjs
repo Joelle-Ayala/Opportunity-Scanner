@@ -52,6 +52,9 @@ const subscriptionPriceNames = [
   "STRIPE_PRICE_GROWTH_ANNUAL"
 ];
 
+const reportCheckoutFlagName = "ENABLE_PAID_REPORT_CHECKOUT";
+const reportCheckoutFlagValue = process.env[reportCheckoutFlagName]?.trim();
+
 function configured(name) {
   return Boolean(process.env[name]?.trim());
 }
@@ -73,6 +76,14 @@ reportGroup("Recommended", recommended);
 const safetyErrors = [];
 if (!process.env.STRIPE_SECRET_KEY?.trim().startsWith("sk_live_")) {
   safetyErrors.push("STRIPE_SECRET_KEY must use an sk_live_* key for production launch.");
+}
+
+if (reportCheckoutFlagValue && reportCheckoutFlagValue !== "true" && reportCheckoutFlagValue !== "false") {
+  safetyErrors.push(`${reportCheckoutFlagName} must be exactly true or false.`);
+} else if (reportCheckoutFlagValue === "true") {
+  console.log("Notice: paid Report checkout is explicitly enabled.");
+} else {
+  console.log("Notice: paid Report checkout is disabled until the controlled launch gate is approved.");
 }
 
 const subscriptionFlagName = "ENABLE_SUBSCRIPTION_CHECKOUT";

@@ -93,7 +93,12 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
           ))}
         </nav>
 
-        <div className="hidden shrink-0 items-center gap-3 lg:flex">{rightSlot}</div>
+        <div className="hidden shrink-0 items-center gap-3 lg:flex">
+          <a href="/dashboard" className="text-sm font-semibold text-steel hover:text-accent">
+            Account
+          </a>
+          {rightSlot}
+        </div>
 
         <div className="flex shrink-0 items-center gap-2 lg:hidden">
           <a href="/#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold leading-none text-white shadow-sm hover:bg-[#0A6871]">
@@ -107,6 +112,9 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
               aria-label="Mobile navigation"
               className="absolute right-0 top-11 grid max-h-[calc(100dvh-5rem)] w-[min(88vw,340px)] gap-2 overflow-y-auto overscroll-contain rounded-lg border border-line bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-sm font-semibold text-steel shadow-lift"
             >
+              <a href="/dashboard" className="rounded-md border border-line bg-mist px-3 py-3 text-center text-ink hover:border-accent hover:text-accent">
+                Account &amp; reports
+              </a>
               {rightSlot ? <div className="grid gap-2 rounded-md border border-line bg-white p-2 [&>*]:w-full [&>*]:justify-center">{rightSlot}</div> : null}
               {navGroups.map((group) => (
                 <div key={group.label} className="rounded-md border border-line bg-field p-2">
@@ -140,6 +148,7 @@ export function SiteFooter() {
     ["Pricing", "/pricing"]
   ];
   const trustLinks = [
+    ["Account", "/dashboard"],
     ["About", "/about"],
     ["Terms", "/terms"],
     ["Privacy", "/privacy"]

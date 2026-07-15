@@ -1,6 +1,6 @@
 import { getStripeServerConfig, priceFor } from "./config.ts";
 import { validateCheckoutInput } from "./contract.ts";
-import { persistStripeWebhookEvent, reportScanExists } from "./persistence.ts";
+import { inspectReportCheckoutEligibility, persistStripeWebhookEvent } from "./persistence.ts";
 import { verifyReportCatalogCached } from "./reportCatalogPreflight.ts";
 import { verifyStripeSignature } from "./signature.ts";
 import { createBillingPortalSession, createCheckoutSession } from "./stripeApi.ts";
@@ -29,18 +29,19 @@ async function boundedJson(request: Request): Promise<unknown> {
 export type CheckoutIdentity = {
   verifiedEmail: string;
   ownedCustomerId: string | null;
+  accountId: string;
 };
 
 type CheckoutDependencies = {
   getConfig: typeof getStripeServerConfig;
-  scanExists: typeof reportScanExists;
+  inspectReport: typeof inspectReportCheckoutEligibility;
   createSession: typeof createCheckoutSession;
   verifyReportCatalog: typeof verifyReportCatalogCached;
 };
 
 const checkoutDependencies: CheckoutDependencies = {
   getConfig: getStripeServerConfig,
-  scanExists: reportScanExists,
+  inspectReport: inspectReportCheckoutEligibility,
   createSession: createCheckoutSession,
   verifyReportCatalog: verifyReportCatalogCached
 };
@@ -74,8 +75,11 @@ export async function handleCheckout(
   try {
     const config = dependencies.getConfig();
     const input = validation.value;
-    if (input.scanId && !(await dependencies.scanExists(input.scanId))) {
-      return error(404, "SCAN_NOT_FOUND", "The report scan was not found.");
+    if (input.scanId) {
+      const reportEligibility = await dependencies.inspectReport(input.scanId, identity?.accountId ?? null);
+      if (!reportEligibility.ok) {
+        return error(reportEligibility.status, reportEligibility.code, reportEligibility.message);
+      }
     }
     if (input.plan === "report") {
       const catalog = await dependencies.verifyReportCatalog(config);

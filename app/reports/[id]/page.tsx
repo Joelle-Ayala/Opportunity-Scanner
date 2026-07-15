@@ -1479,6 +1479,31 @@ export default async function ReportPage({
           comparisonHref={comparisonHref}
         />
 
+        {searchParams?.purchase === "report" && isPaid ? (
+          <section
+            role="status"
+            aria-live="polite"
+            className="rounded-lg border border-emerald-200 bg-emerald-50 p-5 text-sm leading-6 text-ink"
+          >
+            <h2 className="text-base font-semibold text-emerald-950">Purchase complete - your full report is unlocked</h2>
+            <p className="mt-1 text-emerald-900">
+              All qualified opportunity rows, source links, contact paths, next actions, CRM notes,
+              outreach angles, and exports are now available for this report.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a href="#full-pipeline" className="rounded-md bg-emerald-800 px-3 py-2 font-semibold text-white hover:bg-emerald-900">
+                View full pipeline
+              </a>
+              <a href="/dashboard" className="rounded-md border border-emerald-300 bg-white px-3 py-2 font-semibold text-emerald-950 hover:border-emerald-500">
+                Dashboard
+              </a>
+              <a href={`/dashboard/new?from=${encodeURIComponent(scan.id)}`} className="rounded-md border border-emerald-300 bg-white px-3 py-2 font-semibold text-emerald-950 hover:border-emerald-500">
+                Run another report
+              </a>
+            </div>
+          </section>
+        ) : null}
+
         {searchParams?.checkout === "cancelled" ? (
           <section
             id="checkout-return"
@@ -1509,12 +1534,24 @@ export default async function ReportPage({
               Sign in with the exact email used at checkout. If that address is already correct,
               support can verify the purchase without asking you to send payment details.
             </p>
-            <a
-              href={paidReportClaimSupportHref(scan.id)}
-              className="mt-3 inline-flex font-semibold text-accent underline decoration-accent/30 underline-offset-4"
-            >
-              Contact support
-            </a>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <form action="/api/auth/sign-out" method="post">
+                <input
+                  type="hidden"
+                  name="next"
+                  value={`/auth/sign-in?next=${encodeURIComponent(`/reports/${scan.id}?claim=paid`)}`}
+                />
+                <button type="submit" className="rounded-md bg-ink px-3 py-2 font-semibold text-white hover:bg-accent">
+                  Sign out and use purchase email
+                </button>
+              </form>
+              <a
+                href={paidReportClaimSupportHref(scan.id)}
+                className="font-semibold text-accent underline decoration-accent/30 underline-offset-4"
+              >
+                Contact support
+              </a>
+            </div>
           </section>
         ) : null}
 
@@ -1537,6 +1574,7 @@ export default async function ReportPage({
 
         {displayedSignals.length > 0 ? (
           <>
+            <div id="full-pipeline" className="scroll-mt-24" aria-hidden="true" />
             <OpportunityActionTable
               scanId={scan.id}
               signals={displayedSignals}

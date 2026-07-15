@@ -25,6 +25,7 @@ const reportReadyEnvironment = {
   OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@example.test",
   NEXT_PUBLIC_POSTHOG_KEY: "posthog-test",
   NEXT_PUBLIC_POSTHOG_HOST: "https://analytics.example.test",
+  ENABLE_PAID_REPORT_CHECKOUT: "true",
   CRON_SECRET: "cron-test"
 };
 
@@ -36,6 +37,7 @@ assert.equal(reportOnly.ready.subscriptionCheckout, false);
 assert.equal(reportOnly.services.email, true);
 assert.equal(reportOnly.services.support, true);
 assert.equal(reportOnly.services.analytics, true);
+assert.equal(reportOnly.services.reportCheckoutEnabled, true);
 assert.equal(reportOnly.services.reportCatalog, "unverified");
 
 const invalidReportCatalog = evaluateLaunchHealth(reportReadyEnvironment, {
@@ -56,6 +58,14 @@ const verifiedReportCatalog = evaluateLaunchHealth(reportReadyEnvironment, {
 });
 assert.equal(verifiedReportCatalog.ready.reportCheckout, true);
 assert.equal(verifiedReportCatalog.services.reportCatalog, "verified");
+
+const reportCheckoutDisabled = evaluateLaunchHealth({
+  ...reportReadyEnvironment,
+  ENABLE_PAID_REPORT_CHECKOUT: "false"
+});
+assert.equal(reportCheckoutDisabled.services.reportCheckoutEnabled, false);
+assert.equal(reportCheckoutDisabled.ready.paidSignup, false);
+assert.equal(reportCheckoutDisabled.ready.reportCheckout, false);
 
 for (const missing of ["RESEND_API_KEY", "RESEND_FROM_EMAIL"]) {
   const environment = { ...reportReadyEnvironment, [missing]: "" };
@@ -118,7 +128,8 @@ assert.equal(
   true
 );
 
-assert.match(healthEvaluator, /mode === "live" && email && support && analytics && reportCatalogVerified/);
+assert.match(healthEvaluator, /reportCheckoutEnabled/);
+assert.match(healthEvaluator, /mode === "live"/);
 assert.match(healthEvaluator, /subscriptionsEnabled && subscriptionPrices/);
 assert.match(route, /evaluateLaunchHealth\(process\.env\)/);
 assert.match(route, /verifyReportCatalogCached\(getStripeServerConfig\(\)\)/);
@@ -132,8 +143,10 @@ assert.match(pricing, /checkoutPlan === "report" \? checkout\.report : checkout\
 assert.match(pricing, /Monitor and Growth are not open for purchase yet/);
 assert.match(report, /subscriptionCheckoutIsConfigured\(\)/);
 assert.match(eligibility, /code: "PLAN_UNAVAILABLE"/);
+assert.match(eligibility, /reportCheckoutIsEnabled\(\)/);
 assert.match(eligibility, /subscriptionCheckoutIsEnabled\(\)/);
 assert.match(launchCheck, /ENABLE_SUBSCRIPTION_CHECKOUT/);
+assert.match(launchCheck, /ENABLE_PAID_REPORT_CHECKOUT/);
 assert.match(launchCheck, /requires all Monitor and Growth Stripe Price IDs/);
 
 console.log("Paid launch gating and health contract passed without exposing configuration values.");

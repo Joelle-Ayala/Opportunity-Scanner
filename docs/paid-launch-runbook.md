@@ -18,6 +18,8 @@ Use this runbook to move Opportunity Scanner from a working live demo to control
 
 The default first paid launch is controlled and Report-only. Offer Monitor or Growth only after the subscription and monitoring-capacity gates pass.
 
+Keep `ENABLE_PAID_REPORT_CHECKOUT=false` until every Report-only gate below passes. Set it to `true` only for the approved controlled purchase window or the final paid launch. Turning it back to `false` stops new Report Checkout sessions without disabling the Stripe webhook needed for receipts, refunds, disputes, and existing access.
+
 ## 1. Freeze The Candidate
 
 - Record the production commit, deployment ID, domain, test window, launch owner, support owner, and known-good rollback deployment.
@@ -126,14 +128,15 @@ If capacity is not proven, choose **Go - Report only**.
 ### Minimum Money Proof: $49 Report
 
 1. Approve one buyer email, real cardholder, maximum $49 charge, fresh scan, and test window.
-2. Start from that scan's free report and confirm the checkout summary is a one-time $49 Report purchase.
-3. Confirm `/api/health` reports the live Report catalog as valid: active Product, active one-time USD Price, exact $49 amount, and live mode.
-4. Complete live Stripe Checkout, then close the success tab before returning to the report.
-5. Confirm the buyer receives one private claim email and can use the same verified email to complete magic-link sign-in.
-6. Confirm return to the same report with the full action layer, export, opportunity workspace, and workflow access.
-7. Refresh, sign out, and sign back in. Confirm the same report stays unlocked and a different report stays locked.
-8. Reconcile the Stripe payment and receipt, successful webhook event, delivery attempt, Supabase customer/account ownership and active report grant, and PostHog checkout/purchase events.
-9. Refund the test charge if that was pre-approved. Confirm the refund webhook revokes the report grant; otherwise document why the paid access intentionally remains active.
+2. Set `ENABLE_PAID_REPORT_CHECKOUT=true` for Production only after the other readiness checks pass and record the change time.
+3. Start from that scan's free report and confirm the checkout summary is a one-time $49 Report purchase.
+4. Confirm `/api/health` reports the live Report catalog as valid: active Product, active one-time USD Price, exact $49 amount, and live mode.
+5. Complete live Stripe Checkout, then close the success tab before returning to the report.
+6. Confirm the buyer receives one private claim email and can use the same verified email to complete magic-link sign-in.
+7. Confirm return to the same report with the full action layer, export, opportunity workspace, and workflow access.
+8. Refresh, sign out, and sign back in. Confirm the same report stays unlocked and a different report stays locked.
+9. Reconcile the Stripe payment and receipt, successful webhook event, delivery attempt, Supabase customer/account ownership and active report grant, and PostHog checkout/purchase events.
+10. Refund the test charge if that was pre-approved. Confirm the refund webhook revokes the report grant; otherwise document why the paid access intentionally remains active.
 
 ### Subscription Proof
 

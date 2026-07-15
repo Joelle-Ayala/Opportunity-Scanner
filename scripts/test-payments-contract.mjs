@@ -10,6 +10,7 @@ import {
   inspectedCheckoutPlan
 } from "../lib/payments/checkoutEligibility.ts";
 import { handleBillingPortal, handleCheckout } from "../lib/payments/handlers.ts";
+import { inspectReportCheckoutEligibility } from "../lib/payments/persistence.ts";
 import { verifyStripeSignature } from "../lib/payments/signature.ts";
 import { createCheckoutSession } from "../lib/payments/stripeApi.ts";
 
@@ -23,6 +24,7 @@ const ENV_NAMES = [
   "STRIPE_PRICE_GROWTH_MONTHLY",
   "STRIPE_PRICE_GROWTH_ANNUAL",
   "ENABLE_SUBSCRIPTION_CHECKOUT",
+  "ENABLE_PAID_REPORT_CHECKOUT",
   "SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY",
   "NODE_ENV"
@@ -39,7 +41,8 @@ function installTestEnv() {
     STRIPE_PRICE_MONITOR_ANNUAL: "price_monitor_annual_server",
     STRIPE_PRICE_GROWTH_MONTHLY: "price_growth_monthly_server",
     STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual_server",
-    ENABLE_SUBSCRIPTION_CHECKOUT: "true"
+    ENABLE_SUBSCRIPTION_CHECKOUT: "true",
+    ENABLE_PAID_REPORT_CHECKOUT: "true"
   });
 }
 
@@ -128,6 +131,7 @@ test("launch environment rejects test credentials without requiring legacy URL c
     STRIPE_PRICE_GROWTH_MONTHLY: "price_growth_monthly",
     STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual",
     ENABLE_SUBSCRIPTION_CHECKOUT: "false",
+    ENABLE_PAID_REPORT_CHECKOUT: "true",
     CRON_SECRET: "cron-launch-test",
     RESEND_API_KEY: "resend-launch-test",
     RESEND_FROM_EMAIL: "scanner@example.test",
@@ -209,9 +213,13 @@ test("requires a scan only for Report and a request UUID for Stripe idempotency"
 test("checkout handler uses verified account identity and sends anonymous Report buyers through sign-in", async () => {
   installTestEnv();
   const captured = [];
+  const inspectedAccounts = [];
   const dependencies = {
     getConfig: getStripeServerConfig,
-    scanExists: async () => true,
+    inspectReport: async (_scanId, accountId) => {
+      inspectedAccounts.push(accountId);
+      return { ok: true };
+    },
     verifyReportCatalog: async () => ({
       ok: true,
       code: "VERIFIED",
@@ -239,14 +247,96 @@ test("checkout handler uses verified account identity and sends anonymous Report
 
   assert.equal((await handleCheckout(request(), {
     verifiedEmail: "verified@example.com",
-    ownedCustomerId: "cus_ownedBuyer"
+    ownedCustomerId: "cus_ownedBuyer",
+    accountId: "1dc2bbaf-6e76-4a84-8e2f-d190b6580f78"
   }, dependencies)).status, 201);
   assert.equal(captured[1].email, "verified@example.com");
   assert.equal(captured[1].customerId, "cus_ownedBuyer");
+  assert.deepEqual(inspectedAccounts, [null, "1dc2bbaf-6e76-4a84-8e2f-d190b6580f78"]);
   assert.equal(
     captured[1].successUrl,
     "https://scanner.example.test/reports/91a3e66c-2c07-46cf-ab0c-3768375e050a?checkout=success&session_id={CHECKOUT_SESSION_ID}"
   );
+});
+
+test("rejects report states that must not reach Stripe checkout", async () => {
+  installTestEnv();
+  const blockedStates = [
+    { status: 404, code: "SCAN_NOT_FOUND", message: "The report scan was not found." },
+    { status: 409, code: "REPORT_NOT_READY", message: "This report is still being prepared." },
+    { status: 409, code: "REPORT_ALREADY_UNLOCKED", message: "This report is already unlocked." },
+    { status: 401, code: "AUTHENTICATION_REQUIRED", message: "Sign in to purchase this account report." },
+    { status: 403, code: "REPORT_OWNERSHIP_CONFLICT", message: "This report belongs to another account." }
+  ];
+  let checkoutSessions = 0;
+  for (const blocked of blockedStates) {
+    const request = new Request("https://scanner.example.test/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(checkout())
+    });
+    const response = await handleCheckout(request, null, {
+      getConfig: getStripeServerConfig,
+      inspectReport: async () => ({ ok: false, ...blocked }),
+      verifyReportCatalog: async () => ({
+        ok: true,
+        code: "VERIFIED",
+        reason: "Configured Report price verified.",
+        checkedAt: "2026-07-14T12:00:00.000Z"
+      }),
+      createSession: async () => {
+        checkoutSessions += 1;
+        return { id: "cs_test_blocked", url: "https://checkout.stripe.com/c/pay/blocked" };
+      }
+    });
+    assert.equal(response.status, blocked.status);
+    assert.equal((await response.json()).error.code, blocked.code);
+  }
+  assert.equal(checkoutSessions, 0);
+});
+
+test("report checkout inspection enforces readiness, ownership, and existing access", async () => {
+  installTestEnv();
+  Object.assign(process.env, {
+    SUPABASE_URL: "https://database.example.test",
+    SUPABASE_SERVICE_ROLE_KEY: "service-role-contract"
+  });
+  const scanId = checkout().scanId;
+  const ownerId = "1dc2bbaf-6e76-4a84-8e2f-d190b6580f78";
+  const originalFetch = globalThis.fetch;
+  const installRows = ({ scan = { id: scanId, status: "completed", report_access: "free" }, owner = null, grant = null }) => {
+    globalThis.fetch = async (input) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/scans")) return Response.json(scan ? [scan] : []);
+      if (url.pathname.endsWith("/customer_scan_ownership")) return Response.json(owner ? [owner] : []);
+      if (url.pathname.endsWith("/stripe_report_access_grants")) return Response.json(grant ? [grant] : []);
+      return new Response(null, { status: 404 });
+    };
+  };
+
+  try {
+    installRows({});
+    assert.deepEqual(await inspectReportCheckoutEligibility(scanId, null), { ok: true });
+
+    installRows({ owner: { customer_account_id: ownerId, access_level: "free" } });
+    assert.deepEqual(await inspectReportCheckoutEligibility(scanId, ownerId), { ok: true });
+    assert.equal((await inspectReportCheckoutEligibility(scanId, null)).code, "AUTHENTICATION_REQUIRED");
+    assert.equal(
+      (await inspectReportCheckoutEligibility(scanId, "d869b4ab-6911-4fc7-a6b6-d726a395df60")).code,
+      "REPORT_OWNERSHIP_CONFLICT"
+    );
+
+    installRows({ scan: { id: scanId, status: "queued", report_access: "free" } });
+    assert.equal((await inspectReportCheckoutEligibility(scanId, null)).code, "REPORT_NOT_READY");
+
+    installRows({ grant: { id: "da45a7f0-c0cf-4ac3-8f65-b16473ab3b66" } });
+    assert.equal((await inspectReportCheckoutEligibility(scanId, null)).code, "REPORT_ALREADY_UNLOCKED");
+
+    installRows({ scan: null });
+    assert.equal((await inspectReportCheckoutEligibility(scanId, null)).code, "SCAN_NOT_FOUND");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("rejects anonymous subscription checkout before creating a Stripe session", async () => {
@@ -269,6 +359,28 @@ test("rejects anonymous subscription checkout before creating a Stripe session",
 
   assert.equal(response.status, 401);
   assert.equal((await response.json()).error.code, "AUTHENTICATION_REQUIRED");
+  assert.equal(checkoutSessions, 0);
+});
+
+test("rejects Report checkout before Stripe when the paid launch flag is closed", async () => {
+  installTestEnv();
+  process.env.ENABLE_PAID_REPORT_CHECKOUT = "false";
+  let checkoutSessions = 0;
+  const request = new Request("https://scanner.example.test/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(checkout())
+  });
+  const response = await dispatchCheckoutWithEligibility(request, "report", null, null, {
+    checkout: async () => {
+      checkoutSessions += 1;
+      return Response.json({ ok: true }, { status: 201 });
+    },
+    billingPortal: async () => Response.json({ ok: true }, { status: 201 })
+  });
+
+  assert.equal(response.status, 403);
+  assert.equal((await response.json()).error.code, "PLAN_UNAVAILABLE");
   assert.equal(checkoutSessions, 0);
 });
 
@@ -308,7 +420,8 @@ test("sends active and trialing subscribers to billing management without creati
     assert.equal(plan, "growth");
     const response = await dispatchCheckoutWithEligibility(request, plan, {
       verifiedEmail: "verified@example.com",
-      ownedCustomerId: "cus_ownedBuyer"
+      ownedCustomerId: "cus_ownedBuyer",
+      accountId: "1dc2bbaf-6e76-4a84-8e2f-d190b6580f78"
     }, {
       stripeSubscriptionId: `sub_${status}`,
       product: "monitor",
@@ -440,9 +553,10 @@ test("routes are Node-only wrappers and the Stripe API contract owns redirects a
   assert.match(handlers, /auth\/sign-in\?next=\$\{encodeURIComponent\(reportPath\)\}/);
   assert.match(handlers, /\/dashboard\/onboarding\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
   assert.match(handlers, /verifyStripeSignature\(payload/);
-  assert.match(handlers, /reportScanExists/);
+  assert.match(handlers, /inspectReportCheckoutEligibility/);
   assert.match(checkoutRoute, /session\.user\.email_confirmed_at/);
   assert.match(checkoutRoute, /ownedCustomerId: account\.stripe_customer_id/);
+  assert.match(checkoutRoute, /accountId: account\.id/);
   assert.match(checkoutRoute, /findActiveCheckoutSubscription\(account\.stripe_customer_id\)/);
   assert.match(checkoutRoute, /code: "CHECKOUT_IDENTITY_UNAVAILABLE"/);
   assert.match(checkoutRoute, /dispatchCheckoutWithEligibility\(request, plan, null, null\)/);

@@ -29,6 +29,8 @@ for (const slug of industrySlugs) {
 assert.match(brand, /aria-label="Mobile navigation"/);
 assert.match(brand, /max-h-\[calc\(100dvh-5rem\)\]/);
 assert.match(brand, /Customer Dashboard/);
+assert.match(brand, />\s*Account\s*</);
+assert.match(brand, /Account &amp; reports/);
 assert.match(brand, /src="\/opportunity-scanner-logo\.svg"/);
 assert.match(homepage, /fictional CivicStage example/i);
 assert.match(sampleReports, /fictionalClient: "CivicStage Talent Network"/);

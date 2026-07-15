@@ -1,5 +1,5 @@
 import { dashboardSelectOne } from "../dashboard/rest.ts";
-import { subscriptionCheckoutIsEnabled } from "./config.ts";
+import { reportCheckoutIsEnabled, subscriptionCheckoutIsEnabled } from "./config.ts";
 import { validateCheckoutInput, type PaymentPlan } from "./contract.ts";
 import { handleBillingPortal, handleCheckout, type CheckoutIdentity } from "./handlers.ts";
 
@@ -51,6 +51,18 @@ export function dispatchCheckoutWithEligibility(
   dependencies: EligibilityDependencies = eligibilityDependencies
 ): Promise<Response> {
   const isSubscription = plan === "monitor" || plan === "growth";
+  if (plan === "report" && !reportCheckoutIsEnabled()) {
+    return Promise.resolve(Response.json(
+      {
+        ok: false,
+        error: {
+          code: "PLAN_UNAVAILABLE",
+          message: "Paid Report checkout is not available yet."
+        }
+      },
+      { status: 403, headers: NO_STORE_HEADERS }
+    ));
+  }
   if (isSubscription && !subscriptionCheckoutIsEnabled()) {
     return Promise.resolve(Response.json(
       {

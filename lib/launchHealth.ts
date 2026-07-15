@@ -33,6 +33,7 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog
     "STRIPE_PRICE_GROWTH_ANNUAL"
   ].every((name) => configured(env, name));
   const subscriptionsEnabled = env.ENABLE_SUBSCRIPTION_CHECKOUT?.trim() === "true";
+  const reportCheckoutEnabled = env.ENABLE_PAID_REPORT_CHECKOUT?.trim() === "true";
   const mode = stripeMode(env);
   const payments = mode !== "unconfigured" && configured(env, "STRIPE_WEBHOOK_SECRET") && reportPrice;
   const email = configured(env, "RESEND_API_KEY") && validEmail(env.RESEND_FROM_EMAIL);
@@ -41,7 +42,14 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog
   const analytics = configured(env, "NEXT_PUBLIC_POSTHOG_KEY") && configured(env, "NEXT_PUBLIC_POSTHOG_HOST");
   const demoReady = scans && auth;
   const reportCatalogVerified = reportCatalog?.ok ?? true;
-  const paidSignupReady = demoReady && payments && mode === "live" && email && support && analytics && reportCatalogVerified;
+  const paidSignupReady = demoReady
+    && reportCheckoutEnabled
+    && payments
+    && mode === "live"
+    && email
+    && support
+    && analytics
+    && reportCatalogVerified;
   const subscriptionCheckoutReady = paidSignupReady && subscriptionsEnabled && subscriptionPrices;
 
   return {
@@ -57,6 +65,7 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog
       auth,
       scans,
       payments,
+      reportCheckoutEnabled,
       subscriptions: subscriptionCheckoutReady,
       stripeMode: mode,
       reportCatalog: reportCatalog ? (reportCatalog.ok ? "verified" : "invalid") : "unverified",
