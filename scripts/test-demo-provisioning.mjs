@@ -25,7 +25,14 @@ function createFakeSupabase() {
     users: [],
     accounts: [],
     ownership: [],
-    scans: [{ id: SCAN_ID, email: EMAIL, report_access: "free", status: "completed" }],
+    scans: [{
+      id: SCAN_ID,
+      company_name: "CivicStage Talent Network",
+      company_url: "https://civicstage.example",
+      email: EMAIL,
+      report_access: "free",
+      status: "completed"
+    }],
     writes: [],
     authCreationBody: null
   };
@@ -182,6 +189,44 @@ test("apply provisions account-scoped report access without writing Stripe or mo
   assert.deepEqual(repeated.scans.attachedIds, []);
   assert.deepEqual(repeated.scans.grantedFullAccessIds, []);
   assert.equal(fake.state.writes.length, 0);
+});
+
+test("allows CivicStage and Reparel demo scans", async () => {
+  for (const company of [
+    { name: "CivicStage Talent Network", url: "https://civicstage.example" },
+    { name: "Reparel", url: "https://reparel.com" }
+  ]) {
+    const fake = createFakeSupabase();
+    fake.state.scans[0].company_name = company.name;
+    fake.state.scans[0].company_url = company.url;
+    const result = await runProvisioning({
+      argv: ["--email", EMAIL, "--scan-id", SCAN_ID],
+      env,
+      fetchImpl: fake.fetchImpl
+    });
+    assert.deepEqual(result.scans.wouldAttachIds, [SCAN_ID]);
+    assert.equal(fake.state.writes.length, 0);
+  }
+});
+
+test("rejects Jammcard-like scan names and domains before any demo-account writes", async () => {
+  for (const company of [
+    { name: "Jamm Card, Inc.", url: "https://example.com" },
+    { name: "Music Network", url: "https://members.jamm-card.com/path" }
+  ]) {
+    const fake = createFakeSupabase();
+    fake.state.scans[0].company_name = company.name;
+    fake.state.scans[0].company_url = company.url;
+    await assert.rejects(
+      runProvisioning({
+        argv: ["--apply", "--email", EMAIL, "--scan-id", SCAN_ID],
+        env,
+        fetchImpl: fake.fetchImpl
+      }),
+      /Jammcard scans are protected customer\/regression data and cannot be attached to a demo account/
+    );
+    assert.equal(fake.state.writes.length, 0);
+  }
 });
 
 test("refuses to reassign a scan owned by another customer", async () => {

@@ -57,7 +57,7 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
   const errorMessage = searchParams?.error === "invalid-url" ? "Enter a valid company website URL." : null;
 
   return (
-    <form id="scan" action="/api/scans" method="post" className="rounded-lg border border-line bg-white p-5 shadow-panel sm:p-6">
+    <form id="scan" action="/api/scans" method="post" className="home-scan-form rounded-lg border border-line bg-white p-5 sm:p-6">
       <input type="hidden" name="reportType" value="quick" />
       {(["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const).map((name) => {
         const value = searchParams?.[name]?.trim().slice(0, 160);
@@ -79,26 +79,28 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
       ) : null}
 
       <div className="mt-5 grid gap-4">
-        <label className="grid gap-2">
-          <span className="text-sm font-medium text-ink">Company website URL</span>
-          <input
-            required
-            name="companyUrl"
-            type="url"
-            placeholder="https://example.com"
-            className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-          />
-        </label>
-        <label className="grid gap-2">
-          <span className="text-sm font-medium text-ink">Work email</span>
-          <input
-            required
-            name="email"
-            type="email"
-            placeholder="you@company.com"
-            className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
-          />
-        </label>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-2">
+            <span className="text-sm font-medium text-ink">Company website URL</span>
+            <input
+              required
+              name="companyUrl"
+              type="url"
+              placeholder="https://example.com"
+              className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className="text-sm font-medium text-ink">Work email</span>
+            <input
+              required
+              name="email"
+              type="email"
+              placeholder="you@company.com"
+              className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+            />
+          </label>
+        </div>
 
         <p className="text-xs leading-5 text-muted">
           We use your email to provide and support the requested scan. See our{" "}
@@ -177,7 +179,7 @@ function ScanForm({ searchParams }: { searchParams?: HomeSearchParams }) {
 
 function ProductProof() {
   return (
-    <section className="border-y border-line bg-field">
+    <section className="home-product-proof border-y border-line bg-field">
       <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
         <SectionIntro title="From a website to a sourced opportunity your team can route" eyebrow="See the product">
           <p>
@@ -241,7 +243,7 @@ function ProductProof() {
 
 export default function HomePage({ searchParams }: { searchParams?: HomeSearchParams }) {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="home-page min-h-screen bg-white">
       <SiteHeader
         rightSlot={
           <a href="#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
@@ -250,44 +252,43 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
         }
       />
 
-      <section className="relative isolate overflow-hidden bg-ink text-white">
+      <section className="home-hero">
         <img
           src="/product-proof/report-pipeline.png"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 -z-20 h-full w-full object-cover object-center opacity-35"
+          alt="Opportunity Scanner report showing sourced opportunities, revenue motions, target organizations, contact strategies, and next actions"
+          className="home-hero__product"
         />
-        <div className="absolute inset-0 -z-10 bg-ink/90" />
-        <div className="mx-auto max-w-7xl px-6 py-10 sm:py-12 lg:py-12">
-          <div className="max-w-4xl">
+        <div className="home-hero__veil" aria-hidden="true" />
+        <div className="home-hero__content mx-auto max-w-7xl px-6">
+          <div className="home-hero__copy">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="blue">Public-sector revenue intelligence</Badge>
-              <Badge tone="green">Source-backed and action-ready</Badge>
+              <Badge tone="blue">Public-sector intelligence</Badge>
+              <Badge tone="green">Source-backed</Badge>
             </div>
-            <h1 className="mt-5 text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="home-hero__title mt-5 font-semibold leading-tight text-ink">
               Public-sector opportunities your team can actually pursue.
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-200">
-              Scan your company website to find government buyers, funded organizations, grants,
-              procurement paths, and policy demand, then turn each signal into a next action.
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+              Find public-sector buyers, grants, funding signals, and procurement paths matched to
+              your offer, with evidence and a clear next action.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <a href="#scan" className="rounded-md bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:bg-mist">
-                Scan Your Company Website
+              <a href="#scan" className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+                Run a Free Scan
               </a>
-              <a href="/examples" className="rounded-md border border-slate-400 px-4 py-3 text-sm font-semibold text-white hover:border-white hover:bg-white/10">
-                View Sample Reports
+              <a href="/examples" className="rounded-md border border-line bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:border-accent">
+                See Sample Reports
               </a>
             </div>
-            <div className="mt-7 hidden max-w-3xl border-y border-white/20 sm:grid sm:grid-cols-3 sm:divide-x sm:divide-white/20">
+            <div className="home-hero__proof mt-8 hidden max-w-3xl border-y border-line sm:grid sm:grid-cols-3 sm:divide-x sm:divide-line">
               {[
                 ["Evidence", "Official records linked to every signal"],
                 ["Revenue motion", "A clear path to the buyer or partner"],
                 ["Next action", "A step your team can route and own"]
               ].map(([label, copy]) => (
-                <div key={label} className="border-b border-white/20 py-3 last:border-b-0 sm:border-b-0 sm:px-5 sm:first:pl-0">
-                  <p className="text-xs font-semibold text-teal-300">{label}</p>
-                  <p className="mt-1 text-sm font-semibold leading-5 text-white">{copy}</p>
+                <div key={label} className="border-b border-line py-3 last:border-b-0 sm:border-b-0 sm:px-5 sm:first:pl-0">
+                  <p className="text-xs font-semibold text-ember">{label}</p>
+                  <p className="mt-1 text-sm font-semibold leading-5 text-ink">{copy}</p>
                 </div>
               ))}
             </div>
@@ -295,8 +296,8 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
         </div>
       </section>
 
-      <section className="border-b border-line bg-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-14 lg:py-16">
+      <section className="home-scan-section border-b border-line bg-white">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-16 lg:py-16">
           <div className="order-2 lg:order-1 lg:sticky lg:top-24">
             <p className="text-xs font-semibold uppercase text-accent">Start here</p>
             <h2 className="mt-2 max-w-xl text-3xl font-semibold leading-tight text-ink">
@@ -306,7 +307,7 @@ export default function HomePage({ searchParams }: { searchParams?: HomeSearchPa
               The free preview returns 2-3 sourced opportunities and shows how the product translates
               public records into buyer paths, partner targets, and concrete next steps.
             </p>
-            <dl className="mt-7 divide-y divide-line border-y border-line">
+            <dl className="home-scan-steps mt-7 divide-y divide-line border-y border-line">
               {[
                 ["1", "Your company website becomes the search profile"],
                 ["2", "Public sources are screened for fit and timing"],

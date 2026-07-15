@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_SELECTED_SCANS = 100;
+const PROTECTED_DEMO_IDENTITY = "jammcard";
 
 class OperatorError extends Error {
   constructor(message, status = null) {
@@ -285,6 +286,19 @@ function validateScan(row) {
   ) {
     throw new OperatorError("A selected scan is not a completed report with a supported access state.");
   }
+  const companyName = typeof row.company_name === "string" ? row.company_name : "";
+  let companyHostname = "";
+  try {
+    companyHostname = new URL(row.company_url).hostname;
+  } catch {
+    companyHostname = typeof row.company_url === "string" ? row.company_url : "";
+  }
+  const isProtectedIdentity = [companyName, companyHostname].some((value) =>
+    value.toLowerCase().replace(/[^a-z0-9]/g, "").includes(PROTECTED_DEMO_IDENTITY)
+  );
+  if (isProtectedIdentity) {
+    throw new OperatorError("Jammcard scans are protected customer/regression data and cannot be attached to a demo account.");
+  }
   return {
     id: row.id.toLowerCase()
   };
@@ -294,7 +308,7 @@ async function resolveScans(client, scanIds, scanEmails) {
   const selected = new Map();
   for (const scanId of scanIds) {
     const rows = await client.select("scans", {
-      select: "id,report_access,status",
+      select: "id,company_name,company_url,report_access,status",
       id: `eq.${scanId}`,
       limit: 2
     });
@@ -305,7 +319,7 @@ async function resolveScans(client, scanIds, scanEmails) {
   }
   for (const scanEmail of scanEmails) {
     const rows = await client.select("scans", {
-      select: "id,report_access,status",
+      select: "id,company_name,company_url,report_access,status",
       email: `eq.${scanEmail}`,
       status: "eq.completed",
       order: "created_at.asc"
