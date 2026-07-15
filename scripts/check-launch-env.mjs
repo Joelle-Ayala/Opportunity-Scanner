@@ -24,8 +24,6 @@ const required = [
   "SUPABASE_URL",
   "SUPABASE_ANON_KEY",
   "SUPABASE_SERVICE_ROLE_KEY",
-  "OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE",
-  "OPPORTUNITY_SCANNER_ADMIN_CODE",
   "APP_URL",
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
@@ -68,10 +66,44 @@ function reportGroup(label, names) {
 const missingRequired = reportGroup("Required", required);
 reportGroup("Recommended", recommended);
 
+const safetyErrors = [];
+if (!process.env.STRIPE_SECRET_KEY?.trim().startsWith("sk_live_")) {
+  safetyErrors.push("STRIPE_SECRET_KEY must use an sk_live_* key for production launch.");
+}
+
+const legacyOverrideName =
+  "OPPORTUNITY_SCANNER_EMERGENCY_ENABLE_LEGACY_URL_ACCESS_CODES_IN_PRODUCTION";
+const legacyOverrideValue = process.env[legacyOverrideName]?.trim();
+const legacyCodeFamilies = [
+  ["OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE", "REPORT_ACCESS_CODE"],
+  ["OPPORTUNITY_SCANNER_ADMIN_CODE", "ADMIN_REPORT_ACCESS_CODE"]
+];
+const effectiveLegacyCodes = legacyCodeFamilies
+  .map((names) => names.map((name) => process.env[name]?.trim()).find(Boolean))
+  .filter(Boolean);
+
+if (legacyOverrideValue && legacyOverrideValue !== "true" && legacyOverrideValue !== "false") {
+  safetyErrors.push(`${legacyOverrideName} must be exactly true or false.`);
+} else if (legacyOverrideValue === "true") {
+  if (effectiveLegacyCodes.length === 0) {
+    safetyErrors.push(`${legacyOverrideName}=true requires at least one legacy URL access code.`);
+  }
+  if (effectiveLegacyCodes.some((code) => code.length < 32)) {
+    safetyErrors.push("Emergency production legacy URL access codes must be at least 32 characters.");
+  }
+  console.log("Warning: emergency production legacy URL access-code bypass is enabled.");
+} else if (effectiveLegacyCodes.length > 0) {
+  console.log("Notice: configured legacy report/admin URL access codes are disabled in production.");
+}
+
+for (const message of safetyErrors) {
+  console.log(`Production safety error: ${message}`);
+}
+
 if (process.env.ALLOW_LOCAL_STORAGE_IN_PRODUCTION === "true") {
   console.log("Warning: ALLOW_LOCAL_STORAGE_IN_PRODUCTION=true is only acceptable for temporary internal testing.");
 }
 
-if (missingRequired.length > 0) {
+if (missingRequired.length > 0 || safetyErrors.length > 0) {
   process.exitCode = 1;
 }

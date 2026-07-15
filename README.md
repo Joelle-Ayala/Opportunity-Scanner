@@ -128,18 +128,16 @@ npm run test:sam -- "live music services"
 
 ## Launch Checks
 
-Before publishing to the domain, configure production environment variables and run:
+Paid launch operations are documented in [`docs/paid-launch-runbook.md`](docs/paid-launch-runbook.md). Before publishing a production release, configure the production services and run:
 
 ```bash
-npm run build
-npm run check:launch-env
+pnpm run check:launch-env
+pnpm run verify:launch
 ```
 
-For controlled beta, the required production variables are `OPENAI_API_KEY`,
-`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE`,
-and `OPPORTUNITY_SCANNER_ADMIN_CODE`. `OPPORTUNITY_SCANNER_CONTACT_EMAIL` controls where
-full-report requests are sent. `SAM_API_KEY` and Snov credentials are recommended
-for stronger active-opportunity and contact-enrichment coverage.
+`check:launch-env` requires the production scan, Supabase Auth, Stripe live payment, monitoring cron, Resend, unsubscribe, and rate-limit configuration. `verify:launch` runs the launch contract suite, report regressions, typecheck, and production build. Use `GET /api/health` on the deployed release to distinguish demo readiness from real paid-signup readiness without exposing configuration values.
+
+Production access is account- and purchase-based. A customer buys a one-time full report from an existing free report, or signs in with a Supabase magic link before buying Monitor or Growth. Legacy `?access=` report and admin codes are local-development tools only unless the explicit emergency production override is enabled.
 
 ## Environment
 
@@ -147,18 +145,23 @@ Copy `.env.example` to `.env.local`.
 
 - `OPENAI_API_KEY` enables AI-generated company profiles.
 - `SAM_API_KEY` enables SAM.gov active opportunity search.
-- `SUPABASE_URL` plus `SUPABASE_SERVICE_ROLE_KEY` enables Supabase storage.
-- `OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE` unlocks full-report beta access.
-- `OPPORTUNITY_SCANNER_ADMIN_CODE` unlocks admin/operator workspaces.
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` enable production storage and customer magic-link authentication.
+- `APP_URL`, the Stripe live secret and webhook secrets, and all five Stripe Price IDs enable real checkout for Report, Monitor, and Growth.
+- `CRON_SECRET` enables authenticated monitoring and nurture jobs.
+- `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and the alert/nurture unsubscribe secrets enable customer email delivery.
+- `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` enable privacy-limited product events; Vercel Analytics remains available independently.
+- `OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE` and `OPPORTUNITY_SCANNER_ADMIN_CODE` are legacy local-only URL access codes. Production ignores them unless `OPPORTUNITY_SCANNER_EMERGENCY_ENABLE_LEGACY_URL_ACCESS_CODES_IN_PRODUCTION=true`; any emergency code must be at least 32 characters.
 - Without Supabase variables, scans are stored locally in `.data/local-db.json` for development. Production requires Supabase unless `ALLOW_LOCAL_STORAGE_IN_PRODUCTION=true` is set for temporary internal testing.
 
 ## Routes
 
 - `/` scan form
 - `/reports/[id]` free report preview
-- `/reports/[id]?access=[REPORT_ACCESS_CODE]` full beta report
-- `/reports/[id]?access=[ADMIN_CODE]` full internal report with research details
-- `/opportunities/[id]?scanId=[scan_id]&access=[REPORT_ACCESS_CODE]` opportunity profile and enrichment queue
-- `/admin/reports?access=[ADMIN_CODE]` completed scan list
-- `/admin/feedback?access=[ADMIN_CODE]` feedback review for good-fit and bad-fit opportunity labels
-- `/admin/sources?access=[ADMIN_CODE]` connector/source coverage
+- `/pricing` live Report, Monitor, and Growth checkout when Stripe is configured
+- `/auth/sign-in` customer magic-link sign-in
+- `/dashboard` account-owned reports, saved searches, monitoring, and billing
+- `/dashboard/onboarding` post-purchase monitoring setup
+- `/opportunities/[id]?scanId=[scan_id]` paid opportunity workspace for an entitled customer
+- `/admin/reports` internal completed scan list
+- `/admin/feedback` internal feedback review for good-fit and bad-fit labels
+- `/admin/sources` internal connector/source coverage

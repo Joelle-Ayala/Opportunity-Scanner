@@ -1,3 +1,5 @@
+import { requiresLiveStripeObjects } from "./config.ts";
+
 export type ReportCheckoutSessionContract = {
   id: string;
   status?: string;
@@ -69,6 +71,10 @@ function stripeId(value: string | { id?: string } | null | undefined): string | 
   return value?.id ?? null;
 }
 
+function isAllowedCheckoutMode(session: ReportCheckoutSessionContract): boolean {
+  return !requiresLiveStripeObjects() || (session.livemode === true && session.id.startsWith("cs_live_"));
+}
+
 function subscriptionPlanForPrice(
   priceId: string,
   prices: SubscriptionPriceCatalog
@@ -96,6 +102,7 @@ export function verifiedPaidSubscriptionCheckout(
   const subscriptionItems = subscription.items?.data ?? [];
   const checkoutPriceId = stripeId(lineItems[0]?.price);
   const subscriptionPriceId = stripeId(subscriptionItems[0]?.price);
+  if (!isAllowedCheckoutMode(session)) return null;
   if (!checkoutPriceId || checkoutPriceId !== subscriptionPriceId) return null;
   const plan = subscriptionPlanForPrice(checkoutPriceId, prices);
   if (!plan) return null;
@@ -172,7 +179,8 @@ export function isMatchingPaidReportSession(
     paymentIntent && typeof paymentIntent.latest_charge === "object" ? paymentIntent.latest_charge : null;
   const customerEmail = session.customer_details?.email?.trim().toLowerCase();
   return Boolean(
-    session.id.startsWith("cs_") &&
+    isAllowedCheckoutMode(session) &&
+      session.id.startsWith("cs_") &&
       Number.isInteger(session.created) &&
       (session.created ?? 0) > 0 &&
       session.status === "complete" &&

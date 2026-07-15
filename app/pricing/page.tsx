@@ -6,6 +6,7 @@ import { CTASection, SectionIntro } from "@/components/marketing";
 import { PricingAnalytics } from "@/components/page-analytics";
 import { PricingCheckoutNotice } from "@/components/pricing-checkout-notice";
 import { getStripeServerConfig } from "@/lib/payments/config";
+import type { BillingInterval } from "@/lib/payments/contract";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +88,29 @@ function checkoutIsConfigured(): boolean {
   }
 }
 
+type PricingSearchParams = {
+  billing_interval?: string;
+  checkout?: string;
+  plan?: string;
+  session_id?: string;
+  source?: string;
+  scanId?: string;
+};
+
+function resumableSubscriptionCheckout(searchParams?: PricingSearchParams): {
+  plan: "monitor" | "growth";
+  billingInterval: BillingInterval;
+} | null {
+  if (searchParams?.checkout !== "resume") return null;
+  if (searchParams.plan !== "monitor" && searchParams.plan !== "growth") return null;
+  if (searchParams.billing_interval !== "monthly" && searchParams.billing_interval !== "annual") return null;
+
+  return {
+    plan: searchParams.plan,
+    billingInterval: searchParams.billing_interval
+  };
+}
+
 const faqs = [
   {
     question: "What is an enrichment credit?",
@@ -113,9 +137,10 @@ const faqs = [
 export default function PricingPage({
   searchParams
 }: {
-  searchParams?: { checkout?: string; session_id?: string; source?: string; scanId?: string };
+  searchParams?: PricingSearchParams;
 }) {
   const checkoutEnabled = checkoutIsConfigured();
+  const resumeCheckout = resumableSubscriptionCheckout(searchParams);
   const reportScanId = searchParams?.source === "report_gate" ? searchParams.scanId : undefined;
   const analyticsSource = searchParams?.checkout
     ? "checkout_return"
@@ -174,6 +199,7 @@ export default function PricingPage({
             return (
               <article
                 key={plan.name}
+                id={`${checkoutPlan}-checkout`}
                 className={`flex min-w-0 flex-col rounded-lg border p-5 shadow-sm ${
                   featured
                     ? "border-ink bg-ink text-white"
@@ -230,6 +256,10 @@ export default function PricingPage({
                   checkoutEnabled={checkoutEnabled}
                   featured={featured}
                   scanId={plan.name === "Report" ? reportScanId : undefined}
+                  initialBillingInterval={
+                    resumeCheckout?.plan === checkoutPlan ? resumeCheckout.billingInterval : undefined
+                  }
+                  resumeCheckout={resumeCheckout?.plan === checkoutPlan}
                 />
               </article>
             );

@@ -1,8 +1,11 @@
 import type { ClaimedNurtureJob } from "./storage.ts";
 import { getNurtureTouch } from "./sequence.ts";
 import { createUnsubscribeToken, getNurtureUnsubscribeSecret } from "./token.ts";
+import {
+  sendResendEmailRequest,
+  type ResendRequestOptions
+} from "../monitoring/delivery.ts";
 
-const RESEND_ENDPOINT = "https://api.resend.com/emails";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type NurtureEmailConfig = {
@@ -11,8 +14,6 @@ export type NurtureEmailConfig = {
   appUrl: string;
   unsubscribeSecret: string;
 };
-
-type ResendResponse = { id?: string; message?: string };
 
 export function getNurtureEmailConfig(env: NodeJS.ProcessEnv = process.env): NurtureEmailConfig | null {
   const apiKey = env.RESEND_API_KEY?.trim();
@@ -54,7 +55,8 @@ export function nurtureOneClickUnsubscribeUrl(config: NurtureEmailConfig, subscr
 export async function sendNurtureEmail(
   config: NurtureEmailConfig,
   job: ClaimedNurtureJob,
-  fetchImpl: typeof fetch = fetch
+  fetchImpl: typeof fetch = fetch,
+  options: ResendRequestOptions = {}
 ): Promise<string> {
   if (!EMAIL_PATTERN.test(job.recipient_email) || job.recipient_email.length > 254) {
     throw new Error("Nurture recipient email is invalid.");
@@ -86,14 +88,11 @@ export async function sendNurtureEmail(
     `<p style="border-top:1px solid #d8dee8;padding-top:18px;font-size:12px;line-height:1.5;color:#667085">You received this because you requested an Opportunity Scanner report. <a href="${escapeHtml(unsubscribeUrl)}" style="color:#42526b">Unsubscribe</a>.</p>`
   ].join("");
 
-  const response = await fetchImpl(RESEND_ENDPOINT, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": `scan-nurture/${job.job_id}`
-    },
-    body: JSON.stringify({
+  return sendResendEmailRequest({
+    apiKey: config.apiKey,
+    idempotencyKey: `scan-nurture/${job.job_id}`,
+    failureLabel: "Resend nurture delivery",
+    body: {
       from: `Opportunity Scanner <${config.fromEmail}>`,
       to: [job.recipient_email],
       subject,
@@ -103,12 +102,6 @@ export async function sendNurtureEmail(
         "List-Unsubscribe": `<${oneClickUnsubscribeUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
       }
-    })
-  });
-
-  const payload = (await response.json().catch(() => ({}))) as ResendResponse;
-  if (!response.ok || !payload.id) {
-    throw new Error(payload.message?.slice(0, 450) || `Resend nurture delivery failed with status ${response.status}.`);
-  }
-  return payload.id;
+    }
+  }, fetchImpl, options);
 }

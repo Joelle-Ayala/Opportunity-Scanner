@@ -84,7 +84,7 @@ test("monitoring APIs reject anonymous writes and derive ownership from the serv
     assert.match(route, /session\.user\.id/);
     assert.doesNotMatch(route, /form\.get\(["'](?:authUserId|customerAccountId|stripeCustomerId)["']\)/);
   }
-  assert.match(createRoute, /if \(!session\?\.user\.email\) redirect/);
+  assert.match(createRoute, /if \(!session\?\.user\.email\) \{[\s\S]*return redirectTo\(request, "\/auth\/sign-in"/);
   assert.match(createRoute, /createMonitoredSearchFromScan\(session\.user\.id, scanId\)/);
   assert.match(mutateRoute, /if \(!session\?\.user\.email\)[\s\S]*NextResponse\.redirect\(signIn, 303\)/);
   assert.match(mutateRoute, /UUID_PATTERN\.test\(params\.searchId\)/);
@@ -112,9 +112,11 @@ test("dashboard data is account-scoped and browser database roles remain closed"
 });
 
 test("monitoring onboarding requires an active plan, owned report, and plan capacity", async () => {
-  const [onboarding, repository] = await Promise.all([
+  const [onboarding, repository, setupMigration, createRoute] = await Promise.all([
     source("app/dashboard/onboarding/page.tsx"),
-    source("lib/dashboard/repository.ts")
+    source("lib/dashboard/repository.ts"),
+    source("db/monitoring-setup-transaction.sql"),
+    source("app/api/dashboard/searches/route.ts")
   ]);
 
   assert.match(onboarding, /subscriptions\.find\(\(item\) => \["active", "trialing"\]\.includes\(item\.status\)\)/);
@@ -124,11 +126,32 @@ test("monitoring onboarding requires an active plan, owned report, and plan capa
   assert.match(onboarding, /action="\/api\/dashboard\/searches"/);
 
   assert.match(repository, /createMonitoredSearchFromScan/);
-  assert.match(repository, /customer_scan_ownership[\s\S]*customer_account_id: `eq\.\$\{account\.id\}`[\s\S]*scan_id: `eq\.\$\{scanId\}`/);
-  assert.match(repository, /status: "in\.\(active,trialing\)"/);
-  assert.match(repository, /subscription\.product === "growth" \? 3 : 1/);
-  assert.match(repository, /cadence: subscription\.product === "growth" \? "daily" : "weekly"/);
-  assert.match(repository, /customer_monitored_profile_ownership/);
+  const createFunction = repository.slice(
+    repository.indexOf("export async function createMonitoredSearchFromScan"),
+    repository.indexOf("async function requireOwnedSavedSearch")
+  );
+  assert.match(createFunction, /supabaseRpc<MonitoringSetupRpcResult>\("create_customer_monitored_search"/);
+  assert.doesNotMatch(createFunction, /dashboardInsert|dashboardUpdate|Promise\.all/);
+
+  assert.match(setupMigration, /from customer_accounts account[\s\S]*for update/);
+  assert.match(setupMigration, /subscription\.status in \('active', 'trialing'\)/);
+  assert.match(setupMigration, /subscription\.product in \('monitor', 'growth'\)/);
+  assert.match(setupMigration, /profile\.status <> 'canceled'/);
+  assert.match(setupMigration, /scan\.status = 'completed'/);
+  assert.match(setupMigration, /customer_scan_ownership ownership/);
+  assert.match(setupMigration, /case when v_subscription\.product = 'growth' then 'daily' else 'weekly' end/);
+  assert.match(setupMigration, /insert into customer_saved_searches/);
+  assert.match(setupMigration, /insert into customer_saved_search_versions/);
+  assert.match(setupMigration, /insert into monitored_profiles/);
+  assert.match(setupMigration, /insert into customer_monitored_profile_ownership/);
+  assert.match(setupMigration, /grant execute on function create_customer_monitored_search\(uuid, uuid\) to service_role/);
+
+  assert.match(createRoute, /error\.code === "AUTHENTICATION_REQUIRED"/);
+  assert.match(createRoute, /error\.code === "PLAN_REQUIRED"[\s\S]*"\/pricing"/);
+  assert.match(createRoute, /searchErrorCode: error\.code/);
+  assert.match(createRoute, /new MonitoringSetupError\("TEMPORARY_SETUP_FAILURE", error\)/);
+  const temporaryFailureBranch = createRoute.slice(createRoute.indexOf("function setupErrorRedirect"));
+  assert.doesNotMatch(temporaryFailureBranch, /TEMPORARY_SETUP_FAILURE[\s\S]*"\/pricing"/);
 });
 
 test("saved-search edits and controls remain owner-scoped, versioned, and plan-limited", async () => {

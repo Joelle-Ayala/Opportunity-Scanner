@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/brand";
+import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
 import { MonitoringOnboardingAnalytics, PurchaseCompletedAnalytics } from "@/components/page-analytics";
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
 import {
@@ -91,6 +92,10 @@ export default async function MonitoringOnboardingPage({
         <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
           Your {subscription.product === "growth" ? "Growth" : "Monitor"} plan includes {limit} monitored {limit === 1 ? "company profile" : "company profiles"}. You are using {activeCount}.
         </p>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <a href="/dashboard?tab=billing" className="text-sm font-semibold text-accent hover:text-ink">View account status</a>
+          {summary.billing.stripeCustomerId ? <BillingPortalButton /> : null}
+        </div>
 
         {activeCount >= limit ? (
           <div className="mt-7 rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">

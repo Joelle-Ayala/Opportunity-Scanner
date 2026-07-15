@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { secureStripeBillingPortalUrl } from "@/components/billing-management-state";
 import type { BillingInterval, PaymentPlan } from "@/lib/payments/contract";
 import { trackProductEvent } from "@/lib/productAnalytics";
@@ -10,17 +10,28 @@ type CheckoutButtonProps = {
   checkoutEnabled: boolean;
   featured?: boolean;
   scanId?: string;
+  initialBillingInterval?: BillingInterval;
+  resumeCheckout?: boolean;
 };
 
 type CheckoutResponse = {
   ok?: boolean;
   checkoutUrl?: unknown;
   portalUrl?: unknown;
-  error?: { message?: unknown };
+  error?: { code?: unknown; message?: unknown };
+};
+
+type PendingSubscriptionCheckout = {
+  plan: "monitor" | "growth";
+  billingInterval: BillingInterval;
+  customerEmail: string;
+  createdAt: number;
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const PENDING_CHECKOUT_KEY = "opportunity-scanner:pending-subscription-checkout";
+const PENDING_CHECKOUT_MAX_AGE_MS = 15 * 60 * 1000;
 
 function secureStripeCheckoutUrl(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -36,13 +47,42 @@ export function CheckoutButton({
   plan,
   checkoutEnabled,
   featured = false,
-  scanId
+  scanId,
+  initialBillingInterval = "monthly",
+  resumeCheckout = false
 }: CheckoutButtonProps) {
-  const [billingInterval, setBillingInterval] = useState<BillingInterval>("monthly");
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>(initialBillingInterval);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const canCheckout = checkoutEnabled && (plan !== "report" || UUID_PATTERN.test(scanId ?? ""));
+
+  useEffect(() => {
+    if (!resumeCheckout || plan === "report") return;
+
+    try {
+      const stored = window.localStorage.getItem(PENDING_CHECKOUT_KEY);
+      if (!stored) return;
+      window.localStorage.removeItem(PENDING_CHECKOUT_KEY);
+
+      const pending = JSON.parse(stored) as Partial<PendingSubscriptionCheckout>;
+      const isCurrent = typeof pending.createdAt === "number"
+        && Date.now() - pending.createdAt >= 0
+        && Date.now() - pending.createdAt <= PENDING_CHECKOUT_MAX_AGE_MS;
+      if (
+        pending.plan === plan
+        && pending.billingInterval === initialBillingInterval
+        && typeof pending.customerEmail === "string"
+        && EMAIL_PATTERN.test(pending.customerEmail)
+        && pending.customerEmail.length <= 254
+        && isCurrent
+      ) {
+        setEmail(pending.customerEmail);
+      }
+    } catch {
+      // Plan and billing interval still survive in the validated return URL.
+    }
+  }, [initialBillingInterval, plan, resumeCheckout]);
 
   if (!canCheckout) {
     return (
@@ -99,12 +139,40 @@ export function CheckoutButton({
       const portalUrl = secureStripeBillingPortalUrl(body?.portalUrl);
 
       if (!response.ok || !body?.ok || (!checkoutUrl && !portalUrl)) {
+        if (body?.error?.code === "AUTHENTICATION_REQUIRED" && plan !== "report") {
+          const pendingCheckout: PendingSubscriptionCheckout = {
+            plan,
+            billingInterval,
+            customerEmail,
+            createdAt: Date.now()
+          };
+          try {
+            window.localStorage.setItem(PENDING_CHECKOUT_KEY, JSON.stringify(pendingCheckout));
+          } catch {
+            // The return URL still preserves the plan and billing interval when storage is unavailable.
+          }
+
+          const returnParams = new URLSearchParams({
+            checkout: "resume",
+            plan,
+            billing_interval: billingInterval
+          });
+          const nextPath = `/pricing?${returnParams.toString()}#${plan}-checkout`;
+          window.location.assign(`/auth/sign-in?next=${encodeURIComponent(nextPath)}`);
+          return;
+        }
+
         const message = typeof body?.error?.message === "string"
           ? body.error.message
           : "Checkout could not be started. Please try again.";
         throw new Error(message);
       }
 
+      try {
+        window.localStorage.removeItem(PENDING_CHECKOUT_KEY);
+      } catch {
+        // Checkout can continue when browser storage is unavailable.
+      }
       window.location.assign(checkoutUrl || portalUrl!);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Checkout could not be started. Please try again.");
@@ -114,6 +182,20 @@ export function CheckoutButton({
 
   return (
     <form onSubmit={startCheckout} className="mt-5 border-t border-current/15 pt-4" noValidate>
+      {resumeCheckout && plan !== "report" ? (
+        <div
+          role="status"
+          className={`mb-4 rounded-md border px-3 py-3 text-xs leading-5 ${
+            featured
+              ? "border-white/20 bg-white/10 text-slate-100"
+              : "border-cyan-100 bg-white text-steel"
+          }`}
+        >
+          Your {plan === "monitor" ? "Monitor" : "Growth"} checkout is ready. {billingInterval === "annual" ? "Annual" : "Monthly"} billing is
+          selected below.
+        </div>
+      ) : null}
+
       {plan !== "report" ? (
         <fieldset>
           <legend className={`text-xs font-semibold ${featured ? "text-slate-200" : "text-slate-700"}`}>
@@ -182,7 +264,13 @@ export function CheckoutButton({
             : "bg-accent text-white hover:bg-[#0A6871]"
         }`}
       >
-        {loading ? "Opening Secure Checkout..." : plan === "report" ? "Buy Full Report" : "Continue to Secure Checkout"}
+        {loading
+          ? "Opening Secure Checkout..."
+          : plan === "report"
+            ? "Buy Full Report"
+            : resumeCheckout
+              ? "Resume Secure Checkout"
+              : "Continue to Secure Checkout"}
       </button>
 
       <div aria-live="polite" aria-atomic="true" className="min-h-6">

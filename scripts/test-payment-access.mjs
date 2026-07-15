@@ -2,8 +2,15 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
   isMatchingPaidReportSession,
-  resolveStoredReportAccess
+  resolveStoredReportAccess,
+  verifiedPaidSubscriptionCheckout
 } from "../lib/payments/accessContract.ts";
+import {
+  accessSuffix,
+  hasAdminAccess,
+  hasFullReportAccess,
+  reportAccessHref
+} from "../lib/access.ts";
 import { fulfillVerifiedReportCheckout } from "../lib/payments/persistence.ts";
 
 const SCAN_ID = "91a3e66c-2c07-46cf-ab0c-3768375e050a";
@@ -38,6 +45,49 @@ function paidSession(overrides = {}) {
   };
 }
 
+function paidSubscriptionSession(overrides = {}) {
+  return {
+    id: "cs_test_subscription123",
+    created: 1_750_000_000,
+    livemode: false,
+    status: "complete",
+    mode: "subscription",
+    payment_status: "paid",
+    customer: "cus_customer123",
+    customer_details: { email: "buyer@example.com" },
+    metadata: {
+      product: "monitor",
+      billing_interval: "monthly",
+      price_id: "price_monitor_monthly"
+    },
+    line_items: {
+      has_more: false,
+      data: [{ quantity: 1, price: { id: "price_monitor_monthly" } }]
+    },
+    subscription: {
+      id: "sub_subscription123",
+      customer: "cus_customer123",
+      status: "active",
+      cancel_at_period_end: false,
+      items: {
+        data: [{
+          price: { id: "price_monitor_monthly" },
+          current_period_start: 1_750_000_000,
+          current_period_end: 1_752_592_000
+        }]
+      }
+    },
+    ...overrides
+  };
+}
+
+const subscriptionPrices = {
+  monitorMonthly: "price_monitor_monthly",
+  monitorAnnual: "price_monitor_annual",
+  growthMonthly: "price_growth_monthly",
+  growthAnnual: "price_growth_annual"
+};
+
 const tests = [];
 function test(name, run) {
   tests.push({ name, run });
@@ -51,6 +101,50 @@ test("preserves legacy admin and report-code access without querying billing", a
   });
   assert.equal(granted, true);
   assert.equal(queries, 0);
+});
+
+test("disables production legacy URL codes and propagation unless the emergency override is explicit", () => {
+  const names = [
+    "NODE_ENV",
+    "OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE",
+    "OPPORTUNITY_SCANNER_ADMIN_CODE",
+    "OPPORTUNITY_SCANNER_EMERGENCY_ENABLE_LEGACY_URL_ACCESS_CODES_IN_PRODUCTION"
+  ];
+  const original = Object.fromEntries(names.map((name) => [name, process.env[name]]));
+  const reportCode = "report-code-with-at-least-thirty-two-characters";
+  const adminCode = "admin-code-with-at-least-thirty-two-characters";
+
+  try {
+    process.env.NODE_ENV = "development";
+    process.env.OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE = reportCode;
+    process.env.OPPORTUNITY_SCANNER_ADMIN_CODE = adminCode;
+    delete process.env.OPPORTUNITY_SCANNER_EMERGENCY_ENABLE_LEGACY_URL_ACCESS_CODES_IN_PRODUCTION;
+    assert.equal(hasFullReportAccess(reportCode), true);
+    assert.equal(hasAdminAccess(adminCode), true);
+    assert.match(reportAccessHref("/reports/scan", reportCode), /access=/);
+
+    process.env.NODE_ENV = "production";
+    assert.equal(hasFullReportAccess(reportCode), false);
+    assert.equal(hasAdminAccess(adminCode), false);
+    assert.equal(accessSuffix(reportCode), "");
+    assert.equal(reportAccessHref("/reports/scan", reportCode), "/reports/scan");
+    assert.equal(hasFullReportAccess(undefined, { report_access: "unlocked" }), true);
+    assert.equal(hasAdminAccess(undefined, { report_access: "admin" }), true);
+
+    process.env.OPPORTUNITY_SCANNER_EMERGENCY_ENABLE_LEGACY_URL_ACCESS_CODES_IN_PRODUCTION = "true";
+    assert.equal(hasFullReportAccess(reportCode), true);
+    assert.equal(hasAdminAccess(adminCode), true);
+    assert.match(accessSuffix(reportCode), /access=/);
+
+    process.env.OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE = "too-short";
+    assert.equal(hasFullReportAccess("too-short"), false);
+    assert.equal(accessSuffix("too-short"), "");
+  } finally {
+    for (const [name, value] of Object.entries(original)) {
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
+    }
+  }
 });
 
 test("recognizes only an active account-owned scan grant and fails closed for anonymous buyers", async () => {
@@ -98,6 +192,65 @@ test("accepts a paid Report session by exact server Price without a hardcoded am
   for (const session of rejected) {
     assert.equal(isMatchingPaidReportSession(session, SCAN_ID, PRICE_ID), false);
   }
+});
+
+test("production handoffs accept only live Checkout session objects", () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+  try {
+    process.env.NODE_ENV = "test";
+    assert.equal(isMatchingPaidReportSession(paidSession(), SCAN_ID, PRICE_ID), true);
+    assert.ok(
+      verifiedPaidSubscriptionCheckout(
+        paidSubscriptionSession(),
+        "buyer@example.com",
+        subscriptionPrices
+      )
+    );
+
+    process.env.NODE_ENV = "production";
+    assert.equal(isMatchingPaidReportSession(paidSession(), SCAN_ID, PRICE_ID), false);
+    assert.equal(
+      isMatchingPaidReportSession(
+        paidSession({ id: "cs_live_report123", livemode: true }),
+        SCAN_ID,
+        PRICE_ID
+      ),
+      true
+    );
+    assert.equal(
+      verifiedPaidSubscriptionCheckout(
+        paidSubscriptionSession({ livemode: true }),
+        "buyer@example.com",
+        subscriptionPrices
+      ),
+      null
+    );
+    assert.ok(
+      verifiedPaidSubscriptionCheckout(
+        paidSubscriptionSession({ id: "cs_live_subscription123", livemode: true }),
+        "buyer@example.com",
+        subscriptionPrices
+      )
+    );
+  } finally {
+    if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = originalNodeEnv;
+  }
+});
+
+test("production webhook persistence requires live event and object mode before billing writes", async () => {
+  const [config, persistence, migration] = await Promise.all([
+    readFile(new URL("../lib/payments/config.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/payments/persistence.ts", import.meta.url), "utf8"),
+    readFile(new URL("../db/stripe-live-mode-enforcement.sql", import.meta.url), "utf8")
+  ]);
+  assert.match(config, /requireLivemode/);
+  assert.match(persistence, /p_price_catalog: prices/);
+  assert.match(migration, /p_payload->'livemode' is distinct from 'true'::jsonb/);
+  assert.match(migration, /data,object,livemode/);
+  assert.match(migration, /\^cs_live_/);
+  assert.match(migration, /process_stripe_webhook_event_unchecked/);
+  assert.match(migration, /from public, anon, authenticated, service_role/);
 });
 
 test("checkout sends Report buyers to their report while subscriptions enter monitoring onboarding", async () => {

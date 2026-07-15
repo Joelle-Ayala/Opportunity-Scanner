@@ -72,6 +72,38 @@ test("monitoring schema is subscription-gated, leased, and private", async () =>
   assert.match(sql, /grant execute on function claim_due_monitored_profiles\(integer\) to service_role/);
 });
 
+test("customer monitoring setup is one rollback-safe production RPC", async () => {
+  const [migration, repository, route] = await Promise.all([
+    readFile(new URL("../db/monitoring-setup-transaction.sql", import.meta.url), "utf8"),
+    readFile(new URL("../lib/dashboard/repository.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/dashboard/searches/route.ts", import.meta.url), "utf8")
+  ]);
+  const createFunction = repository.slice(
+    repository.indexOf("export async function createMonitoredSearchFromScan"),
+    repository.indexOf("async function requireOwnedSavedSearch")
+  );
+
+  assert.match(migration, /create or replace function create_customer_monitored_search/);
+  assert.match(migration, /security definer/);
+  assert.match(migration, /from customer_accounts account[\s\S]*for update/);
+  assert.match(migration, /return jsonb_build_object\('error_code', 'PLAN_REQUIRED'\)/);
+  assert.match(migration, /return jsonb_build_object\('error_code', 'LIMIT_REACHED'\)/);
+  assert.match(migration, /return jsonb_build_object\('error_code', 'REPORT_NOT_ELIGIBLE'\)/);
+  assert.match(migration, /insert into customer_saved_searches/);
+  assert.match(migration, /insert into customer_saved_search_versions/);
+  assert.match(migration, /insert into monitored_profiles/);
+  assert.match(migration, /insert into customer_scan_saved_search_versions/);
+  assert.match(migration, /insert into customer_monitored_profile_ownership/);
+  assert.match(migration, /insert into customer_monitored_profile_saved_search_versions/);
+  assert.doesNotMatch(migration, /exception\s+when/i);
+
+  assert.match(createFunction, /supabaseRpc<MonitoringSetupRpcResult>\("create_customer_monitored_search"/);
+  assert.doesNotMatch(createFunction, /dashboardInsert|dashboardUpdate|Promise\.all/);
+  assert.match(route, /error\.code === "PLAN_REQUIRED"/);
+  assert.match(route, /searchErrorCode: error\.code/);
+  assert.match(route, /TEMPORARY_SETUP_FAILURE/);
+});
+
 test("customer scans and future scheduled scans share one pipeline", async () => {
   const [route, pipeline] = await Promise.all([
     readFile(new URL("../app/api/scans/route.ts", import.meta.url), "utf8"),
@@ -93,10 +125,21 @@ test("cron monitoring is secret-protected and writes durable run outcomes", asyn
   ]);
   assert.match(route, /process\.env\.CRON_SECRET/);
   assert.match(route, /timingSafeEqual/);
-  assert.match(route, /claimDueMonitoredProfiles\(1\)/);
+  assert.match(route, /DEFAULT_PROFILE_BATCH_SIZE = 3/);
+  assert.match(route, /MAX_PROFILE_BATCH_SIZE = 5/);
+  assert.match(route, /process\.env\.MONITORING_PROFILE_BATCH_SIZE/);
+  assert.match(route, /claimDueMonitoredProfiles\(profileBatchSize\(\)\)/);
+  assert.match(route, /Promise\.all\(profiles\.map\(processMonitoredProfile\)\)/);
   assert.match(route, /claimPendingMonitoringAlerts\(5\)/);
   assert.match(route, /executeScanPipeline\(scan\.id, input\)/);
   assert.match(route, /findNewMonitoringSignals/);
+  assert.match(route, /event: "cron\.monitoring\.summary"/);
+  assert.match(route, /const configurationFailed = !emailConfig \|\| !deadlineEmailConfig/);
+  assert.match(route, /configurationFailed \|\| storageFailed \? 503 : deliveryFailed \? 502 : 500/);
+  assert.match(route, /alertsDeadLettered \+= 1/);
+  assert.match(route, /deadlineAlertsDeadLettered \+= 1/);
+  assert.doesNotMatch(route, /claimPendingMonitoringAlerts\(5\)\.catch\(\(\) => \[\]\)/);
+  assert.doesNotMatch(route, /claimPendingDeadlineAlerts\(5\)\.catch\(\(\) => \[\]\)/);
   assert.match(storage, /record_monitoring_alerts/);
   assert.match(storage, /monitoringOpportunityKey/);
   assert.match(storage, /provider_message_id/);

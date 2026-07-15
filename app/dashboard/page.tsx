@@ -93,7 +93,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
   const billingSubscription = subscription || monitoringSubscriptions[0];
   const subscriptionStatus = billingStatusFor(billingSubscription);
   const activeMonitorCount = subscription ? summary.activeMonitorCount : 0;
-  if (subscription && searches.length === 0) redirect("/dashboard/onboarding");
+  const needsMonitoringSetup = Boolean(subscription && searches.length === 0);
 
   const subscriptionPlan = subscription?.product === "growth" ? "growth" : subscription?.product === "monitor" ? "monitor" : "none";
   const planName = billingSubscription?.product === "growth" ? "Growth" : billingSubscription?.product === "monitor" ? "Monitor" : "Report access";
@@ -174,11 +174,21 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
       {searchParams?.searchError ? <div role="alert" className="border-b border-red-200 bg-red-50 px-5 py-3 text-center text-sm font-semibold text-red-800">{searchParams.searchError}</div> : null}
       {searchParams?.alertNotice ? <div role="status" aria-live="polite" className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">{searchParams.alertNotice}</div> : null}
       {searchParams?.alertError ? <div role="alert" className="border-b border-red-200 bg-red-50 px-5 py-3 text-center text-sm font-semibold text-red-800">{searchParams.alertError}</div> : null}
+      {needsMonitoringSetup ? (
+        <div className="border-b border-amber-200 bg-amber-50 px-5 py-3 text-amber-950">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
+            <p role="status" aria-live="polite" className="text-sm font-semibold">Your plan is active, but monitoring setup is not complete yet.</p>
+            <a href="/dashboard/onboarding" className="rounded-md bg-ink px-3 py-2 text-sm font-semibold text-white hover:bg-accent">Continue setup</a>
+          </div>
+        </div>
+      ) : null}
       <CustomerDashboard
         title="Opportunity workspace"
         description="Reports, saved searches, monitoring changes, and billing in one place."
-        initialTab={searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError ? "alerts" : searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : "overview"}
-        primaryAction={<a href="/dashboard/new" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run new report</a>}
+        initialTab={searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError ? "alerts" : searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : searchParams?.tab === "billing" ? "billing" : "overview"}
+        primaryAction={needsMonitoringSetup
+          ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Continue setup</a>
+          : <a href="/dashboard/new" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run new report</a>}
         accountSlot={<form action="/api/auth/sign-out" method="post"><button className="text-sm font-semibold text-steel hover:text-accent">Sign out</button></form>}
         overview={{
           metrics: [

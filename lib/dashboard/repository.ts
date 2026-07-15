@@ -1,5 +1,6 @@
 import { dashboardInsert, dashboardSelect, dashboardSelectOne, dashboardUpdate, inFilter, pageParameters } from "./rest";
 import { loadEnrichmentCreditBalance } from "../enrichmentCredits";
+import { supabaseRpc } from "../supabaseRest";
 import type {
   CustomerAccountRecord,
   DashboardBillingState,
@@ -80,6 +81,44 @@ type SubscriptionRow = {
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const MONITORING_MANUAL_RUN_COOLDOWN_MS = 5 * 60_000;
+
+export type MonitoringSetupErrorCode =
+  | "AUTHENTICATION_REQUIRED"
+  | "PLAN_REQUIRED"
+  | "LIMIT_REACHED"
+  | "REPORT_NOT_ELIGIBLE"
+  | "TEMPORARY_SETUP_FAILURE";
+
+const MONITORING_SETUP_ELIGIBILITY_CODES = [
+  "AUTHENTICATION_REQUIRED",
+  "PLAN_REQUIRED",
+  "LIMIT_REACHED",
+  "REPORT_NOT_ELIGIBLE"
+] as const satisfies readonly MonitoringSetupErrorCode[];
+
+const MONITORING_SETUP_MESSAGES: Record<MonitoringSetupErrorCode, string> = {
+  AUTHENTICATION_REQUIRED: "Sign in again to set up monitoring.",
+  PLAN_REQUIRED: "An active Monitor or Growth plan is required.",
+  LIMIT_REACHED: "Your monitored profile limit has been reached.",
+  REPORT_NOT_ELIGIBLE: "Choose a completed report owned by this account that is not already monitored.",
+  TEMPORARY_SETUP_FAILURE: "Monitoring setup is temporarily unavailable. Your plan is still active; please try again."
+};
+
+export class MonitoringSetupError extends Error {
+  readonly code: MonitoringSetupErrorCode;
+  readonly cause?: unknown;
+
+  constructor(code: MonitoringSetupErrorCode, cause?: unknown) {
+    super(MONITORING_SETUP_MESSAGES[code]);
+    this.name = "MonitoringSetupError";
+    this.code = code;
+    this.cause = cause;
+  }
+}
+
+type MonitoringSetupRpcResult =
+  | { saved_search_id: string }
+  | { error_code: Exclude<MonitoringSetupErrorCode, "TEMPORARY_SETUP_FAILURE"> };
 
 export async function ensureCustomerAccount(authUserId: string, emailValue: string): Promise<CustomerAccountRecord> {
   if (!UUID_PATTERN.test(authUserId)) throw new Error("A valid authenticated user ID is required.");
@@ -180,56 +219,33 @@ export async function attachScanToCustomer(authUserId: string, scanId: string): 
 }
 
 export async function createMonitoredSearchFromScan(authUserId: string, scanId: string): Promise<string> {
-  const account = await requireAccount(authUserId);
-  if (!UUID_PATTERN.test(scanId)) throw new Error("A valid scan ID is required.");
-  const owned = await dashboardSelectOne<{ scan_id: string }>("customer_scan_ownership", {
-    select: "scan_id", customer_account_id: `eq.${account.id}`, scan_id: `eq.${scanId}`
-  });
-  if (!owned || !account.stripe_customer_id) throw new Error("A monitoring plan and owned report are required.");
-  const subscription = await dashboardSelectOne<SubscriptionRow>("stripe_subscriptions", {
-    select: "stripe_subscription_id,product,billing_interval,status,cancel_at_period_end,current_period_end",
-    stripe_customer_id: `eq.${account.stripe_customer_id}`,
-    status: "in.(active,trialing)",
-    order: "created_at.desc"
-  });
-  if (!subscription?.product) throw new Error("An active monitoring plan is required.");
-  const limit = subscription.product === "growth" ? 3 : 1;
-  const profiles = await ownedMonitoredProfiles(account.id);
-  if (profiles.filter((profile) => profile.status !== "canceled").length >= limit) throw new Error("Your monitored profile limit has been reached.");
-  const scan = await dashboardSelectOne<Record<string, unknown> & { company_name: string | null; company_url: string }>("scans", {
-    select: "company_name,company_url,industry,headquarters_state,target_states,customer_type,opportunity_focus,include_terms,exclude_terms,priority_signals",
-    id: `eq.${scanId}`
-  });
-  if (!scan) throw new Error("Report not found.");
-  const search = await dashboardInsert<{ id: string }>("customer_saved_searches", {
-    customer_account_id: account.id,
-    name: scan.company_name || new URL(scan.company_url).hostname.replace(/^www\./, ""),
-    status: "active"
-  });
-  if (!search) throw new Error("Saved search could not be created.");
-  const version = await dashboardInsert<{ id: string }>("customer_saved_search_versions", {
-    saved_search_id: search.id,
-    version: 1,
-    configuration: { companyUrl: scan.company_url, industry: scan.industry, headquartersState: scan.headquarters_state, targetStates: scan.target_states, customerType: scan.customer_type, opportunityFocus: scan.opportunity_focus, includeTerms: scan.include_terms, excludeTerms: scan.exclude_terms, prioritySignals: scan.priority_signals },
-    created_by_auth_user_id: authUserId
-  });
-  if (!version) throw new Error("Saved search version could not be created.");
-  await dashboardUpdate("customer_saved_searches", { id: `eq.${search.id}` }, { current_version_id: version.id, updated_at: new Date().toISOString() });
-  const profile = await dashboardInsert<{ id: string }>("monitored_profiles", {
-    stripe_customer_id: account.stripe_customer_id,
-    source_scan_id: scanId,
-    latest_scan_id: scanId,
-    cadence: subscription.product === "growth" ? "daily" : "weekly",
-    status: "active",
-    next_run_at: new Date().toISOString()
-  });
-  if (!profile) throw new Error("Monitored profile could not be created.");
-  await Promise.all([
-    dashboardInsert("customer_scan_saved_search_versions", { scan_id: scanId, saved_search_version_id: version.id }, { onConflict: "scan_id", ignoreDuplicates: true }),
-    dashboardInsert("customer_monitored_profile_ownership", { customer_account_id: account.id, monitored_profile_id: profile.id }, { onConflict: "monitored_profile_id", ignoreDuplicates: true }),
-    dashboardInsert("customer_monitored_profile_saved_search_versions", { monitored_profile_id: profile.id, saved_search_version_id: version.id })
-  ]);
-  return search.id;
+  if (!UUID_PATTERN.test(authUserId)) throw new MonitoringSetupError("AUTHENTICATION_REQUIRED");
+  if (!UUID_PATTERN.test(scanId)) throw new MonitoringSetupError("REPORT_NOT_ELIGIBLE");
+
+  let result: MonitoringSetupRpcResult;
+  try {
+    result = await supabaseRpc<MonitoringSetupRpcResult>("create_customer_monitored_search", {
+      p_auth_user_id: authUserId,
+      p_scan_id: scanId
+    });
+  } catch (error) {
+    throw new MonitoringSetupError("TEMPORARY_SETUP_FAILURE", error);
+  }
+
+  if (!result || typeof result !== "object") {
+    throw new MonitoringSetupError("TEMPORARY_SETUP_FAILURE");
+  }
+  if ("error_code" in result) {
+    const errorCode = result.error_code;
+    if (MONITORING_SETUP_ELIGIBILITY_CODES.includes(errorCode)) {
+      throw new MonitoringSetupError(errorCode);
+    }
+    throw new MonitoringSetupError("TEMPORARY_SETUP_FAILURE");
+  }
+  if (!UUID_PATTERN.test(result.saved_search_id)) {
+    throw new MonitoringSetupError("TEMPORARY_SETUP_FAILURE");
+  }
+  return result.saved_search_id;
 }
 
 async function requireOwnedSavedSearch(

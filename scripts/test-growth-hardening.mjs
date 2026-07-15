@@ -23,8 +23,6 @@ const required = [
   "SUPABASE_URL",
   "SUPABASE_ANON_KEY",
   "SUPABASE_SERVICE_ROLE_KEY",
-  "OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE",
-  "OPPORTUNITY_SCANNER_ADMIN_CODE",
   "APP_URL",
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
@@ -68,6 +66,7 @@ try {
   const configuredValues = Object.fromEntries(
     [...required, ...recommended].map((name, index) => [name, `private-value-${index}`])
   );
+  configuredValues.STRIPE_SECRET_KEY = "sk_live_growth_hardening";
   const configured = runPreflight(configuredValues);
   assert.equal(configured.status, 0, `Preflight should pass with required variables configured: ${configured.stderr}`);
 

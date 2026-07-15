@@ -4,7 +4,14 @@ export type StripeServerConfig = {
   secretKey: string;
   webhookSecret: string;
   appUrl: string;
-  prices: Record<"report" | "monitorMonthly" | "monitorAnnual" | "growthMonthly" | "growthAnnual", string>;
+  prices: StripePriceCatalog;
+};
+
+export type StripePriceCatalog = Record<
+  "report" | "monitorMonthly" | "monitorAnnual" | "growthMonthly" | "growthAnnual",
+  string
+> & {
+  requireLivemode: boolean;
 };
 
 export type BillingDatabaseConfig = {
@@ -47,10 +54,21 @@ function normalizedAppUrl(value: string): string {
   return url.toString().replace(/\/$/, "");
 }
 
+export function requiresLiveStripeObjects(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
 export function getStripeServerConfig(): StripeServerConfig {
   const env = requiredEnvironment(REQUIRED_STRIPE_ENV);
-  if (!env.STRIPE_SECRET_KEY.startsWith("sk_") || !env.STRIPE_WEBHOOK_SECRET.startsWith("whsec_")) {
+  const requireLivemode = requiresLiveStripeObjects();
+  if (
+    (!env.STRIPE_SECRET_KEY.startsWith("sk_test_") && !env.STRIPE_SECRET_KEY.startsWith("sk_live_")) ||
+    !env.STRIPE_WEBHOOK_SECRET.startsWith("whsec_")
+  ) {
     throw new Error("Stripe server credentials are invalid.");
+  }
+  if (requireLivemode && !env.STRIPE_SECRET_KEY.startsWith("sk_live_")) {
+    throw new Error("Production payments require a Stripe sk_live_* secret key.");
   }
   for (const name of REQUIRED_STRIPE_ENV.filter((item) => item.startsWith("STRIPE_PRICE_"))) {
     if (!env[name].startsWith("price_")) throw new Error(`${name} must be a Stripe Price ID.`);
@@ -64,7 +82,8 @@ export function getStripeServerConfig(): StripeServerConfig {
       monitorMonthly: env.STRIPE_PRICE_MONITOR_MONTHLY,
       monitorAnnual: env.STRIPE_PRICE_MONITOR_ANNUAL,
       growthMonthly: env.STRIPE_PRICE_GROWTH_MONTHLY,
-      growthAnnual: env.STRIPE_PRICE_GROWTH_ANNUAL
+      growthAnnual: env.STRIPE_PRICE_GROWTH_ANNUAL,
+      requireLivemode
     }
   };
 }

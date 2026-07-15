@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { createHmac } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { getStripeServerConfig, priceFor } from "../lib/payments/config.ts";
@@ -22,7 +23,8 @@ const ENV_NAMES = [
   "STRIPE_PRICE_GROWTH_MONTHLY",
   "STRIPE_PRICE_GROWTH_ANNUAL",
   "SUPABASE_URL",
-  "SUPABASE_SERVICE_ROLE_KEY"
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "NODE_ENV"
 ];
 const originalEnv = Object.fromEntries(ENV_NAMES.map((name) => [name, process.env[name]]));
 
@@ -74,6 +76,63 @@ test("fails closed when any required Stripe setting is absent or malformed", () 
   installTestEnv();
   process.env.STRIPE_PRICE_REPORT = "prod_report";
   assert.throws(() => getStripeServerConfig(), /STRIPE_PRICE_REPORT/);
+});
+
+test("requires live Stripe credentials only in production", () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+  try {
+    installTestEnv();
+    process.env.NODE_ENV = "test";
+    assert.equal(getStripeServerConfig().prices.requireLivemode, false);
+
+    process.env.NODE_ENV = "production";
+    assert.throws(() => getStripeServerConfig(), /sk_live_\*/);
+    process.env.STRIPE_SECRET_KEY = "sk_live_contract";
+    assert.equal(getStripeServerConfig().prices.requireLivemode, true);
+  } finally {
+    if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = originalNodeEnv;
+  }
+});
+
+test("launch environment rejects test credentials without requiring legacy URL codes", () => {
+  const launchEnv = {
+    ...process.env,
+    NODE_ENV: "production",
+    OPENAI_API_KEY: "openai-launch-test",
+    SUPABASE_URL: "https://database.example.test",
+    SUPABASE_ANON_KEY: "anon-launch-test",
+    SUPABASE_SERVICE_ROLE_KEY: "service-role-launch-test",
+    APP_URL: "https://scanner.example.test",
+    STRIPE_SECRET_KEY: "sk_test_launch",
+    STRIPE_WEBHOOK_SECRET: "whsec_launch",
+    STRIPE_PRICE_REPORT: "price_report",
+    STRIPE_PRICE_MONITOR_MONTHLY: "price_monitor_monthly",
+    STRIPE_PRICE_MONITOR_ANNUAL: "price_monitor_annual",
+    STRIPE_PRICE_GROWTH_MONTHLY: "price_growth_monthly",
+    STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual",
+    CRON_SECRET: "cron-launch-test",
+    RESEND_API_KEY: "resend-launch-test",
+    RESEND_FROM_EMAIL: "scanner@example.test",
+    ALERT_UNSUBSCRIBE_SECRET: "alert-launch-test",
+    NURTURE_UNSUBSCRIBE_SECRET: "nurture-launch-test",
+    SCAN_RATE_LIMIT_HASH_SECRET: "rate-limit-launch-test",
+    OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE: "",
+    OPPORTUNITY_SCANNER_ADMIN_CODE: "",
+    OPPORTUNITY_SCANNER_EMERGENCY_ENABLE_LEGACY_URL_ACCESS_CODES_IN_PRODUCTION: "false"
+  };
+  const runLaunchCheck = (secretKey) => spawnSync(process.execPath, ["scripts/check-launch-env.mjs"], {
+    cwd: process.cwd(),
+    env: { ...launchEnv, STRIPE_SECRET_KEY: secretKey },
+    encoding: "utf8"
+  });
+
+  const testMode = runLaunchCheck("sk_test_launch");
+  assert.equal(testMode.status, 1);
+  assert.match(`${testMode.stdout}${testMode.stderr}`, /must use an sk_live_\* key/);
+
+  const liveMode = runLaunchCheck("sk_live_launch");
+  assert.equal(liveMode.status, 0, `${liveMode.stdout}${liveMode.stderr}`);
 });
 
 test("accepts the one-time Report contract and normalizes identity fields", () => {

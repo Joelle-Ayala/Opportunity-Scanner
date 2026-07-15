@@ -135,6 +135,22 @@
       "prerequisites": ["v0003"],
       "sha256": "12ee49cfba04f116dda4e88c87282c6bc08127d765b89b28e98475d8839f044a",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0017",
+      "file": "db/monitoring-setup-transaction.sql",
+      "description": "Atomic customer monitoring setup with plan, capacity, report-ownership, and report-eligibility checks.",
+      "prerequisites": ["v0007", "v0009", "v0013"],
+      "sha256": "eb87219f3a8f744d67c8429d06346bb117031c18aa3a53e66c1c54e20f0034d7",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0018",
+      "file": "db/stripe-live-mode-enforcement.sql",
+      "description": "Production live-mode enforcement for Stripe webhook events and Checkout objects.",
+      "prerequisites": ["v0006"],
+      "sha256": "795c142326319f88e7579ebe72b7d810ac5b35e9fa6e9c989c6ed4a0a121b10d",
+      "requiredInProduction": true
     }
   ]
 }

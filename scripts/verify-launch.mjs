@@ -3,11 +3,13 @@ import { spawnSync } from "node:child_process";
 const checks = [
   ["TypeScript", ["./node_modules/typescript/bin/tsc", "--noEmit", "--incremental", "false"]],
   ["Security headers", ["scripts/test-security-headers.mjs"]],
+  ["Launch health", ["scripts/test-launch-health.mjs"]],
   ["Safe outbound URLs", ["--experimental-strip-types", "scripts/test-safe-outbound-urls.mts"]],
   ["Report scan states", ["scripts/test-report-scan-states.mjs"]],
   ["Payment contract", ["--experimental-strip-types", "scripts/test-payments-contract.mjs"]],
   ["Payment access", ["--experimental-strip-types", "scripts/test-payment-access.mjs"]],
   ["Subscription handoff", ["--experimental-strip-types", "scripts/test-subscription-checkout-handoff.mjs"]],
+  ["Anonymous subscription recovery", ["scripts/test-anonymous-subscription-checkout-recovery.mjs"]],
   ["Billing management", ["--experimental-strip-types", "scripts/test-billing-management.mjs"]],
   ["Customer entitlement", ["--experimental-strip-types", "scripts/test-customer-entitlement-contract.mjs"]],
   ["Paid customer journey", ["--experimental-strip-types", "scripts/test-paid-customer-journey.mjs"]],

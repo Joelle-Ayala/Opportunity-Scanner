@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { getEventListeners } from "node:events";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
@@ -67,11 +68,75 @@ test("Resend delivery is idempotent and includes visible and one-click unsubscri
 
   assert.equal(providerId, "email-123");
   assert.equal(request.url, "https://api.resend.com/emails");
+  assert.ok(request.init.signal instanceof AbortSignal);
   assert.equal(request.init.headers["Idempotency-Key"], "scan-nurture/job-123");
   assert.match(request.body.text, /12 months of access for the price of 10/);
   assert.match(request.body.text, /\/unsubscribe\?token=/);
   assert.match(request.body.headers["List-Unsubscribe"], /\/api\/nurture\/unsubscribe\?token=/);
   assert.equal(request.body.headers["List-Unsubscribe-Post"], "List-Unsubscribe=One-Click");
+});
+
+test("hung nurture delivery aborts within the monitoring delivery budget", async () => {
+  const config = {
+    apiKey: "re_test",
+    fromEmail: "hello@example.test",
+    appUrl: "https://scanner.example.test",
+    unsubscribeSecret: secret
+  };
+  const job = {
+    job_id: "job-timeout",
+    enrollment_id: "enrollment-timeout",
+    subscriber_id: subscriberId,
+    scan_id: "scan-timeout",
+    recipient_email: "customer@example.test",
+    touch_number: 1,
+    attempt_count: 1
+  };
+  let observedAbort = false;
+  const hungFetch = async (_url, init) => new Promise((_resolve, reject) => {
+    const signal = init?.signal;
+    assert.ok(signal instanceof AbortSignal);
+    const abort = () => {
+      observedAbort = true;
+      reject(signal.reason);
+    };
+    if (signal.aborted) abort();
+    else signal.addEventListener("abort", abort, { once: true });
+  });
+
+  await assert.rejects(
+    sendNurtureEmail(config, job, hungFetch, { timeoutMs: 20 }),
+    /Resend nurture delivery timed out after 20ms/
+  );
+  assert.equal(observedAbort, true);
+});
+
+test("nurture delivery removes caller abort listeners after completion", async () => {
+  const controller = new AbortController();
+  const config = {
+    apiKey: "re_test",
+    fromEmail: "hello@example.test",
+    appUrl: "https://scanner.example.test",
+    unsubscribeSecret: secret
+  };
+  const job = {
+    job_id: "job-cleanup",
+    enrollment_id: "enrollment-cleanup",
+    subscriber_id: subscriberId,
+    scan_id: "scan-cleanup",
+    recipient_email: "customer@example.test",
+    touch_number: 2,
+    attempt_count: 1
+  };
+
+  await sendNurtureEmail(
+    config,
+    job,
+    async () => Response.json({ id: "email-cleanup" }),
+    { signal: controller.signal, timeoutMs: 100 }
+  );
+
+  assert.equal(getEventListeners(controller.signal, "abort").length, 0);
 });
 
 test("migration provides transactional dedupe, leasing, retries, and durable suppression", async () => {
@@ -124,4 +189,9 @@ test("cron and environment configuration expose the isolated nurture runner", as
   assert.match(route, /process\.env\.CRON_SECRET/);
   assert.match(route, /timingSafeEqual/);
   assert.match(route, /claimDueNurtureJobs\(10\)/);
+  assert.match(route, /event: "cron\.nurture\.summary"/);
+  assert.match(route, /const status = ok \? 200 : storageFailed \? 503 : 502/);
+  assert.match(route, /status === "dead_letter"/);
+  assert.match(route, /status === "pending"/);
+  assert.match(route, /outcome: "configuration_error"/);
 });
