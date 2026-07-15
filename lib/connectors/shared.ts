@@ -1,4 +1,4 @@
-import { CompanyProfile, OpportunitySignal } from "../types";
+import type { CompanyProfile, OpportunitySignal } from "../types";
 
 const strongEvidenceTerms = [
   "education",
@@ -333,12 +333,17 @@ export function evidenceText(...parts: Array<string | undefined | null>): string
   return parts.filter(Boolean).join(" ").toLowerCase();
 }
 
+function containsWholeTerm(text: string, term: string): boolean {
+  const escaped = term.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`).test(text);
+}
+
 export function hasStrongEvidence(text: string): boolean {
-  return strongEvidenceTerms.some((term) => text.includes(term));
+  return strongEvidenceTerms.some((term) => containsWholeTerm(text, term));
 }
 
 export function hasNegativeEvidence(text: string): boolean {
-  return negativeEvidenceTerms.some((term) => text.includes(term));
+  return negativeEvidenceTerms.some((term) => containsWholeTerm(text, term));
 }
 
 export function hasProfileNegativeEvidence(profile: CompanyProfile, text: string): boolean {
@@ -349,7 +354,7 @@ export function hasProfileNegativeEvidence(profile: CompanyProfile, text: string
 }
 
 export function isInfrastructureSignal(text: string): boolean {
-  return infrastructureTerms.some((term) => text.includes(term));
+  return infrastructureTerms.some((term) => containsWholeTerm(text, term));
 }
 
 export function evidenceScore(text: string, query: string): number {
@@ -361,7 +366,7 @@ export function evidenceScore(text: string, query: string): number {
   }
 
   for (const term of strongEvidenceTerms) {
-    if (text.includes(term)) {
+    if (containsWholeTerm(text, term)) {
       score += 4;
     }
   }

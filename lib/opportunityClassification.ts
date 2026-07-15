@@ -1,6 +1,6 @@
 import { assessActionability, signalDate, signalLane } from "./actionability";
 import { contactTargetsForSignal } from "./contactTargeting";
-import { CompanyProfile, StoredOpportunitySignal } from "./types";
+import type { CompanyProfile, StoredOpportunitySignal } from "./types";
 
 export type EstimatedOpportunityType =
   | "active_opportunity"
@@ -133,6 +133,21 @@ function evidenceText(signal: StoredOpportunitySignal): string {
     .toLowerCase();
 }
 
+function sourceRecordText(signal: StoredOpportunitySignal): string {
+  return [
+    signal.external_evidence_summary,
+    signal.agency_or_funder,
+    signal.source_name,
+    typeof signal.raw_json?.title === "string" ? signal.raw_json.title : "",
+    typeof signal.raw_json?.Title === "string" ? signal.raw_json.Title : "",
+    typeof signal.raw_json?.["Opportunity Title"] === "string" ? signal.raw_json["Opportunity Title"] : "",
+    typeof signal.raw_json?.["Recipient Name"] === "string" ? signal.raw_json["Recipient Name"] : "",
+    typeof signal.raw_json?.recipient === "string" ? signal.raw_json.recipient : ""
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
 function playbookIds(profile?: CompanyProfile | null): string[] {
   return profile?.selected_playbooks?.map((playbook) => playbook.playbook_id) ?? [];
 }
@@ -156,29 +171,53 @@ function profileConfirmsSignal(signal: StoredOpportunitySignal, profile?: Compan
   return (profile.confirmed_opportunity_lanes ?? []).some((confirmed) => confirmed.toLowerCase().trim() === lane);
 }
 
-function isCreativeOnlyProfile(profile?: CompanyProfile | null): boolean {
-  const ids = playbookIds(profile);
-  return ids.includes("music_arts_creative_economy") && !ids.includes("education_workforce_training");
+function profileText(profile?: CompanyProfile | null): string {
+  if (!profile) return "";
+  return [
+    profile.company_name,
+    profile.website,
+    profile.summary,
+    ...(profile.products_services ?? []),
+    ...(profile.inferred_products_services ?? []),
+    ...(profile.target_customers ?? []),
+    ...(profile.inferred_target_customers ?? []),
+    ...(profile.industries ?? []),
+    ...(profile.keywords ?? []),
+    ...(profile.include_terms ?? [])
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
+function isCreativeCommerceProfile(profile?: CompanyProfile | null): boolean {
+  const text = profileText(profile);
+  return /jammcard|live music|music professional|musician services|artist booking|performer booking|event entertainment|performing artist|live entertainment/.test(
+    text
+  );
 }
 
 function isEducationWorkforceProfile(profile?: CompanyProfile | null): boolean {
   if (!profile) return false;
   const ids = playbookIds(profile);
-  if (ids.includes("education_workforce_training")) return true;
+  const text = profileText(profile);
 
-  const text = [
-    profile.company_name,
-    profile.summary,
-    ...(profile.industries ?? []),
-    ...(profile.keywords ?? []),
-    ...(profile.public_sector_search_terms ?? []),
-    ...(profile.opportunity_lanes ?? [])
-  ]
-    .join(" ")
-    .toLowerCase();
+  return (
+    ids.includes("education_workforce_training") &&
+    /schoolgig|teacher|teachers|educator|educators|substitute|teacher shortage|teacher recruitment|school staffing|school district hiring|education hiring|recruiting platform|job board|talent acquisition|applicant tracking/.test(
+      text
+    )
+  );
+}
 
-  return /schoolgig|teacher|teachers|educator|educators|substitute|teacher shortage|teacher recruitment|school staffing|school district hiring|hiring platform|recruiting|recruitment|job board|talent acquisition|applicant tracking/.test(
-    text
+function isHealthcareProductProfile(profile?: CompanyProfile | null): boolean {
+  if (!profile) return false;
+  const ids = playbookIds(profile);
+  const text = profileText(profile);
+  return (
+    ids.includes("healthcare_rehab_dme") &&
+    /reparel|durable medical equipment|\bdme\b|medical suppl|rehabilitation suppl|physical therapy suppl|orthotic|prosthetic|compression (?:garment|sleeve)|recovery sleeve|bracing/.test(
+      text
+    )
   );
 }
 
@@ -406,8 +445,8 @@ function creativeOnlyScreen(signal: StoredOpportunitySignal, profile?: CompanyPr
   path: string;
   reason: string;
 } | null {
-  if (!isCreativeOnlyProfile(profile)) return null;
-  const text = evidenceText(signal);
+  if (!isCreativeCommerceProfile(profile)) return null;
+  const text = sourceRecordText(signal);
   const deadline = sourceDeadline(signal);
   const liveMusicFit =
     /live music|music performance|musical performance|musician services|performer services|performing artist|artist booking|event entertainment|festival entertainment|concert|summer concert|public concerts|public event production|event production services|tourism|placemaking|parks recreation|parks and recreation|public event|cultural programming|downtown activation/.test(
@@ -471,16 +510,24 @@ function educationWorkforceScreen(signal: StoredOpportunitySignal, profile?: Com
   reason: string;
 } | null {
   if (!isEducationWorkforceProfile(profile)) return null;
-  const text = evidenceText(signal);
+  const text = sourceRecordText(signal);
   const deadline = sourceDeadline(signal);
-  const staffingOrHrPath =
-    /teacher|teachers|educator|educators|principal|principals|substitute teacher|teacher shortage|teacher recruitment|teacher residency|school staffing|educator workforce|school workforce|district workforce|school district recruiting|district recruiting|school hr|district hr|human resources|applicant tracking|job board|talent acquisition|recruiting platform|hiring platform|workforce hiring/.test(
+  const teacherWorkforcePath =
+    /substitute teacher|teacher shortage|teacher recruitment|teacher recruiting|teacher hiring|teacher staffing|teacher residency|educator workforce|educator recruitment|educator hiring|school workforce|district workforce|school district recruiting|district recruiting|school hr|district hr/.test(
       text
     );
+  const districtHrPath =
+    /school|school district|local educational agency|\blea\b|department of education|education agency|k-12/.test(text) &&
+    /recruiting|recruitment|hiring|staffing|human resources|\bhr\b|applicant tracking|job board|talent acquisition/.test(
+      text
+    );
+  const staffingOrHrPath = teacherWorkforcePath || districtHrPath;
   const schoolArtsStaffingPath =
-    /prop 28|proposition 28|teaching artist|teaching artists|artist educator|artist educators|school arts|arts education staffing|arts enrichment|expanded learning|vapa|visual and performing arts/.test(
+    /prop 28|proposition 28|teaching artist|teaching artists|artist educator|artist educators|school arts|arts education staffing|vapa/.test(
       text
-    );
+    ) ||
+    (/school|student|k-12|school district|local educational agency|\blea\b|expanded learning/.test(text) &&
+      /arts education|arts enrichment|visual and performing arts|music education/.test(text));
   const districtVendorPath =
     /school district|local educational agency|\blea\b|district procurement|district vendor|district contract|department of education procurement|education procurement/.test(
       text
@@ -496,9 +543,24 @@ function educationWorkforceScreen(signal: StoredOpportunitySignal, profile?: Com
     /literacy|reading|writing|dyslexia|students with disabilities|developmental delay|quality of instruction|achievement gaps|comprehensive center/.test(
       text
     );
+  const seniorPrimaryProgram =
+    /senior center|area seniors|older adults|creative aging|project on aging|aging program|elder services/.test(text);
+  const concreteSchoolWorkforcePath =
+    staffingOrHrPath ||
+    districtVendorPath ||
+    /teaching artist|teaching artists|artist educator|artist educators|prop 28|proposition 28|vapa/.test(text);
 
   if (deadline && deadline < CURRENT_SCAN_DATE) {
     return { show: false, path: "Expired or ended", reason: `This record ended on ${deadline}.` };
+  }
+
+  if (seniorPrimaryProgram && !concreteSchoolWorkforcePath) {
+    return {
+      show: false,
+      path: "Senior program, not a school workforce path",
+      reason:
+        "The source primarily serves seniors or older adults and does not show a concrete district, K-12 staffing, teacher recruitment, or teaching-artist route."
+    };
   }
 
   if (staffingOrHrPath || schoolArtsStaffingPath || districtVendorPath) {
@@ -536,6 +598,40 @@ function educationWorkforceScreen(signal: StoredOpportunitySignal, profile?: Com
   };
 }
 
+function healthcareProductScreen(signal: StoredOpportunitySignal, profile?: CompanyProfile | null): {
+  show: boolean;
+  path: string;
+  reason: string;
+} | null {
+  if (!isHealthcareProductProfile(profile)) return null;
+  const text = sourceRecordText(signal);
+  const deadline = sourceDeadline(signal);
+  const productFit =
+    /durable medical equipment|dmepos|\bdme\b|medical supplies?|rehabilitation supplies?|physical therapy supplies?|orthotic|prosthetic|compression (?:garment|sleeve)|recovery sleeve|bracing|assistive device/.test(
+      text
+    ) ||
+    (/veterans affairs|\bva\b|visn/.test(text) &&
+      /medical supplies?|rehabilitation|\bdme\b|orthotic|prosthetic|recovery|bracing|assistive device/.test(text));
+
+  if (deadline && deadline < CURRENT_SCAN_DATE) {
+    return { show: false, path: "Expired or ended", reason: `This record ended on ${deadline}.` };
+  }
+  if (!productFit) {
+    return {
+      show: false,
+      path: "No clear medical-product fit",
+      reason:
+        "The official source does not clearly connect to DME, medical or rehabilitation supplies, orthotics, prosthetics, recovery products, or a relevant VA channel."
+    };
+  }
+  return {
+    show: true,
+    path: "Clear medical-product path",
+    reason:
+      "The official source directly references a medical, rehabilitation, DME, orthotics, prosthetics, recovery-product, or VA purchasing path."
+  };
+}
+
 export function classifyOpportunity(
   signal: StoredOpportunitySignal,
   profile?: CompanyProfile | null
@@ -555,14 +651,17 @@ export function classifyOpportunity(
   const score = Math.min(100, actionabilityScore(signal, type, time) + (profileConfirmsSignal(signal, profile) ? 8 : 0));
   const educationScreen = educationWorkforceScreen(signal, profile);
   const creativeScreen = creativeOnlyScreen(signal, profile);
+  const healthcareScreen = healthcareProductScreen(signal, profile);
   const genericShow = actionability.actionability !== "unlikely" && time !== "expired" && type !== "source_route";
   const rejectedByProfile = profileRejectsSignal(signal, profile);
   const show = rejectedByProfile
     ? false
     : educationScreen
-    ? educationScreen.show
+    ? educationScreen.show && genericShow
     : creativeScreen
-    ? creativeScreen.show
+    ? creativeScreen.show && genericShow
+    : healthcareScreen
+    ? healthcareScreen.show && genericShow
     : genericShow;
   const workflowStatus = show
     ? workflow
@@ -586,10 +685,10 @@ export function classifyOpportunity(
     show_in_report: show,
     screening_path: rejectedByProfile
       ? "Rejected by profile feedback"
-      : educationScreen?.path || creativeScreen?.path || (show ? "Move forward" : "Screened out"),
+      : educationScreen?.path || creativeScreen?.path || healthcareScreen?.path || (show ? "Move forward" : "Screened out"),
     screening_reason: rejectedByProfile
       ? "This signal matches profile feedback that the user asked to exclude."
-      : educationScreen?.reason || creativeScreen?.reason || (show ? actionability.reason : actionability.reason),
+      : educationScreen?.reason || creativeScreen?.reason || healthcareScreen?.reason || actionability.reason,
     next_best_action: nextAction,
     contact_strategy: strategy,
     recommended_contact_roles: roles,

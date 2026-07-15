@@ -1,4 +1,4 @@
-import { StoredOpportunitySignal } from "./types";
+import type { StoredOpportunitySignal } from "./types";
 
 const CURRENT_ACTION_DATE = new Date().toISOString().slice(0, 10);
 

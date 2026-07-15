@@ -1,6 +1,6 @@
 import { classifyOpportunity } from "./opportunityClassification";
 import { resolvePrimaryTargetForSignal } from "./organizationResolution";
-import { CompanyProfile, NormalizedOpportunityAction, OpportunitySignal, StoredOpportunitySignal } from "./types";
+import type { CompanyProfile, NormalizedOpportunityAction, OpportunitySignal, StoredOpportunitySignal } from "./types";
 
 function targetOrganization(signal: OpportunitySignal): string {
   return signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review";
@@ -57,6 +57,10 @@ export function opportunityActionFor(
   signal: OpportunitySignal | StoredOpportunitySignal,
   profile?: CompanyProfile | null
 ): NormalizedOpportunityAction {
+  if (profile) {
+    return normalizeOpportunityAction(signal, profile);
+  }
+
   if (hasNormalizedAction(signal.normalized_action)) {
     return signal.normalized_action;
   }

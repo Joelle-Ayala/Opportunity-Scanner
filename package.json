@@ -27,6 +27,8 @@
     "test:workflow": "node --experimental-strip-types scripts/test-workflow-contract.mjs",
     "test:safe-outbound": "node --experimental-strip-types scripts/test-safe-outbound-urls.mts",
     "test:report-states": "node scripts/test-report-scan-states.mjs",
+    "test:report-text": "node --experimental-strip-types scripts/test-report-text.mts",
+    "test:demo-report-relevance": "node --experimental-strip-types --import ./scripts/register-ts-test-hooks.mjs scripts/test-demo-report-relevance.mts",
     "test:monitoring": "node --experimental-strip-types scripts/test-monitoring-contract.mjs",
     "test:deadline-alerts": "node --experimental-strip-types scripts/test-deadline-alerts.mjs",
     "test:nurture": "node --experimental-strip-types scripts/test-scan-nurture.mjs",

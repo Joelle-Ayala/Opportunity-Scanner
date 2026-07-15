@@ -27,6 +27,7 @@ import {
   sourceTypeLabel
 } from "@/lib/workflowPayload";
 import { configuredSupportEmail } from "@/lib/support";
+import { sourceEvidenceText } from "@/lib/reportText";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -320,7 +321,9 @@ function buildExecutiveSummary(signals: StoredOpportunitySignal[], profile?: Com
 
   return {
     best,
-    topSignalPattern: best ? best.external_evidence_summary : "No sourced pattern yet.",
+    topSignalPattern: best
+      ? sourceEvidenceText(best.external_evidence_summary, opportunityHeadline(best), 420)
+      : "No sourced pattern yet.",
     topLane,
     confidence,
     bestNextAction: best ? opportunityActionFor(best, profile).next_best_action : "Run a broader scan or review source coverage."
@@ -773,7 +776,9 @@ function OpportunityDetail({
         </div>
         <div>
           <h3 className="text-sm font-semibold text-ink">Source-backed evidence</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-700">{signal.external_evidence_summary}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">
+            {sourceEvidenceText(signal.external_evidence_summary, opportunityHeadline(signal), 640)}
+          </p>
           {isPaid ? (
             <a href={signal.source_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-semibold text-accent">
               Open source record
@@ -996,7 +1001,9 @@ function OpportunitySignalCard({
         <Badge>{signalLane(signal)}</Badge>
       </div>
       <h3 className="mt-4 text-lg font-semibold leading-7 text-ink">{opportunityHeadline(signal)}</h3>
-      <p className="mt-3 text-sm leading-6 text-slate-700">{signal.external_evidence_summary}</p>
+      <p className="mt-3 text-sm leading-6 text-slate-700">
+        {sourceEvidenceText(signal.external_evidence_summary, opportunityHeadline(signal), 520)}
+      </p>
       <div className="mt-4 grid gap-3 text-sm md:grid-cols-3">
         <p><span className="font-semibold text-ink">Target:</span> {signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review"}</p>
         <p><span className="font-semibold text-ink">Contact path:</span> {classificationLabel(classification.contact_strategy)}</p>
@@ -1534,8 +1541,7 @@ export default async function ReportPage({
         opportunityActionFor(b, profile).actionability_score -
         opportunityActionFor(a, profile).actionability_score
     );
-  const fallbackSignals = signals.slice(0, 6);
-  const reportSignals = moveForwardSignals.length > 0 ? moveForwardSignals : fallbackSignals;
+  const reportSignals = moveForwardSignals;
   const visibleCount = isPaid ? reportSignals.length : visibleSignalCount(reportSignals.length);
   const displayedSignals = reportSignals.slice(0, visibleCount);
   const lockedSignals = reportSignals.slice(visibleCount);

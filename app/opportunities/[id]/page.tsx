@@ -16,6 +16,7 @@ import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { OpportunityEnrichmentRequestRecord, StoredOpportunitySignal } from "@/lib/types";
 import { resolveRequestReportAccess } from "@/lib/payments/requestAccess";
 import { configuredSupportEmail } from "@/lib/support";
+import { sourceEvidenceText } from "@/lib/reportText";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 
 export const dynamic = "force-dynamic";
@@ -487,7 +488,9 @@ export default async function OpportunityPage({
             <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
               Source Evidence
             </h2>
-            <p className="mt-3 text-sm leading-6 text-slate-700">{signal.external_evidence_summary}</p>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              {sourceEvidenceText(signal.external_evidence_summary, opportunityHeadline(signal), 720)}
+            </p>
             <div className="mt-4 grid gap-3 text-sm leading-6 text-slate-700 md:grid-cols-2">
               <p>
                 <span className="font-semibold text-ink">Source type:</span>{" "}

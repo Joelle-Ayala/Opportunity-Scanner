@@ -6,6 +6,16 @@ const checks = [
   ["Launch health", ["scripts/test-launch-health.mjs"]],
   ["Safe outbound URLs", ["--experimental-strip-types", "scripts/test-safe-outbound-urls.mts"]],
   ["Report scan states", ["scripts/test-report-scan-states.mjs"]],
+  ["Report source text", ["--experimental-strip-types", "scripts/test-report-text.mts"]],
+  [
+    "Demo report relevance",
+    [
+      "--experimental-strip-types",
+      "--import",
+      "./scripts/register-ts-test-hooks.mjs",
+      "scripts/test-demo-report-relevance.mts"
+    ]
+  ],
   ["Payment contract", ["--experimental-strip-types", "scripts/test-payments-contract.mjs"]],
   ["Stripe catalog preflight", ["--experimental-strip-types", "scripts/test-stripe-catalog-preflight.mjs"]],
   ["Payment access", ["--experimental-strip-types", "scripts/test-payment-access.mjs"]],

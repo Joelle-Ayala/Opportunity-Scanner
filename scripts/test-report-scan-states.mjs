@@ -105,6 +105,12 @@ assert.match(pageEntry, /sourceMatches: signals\.length/);
 assert.match(pageEntry, /actionTableRows: reportSignals\.length/);
 assert.match(pageEntry, /shownRows: displayedSignals\.length/);
 assert.match(pageEntry, /lockedRows: lockedSignals\.length/);
+assert.match(pageEntry, /const reportSignals = moveForwardSignals;/);
+assert.doesNotMatch(
+  pageEntry,
+  /fallbackSignals|moveForwardSignals\.length > 0/,
+  "A report with no qualified rows must show the truthful empty state instead of unrelated fallback results"
+);
 assert.match(
   reportPage,
   /rows shown plus rows locked equal the action-table total/,

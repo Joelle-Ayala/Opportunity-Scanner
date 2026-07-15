@@ -1,4 +1,4 @@
-import { CompanyProfile, OpportunitySignal } from "../types";
+import type { CompanyProfile, OpportunitySignal } from "../types";
 import {
   clampScore,
   collectSearchTerms,
@@ -100,7 +100,7 @@ function isEducationGrantMismatch(text: string): boolean {
 }
 
 function isCreativeGrantFit(text: string): boolean {
-  return /arts|artist|artists|creative|cultural|culture|music|musician|performing arts|performance|festival|concert|talent program|public diplomacy|cultural affairs|creative tech|nea grants/.test(text);
+  return /\barts?\b|\bartists?\b|\bcreative\b|\bcultural\b|\bculture\b|\bmusic\b|\bmusicians?\b|performing arts|\bperformance\b|\bfestival\b|\bconcert\b|talent program|public diplomacy|cultural affairs|creative tech|nea grants/.test(text);
 }
 
 function isCreativeGrantMismatch(text: string): boolean {

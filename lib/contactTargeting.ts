@@ -1,4 +1,4 @@
-import { StoredOpportunitySignal } from "./types";
+import type { StoredOpportunitySignal } from "./types";
 import { signalLane } from "./actionability";
 
 export type ContactTarget = {
