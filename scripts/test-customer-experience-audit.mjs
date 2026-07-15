@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 import { safeSameOriginRedirect } from "../lib/customer-auth/redirect.ts";
+import { workspaceCompanyFor } from "../lib/dashboard/workspace-identity.ts";
 
 const ROOT = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, ROOT), "utf8");
@@ -33,6 +34,7 @@ assert.match(dashboard, />Set up monitoring<\/a>/);
 assert.match(dashboard, />View monitoring plans<\/a>/);
 assert.match(dashboard, /Pick up where you left off/);
 assert.match(dashboard, /latestReadyReport/);
+assert.match(dashboard, /workspaceCompanyFor\(session\.user\.email, reportRows\)/);
 assert.match(dashboard, />Open report<\/DashboardActionLink>/);
 assert.match(dashboard, />Refresh report<\/DashboardActionLink>/);
 assert.match(dashboard, /label: "Full reports"/);
@@ -61,6 +63,17 @@ assert.match(signIn, /const nextPath = searchParams\?\.next \|\| "\/dashboard"/)
 assert.match(signInRoute, /safeSameOriginRedirect\(String\(form\.get\("next"\) \|\| ""\), config\.appOrigin\)/);
 assert.equal(safeSameOriginRedirect("/reports/scan-123", "https://scanner.example.test", "/dashboard"), "/reports/scan-123");
 assert.equal(safeSameOriginRedirect("https://attacker.example/collect", "https://scanner.example.test", "/dashboard"), "/dashboard");
+
+const mixedDemoReports = [
+  { companyName: "Jammcard", companyUrl: "https://jammcard.com", status: "ready" },
+  { companyName: "SchoolGig", companyUrl: "https://schoolgig.us", status: "ready" }
+];
+assert.equal(workspaceCompanyFor("joelle@schoolgig.us", mixedDemoReports), "SchoolGig");
+assert.equal(workspaceCompanyFor("joelle@reparel.com", [
+  ...mixedDemoReports,
+  { companyName: "Reparel", companyUrl: "https://reparel.com", status: "ready" }
+]), "Reparel");
+assert.equal(workspaceCompanyFor("founder@gmail.com", mixedDemoReports), "Jammcard");
 
 assert.match(dashboardLoading, /aria-label="Loading customer workspace"/);
 assert.match(reportLoading, /aria-label="Loading opportunity report"/);

@@ -12,6 +12,7 @@ import {
   loadDashboardSavedSearches,
   loadDashboardSummary
 } from "@/lib/dashboard/repository";
+import { workspaceCompanyFor } from "@/lib/dashboard/workspace-identity";
 import { loadCustomerAlertPreferences } from "@/lib/deadlineAlerts/preferences";
 
 export const dynamic = "force-dynamic";
@@ -139,7 +140,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
   }));
   const latestReadyReport = reportRows.find((report) => report.status === "ready" && report.href);
   const fullReportCount = reportRows.filter((report) => report.reportType === "Full report").length;
-  const workspaceCompany = latestReadyReport?.companyName;
+  const workspaceCompany = workspaceCompanyFor(session.user.email, reportRows);
   const searchRows: MonitoredSearchRow[] = searches.map((search) => ({
     id: search.id,
     name: search.name,
