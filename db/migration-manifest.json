@@ -151,6 +151,22 @@
       "prerequisites": ["v0006"],
       "sha256": "795c142326319f88e7579ebe72b7d810ac5b35e9fa6e9c989c6ed4a0a121b10d",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0019",
+      "file": "db/scan-nurture-enrollment-ambiguity-fix.sql",
+      "description": "Resolve PL/pgSQL output-column ambiguity when enrolling completed scans in the nurture sequence.",
+      "prerequisites": ["v0004"],
+      "sha256": "1107275d6116d735a1609581eda9812c13beb3ddefe9f14810a3a346141dd8ca",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0020",
+      "file": "db/stripe-report-access-revocation.sql",
+      "description": "Derive authenticated one-time report access from active Stripe grants while preserving manual and demo access.",
+      "prerequisites": ["v0015"],
+      "sha256": "7dfbab7e0a53387b76351149aa8531b335017a48cb66e8f708490c304b81ce97",
+      "requiredInProduction": true
     }
   ]
 }

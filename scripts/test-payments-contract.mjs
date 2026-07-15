@@ -22,6 +22,7 @@ const ENV_NAMES = [
   "STRIPE_PRICE_MONITOR_ANNUAL",
   "STRIPE_PRICE_GROWTH_MONTHLY",
   "STRIPE_PRICE_GROWTH_ANNUAL",
+  "ENABLE_SUBSCRIPTION_CHECKOUT",
   "SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY",
   "NODE_ENV"
@@ -37,7 +38,8 @@ function installTestEnv() {
     STRIPE_PRICE_MONITOR_MONTHLY: "price_monitor_monthly_server",
     STRIPE_PRICE_MONITOR_ANNUAL: "price_monitor_annual_server",
     STRIPE_PRICE_GROWTH_MONTHLY: "price_growth_monthly_server",
-    STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual_server"
+    STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual_server",
+    ENABLE_SUBSCRIPTION_CHECKOUT: "true"
   });
 }
 
@@ -78,6 +80,20 @@ test("fails closed when any required Stripe setting is absent or malformed", () 
   assert.throws(() => getStripeServerConfig(), /STRIPE_PRICE_REPORT/);
 });
 
+test("allows Report-only configuration while subscription checkout defaults closed", () => {
+  installTestEnv();
+  process.env.ENABLE_SUBSCRIPTION_CHECKOUT = "false";
+  delete process.env.STRIPE_PRICE_MONITOR_MONTHLY;
+  delete process.env.STRIPE_PRICE_MONITOR_ANNUAL;
+  delete process.env.STRIPE_PRICE_GROWTH_MONTHLY;
+  delete process.env.STRIPE_PRICE_GROWTH_ANNUAL;
+
+  const config = getStripeServerConfig();
+  assert.equal(config.subscriptionCheckoutEnabled, false);
+  assert.equal(priceFor(config, "report", null), "price_report_server");
+  assert.throws(() => priceFor(config, "monitor", "monthly"), /Subscription checkout is disabled/);
+});
+
 test("requires live Stripe credentials only in production", () => {
   const originalNodeEnv = process.env.NODE_ENV;
   try {
@@ -111,19 +127,23 @@ test("launch environment rejects test credentials without requiring legacy URL c
     STRIPE_PRICE_MONITOR_ANNUAL: "price_monitor_annual",
     STRIPE_PRICE_GROWTH_MONTHLY: "price_growth_monthly",
     STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual",
+    ENABLE_SUBSCRIPTION_CHECKOUT: "false",
     CRON_SECRET: "cron-launch-test",
     RESEND_API_KEY: "resend-launch-test",
     RESEND_FROM_EMAIL: "scanner@example.test",
+    OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@example.test",
     ALERT_UNSUBSCRIBE_SECRET: "alert-launch-test",
     NURTURE_UNSUBSCRIBE_SECRET: "nurture-launch-test",
     SCAN_RATE_LIMIT_HASH_SECRET: "rate-limit-launch-test",
+    NEXT_PUBLIC_POSTHOG_KEY: "posthog-launch-test",
+    NEXT_PUBLIC_POSTHOG_HOST: "https://analytics.example.test",
     OPPORTUNITY_SCANNER_REPORT_ACCESS_CODE: "",
     OPPORTUNITY_SCANNER_ADMIN_CODE: "",
     OPPORTUNITY_SCANNER_EMERGENCY_ENABLE_LEGACY_URL_ACCESS_CODES_IN_PRODUCTION: "false"
   };
-  const runLaunchCheck = (secretKey) => spawnSync(process.execPath, ["scripts/check-launch-env.mjs"], {
+  const runLaunchCheck = (secretKey, overrides = {}) => spawnSync(process.execPath, ["scripts/check-launch-env.mjs"], {
     cwd: process.cwd(),
-    env: { ...launchEnv, STRIPE_SECRET_KEY: secretKey },
+    env: { ...launchEnv, STRIPE_SECRET_KEY: secretKey, ...overrides },
     encoding: "utf8"
   });
 
@@ -133,6 +153,21 @@ test("launch environment rejects test credentials without requiring legacy URL c
 
   const liveMode = runLaunchCheck("sk_live_launch");
   assert.equal(liveMode.status, 0, `${liveMode.stdout}${liveMode.stderr}`);
+
+  const missingSubscriptionPrices = runLaunchCheck("sk_live_launch", {
+    ENABLE_SUBSCRIPTION_CHECKOUT: "true",
+    STRIPE_PRICE_GROWTH_ANNUAL: ""
+  });
+  assert.equal(missingSubscriptionPrices.status, 1);
+  assert.match(
+    `${missingSubscriptionPrices.stdout}${missingSubscriptionPrices.stderr}`,
+    /requires all Monitor and Growth Stripe Price IDs/
+  );
+
+  const enabledSubscriptions = runLaunchCheck("sk_live_launch", {
+    ENABLE_SUBSCRIPTION_CHECKOUT: "true"
+  });
+  assert.equal(enabledSubscriptions.status, 0, `${enabledSubscriptions.stdout}${enabledSubscriptions.stderr}`);
 });
 
 test("accepts the one-time Report contract and normalizes identity fields", () => {
@@ -228,6 +263,28 @@ test("rejects anonymous subscription checkout before creating a Stripe session",
 
   assert.equal(response.status, 401);
   assert.equal((await response.json()).error.code, "AUTHENTICATION_REQUIRED");
+  assert.equal(checkoutSessions, 0);
+});
+
+test("rejects subscription checkout before auth or Stripe when the launch flag is closed", async () => {
+  installTestEnv();
+  process.env.ENABLE_SUBSCRIPTION_CHECKOUT = "false";
+  let checkoutSessions = 0;
+  const request = new Request("https://scanner.example.test/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(checkout({ plan: "growth", billingInterval: "annual", scanId: undefined }))
+  });
+  const response = await dispatchCheckoutWithEligibility(request, "growth", null, null, {
+    checkout: async () => {
+      checkoutSessions += 1;
+      return Response.json({ ok: true }, { status: 201 });
+    },
+    billingPortal: async () => Response.json({ ok: true }, { status: 201 })
+  });
+
+  assert.equal(response.status, 403);
+  assert.equal((await response.json()).error.code, "PLAN_UNAVAILABLE");
   assert.equal(checkoutSessions, 0);
 });
 

@@ -16,13 +16,14 @@ This is a controlled paid-launch test, not a broad public launch. Use founder-ap
 
 - A free scan produces a limited report with real opportunity signals.
 - A $49 one-time Report is purchased from an existing free report so the paid grant stays tied to the correct scan.
-- Monitor is $99 per month or $990 per year and includes one weekly monitored company profile.
-- Growth is $249 per month or $2,490 per year and includes up to three daily monitored company profiles.
+- Monitor is $99 per month or $990 per year and includes one weekly monitored company profile when subscription checkout is explicitly enabled.
+- Growth is $249 per month or $2,490 per year and includes up to three daily monitored company profiles when subscription checkout is explicitly enabled.
 - One-time Report checkout may start before sign-in; the buyer must complete magic-link sign-in to claim durable account-owned access after payment.
 - Monitor and Growth require a verified Supabase Auth session before Stripe Checkout.
 - Production accepts only live Stripe credentials, live Checkout sessions, and live webhook objects.
 - Paid access is resolved server-side from account ownership, report grants, or active monitoring entitlement. Legacy URL access codes are disabled in production unless the explicit emergency override is enabled.
 - If Stripe is incomplete, the product keeps the free scan available and presents paid checkout as temporarily unavailable.
+- Production defaults to Report-only checkout. Monitor and Growth must remain unavailable unless `ENABLE_SUBSCRIPTION_CHECKOUT=true` and all four subscription Price IDs are configured.
 
 ## Entry Gates
 
@@ -88,7 +89,7 @@ Pass when payment, webhook fulfillment, account ownership, report-scoped access,
 
 ### 4. Subscription Purchase And Monitoring
 
-Run this pass only if Monitor or Growth will be available to customers at launch.
+Run this pass only if Monitor or Growth will be available to customers at launch. Before the pass, confirm `ENABLE_SUBSCRIPTION_CHECKOUT=true`, all four subscription Price IDs are configured, and `GET /api/health` reports `ready.subscriptionCheckout: true`.
 
 1. Sign in before checkout and purchase the approved monthly or annual plan.
 2. Confirm the active subscription appears in Stripe and the customer's dashboard.
@@ -127,6 +128,8 @@ The Project Management Agent records:
 
 Do not place card data, secret values, magic links, auth tokens, webhook signatures, or service-role credentials in the evidence package.
 
+`/api/health` does not query migration-manifest/ledger parity. Treat its database status as configuration readiness only and attach a separately verified parity result to the evidence package.
+
 ## Go Criteria
 
 - All entry gates pass on the exact deployed release.
@@ -156,8 +159,8 @@ Do not place card data, secret values, magic links, auth tokens, webhook signatu
 
 The Chief of Staff Agent summarizes the evidence and recommends one of three decisions:
 
-- **Go - Report only:** accept controlled $49 Report purchases; keep subscriptions out of promotion until monitoring capacity passes.
-- **Go - Paid plans:** accept Report, Monitor, and Growth purchases within the verified capacity and support window.
+- **Go - Report only:** accept one-time Report purchases while Monitor and Growth remain visibly unavailable and the checkout API rejects both subscription plans.
+- **Go - Paid plans:** accept Report, Monitor, and Growth purchases only after subscription capacity, operations, and `ready.subscriptionCheckout` are verified.
 - **No-go:** stop new paid traffic, execute the rollback section of the runbook, assign blockers, and repeat the failed pass.
 
 ## Definition Of Done

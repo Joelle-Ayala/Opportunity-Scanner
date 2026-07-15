@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { OpportunityScannerLogo } from "@/components/brand";
+import { resolveVerifiedReportCheckoutSignIn } from "@/lib/payments/access";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sign In",
@@ -15,7 +18,20 @@ const messages: Record<string, { tone: string; text: string }> = {
   "expired-link": { tone: "border-red-200 bg-red-50 text-red-700", text: "That sign-in link expired or was already used. Request a new one below." }
 };
 
-export default function SignInPage({
+function purchaseSupportHref(scanId: string): string {
+  const supportEmail = process.env.OPPORTUNITY_SCANNER_CONTACT_EMAIL || "hello@opportunitysystems.ai";
+  const subject = "Help accessing a purchased Opportunity Scanner report";
+  const body = [
+    "Hi Opportunity Systems,",
+    "",
+    "The email shown for my Report purchase does not look right. Please help me recover access safely.",
+    "",
+    `Report ID: ${scanId}`
+  ].join("\n");
+  return `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+export default async function SignInPage({
   searchParams
 }: {
   searchParams?: { error?: string; status?: string; next?: string };
@@ -24,6 +40,7 @@ export default function SignInPage({
   const emailSent = searchParams?.status === "email-sent";
   const signedOut = searchParams?.status === "signed-out";
   const nextPath = searchParams?.next || "/dashboard";
+  const checkoutRecovery = await resolveVerifiedReportCheckoutSignIn(nextPath);
 
   return (
     <main className="min-h-screen bg-field">
@@ -66,6 +83,22 @@ export default function SignInPage({
           ) : null}
           {error ? <div className={`mt-5 rounded-md border px-4 py-3 text-sm leading-6 ${error.tone}`} role="alert">{error.text}</div> : null}
 
+          {checkoutRecovery ? (
+            <div className="mt-5 rounded-md border border-cyan-100 bg-mist px-4 py-3 text-sm leading-6 text-steel" role="status">
+              <p className="font-semibold text-ink">Continue with your checkout email</p>
+              <p className="mt-1">
+                We verified and prefilled the email tied to this Report purchase. Use it to connect the payment to your report.
+              </p>
+              <p className="mt-2">
+                Does this address look wrong?{" "}
+                <a href={purchaseSupportHref(checkoutRecovery.scanId)} className="font-semibold text-accent hover:text-[#0A6871]">
+                  Contact support
+                </a>{" "}
+                so we can verify the purchase safely.
+              </p>
+            </div>
+          ) : null}
+
           <form action="/api/auth/sign-in" method="post" className="mt-6 grid gap-4">
             <input type="hidden" name="next" value={nextPath} />
             <label className="grid gap-2">
@@ -76,8 +109,10 @@ export default function SignInPage({
                 inputMode="email"
                 name="email"
                 type="email"
+                defaultValue={checkoutRecovery?.checkoutEmail}
+                readOnly={Boolean(checkoutRecovery)}
                 placeholder="you@company.com"
-                className="min-h-12 rounded-md border border-line bg-white px-3 py-3 text-ink outline-none placeholder:text-slate-400 focus:border-accent"
+                className="min-h-12 rounded-md border border-line bg-white px-3 py-3 text-ink outline-none placeholder:text-slate-400 read-only:bg-slate-50 read-only:text-steel focus:border-accent"
               />
             </label>
             <button type="submit" className="min-h-12 rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">

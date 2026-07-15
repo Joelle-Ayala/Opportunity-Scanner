@@ -84,6 +84,26 @@ export function CheckoutButton({
     }
   }, [initialBillingInterval, plan, resumeCheckout]);
 
+  if (!checkoutEnabled && plan !== "report") {
+    return (
+      <div className="mt-5 border-t border-current/15 pt-4">
+        <p
+          aria-disabled="true"
+          className={`flex min-h-11 w-full items-center justify-center rounded-md border px-4 py-3 text-sm font-semibold ${
+            featured
+              ? "border-white/20 bg-white/10 text-slate-200"
+              : "border-line bg-white/70 text-muted"
+          }`}
+        >
+          Not Available Yet
+        </p>
+        <p className={`mt-2 text-center text-xs leading-5 ${featured ? "text-slate-300" : "text-muted"}`}>
+          Subscription checkout will open after monitoring readiness is verified.
+        </p>
+      </div>
+    );
+  }
+
   if (!canCheckout) {
     return (
       <a

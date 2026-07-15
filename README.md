@@ -135,9 +135,9 @@ pnpm run check:launch-env
 pnpm run verify:launch
 ```
 
-`check:launch-env` requires the production scan, Supabase Auth, Stripe live payment, monitoring cron, Resend, unsubscribe, and rate-limit configuration. `verify:launch` runs the launch contract suite, report regressions, typecheck, and production build. Use `GET /api/health` on the deployed release to distinguish demo readiness from real paid-signup readiness without exposing configuration values.
+`check:launch-env` requires the production scan, Supabase Auth, Stripe live payment, monitoring cron, Resend, unsubscribe, and rate-limit configuration. `verify:launch` runs the launch contract suite, report regressions, typecheck, and production build. Use `GET /api/health` on the deployed release to distinguish demo readiness from real paid-signup readiness without exposing configuration values. Paid Report readiness also requires configured customer email delivery and product analytics. The health route checks configuration and Stripe mode only; it does not query production migration-manifest/ledger parity, which remains a separate launch-runbook check.
 
-Production access is account- and purchase-based. A customer buys a one-time full report from an existing free report, or signs in with a Supabase magic link before buying Monitor or Growth. Legacy `?access=` report and admin codes are local-development tools only unless the explicit emergency production override is enabled.
+Production access is account- and purchase-based. A customer buys a one-time full report from an existing free report. Monitor and Growth remain unavailable unless `ENABLE_SUBSCRIPTION_CHECKOUT=true`; when enabled, a customer signs in with a Supabase magic link before buying either subscription. Legacy `?access=` report and admin codes are local-development tools only unless the explicit emergency production override is enabled.
 
 ## Environment
 
@@ -146,7 +146,8 @@ Copy `.env.example` to `.env.local`.
 - `OPENAI_API_KEY` enables AI-generated company profiles.
 - `SAM_API_KEY` enables SAM.gov active opportunity search.
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` enable production storage and customer magic-link authentication.
-- `APP_URL`, the Stripe live secret and webhook secrets, and all five Stripe Price IDs enable real checkout for Report, Monitor, and Growth.
+- `APP_URL`, the Stripe live secret and webhook secret, and `STRIPE_PRICE_REPORT` enable one-time Report checkout.
+- `ENABLE_SUBSCRIPTION_CHECKOUT=true` plus all four Monitor/Growth Stripe Price IDs explicitly enables subscription checkout. Any other value keeps subscriptions unavailable.
 - `CRON_SECRET` enables authenticated monitoring and nurture jobs.
 - `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and the alert/nurture unsubscribe secrets enable customer email delivery.
 - `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` enable privacy-limited product events; Vercel Analytics remains available independently.
@@ -157,7 +158,7 @@ Copy `.env.example` to `.env.local`.
 
 - `/` scan form
 - `/reports/[id]` free report preview
-- `/pricing` live Report, Monitor, and Growth checkout when Stripe is configured
+- `/pricing` live Report checkout when Stripe is configured; Monitor and Growth are shown as unavailable until explicitly enabled
 - `/auth/sign-in` customer magic-link sign-in
 - `/dashboard` account-owned reports, saved searches, monitoring, and billing
 - `/dashboard/onboarding` post-purchase monitoring setup

@@ -253,6 +253,93 @@ test("production webhook persistence requires live event and object mode before 
   assert.match(migration, /from public, anon, authenticated, service_role/);
 });
 
+test("future paid fulfillment relies on active grant ownership instead of copied full access", async () => {
+  const [billingSql, revocationSql, customerEntitlement] = await Promise.all([
+    readFile(new URL("../db/stripe-billing-expansion.sql", import.meta.url), "utf8"),
+    readFile(new URL("../db/stripe-report-access-revocation.sql", import.meta.url), "utf8"),
+    readFile(new URL("../lib/payments/customerEntitlement.ts", import.meta.url), "utf8")
+  ]);
+
+  assert.match(billingSql, /charge\.refunded[\s\S]*status = 'refunded'/);
+  assert.match(billingSql, /charge\.dispute\.created[\s\S]*status = 'disputed'/);
+  assert.match(revocationSql, /create or replace function public\.fulfill_verified_customer_report_checkout/);
+  const ownershipInsert = revocationSql.match(
+    /insert into public\.customer_scan_ownership \([\s\S]*?on conflict \(scan_id\) do nothing;/
+  )?.[0];
+  assert.ok(ownershipInsert, "replacement fulfillment must keep the purchased scan in the customer library");
+  assert.match(ownershipInsert, /'claimed',[\s\S]*'free'/);
+  assert.doesNotMatch(ownershipInsert, /'full'/);
+  assert.doesNotMatch(revocationSql, /create trigger|after update of status/i);
+  assert.match(revocationSql, /report_grant\.status = 'active'/);
+  assert.doesNotMatch(revocationSql, /update\s+public\.stripe_subscriptions/i);
+  assert.doesNotMatch(revocationSql, /update\s+public\.monitored_profiles/i);
+
+  // Manual/demo access and subscriptions remain independent entitlement paths.
+  assert.match(customerEntitlement, /customer_scan_ownership[\s\S]*access_level: "eq\.full"/);
+  assert.match(customerEntitlement, /stripe_report_access_grants[\s\S]*status: "eq\.active"/);
+  assert.match(customerEntitlement, /stripe_subscriptions[\s\S]*status: "in\.\(active,trialing\)"/);
+  assert.match(customerEntitlement, /source_scan_id === scanId \|\| profile\.latest_scan_id === scanId/);
+});
+
+test("pre-existing manual full access survives a paid purchase and refund transition", async () => {
+  const revocationSql = await readFile(
+    new URL("../db/stripe-report-access-revocation.sql", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(revocationSql, /with legacy_purchase_access_copies as/);
+  assert.match(revocationSql, /scan_ownership\.ownership_kind = 'claimed'/);
+  assert.match(revocationSql, /grant_ownership\.created_at = scan_ownership\.created_at/);
+  assert.match(revocationSql, /report_grant\.status in \('refunded', 'disputed'\)/);
+  assert.match(revocationSql, /active_grant\.status = 'active'/);
+
+  const isNarrowLegacyCopy = ({
+    accessLevel,
+    ownershipKind,
+    ownershipCreatedAt,
+    grantOwnershipCreatedAt,
+    grantStatus,
+    hasActiveGrant
+  }) => (
+    accessLevel === "full" &&
+    ownershipKind === "claimed" &&
+    ownershipCreatedAt === grantOwnershipCreatedAt &&
+    (grantStatus === "refunded" || grantStatus === "disputed") &&
+    !hasActiveGrant
+  );
+
+  const preExistingManualAccess = {
+    accessLevel: "full",
+    ownershipKind: "claimed",
+    ownershipCreatedAt: "2026-07-01T12:00:00.000Z",
+    grantOwnershipCreatedAt: "2026-07-10T12:00:00.000Z",
+    grantStatus: null,
+    hasActiveGrant: false
+  };
+  assert.equal(preExistingManualAccess.accessLevel, "full");
+
+  const afterPaidPurchase = {
+    ...preExistingManualAccess,
+    grantStatus: "active",
+    hasActiveGrant: true
+  };
+  assert.equal(afterPaidPurchase.accessLevel, "full");
+  assert.equal(isNarrowLegacyCopy(afterPaidPurchase), false);
+
+  const afterPaidRefund = {
+    ...afterPaidPurchase,
+    grantStatus: "refunded",
+    hasActiveGrant: false
+  };
+  assert.equal(isNarrowLegacyCopy(afterPaidRefund), false);
+  assert.equal(afterPaidRefund.accessLevel, "full");
+
+  assert.equal(isNarrowLegacyCopy({
+    ...afterPaidRefund,
+    ownershipCreatedAt: afterPaidRefund.grantOwnershipCreatedAt
+  }), true);
+});
+
 test("checkout sends Report buyers to their report while subscriptions enter monitoring onboarding", async () => {
   const handlers = await readFile(new URL("../lib/payments/handlers.ts", import.meta.url), "utf8");
   assert.match(handlers, /const reportPath = `\/reports\/\$\{scanId\}\?checkout=success&session_id=`/);

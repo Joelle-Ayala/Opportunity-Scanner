@@ -261,6 +261,14 @@ function reportCheckoutIsConfigured(): boolean {
   }
 }
 
+function subscriptionCheckoutIsConfigured(): boolean {
+  try {
+    return getStripeServerConfig().subscriptionCheckoutEnabled;
+  } catch {
+    return false;
+  }
+}
+
 function fullReportUpgradeHref(scan: ScanRecord, signal?: StoredOpportunitySignal): string {
   if (reportCheckoutIsConfigured()) {
     return `/pricing?source=report_gate&scanId=${encodeURIComponent(scan.id)}`;
@@ -1407,7 +1415,7 @@ export default async function ReportPage({
     isPaid &&
     !isAdminView &&
     !hasActiveMonitoringPlan &&
-    reportCheckoutIsConfigured();
+    subscriptionCheckoutIsConfigured();
   const reportCompanyName = profile?.company_name || scan.company_name || hostname(scan.company_url);
   const contactLookupAccess: ContactLookupAccess = {
     hasGrowthPlan: hasActiveGrowthPlan,

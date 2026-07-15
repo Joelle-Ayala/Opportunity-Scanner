@@ -28,24 +28,28 @@ const required = [
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "STRIPE_PRICE_REPORT",
-  "STRIPE_PRICE_MONITOR_MONTHLY",
-  "STRIPE_PRICE_MONITOR_ANNUAL",
-  "STRIPE_PRICE_GROWTH_MONTHLY",
-  "STRIPE_PRICE_GROWTH_ANNUAL",
   "CRON_SECRET",
   "RESEND_API_KEY",
   "RESEND_FROM_EMAIL",
+  "OPPORTUNITY_SCANNER_CONTACT_EMAIL",
   "ALERT_UNSUBSCRIBE_SECRET",
   "NURTURE_UNSUBSCRIBE_SECRET",
-  "SCAN_RATE_LIMIT_HASH_SECRET"
+  "SCAN_RATE_LIMIT_HASH_SECRET",
+  "NEXT_PUBLIC_POSTHOG_KEY",
+  "NEXT_PUBLIC_POSTHOG_HOST"
 ];
 
 const recommended = [
   "SAM_API_KEY",
   "SNOV_CLIENT_ID",
-  "SNOV_CLIENT_SECRET",
-  "NEXT_PUBLIC_POSTHOG_KEY",
-  "NEXT_PUBLIC_POSTHOG_HOST"
+  "SNOV_CLIENT_SECRET"
+];
+
+const subscriptionPriceNames = [
+  "STRIPE_PRICE_MONITOR_MONTHLY",
+  "STRIPE_PRICE_MONITOR_ANNUAL",
+  "STRIPE_PRICE_GROWTH_MONTHLY",
+  "STRIPE_PRICE_GROWTH_ANNUAL"
 ];
 
 function configured(name) {
@@ -69,6 +73,21 @@ reportGroup("Recommended", recommended);
 const safetyErrors = [];
 if (!process.env.STRIPE_SECRET_KEY?.trim().startsWith("sk_live_")) {
   safetyErrors.push("STRIPE_SECRET_KEY must use an sk_live_* key for production launch.");
+}
+
+const subscriptionFlagName = "ENABLE_SUBSCRIPTION_CHECKOUT";
+const subscriptionFlagValue = process.env[subscriptionFlagName]?.trim();
+if (subscriptionFlagValue && subscriptionFlagValue !== "true" && subscriptionFlagValue !== "false") {
+  safetyErrors.push(`${subscriptionFlagName} must be exactly true or false.`);
+} else if (subscriptionFlagValue === "true") {
+  const missingSubscriptionPrices = reportGroup("Subscription prices", subscriptionPriceNames);
+  if (missingSubscriptionPrices.length > 0) {
+    safetyErrors.push(
+      `${subscriptionFlagName}=true requires all Monitor and Growth Stripe Price IDs.`
+    );
+  }
+} else {
+  console.log("Notice: subscription checkout is disabled; only one-time Report checkout may launch.");
 }
 
 const legacyOverrideName =

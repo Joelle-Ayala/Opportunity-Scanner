@@ -4,6 +4,7 @@ export type StripeServerConfig = {
   secretKey: string;
   webhookSecret: string;
   appUrl: string;
+  subscriptionCheckoutEnabled: boolean;
   prices: StripePriceCatalog;
 };
 
@@ -23,12 +24,17 @@ const REQUIRED_STRIPE_ENV = [
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "APP_URL",
-  "STRIPE_PRICE_REPORT",
+  "STRIPE_PRICE_REPORT"
+] as const;
+
+const SUBSCRIPTION_PRICE_ENV = [
   "STRIPE_PRICE_MONITOR_MONTHLY",
   "STRIPE_PRICE_MONITOR_ANNUAL",
   "STRIPE_PRICE_GROWTH_MONTHLY",
   "STRIPE_PRICE_GROWTH_ANNUAL"
 ] as const;
+
+export const SUBSCRIPTION_CHECKOUT_FLAG = "ENABLE_SUBSCRIPTION_CHECKOUT";
 
 function requiredEnvironment(names: readonly string[]): Record<string, string> {
   const values: Record<string, string> = {};
@@ -58,8 +64,19 @@ export function requiresLiveStripeObjects(): boolean {
   return process.env.NODE_ENV === "production";
 }
 
+export function subscriptionCheckoutIsEnabled(): boolean {
+  return process.env[SUBSCRIPTION_CHECKOUT_FLAG]?.trim() === "true";
+}
+
 export function getStripeServerConfig(): StripeServerConfig {
   const env = requiredEnvironment(REQUIRED_STRIPE_ENV);
+  const subscriptionCheckoutEnabled = subscriptionCheckoutIsEnabled();
+  const subscriptionPrices = Object.fromEntries(
+    SUBSCRIPTION_PRICE_ENV.map((name) => [name, process.env[name]?.trim() ?? ""])
+  ) as Record<(typeof SUBSCRIPTION_PRICE_ENV)[number], string>;
+  if (subscriptionCheckoutEnabled) {
+    Object.assign(subscriptionPrices, requiredEnvironment(SUBSCRIPTION_PRICE_ENV));
+  }
   const requireLivemode = requiresLiveStripeObjects();
   if (
     (!env.STRIPE_SECRET_KEY.startsWith("sk_test_") && !env.STRIPE_SECRET_KEY.startsWith("sk_live_")) ||
@@ -70,19 +87,25 @@ export function getStripeServerConfig(): StripeServerConfig {
   if (requireLivemode && !env.STRIPE_SECRET_KEY.startsWith("sk_live_")) {
     throw new Error("Production payments require a Stripe sk_live_* secret key.");
   }
-  for (const name of REQUIRED_STRIPE_ENV.filter((item) => item.startsWith("STRIPE_PRICE_"))) {
-    if (!env[name].startsWith("price_")) throw new Error(`${name} must be a Stripe Price ID.`);
+  const priceEnvironment = {
+    STRIPE_PRICE_REPORT: env.STRIPE_PRICE_REPORT,
+    ...subscriptionPrices
+  };
+  for (const [name, value] of Object.entries(priceEnvironment)) {
+    if (!value) continue;
+    if (!value.startsWith("price_")) throw new Error(`${name} must be a Stripe Price ID.`);
   }
   return {
     secretKey: env.STRIPE_SECRET_KEY,
     webhookSecret: env.STRIPE_WEBHOOK_SECRET,
     appUrl: normalizedAppUrl(env.APP_URL),
+    subscriptionCheckoutEnabled,
     prices: {
       report: env.STRIPE_PRICE_REPORT,
-      monitorMonthly: env.STRIPE_PRICE_MONITOR_MONTHLY,
-      monitorAnnual: env.STRIPE_PRICE_MONITOR_ANNUAL,
-      growthMonthly: env.STRIPE_PRICE_GROWTH_MONTHLY,
-      growthAnnual: env.STRIPE_PRICE_GROWTH_ANNUAL,
+      monitorMonthly: subscriptionPrices.STRIPE_PRICE_MONITOR_MONTHLY,
+      monitorAnnual: subscriptionPrices.STRIPE_PRICE_MONITOR_ANNUAL,
+      growthMonthly: subscriptionPrices.STRIPE_PRICE_GROWTH_MONTHLY,
+      growthAnnual: subscriptionPrices.STRIPE_PRICE_GROWTH_ANNUAL,
       requireLivemode
     }
   };
@@ -99,6 +122,7 @@ export function getBillingDatabaseConfig(): BillingDatabaseConfig {
 
 export function priceFor(config: StripeServerConfig, plan: PaymentPlan, interval: BillingInterval | null): string {
   if (plan === "report") return config.prices.report;
+  if (!config.subscriptionCheckoutEnabled) throw new Error("Subscription checkout is disabled.");
   if (plan === "monitor") return interval === "annual" ? config.prices.monitorAnnual : config.prices.monitorMonthly;
   return interval === "annual" ? config.prices.growthAnnual : config.prices.growthMonthly;
 }

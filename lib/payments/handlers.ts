@@ -47,6 +47,10 @@ function reportSuccessUrl(appUrl: string, scanId: string, signedIn: boolean): st
   return `${appUrl}/auth/sign-in?next=${encodeURIComponent(reportPath)}{CHECKOUT_SESSION_ID}`;
 }
 
+function reportCancelUrl(appUrl: string, scanId: string): string {
+  return `${appUrl}/reports/${scanId}?checkout=cancelled`;
+}
+
 export async function handleCheckout(
   request: Request,
   identity: CheckoutIdentity | null = null,
@@ -83,7 +87,10 @@ export async function handleCheckout(
         input.plan === "report"
           ? reportSuccessUrl(config.appUrl, input.scanId!, Boolean(identity))
           : `${config.appUrl}/dashboard/onboarding?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${config.appUrl}/pricing?checkout=cancelled`
+      cancelUrl:
+        input.plan === "report"
+          ? reportCancelUrl(config.appUrl, input.scanId!)
+          : `${config.appUrl}/pricing?checkout=cancelled`
     });
     if (!session.url || !session.url.startsWith("https://checkout.stripe.com/")) {
       throw new Error("Stripe did not return a secure Checkout URL.");

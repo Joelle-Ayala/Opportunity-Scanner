@@ -27,23 +27,26 @@ const required = [
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "STRIPE_PRICE_REPORT",
-  "STRIPE_PRICE_MONITOR_MONTHLY",
-  "STRIPE_PRICE_MONITOR_ANNUAL",
-  "STRIPE_PRICE_GROWTH_MONTHLY",
-  "STRIPE_PRICE_GROWTH_ANNUAL",
   "CRON_SECRET",
   "RESEND_API_KEY",
   "RESEND_FROM_EMAIL",
+  "OPPORTUNITY_SCANNER_CONTACT_EMAIL",
   "ALERT_UNSUBSCRIBE_SECRET",
   "NURTURE_UNSUBSCRIBE_SECRET",
-  "SCAN_RATE_LIMIT_HASH_SECRET"
+  "SCAN_RATE_LIMIT_HASH_SECRET",
+  "NEXT_PUBLIC_POSTHOG_KEY",
+  "NEXT_PUBLIC_POSTHOG_HOST"
 ];
 const recommended = [
   "SAM_API_KEY",
   "SNOV_CLIENT_ID",
-  "SNOV_CLIENT_SECRET",
-  "NEXT_PUBLIC_POSTHOG_KEY",
-  "NEXT_PUBLIC_POSTHOG_HOST"
+  "SNOV_CLIENT_SECRET"
+];
+const subscriptionPrices = [
+  "STRIPE_PRICE_MONITOR_MONTHLY",
+  "STRIPE_PRICE_MONITOR_ANNUAL",
+  "STRIPE_PRICE_GROWTH_MONTHLY",
+  "STRIPE_PRICE_GROWTH_ANNUAL"
 ];
 const preflightPath = path.join(root, "scripts", "check-launch-env.mjs");
 const emptyDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "opportunity-scanner-launch-env-"));
@@ -62,6 +65,13 @@ try {
   for (const name of [...required, ...recommended]) {
     assert.match(missing.stdout, new RegExp(`\\b${name}\\b`), `Preflight reports missing ${name}`);
   }
+  for (const name of subscriptionPrices) {
+    assert.doesNotMatch(
+      missing.stdout,
+      new RegExp(`Missing required:[^\\n]*\\b${name}\\b`),
+      `${name} must not block Report-only launch`
+    );
+  }
 
   const configuredValues = Object.fromEntries(
     [...required, ...recommended].map((name, index) => [name, `private-value-${index}`])
@@ -74,8 +84,17 @@ try {
   for (const value of Object.values(configuredValues)) {
     assert.doesNotMatch(output, new RegExp(value), "Preflight must never print secret values");
   }
+
+  const subscriptionEnabled = runPreflight({
+    ...configuredValues,
+    ENABLE_SUBSCRIPTION_CHECKOUT: "true"
+  });
+  assert.equal(subscriptionEnabled.status, 1);
+  for (const name of subscriptionPrices) {
+    assert.match(subscriptionEnabled.stdout, new RegExp(`\\b${name}\\b`));
+  }
 } finally {
   fs.rmSync(emptyDirectory, { recursive: true, force: true });
 }
 
-console.log(`Growth hardening checks passed: ${privateSegments.length} private route groups and ${required.length} required environment variables`);
+console.log(`Growth hardening checks passed: ${privateSegments.length} private route groups and ${required.length} Report-launch environment variables`);

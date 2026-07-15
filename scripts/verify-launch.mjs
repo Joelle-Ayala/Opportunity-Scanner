@@ -10,6 +10,7 @@ const checks = [
   ["Payment access", ["--experimental-strip-types", "scripts/test-payment-access.mjs"]],
   ["Subscription handoff", ["--experimental-strip-types", "scripts/test-subscription-checkout-handoff.mjs"]],
   ["Anonymous subscription recovery", ["scripts/test-anonymous-subscription-checkout-recovery.mjs"]],
+  ["Anonymous Report recovery", ["scripts/test-anonymous-report-checkout-recovery.mjs"]],
   ["Billing management", ["--experimental-strip-types", "scripts/test-billing-management.mjs"]],
   ["Customer entitlement", ["--experimental-strip-types", "scripts/test-customer-entitlement-contract.mjs"]],
   ["Paid customer journey", ["--experimental-strip-types", "scripts/test-paid-customer-journey.mjs"]],

@@ -140,8 +140,9 @@ test("nurture delivery removes caller abort listeners after completion", async (
 });
 
 test("migration provides transactional dedupe, leasing, retries, and durable suppression", async () => {
-  const [sql, route, storage, homepage, submitButton] = await Promise.all([
+  const [sql, ambiguityFix, route, storage, homepage, submitButton] = await Promise.all([
     readFile(new URL("../db/scan-nurture.sql", import.meta.url), "utf8"),
+    readFile(new URL("../db/scan-nurture-enrollment-ambiguity-fix.sql", import.meta.url), "utf8"),
     readFile(new URL("../app/api/scans/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/nurture/storage.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
@@ -168,6 +169,9 @@ test("migration provides transactional dedupe, leasing, retries, and durable sup
   assert.match(sql, /p_consent_source <> 'homepage_scan'/);
   assert.match(sql, /drop function if exists enqueue_scan_nurture\(uuid, text, text, text\)/);
   assert.match(sql, /enqueue_scan_nurture\(uuid, text, text, text, timestamptz, text\)/);
+  assert.match(ambiguityFix, /create or replace function enqueue_scan_nurture/);
+  assert.match(ambiguityFix, /#variable_conflict use_column/);
+  assert.match(ambiguityFix, /grant execute on function enqueue_scan_nurture/);
   assert.match(route, /input\.email && marketingConsent/);
   assert.match(storage, /p_consented_at: consentedAt\.toISOString\(\)/);
   assert.match(storage, /p_consent_source: input\.consentSource/);

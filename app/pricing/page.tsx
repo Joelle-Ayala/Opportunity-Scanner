@@ -79,12 +79,12 @@ const plans = [
   }
 ] as const;
 
-function checkoutIsConfigured(): boolean {
+function checkoutAvailability(): { report: boolean; subscriptions: boolean } {
   try {
-    getStripeServerConfig();
-    return true;
+    const config = getStripeServerConfig();
+    return { report: true, subscriptions: config.subscriptionCheckoutEnabled };
   } catch {
-    return false;
+    return { report: false, subscriptions: false };
   }
 }
 
@@ -139,8 +139,8 @@ export default function PricingPage({
 }: {
   searchParams?: PricingSearchParams;
 }) {
-  const checkoutEnabled = checkoutIsConfigured();
-  const resumeCheckout = resumableSubscriptionCheckout(searchParams);
+  const checkout = checkoutAvailability();
+  const resumeCheckout = checkout.subscriptions ? resumableSubscriptionCheckout(searchParams) : null;
   const reportScanId = searchParams?.source === "report_gate" ? searchParams.scanId : undefined;
   const analyticsSource = searchParams?.checkout
     ? "checkout_return"
@@ -195,6 +195,7 @@ export default function PricingPage({
             const featured = plan.tone === "ink";
             const monitor = plan.tone === "mist";
             const checkoutPlan = plan.name === "Report" ? "report" : plan.name === "Monitor" ? "monitor" : "growth";
+            const checkoutEnabled = checkoutPlan === "report" ? checkout.report : checkout.subscriptions;
 
             return (
               <article
@@ -217,7 +218,7 @@ export default function PricingPage({
                         : "border-line bg-white text-accent"
                     }`}
                   >
-                    {plan.badge}
+                    {checkoutPlan !== "report" && !checkout.subscriptions ? "Coming soon" : plan.badge}
                   </span>
                 </div>
 
@@ -265,9 +266,13 @@ export default function PricingPage({
             );
           })}
         </div>
-        {!checkoutEnabled ? (
+        {!checkout.report ? (
           <p className="mt-4 text-center text-xs leading-5 text-muted">
             Paid checkout is temporarily unavailable. The free scan is available now.
+          </p>
+        ) : !checkout.subscriptions ? (
+          <p className="mt-4 text-center text-xs leading-5 text-muted">
+            One-time Report checkout is available. Monitor and Growth are not open for purchase yet.
           </p>
         ) : null}
       </section>
@@ -302,8 +307,12 @@ export default function PricingPage({
             <article key={faq.question} className="border-t border-line pt-4">
               <h3 className="text-base font-semibold text-ink">{faq.question}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                {faq.question === "Can I buy a paid plan today?" && checkoutEnabled
-                  ? "Yes. Monitor and Growth can be purchased here through secure Stripe checkout. The $49 report can be purchased from an existing free report so access returns to the correct scan."
+                {faq.question === "Can I buy a paid plan today?"
+                  ? checkout.subscriptions
+                    ? "Yes. Monitor and Growth can be purchased here through secure Stripe checkout. The $49 report can be purchased from an existing free report so access returns to the correct scan."
+                    : checkout.report
+                      ? "Yes. The $49 report can be purchased from an existing free report so access returns to the correct scan. Monitor and Growth are not open for purchase yet."
+                      : faq.answer
                   : faq.answer}
               </p>
             </article>
