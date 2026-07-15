@@ -307,11 +307,7 @@ function actionabilityDisplayLabel(value: string): string {
 
 function buildExecutiveSummary(signals: StoredOpportunitySignal[], profile?: CompanyProfile) {
   const summarySignals = signals.length > 0 ? signals : [];
-  const sorted = [...summarySignals].sort(
-    (a, b) =>
-      b.relevance_score + b.confidence_score + b.novelty_score -
-      (a.relevance_score + a.confidence_score + a.novelty_score)
-  );
+  const sorted = [...summarySignals];
   const best = sorted[0];
   const topLane = best ? signalLane(best) : "No strong lane yet";
   const confidence =

@@ -103,6 +103,16 @@ function roleSetForSignal(signal: StoredOpportunitySignal): string[] {
     ];
   }
 
+  if (/teacher recruitment|teacher recruiting|teacher hiring|teacher staffing|teacher shortage|teacher residency|educator workforce|educator recruitment|district hiring|school district recruiting|applicant tracking|talent acquisition|hiring platform/.test(`${lane} ${evidence}`)) {
+    return [
+      "District HR Director",
+      "Talent Acquisition Director",
+      "Teacher Recruitment Lead",
+      "Educator Workforce Program Manager",
+      "Procurement Specialist"
+    ];
+  }
+
   if (/school|district|education|teaching artist|arts education|enrichment/.test(`${lane} ${evidence}`)) {
     return [
       "VAPA Coordinator",
@@ -135,16 +145,6 @@ function roleSetForSignal(signal: StoredOpportunitySignal): string[] {
     ];
   }
 
-  if (/teacher|educator|workforce|recruiting|staffing/.test(`${lane} ${evidence}`)) {
-    return [
-      "Workforce Program Manager",
-      "HR Director",
-      "Program Director",
-      "Procurement Specialist",
-      "Grants Manager"
-    ];
-  }
-
   return ["Program Director", "Procurement Specialist", "Partnerships Director", "Grants Manager"];
 }
 
@@ -158,6 +158,10 @@ function outreachAngleForSignal(signal: StoredOpportunitySignal): string {
 
   if (/tourism|placemaking|downtown|public space|open streets|public plaza|bid|business improvement district/.test(`${lane} ${evidence}`)) {
     return "Lead with public-space activation: position the company as a way to source reliable live programming for visitor, downtown, or community event goals.";
+  }
+
+  if (/teacher recruitment|teacher recruiting|teacher hiring|teacher staffing|teacher shortage|teacher residency|educator workforce|educator recruitment|district hiring|school district recruiting|applicant tracking|talent acquisition|hiring platform/.test(`${lane} ${evidence}`)) {
+    return "Lead with educator hiring outcomes: ask who owns teacher recruitment, candidate pipelines, district HR systems, or funded workforce implementation.";
   }
 
   if (/school|education|enrichment|teaching artist/.test(`${lane} ${evidence}`)) {

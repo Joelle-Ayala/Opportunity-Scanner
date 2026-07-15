@@ -150,3 +150,14 @@ test("whole-term evidence matching does not treat partnership as arts", async ()
   assert.equal(hasStrongEvidence("international research partnership for quantum systems"), false);
   assert.equal(hasStrongEvidence("public arts and live music programming"), true);
 });
+
+test("teacher recruitment rows route to district HR instead of arts-program contacts", async () => {
+  const { contactTargetsForSignal } = await import("../lib/contactTargeting.ts");
+  const teacherRecruitment = signal("District teacher recruitment initiative", "Seven school districts are funding teacher recruitment and retention.", "teacher recruitment", "K-12 hiring, teacher staffing, and educator workforce");
+  teacherRecruitment.source_type = "historical_award";
+  teacherRecruitment.revenue_pathway = "sell_to_agency";
+  const roles = contactTargetsForSignal(teacherRecruitment)[0]?.roles ?? [];
+  assert.ok(roles.includes("District HR Director"));
+  assert.ok(roles.includes("Teacher Recruitment Lead"));
+  assert.ok(!roles.includes("VAPA Coordinator"));
+});
