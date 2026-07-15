@@ -6,12 +6,16 @@ import { safeSameOriginRedirect } from "../lib/customer-auth/redirect.ts";
 const ROOT = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, ROOT), "utf8");
 
-const [dashboard, onboarding, billing, signIn, signInRoute] = await Promise.all([
+const [dashboard, onboarding, billing, signIn, signInRoute, dashboardLoading, dashboardError, reportLoading, reportError] = await Promise.all([
   source("app/dashboard/page.tsx"),
   source("app/dashboard/onboarding/page.tsx"),
   source("components/dashboard/billing-summary.tsx"),
   source("app/auth/sign-in/page.tsx"),
-  source("app/api/auth/sign-in/route.ts")
+  source("app/api/auth/sign-in/route.ts"),
+  source("app/dashboard/loading.tsx"),
+  source("app/dashboard/error.tsx"),
+  source("app/reports/loading.tsx"),
+  source("app/reports/error.tsx")
 ]);
 
 assert.match(dashboard, /item\.product === "monitor" \|\| item\.product === "growth"/);
@@ -43,5 +47,14 @@ assert.match(signIn, /const nextPath = searchParams\?\.next \|\| "\/dashboard"/)
 assert.match(signInRoute, /safeSameOriginRedirect\(String\(form\.get\("next"\) \|\| ""\), config\.appOrigin\)/);
 assert.equal(safeSameOriginRedirect("/reports/scan-123", "https://scanner.example.test", "/dashboard"), "/reports/scan-123");
 assert.equal(safeSameOriginRedirect("https://attacker.example/collect", "https://scanner.example.test", "/dashboard"), "/dashboard");
+
+assert.match(dashboardLoading, /aria-label="Loading customer workspace"/);
+assert.match(reportLoading, /aria-label="Loading opportunity report"/);
+for (const errorState of [dashboardError, reportError]) {
+  assert.match(errorState, /onClick=\{reset\}/);
+  assert.doesNotMatch(errorState, /\{error\.(?:message|stack|digest)\}/);
+}
+assert.match(dashboardError, /Sign in again/);
+assert.match(reportError, /Contact support/);
 
 console.log("Customer experience audit tests passed.");

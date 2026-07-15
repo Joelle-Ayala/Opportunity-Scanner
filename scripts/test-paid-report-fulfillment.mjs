@@ -80,7 +80,11 @@ assert.doesNotMatch(claimUrl, /cs_|pi_|evt_|token=|access=/);
 let resendRequest;
 const providerId = await sendPaidReportEmail(
   emailConfig,
-  { scanId: SCAN_ID, recipientEmail: "buyer@example.test" },
+  {
+    scanId: SCAN_ID,
+    recipientEmail: "buyer@example.test",
+    deliveryId: "1f3e72ce-4d15-4a36-8e9c-37ae019c8e90"
+  },
   async (url, init) => {
     resendRequest = { url, init, body: JSON.parse(String(init.body)) };
     return Response.json({ id: "resend-message-fixture" });
@@ -88,10 +92,21 @@ const providerId = await sendPaidReportEmail(
 );
 assert.equal(providerId, "resend-message-fixture");
 assert.equal(resendRequest.url, "https://api.resend.com/emails");
-assert.equal(resendRequest.init.headers["Idempotency-Key"], `paid-report/${SCAN_ID}/active`);
+assert.equal(
+  resendRequest.init.headers["Idempotency-Key"],
+  "paid-report/1f3e72ce-4d15-4a36-8e9c-37ae019c8e90/claim"
+);
 assert.deepEqual(resendRequest.body.to, ["buyer@example.test"]);
 assert.match(resendRequest.body.text, /Sign in with the email used for your purchase/);
 assert.doesNotMatch(JSON.stringify(resendRequest.body), /cs_|pi_|evt_|sk_live|whsec|access code/i);
+await assert.rejects(
+  sendPaidReportEmail(emailConfig, {
+    scanId: SCAN_ID,
+    recipientEmail: "buyer@example.test",
+    deliveryId: "not-a-delivery"
+  }),
+  /delivery ID is invalid/
+);
 
 const recorded = [];
 let sends = 0;

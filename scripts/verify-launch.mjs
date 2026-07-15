@@ -25,6 +25,8 @@ const checks = [
   ["Scan lifecycle email", ["--experimental-strip-types", "scripts/test-scan-lifecycle-email.mjs"]],
   ["Support identity", ["--experimental-strip-types", "scripts/test-support-identity.mjs"]],
   ["Paid Report fulfillment", ["--experimental-strip-types", "scripts/test-paid-report-fulfillment.mjs"]],
+  ["Report payment lifecycle", ["scripts/test-report-payment-lifecycle-migration.mjs"]],
+  ["Paid operations health", ["--experimental-strip-types", "scripts/test-paid-ops-health.mjs"]],
   ["Launch funnel", ["--experimental-strip-types", "scripts/test-launch-funnel.mjs"]],
   ["Product analytics", ["--experimental-strip-types", "scripts/test-product-analytics.mjs"]],
   ["Report outcome analytics", ["scripts/test-report-outcome-analytics.mjs"]],

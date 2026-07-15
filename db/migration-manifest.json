@@ -183,6 +183,14 @@
       "prerequisites": ["v0006", "v0009", "v0015", "v0020"],
       "sha256": "6163fefc305cb9d877a96a6392f5270787eaf286e4c6f8b7203f67780f5794e6",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0023",
+      "file": "db/stripe-report-payment-lifecycle.sql",
+      "description": "Event-order-safe one-time Report payment lifecycle and immutable purchase email.",
+      "prerequisites": ["v0018", "v0022"],
+      "sha256": "d92de51c3c04af2a023da18ab9e391459156f232b01fb91c522eb40a2f49b4f2",
+      "requiredInProduction": true
     }
   ]
 }

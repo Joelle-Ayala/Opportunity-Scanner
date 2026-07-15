@@ -28,6 +28,7 @@ Keep `ENABLE_PAID_REPORT_CHECKOUT=false` until every Report-only gate below pass
 - Run `pnpm run check:launch-env` against production configuration.
 - Run `pnpm run verify:launch` on the exact release candidate.
 - Open `GET /api/health`; save the response and confirm it contains service booleans and release ID only, never secret values.
+- Query `GET /api/health/paid` with `Authorization: Bearer <CRON_SECRET>`; confirm it returns no customer identifiers and use its strict `200`/`503` result as the paid Report operations gate.
 
 ## 2. Prove Demo Readiness
 
@@ -78,7 +79,7 @@ Confirm currency, tax behavior, receipt settings, customer statement text, and b
 
 - Create the live endpoint `https://www.opportunityscanner.ai/api/stripe/webhook`.
 - Put its signing secret in `STRIPE_WEBHOOK_SECRET`.
-- Subscribe to: `customer.created`, `customer.updated`, `customer.deleted`, `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.payment_action_required`, `charge.refunded`, and `charge.dispute.created`.
+- Subscribe to: `customer.created`, `customer.updated`, `customer.deleted`, `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.payment_action_required`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.closed`, and `charge.dispute.funds_reinstated`.
 - Confirm Stripe receives a `2xx` response, duplicate events are harmless, and failures can be retried.
 - Confirm paid Report fulfillment sends one idempotent sign-in-and-claim email when the buyer closes the Checkout success tab, and that it never exposes Stripe or auth tokens.
 - Keep webhook processing active during rollback so refunds, disputes, cancellations, and subscription status changes continue to update access.
@@ -130,7 +131,7 @@ If capacity is not proven, choose **Go - Report only**.
 1. Approve one buyer email, real cardholder, maximum $49 charge, fresh scan, and test window.
 2. Set `ENABLE_PAID_REPORT_CHECKOUT=true` for Production only after the other readiness checks pass and record the change time.
 3. Start from that scan's free report and confirm the checkout summary is a one-time $49 Report purchase.
-4. Confirm `/api/health` reports the live Report catalog as valid: active Product, active one-time USD Price, exact $49 amount, and live mode.
+4. Confirm authenticated `/api/health/paid` returns `200` with `ready.paidReport: true`, including a verified live Report catalog, recent persisted webhook, no stale/failed delivery, and no active grant missing a delivery attempt.
 5. Complete live Stripe Checkout, then close the success tab before returning to the report.
 6. Confirm the buyer receives one private claim email and can use the same verified email to complete magic-link sign-in.
 7. Confirm return to the same report with the full action layer, export, opportunity workspace, and workflow access.

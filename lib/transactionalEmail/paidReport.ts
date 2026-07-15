@@ -103,10 +103,13 @@ export function paidReportClaimUrl(config: ScanLifecycleEmailConfig, scanId: str
 
 export function sendPaidReportEmail(
   config: ScanLifecycleEmailConfig,
-  input: { scanId: string; recipientEmail: string },
+  input: { scanId: string; recipientEmail: string; deliveryId: string },
   fetchImpl: typeof fetch = fetch,
   options: ResendRequestOptions = {}
 ): Promise<string> {
+  if (!UUID_PATTERN.test(input.deliveryId)) {
+    return Promise.reject(new Error("Paid Report delivery ID is invalid."));
+  }
   const claimUrl = paidReportClaimUrl(config, input.scanId);
   const text = [
     "Your full Opportunity Scanner report is ready.",
@@ -128,7 +131,7 @@ export function sendPaidReportEmail(
 
   return sendResendEmailRequest({
     apiKey: config.apiKey,
-    idempotencyKey: `paid-report/${input.scanId}/active`,
+    idempotencyKey: `paid-report/${input.deliveryId}/claim`,
     failureLabel: "Resend paid Report delivery",
     body: {
       from: `Opportunity Scanner <${config.fromEmail}>`,
@@ -182,7 +185,8 @@ export async function deliverPaidReportFulfillment(
   try {
     providerMessageId = await dependencies.send(emailConfig, {
       scanId: fulfillment.scanId,
-      recipientEmail: prepared.recipient_email
+      recipientEmail: prepared.recipient_email,
+      deliveryId: prepared.delivery_id
     });
   } catch {
     await recordFailureSafely(prepared, "provider_failure", dependencies);

@@ -33,6 +33,7 @@ Do not begin a live purchase until all of these are true:
 - `pnpm run check:launch-env` passes against the production configuration.
 - `pnpm run verify:launch` passes on the release candidate.
 - `GET /api/health` returns `ready.demo: true`, `ready.paidSignup: true`, `services.stripeMode: "live"`, and the expected service readiness.
+- Authenticated `GET /api/health/paid` returns `200` and `ready.paidReport: true`; unauthenticated requests return `401` without operational counts.
 - The Supabase migration ledger matches every required entry in `db/migration-manifest.json`.
 - Supabase Auth Site URL and redirect allowlist include the production origin and `/auth/callback`.
 - The Stripe live webhook endpoint is healthy and subscribed to the required billing events.
@@ -137,6 +138,7 @@ Do not place card data, secret values, magic links, auth tokens, webhook signatu
 - Magic-link authentication and customer isolation pass.
 - The controlled $49 Report purchase creates only the intended report entitlement and survives a new session.
 - Stripe live webhook delivery is healthy and idempotent.
+- The private paid-operations health gate confirms recent webhook persistence, delivery recovery coverage, and no stale or failed paid Report delivery.
 - Required Supabase migrations and production Auth settings are verified.
 - Required customer emails deliver from a verified sender with working unsubscribe behavior where applicable.
 - PostHog records the paid funnel without personal data or sensitive URL parameters.
