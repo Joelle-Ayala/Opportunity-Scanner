@@ -47,7 +47,8 @@ test("sign-in uses same-origin PKCE handoff without exposing customer tokens to 
   assert.match(signIn, /createPkcePair\(\)/);
   assert.match(signIn, /requestMagicLink/);
   assert.match(signIn, /setPendingAuthCookies/);
-  assert.match(callback, /state !== expectedState/);
+  assert.match(callback, /const stateMismatch = Boolean\(state && state !== expectedState\)/);
+  assert.match(callback, /if \(!expectedState \|\| stateMismatch \|\| !codeVerifier\)/);
   assert.match(callback, /exchangeAuthCode\(config, code, codeVerifier\)/);
   assert.match(callback, /setSessionCookies\(response, tokens\)/);
   assert.match(hashCallback, /setSessionCookies/);

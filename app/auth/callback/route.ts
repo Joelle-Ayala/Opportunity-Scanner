@@ -44,12 +44,13 @@ export async function GET(request: NextRequest) {
   const state = url.searchParams.get("state");
   const expectedState = request.cookies.get(CUSTOMER_AUTH_COOKIES.callbackState)?.value;
   const codeVerifier = request.cookies.get(CUSTOMER_AUTH_COOKIES.codeVerifier)?.value;
+  const stateMismatch = Boolean(state && state !== expectedState);
   const nextPath = safeSameOriginRedirect(
     request.cookies.get(CUSTOMER_AUTH_COOKIES.nextPath)?.value,
     config.appOrigin
   );
 
-  if (!state || !expectedState || state !== expectedState || !codeVerifier) {
+  if (!expectedState || stateMismatch || !codeVerifier) {
     const response = NextResponse.redirect(new URL("/auth/sign-in?error=invalid-link", config.appOrigin), 303);
     clearPendingAuthCookies(response);
     return response;
