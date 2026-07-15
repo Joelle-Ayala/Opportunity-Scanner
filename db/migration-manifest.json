@@ -191,6 +191,14 @@
       "prerequisites": ["v0018", "v0022"],
       "sha256": "d92de51c3c04af2a023da18ab9e391459156f232b01fb91c522eb40a2f49b4f2",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0024",
+      "file": "db/stripe-report-full-refund-guard.sql",
+      "description": "Keep partial Report refunds active while making full refunds terminal.",
+      "prerequisites": ["v0023"],
+      "sha256": "38574b0584240044601141d51e417c756c1515691afd8de1f7fa22ce009775d3",
+      "requiredInProduction": true
     }
   ]
 }

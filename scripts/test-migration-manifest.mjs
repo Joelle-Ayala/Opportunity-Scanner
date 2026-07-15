@@ -234,7 +234,8 @@ const expectedOrder = [
   "db/stripe-report-access-revocation.sql",
   "db/first-touch-acquisition-attribution.sql",
   "db/paid-report-fulfillment-recovery.sql",
-  "db/stripe-report-payment-lifecycle.sql"
+  "db/stripe-report-payment-lifecycle.sql",
+  "db/stripe-report-full-refund-guard.sql"
 ];
 
 const requiredDependencies = {
@@ -294,6 +295,9 @@ const requiredDependencies = {
   "db/stripe-report-payment-lifecycle.sql": [
     "db/stripe-live-mode-enforcement.sql",
     "db/paid-report-fulfillment-recovery.sql"
+  ],
+  "db/stripe-report-full-refund-guard.sql": [
+    "db/stripe-report-payment-lifecycle.sql"
   ]
 };
 

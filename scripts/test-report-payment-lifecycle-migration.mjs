@@ -2,19 +2,30 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
-const [sql, manifestSource] = await Promise.all([
+const [sql, fullRefundGuardSql, manifestSource] = await Promise.all([
   readFile(new URL("../db/stripe-report-payment-lifecycle.sql", import.meta.url), "utf8"),
+  readFile(new URL("../db/stripe-report-full-refund-guard.sql", import.meta.url), "utf8"),
   readFile(new URL("../db/migration-manifest.json", import.meta.url), "utf8")
 ]);
 const manifest = JSON.parse(manifestSource);
-const migration = manifest.migrations.at(-1);
+const lifecycleMigration = manifest.migrations.at(-2);
+const refundGuardMigration = manifest.migrations.at(-1);
 
-assert.deepEqual(migration, {
+assert.deepEqual(lifecycleMigration, {
   version: "v0023",
   file: "db/stripe-report-payment-lifecycle.sql",
   description: "Event-order-safe one-time Report payment lifecycle and immutable purchase email.",
   prerequisites: ["v0018", "v0022"],
   sha256: createHash("sha256").update(sql).digest("hex"),
+  requiredInProduction: true
+});
+
+assert.deepEqual(refundGuardMigration, {
+  version: "v0024",
+  file: "db/stripe-report-full-refund-guard.sql",
+  description: "Keep partial Report refunds active while making full refunds terminal.",
+  prerequisites: ["v0023"],
+  sha256: createHash("sha256").update(fullRefundGuardSql).digest("hex"),
   requiredInProduction: true
 });
 
@@ -38,7 +49,14 @@ assert.match(sql, /charge\.dispute\.closed/);
 assert.match(sql, /charge\.dispute\.funds_reinstated/);
 assert.match(sql, /when v_object->>'status' = 'won' then 'dispute_won'/);
 assert.match(sql, /else 'dispute_lost'/);
-assert.doesNotMatch(sql, /charge\.refunded'[\s\S]{0,200}v_object->>'refunded'/);
+assert.match(
+  fullRefundGuardSql,
+  /p_event_type = 'charge\.refunded'[\s\S]{0,160}coalesce\(\(v_object->>'refunded'\)::boolean, false\)/
+);
+assert.match(
+  fullRefundGuardSql,
+  /process_stripe_webhook_event_before_report_lifecycle_v0023/
+);
 assert.match(sql, /create or replace function public\.fulfill_verified_report_checkout[\s\S]*purchase_email,[\s\S]*p_customer_email/);
 assert.match(sql, /create or replace function public\.fulfill_verified_customer_report_checkout[\s\S]*purchase_email,[\s\S]*p_customer_email/);
 
@@ -136,9 +154,16 @@ assert.equal(mergeLifecycle([checkout, refund, won]), "refunded");
 assert.equal(mergeLifecycle([checkout, { kind: "dispute_lost", created: 400 }, cleared]), "active");
 assert.equal(mergeLifecycle([checkout, won, won]), "active");
 
+function lifecycleEventForRefund(charge) {
+  return charge.refunded === true ? "refunded" : null;
+}
+
+assert.equal(lifecycleEventForRefund({ refunded: false, amount_refunded: 1000 }), null);
+assert.equal(lifecycleEventForRefund({ refunded: true, amount_refunded: 4900 }), "refunded");
+
 const equalTimeOpen = { kind: "dispute_open", created: 600 };
 const equalTimeWon = { kind: "dispute_won", created: 600 };
 assert.equal(mergeLifecycle([checkout, equalTimeWon, equalTimeOpen]), "disputed");
 assert.equal(mergeLifecycle([checkout, equalTimeOpen, equalTimeWon]), "disputed");
 
-console.log("Report payment lifecycle migration contract checks passed.");
+console.log("Report payment lifecycle and full-refund guard checks passed.");
