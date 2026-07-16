@@ -11,6 +11,8 @@
     "verify:launch": "node scripts/verify-launch.mjs",
     "check:launch-env": "node scripts/check-launch-env.mjs",
     "validate:related-content": "node scripts/validate-related-resources.mjs",
+    "validate:social-repurposing": "node scripts/validate-social-repurposing.mjs",
+    "validate:social-profile-kit": "node scripts/validate-social-profile-kit.mjs",
     "evaluate:reports": "node scripts/evaluate-local-reports.mjs",
     "test:sam": "node scripts/test-sam-connector.mjs",
     "test:apis": "node scripts/test-api-connectors.mjs",

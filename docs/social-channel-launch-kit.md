@@ -1,5 +1,7 @@
 # Opportunity Scanner Social Channel Launch Kit
 
+> The completed profile fields, platform-specific graphics, tracking links, and account-security checklist now live in `docs/social-profile-kit/`. Upload-ready assets are in `public/social-profile-kit/`. This older launch brief remains the strategic channel overview.
+
 ## Brand Handles To Try
 
 Priority handle:
