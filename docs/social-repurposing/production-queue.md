@@ -42,7 +42,7 @@ This sequence creates a coherent audience journey: understand the category, down
 
 | Source slug | Pack path | Owner | Status |
 |---|---|---|---|
-| public-sector-revenue-opportunity-playbook-2026 | `lead-magnets/flagship-people/public-sector-revenue-opportunity-playbook-2026.md` | Flagship/people agent | Draft ready for claim review |
+| public-sector-revenue-opportunity-playbook-2026 | `lead-magnets/flagship-people/public-sector-revenue-opportunity-playbook-2026.md` | Flagship/people agent | Carousel ready; video ready for paid render |
 | healthcare-dme-public-sector-opportunity-report-2026 | `lead-magnets/flagship-people/healthcare-dme-public-sector-opportunity-report-2026.md` | Flagship/people agent | Draft ready for claim review |
 | education-workforce-public-sector-opportunity-report-2026 | `lead-magnets/flagship-people/education-workforce-public-sector-opportunity-report-2026.md` | Flagship/people agent | Drafting |
 | creative-economy-live-events-public-sector-opportunity-report-2026 | `lead-magnets/flagship-people/creative-economy-live-events-public-sector-opportunity-report-2026.md` | Flagship/people agent | Drafting |
