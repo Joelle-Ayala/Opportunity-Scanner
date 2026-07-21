@@ -1,62 +1,80 @@
 # Opportunity Scanner Launch Control
 
-Last audited: 2026-07-15
+Last audited: 2026-07-21
 Integration owner: Chief of Staff Agent
 Status owner: Project Management Agent
 
-This is the current source of truth for launch status. It keeps deployed production evidence separate from the verified release candidate.
+This is the source of truth for launch status. Deployed production evidence is kept separate from local or release-candidate work.
 
 ## Executive status
 
-**Demo-ready: GO. Paid signup: NO-GO. Subscriptions: NO-GO.**
+**Demo-ready: GO. Paid Report checkout: NO-GO. Subscriptions: NO-GO.**
 
-- The latest independently verified launch feature release is `9e2f55b`; read `/api/health` after every deployment for the exact live release.
-- Production health reports `ready.demo: true`, analytics via Vercel, `ready.paidSignup: false`, and Stripe in test mode.
-- The Reparel demo account for `joelle@reparel.com` has account-scoped full access to scan `74de7c26-0978-48f4-af7a-be58c1623dd9`, refreshed July 14, 2026 with six sourced signals.
-- Launch verification passed 46/46 distinct checks, including the production build and 99 generated pages.
-- The homepage, fictional public examples, industries, lead magnets, and planned content surfaces are complete. Public example QA found no Jammcard name or logo in the presentation layer.
-- The `v0019` scan-nurture ambiguity repair was applied and rollback-tested.
-- The `v0020` refund-safe Report entitlement migration was applied and verified without changing Reparel demo access.
-- Production migrations through `v0028` are applied, rollback-tested, and ledger-recorded, including aggregate scheduler heartbeat and capacity evidence.
-- The live release adds a Report-to-Monitor/Growth plan and billing selector, product-level MRR mix, scheduler evidence, branded-support launch checks, and a payment gate that stays closed until monitoring readiness is proven.
+- Production release `d0eb48b6b07f` reports demo readiness and a verified live Stripe catalog.
+- Paid Report checkout remains fail-closed because branded support readiness is false and the controlled purchase/refund/access proof is incomplete.
+- Monitor and Growth remain fail-closed because the production monitoring scheduler readiness flag is false.
+- Vercel Web Analytics is live. A consent-controlled HubSpot/PostHog and company-account analytics release is in verification and is not counted as deployed until the live release changes.
+- Reparel, SchoolGig, and Jammcard report regression tests pass, but the paid quality bar still needs a stronger guarantee of current pursuits or an explicit market-intelligence classification.
 
-## Launch board
+## Production health
 
-| Workstream | Status | Current evidence / decision | Next action |
+Checked July 21, 2026 at `https://www.opportunityscanner.ai/api/health`:
+
+| Capability | Production state |
+|---|---|
+| Demo | Ready |
+| Database, auth, and scans | Ready |
+| Stripe | Live |
+| Report catalog | Verified |
+| Paid Report checkout | Closed |
+| Monitor/Growth checkout | Closed |
+| Email delivery | Ready |
+| Branded support identity | Not ready |
+| Monitoring runtime | Available |
+| Monitoring scheduler launch proof | Not ready |
+| Analytics | Vercel active |
+
+## Prioritized launch board
+
+| Priority | Workstream | Status | Definition of done |
 |---|---|---|---|
-| Production demo release | **Live / GO** | Feature release `9e2f55b` is live; production is demo-ready and the core routes return 200 with no recent Vercel runtime errors. | Preserve the live demo while completing the controlled paid launch gate. |
-| Reparel demo | **Live / GO** | `joelle@reparel.com` owns full access to the July 14 Reparel report at `/reports/74de7c26-0978-48f4-af7a-be58c1623dd9`. The signed-out route returns a safe gated report. | Open the magic link sent to `joelle@reparel.com`, then use the dashboard and full report as the primary private demo path. |
-| Public acquisition surfaces | **Complete** | Homepage, examples, industry pages, lead magnets, and content are complete. | Shift effort from new surface creation to distribution, measurement, and conversion proof. |
-| Launch verification | **Passed** | Automated launch verification passed 46/46 distinct checks, including the production build, 99 generated pages, and 28 production migrations in order. | Preserve the gate during deployment and live verification. |
-| Scan nurture repair | **Applied / rollback-tested** | Production database repair `v0019` resolves the nurture-enrollment ambiguity and has a tested rollback path. | Keep the migration ledger and repository record aligned before the next release. |
-| Report-only payments | **Live code / NO-GO** | Production still reports `paidSignup: false` because Vercel uses a test Stripe secret. Live price IDs are present and checkout remains explicitly fail-closed. | Complete Stripe identity verification, install the dedicated live key, then run the controlled $49 Report purchase. |
-| Monitor and Growth subscriptions | **NO-GO** | Batch processing, retries, queue health, and aggregate heartbeat evidence are ready, but the production schedule is still once daily. | Approve Vercel Pro, run every 15 minutes for 48 hours, and review the capacity evidence before enabling subscriptions. |
-| Paid-launch operations | **Founder action required** | Vercel Web Analytics and Resend are ready. Live Stripe identity verification, a branded support mailbox, and the controlled purchase remain. | Complete the founder checklist below before any paid traffic. |
+| P0 | Report usefulness and current-opportunity guarantee | In progress | Fresh Reparel, SchoolGig, and Jammcard production scans either contain at least one credible current pursuit from appropriate sources or clearly state that the result is market intelligence rather than an open opportunity list. |
+| P0 | Consent, funnel, and company analytics | Release candidate | Cookieless Vercel analytics remains active; optional attribution, PostHog, and HubSpot load only after permission; known accounts use account IDs/work-email domains; scanned companies remain separate; Stripe webhooks are the purchase source of truth. |
+| P0 | $49 Report checkout | Closed by design | Branded support identity passes, pricing copy is current, and one controlled live purchase proves receipt, account ownership, full access, refund, and revocation before the checkout flag opens. |
+| P0 | Quality-review operations | Needs operating rule | Assign an owner, response-time target, alert, and customer-facing delay state for reports held by the publication fence. |
+| P1 | Opportunity pursuit/application workflow | Planned next | Store source-native application method/URL, eligibility, registration, required documents, owner, pursuit status, and deadline; provide a readiness screen before sending the user to the official submission route. |
+| P1 | Monitor and Growth launch | Closed by design | Run the intended authenticated schedule, collect 48 hours of capacity and failure evidence, then make a separate subscription go/no-go decision. |
+| P1 | Native CRM lifecycle sync | Foundation ready | HubSpot tracking and known-contact association work first; server-side contact/company/deal sync requires a private app or OAuth credential and a reviewed field map. |
+| P2 | Demo video and remaining content repurposing | Queued | Product proof uses current screen recordings and credible example data; remaining social packs proceed after product quality and measurement are stable. |
+
+## What is already done
+
+- Company website enrichment and company-profile evidence extraction.
+- Normalized opportunity rows with revenue motion, contact path, next action, CRM note, outreach angle, source link, export, and generic workflow send.
+- Account dashboard for reports, new searches, saved-search edits, monitoring controls, comparisons, alerts, usage, and billing.
+- Live Stripe integration, verified Report price catalog, webhook idempotency, account-owned access, fulfillment recovery, and refund-safe entitlement logic.
+- Publication fence and admin quality-review controls.
+- Industry, solution, article, lead-magnet, example-report, social-profile, and flagship-carousel surfaces.
+- First-touch campaign attribution and an authoritative database-backed launch funnel.
 
 ## Founder actions
 
-1. Complete Stripe identity verification so Codex can replace the test key with a dedicated live key, verify the $49 Report catalog, and run one controlled purchase/refund proof.
-2. Approve one Google Workspace Business Starter mailbox for `support@opportunityscanner.ai` (about $7/month on annual billing), complete its identity/MFA prompt, and let Codex configure and verify the provider-issued DNS records.
-3. Approve Vercel Pro for the Opportunity Scanner project (about $20/month), then let Codex activate the 15-minute monitoring schedule and collect the required 48-hour capacity evidence.
+Only these items require founder ownership or spend approval:
 
-## Next launch sequence
+1. Confirm or create the working `support@opportunityscanner.ai` mailbox so the production support readiness check can pass.
+2. Approve and complete one real $49 live purchase/refund proof after the release candidate passes.
+3. Approve the Vercel plan/scheduling capacity needed before Monitor and Growth move from daily proof to the intended production cadence.
+4. In HubSpot, confirm `opportunityscanner.ai` as the tracked domain and configure Buyer Intent target markets/high-intent paths if anonymous company-visit identification is desired.
 
-1. Complete Stripe identity verification and the Google Workspace support mailbox in parallel.
-2. Install the dedicated live Stripe key, verify the $49 Report catalog, rerun the launch gate, and complete one controlled Report purchase, entitlement, receipt, refund/revocation, and rollback pass.
-3. Require production health to show `ready.demo: true`, `ready.paidSignup: true`, and live Stripe before accepting paid Report traffic.
-4. Upgrade Vercel and collect 48 hours of scheduler evidence in parallel with the Report launch.
-5. Make a separate capacity-backed go/no-go decision for subscriptions; Report readiness does not make subscriptions ready.
+## Next sequence
 
-## Current evidence record
-
-- Latest verified launch feature release: `9e2f55b`; Vercel deployment `dpl_E13dPopg6fnLzVti3Zv8BLmsTh4Y` is Ready on the production domains.
-- Production readiness: demo `true`; paid signup `false`; Stripe test mode.
-- Live demo proof: Reparel Auth user `cfda4281-4662-4eba-b304-88ea42125cec`, customer account `1c65ed91-a079-46b3-9446-d607e91875ad`, and full-access scan `74de7c26-0978-48f4-af7a-be58c1623dd9`; signed-out report returned 200 with scan date July 14 and six sourced signals.
-- Automated verification: 46/46 distinct checks passed, including the production build and 99 generated pages.
-- Acquisition buildout: homepage, examples, industries, lead magnets, and content complete.
-- Database migrations through `v0028` are applied, rollback-tested, and ledger-recorded; `v0028` checksum is `c492c45bd551d6dfbdf472b4eb2078f3aa26751544fc1f8eb5e51ad8ea320e4b`.
-- Deployment proof: Vercel reported the feature release ready on the production domains and `/api/health` returned release `9e2f55b40f51` with demo, email, monitoring, and Vercel analytics ready. Homepage, pricing, sign-in, Reparel report, and favicon returned 200, with no runtime error clusters in the release window.
+1. Deploy and verify the consented analytics/company-tracking release.
+2. Strengthen the report publication contract around current pursuits and source diversity; run fresh production regressions.
+3. Complete branded support and the controlled $49 purchase/refund/access proof.
+4. Open one-time Report checkout only when production health reports paid signup ready.
+5. Build the application-readiness workspace while monitoring collects capacity evidence.
+6. Make a separate subscription launch decision; live Report checkout does not imply Monitor/Growth readiness.
 
 ## Checkpoint rule
 
-Future status updates must identify the exact production release and keep deployed evidence separate from local or uncommitted work. Before any commit or release, review scope and confirm secrets, local data, build output, and unrelated changes are excluded.
+Every release update must name the exact production release and keep deployed evidence separate from local work. Before a commit or deployment, confirm that secrets, `.env.local`, local data, build output, and unrelated changes are excluded.

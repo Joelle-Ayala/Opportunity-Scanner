@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/brand";
 import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
-import { MonitoringOnboardingAnalytics, PurchaseCompletedAnalytics } from "@/components/page-analytics";
+import { CheckoutReturnAnalytics, MonitoringOnboardingAnalytics } from "@/components/page-analytics";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import {
   ensureCustomerAccount,
@@ -99,7 +99,7 @@ export default async function MonitoringOnboardingPage({
     <main className="min-h-screen bg-field">
       <MonitoringOnboardingAnalytics subscriptionPlan={subscription.product} state={onboardingState} />
       {searchParams?.checkout === "success" ? (
-        <PurchaseCompletedAnalytics
+        <CheckoutReturnAnalytics
           plan={subscription.product}
           billingPeriod={subscription.billingInterval === "annual" ? "annual" : "monthly"}
           eventKey={`subscription:${subscription.id}`}

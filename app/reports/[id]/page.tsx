@@ -8,7 +8,7 @@ import { accessSuffix, hasAdminAccess, reportAccessHref } from "@/lib/access";
 import { hasCustomerServerReportAccess, hasServerReportAccess, verifyReportCheckoutHandoff } from "@/lib/payments/access";
 import { getStripeServerConfig, reportCheckoutIsEnabled } from "@/lib/payments/config";
 import { claimActiveReportPurchaseByEmail } from "@/lib/payments/persistence";
-import { PurchaseCompletedAnalytics, ReportAnalytics } from "@/components/page-analytics";
+import { CheckoutReturnAnalytics, ReportAnalytics } from "@/components/page-analytics";
 import { ReportMonitorCheckout } from "@/components/report-monitor-checkout";
 import { ReportActionLink } from "@/components/report-action-link";
 import { signalLane } from "@/lib/actionability";
@@ -653,9 +653,20 @@ function PrimaryActionButton({
     signal.source_url &&
     ["Review solicitation", "Check eligibility", "Monitor signal"].includes(label);
   const href = opensSource ? signal.source_url : `/opportunities/${signal.id}?scanId=${scanId}${accessSuffix(access)}`;
+  const analyticsAction = label === "Review solicitation"
+    ? "review_solicitation"
+    : label === "Check eligibility"
+      ? "check_eligibility"
+      : ["Research buyer", "Research recipient", "Map partner path"].includes(label)
+        ? "research_target"
+        : label === "Monitor signal"
+          ? "monitor_signal"
+          : "validate_fit";
 
   return (
-    <a
+    <ReportActionLink
+      action={analyticsAction}
+      reportTier={isPaid ? "full" : "free"}
       href={href}
       target={opensSource ? "_blank" : undefined}
       rel={opensSource ? "noreferrer" : undefined}
@@ -663,7 +674,7 @@ function PrimaryActionButton({
       title={classification.manual_research_instruction}
     >
       {label}
-    </a>
+    </ReportActionLink>
   );
 }
 
@@ -1607,7 +1618,7 @@ export default async function ReportPage({
         completedAt={scan.completed_at}
       />
       {searchParams?.purchase === "report" && isPaid ? (
-        <PurchaseCompletedAnalytics plan="full_report" billingPeriod="one_time" eventKey={`report:${scan.id}`} />
+        <CheckoutReturnAnalytics plan="full_report" billingPeriod="one_time" eventKey={`report:${scan.id}`} />
       ) : null}
       <div className="mx-auto grid max-w-7xl gap-6">
         <ReportHeader

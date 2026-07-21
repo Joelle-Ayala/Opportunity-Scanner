@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { TrackingPreferencesButton } from "@/components/tracking-consent";
 
 const navGroups = [
   {
@@ -182,6 +183,7 @@ export function SiteFooter() {
                 {label}
               </a>
             ))}
+            <TrackingPreferencesButton className="text-left text-slate-300 hover:text-white" />
           </div>
         </nav>
       </div>

@@ -4,6 +4,9 @@ import { CustomerDashboard, DashboardActionLink, type DashboardReportRow, type M
 import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
 import type { BillingSummaryProps } from "@/components/dashboard/billing-summary";
 import { DashboardAnalytics } from "@/components/page-analytics";
+import { KnownCompanyAnalytics } from "@/components/known-company-analytics";
+import { CustomerSignOutForm } from "@/components/customer-sign-out-form";
+import { companyDomainFromEmail } from "@/lib/companyAnalytics";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import {
   ensureCustomerAccount,
@@ -198,6 +201,11 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
         hasActiveMonitoring={activeMonitorCount > 0}
         onboardingCompleted={searchParams?.setup === "complete"}
       />
+      <KnownCompanyAnalytics
+        userId={session.user.id}
+        email={session.user.email}
+        companyDomain={companyDomainFromEmail(session.user.email)}
+      />
       {searchParams?.checkout === "success" ? <div className="border-b border-cyan-200 bg-cyan-50 px-5 py-3 text-center text-sm font-semibold text-cyan-900">{subscription ? "Your plan is active. Choose or create a report to begin monitoring." : "Billing setup was received. Review the status below before starting monitoring."}</div> : null}
       {searchParams?.searchNotice ? <div role="status" aria-live="polite" className="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-center text-sm font-semibold text-emerald-800">{searchParams.searchNotice}</div> : null}
       {searchParams?.searchError ? <div role="alert" className="border-b border-red-200 bg-red-50 px-5 py-3 text-center text-sm font-semibold text-red-800">{searchParams.searchError}</div> : null}
@@ -221,7 +229,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           : hasMonitoringCapacity
             ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Add monitored search</a>
           : <DashboardActionLink action="new_report" href="/dashboard/new" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run new report</DashboardActionLink>}
-        accountSlot={<form action="/api/auth/sign-out" method="post"><button className="text-sm font-semibold text-steel hover:text-accent">Sign out</button></form>}
+        accountSlot={<CustomerSignOutForm />}
         overview={{
           focus: latestReadyReport ? {
             eyebrow: "Pick up where you left off",

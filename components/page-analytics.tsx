@@ -21,7 +21,7 @@ function scanOutcome(status: ScanStatus): "success" | "error" | null {
   return null;
 }
 
-export function PurchaseCompletedAnalytics({
+export function CheckoutReturnAnalytics({
   plan,
   billingPeriod,
   eventKey
@@ -31,9 +31,9 @@ export function PurchaseCompletedAnalytics({
   eventKey: string;
 }) {
   useEffect(() => {
-    const storageKey = `opportunity-scanner:purchase-completed:${eventKey}`;
+    const storageKey = `opportunity-scanner:checkout-return:${eventKey}`;
     if (window.sessionStorage.getItem(storageKey)) return;
-    trackProductEvent("purchase_completed", { plan, billing_period: billingPeriod });
+    trackProductEvent("checkout_return_viewed", { plan, billing_period: billingPeriod });
     window.sessionStorage.setItem(storageKey, "1");
   }, [billingPeriod, eventKey, plan]);
 

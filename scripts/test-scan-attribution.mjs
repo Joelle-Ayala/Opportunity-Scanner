@@ -174,7 +174,7 @@ assert.match(migration, /interval '90 days'/);
 assert.match(migration, /octet_length\(first_touch_landing_path\) between 1 and 512/);
 assert.match(migration, /scans_first_touch_id_created_at_idx/);
 assert.match(privacy, /First-touch campaign attribution/);
-assert.match(privacy, /same-site first-party cookie for up to 90 days/);
+assert.match(privacy, /same-site first-party cookie for up[\s\S]{0,30}to 90 days/);
 assert.match(privacy, /does not store an email address/);
 
 const manifest = JSON.parse(manifestSource);

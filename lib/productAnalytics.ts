@@ -10,7 +10,18 @@ export type MonitoringOnboardingState = "eligible_report" | "report_required" | 
 export type SavedSearchStatus = "active" | "paused" | "archived";
 export type ComparisonFilter = "new" | "changed" | "expired" | "removed" | "unchanged";
 export type DashboardAction = "open_report" | "refresh_report" | "new_report" | "view_plans" | "setup_monitoring";
-export type ReportValueAction = "open_opportunity" | "open_source" | "export_report" | "export_outreach_csv" | "export_outreach_markdown";
+export type ReportValueAction =
+  | "open_opportunity"
+  | "open_source"
+  | "review_solicitation"
+  | "check_eligibility"
+  | "research_target"
+  | "monitor_signal"
+  | "validate_fit"
+  | "send_to_workflow"
+  | "export_report"
+  | "export_outreach_csv"
+  | "export_outreach_markdown";
 
 export type ProductAnalyticsEventMap = {
   scan_started: {
@@ -37,6 +48,10 @@ export type ProductAnalyticsEventMap = {
     billing_period: BillingPeriod;
   };
   purchase_completed: {
+    plan: PurchasePlan;
+    billing_period: BillingPeriod;
+  };
+  checkout_return_viewed: {
     plan: PurchasePlan;
     billing_period: BillingPeriod;
   };
@@ -91,6 +106,7 @@ const EVENT_NAMES = new Set<ProductAnalyticsEventName>([
   "pricing_viewed",
   "checkout_started",
   "purchase_completed",
+  "checkout_return_viewed",
   "dashboard_viewed",
   "dashboard_action_selected",
   "report_value_action_selected",
@@ -114,7 +130,19 @@ const MONITORING_ONBOARDING_STATES = ["eligible_report", "report_required", "lim
 const SAVED_SEARCH_STATUSES = ["active", "paused", "archived"] as const;
 const COMPARISON_FILTERS = ["new", "changed", "expired", "removed", "unchanged"] as const;
 const DASHBOARD_ACTIONS = ["open_report", "refresh_report", "new_report", "view_plans", "setup_monitoring"] as const;
-const REPORT_VALUE_ACTIONS = ["open_opportunity", "open_source", "export_report", "export_outreach_csv", "export_outreach_markdown"] as const;
+const REPORT_VALUE_ACTIONS = [
+  "open_opportunity",
+  "open_source",
+  "review_solicitation",
+  "check_eligibility",
+  "research_target",
+  "monitor_signal",
+  "validate_fit",
+  "send_to_workflow",
+  "export_report",
+  "export_outreach_csv",
+  "export_outreach_markdown"
+] as const;
 
 export function signalCountBucket(count: number): SignalCountBucket {
   if (count <= 0) return "0";
@@ -201,6 +229,7 @@ export function sanitizeProductAnalyticsEvent(
         : null;
     case "checkout_started":
     case "purchase_completed":
+    case "checkout_return_viewed":
       return isOneOf(properties.plan, PURCHASE_PLANS)
         && isOneOf(properties.billing_period, BILLING_PERIODS)
         ? {

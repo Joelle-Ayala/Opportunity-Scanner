@@ -7,14 +7,15 @@ const [checkoutButton, pricingPage] = await Promise.all([
 ]);
 
 assert.match(checkoutButton, /body\?\.error\?\.code === "AUTHENTICATION_REQUIRED" && plan !== "report"/);
-assert.match(checkoutButton, /window\.localStorage\.setItem\(PENDING_CHECKOUT_KEY, JSON\.stringify\(pendingCheckout\)\)/);
-assert.match(checkoutButton, /plan,\s*billingInterval,\s*customerEmail,\s*createdAt: Date\.now\(\)/);
+assert.match(checkoutButton, /window\.sessionStorage\.setItem\(PENDING_CHECKOUT_KEY, JSON\.stringify\(pendingCheckout\)\)/);
+assert.match(checkoutButton, /plan,\s*billingInterval,\s*createdAt: Date\.now\(\)/);
+assert.doesNotMatch(checkoutButton, /type PendingSubscriptionCheckout = \{[\s\S]*customerEmail:/);
 assert.match(checkoutButton, /const nextPath = `\/pricing\?\$\{returnParams\.toString\(\)\}#\$\{plan\}-checkout`/);
 assert.match(checkoutButton, /window\.location\.assign\(`\/auth\/sign-in\?next=\$\{encodeURIComponent\(nextPath\)\}`\)/);
 assert.doesNotMatch(checkoutButton, /returnParams\.set\(["'](?:email|customerEmail)["']/);
 assert.match(checkoutButton, /pending\.plan === plan/);
 assert.match(checkoutButton, /pending\.billingInterval === initialBillingInterval/);
-assert.match(checkoutButton, /window\.localStorage\.removeItem\(PENDING_CHECKOUT_KEY\)/);
+assert.match(checkoutButton, /window\.sessionStorage\.removeItem\(PENDING_CHECKOUT_KEY\)/);
 assert.match(checkoutButton, /PENDING_CHECKOUT_MAX_AGE_MS/);
 assert.match(checkoutButton, /Resume Secure Checkout/);
 

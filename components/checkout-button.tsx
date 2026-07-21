@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { secureStripeBillingPortalUrl } from "@/components/billing-management-state";
 import type { BillingInterval, PaymentPlan } from "@/lib/payments/contract";
 import { trackProductEvent } from "@/lib/productAnalytics";
+import { publishKnownCompanyIdentity } from "@/lib/companyAnalytics";
 
 type CheckoutButtonProps = {
   plan: PaymentPlan;
@@ -24,7 +25,6 @@ type CheckoutResponse = {
 type PendingSubscriptionCheckout = {
   plan: "monitor" | "growth";
   billingInterval: BillingInterval;
-  customerEmail: string;
   createdAt: number;
 };
 
@@ -61,9 +61,9 @@ export function CheckoutButton({
     if (!resumeCheckout || plan === "report") return;
 
     try {
-      const stored = window.localStorage.getItem(PENDING_CHECKOUT_KEY);
+      const stored = window.sessionStorage.getItem(PENDING_CHECKOUT_KEY);
       if (!stored) return;
-      window.localStorage.removeItem(PENDING_CHECKOUT_KEY);
+      window.sessionStorage.removeItem(PENDING_CHECKOUT_KEY);
 
       const pending = JSON.parse(stored) as Partial<PendingSubscriptionCheckout>;
       const isCurrent = typeof pending.createdAt === "number"
@@ -72,13 +72,8 @@ export function CheckoutButton({
       if (
         pending.plan === plan
         && pending.billingInterval === initialBillingInterval
-        && typeof pending.customerEmail === "string"
-        && EMAIL_PATTERN.test(pending.customerEmail)
-        && pending.customerEmail.length <= 254
         && isCurrent
-      ) {
-        setEmail(pending.customerEmail);
-      }
+      ) return;
     } catch {
       // Plan and billing interval still survive in the validated return URL.
     }
@@ -133,6 +128,7 @@ export function CheckoutButton({
 
     setError("");
     setLoading(true);
+    publishKnownCompanyIdentity({ email: customerEmail });
 
     const billingPeriod = plan === "report" ? "one_time" : billingInterval;
     trackProductEvent("email_captured", {
@@ -165,11 +161,10 @@ export function CheckoutButton({
           const pendingCheckout: PendingSubscriptionCheckout = {
             plan,
             billingInterval,
-            customerEmail,
             createdAt: Date.now()
           };
           try {
-            window.localStorage.setItem(PENDING_CHECKOUT_KEY, JSON.stringify(pendingCheckout));
+            window.sessionStorage.setItem(PENDING_CHECKOUT_KEY, JSON.stringify(pendingCheckout));
           } catch {
             // The return URL still preserves the plan and billing interval when storage is unavailable.
           }
@@ -191,7 +186,7 @@ export function CheckoutButton({
       }
 
       try {
-        window.localStorage.removeItem(PENDING_CHECKOUT_KEY);
+        window.sessionStorage.removeItem(PENDING_CHECKOUT_KEY);
       } catch {
         // Checkout can continue when browser storage is unavailable.
       }

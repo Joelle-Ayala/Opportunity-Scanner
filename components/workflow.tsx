@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useId, useRef, useState } from "react";
 import type { WorkflowPayload } from "@/lib/workflowPayload";
+import { trackProductEvent } from "@/lib/productAnalytics";
 
 function prettyLabel(value?: string): string {
   return value ? value.replaceAll("_", " ") : "Needs review";
@@ -74,6 +75,10 @@ export function SendToWorkflowModal({
     });
     if (response.ok) {
       setStatus("sent");
+      trackProductEvent("report_value_action_selected", {
+        action: "send_to_workflow",
+        report_tier: "full"
+      });
       return;
     }
 

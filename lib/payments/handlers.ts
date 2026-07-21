@@ -6,6 +6,7 @@ import { verifyStripeSignature } from "./signature.ts";
 import { createBillingPortalSession, createCheckoutSession } from "./stripeApi.ts";
 import { deliverPaidReportFulfillment } from "../transactionalEmail/paidReport.ts";
 import { dashboardSelectOne } from "../dashboard/rest.ts";
+import { trackVerifiedStripePurchase } from "./analytics.ts";
 
 const NO_STORE_HEADERS = { "Cache-Control": "no-store" };
 const MAX_REQUEST_BYTES = 8_192;
@@ -245,6 +246,15 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
         "REPORT_DELIVERY_RETRY_REQUIRED",
         "Paid Report fulfillment could not be completed yet."
       );
+    }
+    if (processed) {
+      try {
+        await trackVerifiedStripePurchase(event as Record<string, unknown>);
+      } catch (cause) {
+        console.error("Verified purchase analytics failed", {
+          error: cause instanceof Error ? cause.message : "Unknown analytics error"
+        });
+      }
     }
     return json({ ok: true, received: true, duplicate: !processed });
   } catch (cause) {

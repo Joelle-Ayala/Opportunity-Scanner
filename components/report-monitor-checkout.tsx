@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { secureStripeBillingPortalUrl } from "@/components/billing-management-state";
 import type { BillingInterval } from "@/lib/payments/contract";
 import { trackProductEvent } from "@/lib/productAnalytics";
+import { publishKnownCompanyIdentity } from "@/lib/companyAnalytics";
 
 type ReportMonitorCheckoutProps = {
   companyName: string;
@@ -86,6 +87,7 @@ export function ReportMonitorCheckout({
 
     setError("");
     setLoading(true);
+    publishKnownCompanyIdentity({ email: customerEmail });
     trackProductEvent("checkout_started", {
       plan,
       billing_period: billingInterval

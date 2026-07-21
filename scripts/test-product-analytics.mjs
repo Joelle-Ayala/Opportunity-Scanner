@@ -25,6 +25,7 @@ const validEvents = [
   ["pricing_viewed", { source: "report_gate" }],
   ["checkout_started", { plan: "full_report", billing_period: "one_time" }],
   ["purchase_completed", { plan: "growth", billing_period: "annual" }],
+  ["checkout_return_viewed", { plan: "growth", billing_period: "annual" }],
   ["dashboard_action_selected", { action: "open_report" }],
   ["report_value_action_selected", { action: "open_source", report_tier: "full" }]
 ];
@@ -97,8 +98,8 @@ try {
 
 const componentSource = await readFile(new URL("../components/product-analytics.tsx", import.meta.url), "utf8");
 const pageAnalyticsSource = await readFile(new URL("../components/page-analytics.tsx", import.meta.url), "utf8");
-assert.match(pageAnalyticsSource, /trackProductEvent\("purchase_completed"/);
-assert.match(pageAnalyticsSource, /opportunity-scanner:purchase-completed:/);
+assert.match(pageAnalyticsSource, /trackProductEvent\("checkout_return_viewed"/);
+assert.doesNotMatch(pageAnalyticsSource, /trackProductEvent\("purchase_completed"/);
 for (const privacySetting of [
   "autocapture: false",
   "capture_pageview: false",
@@ -110,5 +111,8 @@ for (const privacySetting of [
   assert.ok(componentSource.includes(privacySetting), `Missing PostHog privacy setting: ${privacySetting}`);
 }
 assert.ok(componentSource.includes("<Analytics"), "Vercel Web Analytics component must be rendered");
+assert.match(componentSource, /consent !== "analytics"/);
+assert.match(componentSource, /NEXT_PUBLIC_HUBSPOT_PORTAL_ID/);
+assert.match(componentSource, /postHog\.group\("company"/);
 
 console.log("Product analytics contract tests passed.");

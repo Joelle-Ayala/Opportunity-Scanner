@@ -27,7 +27,7 @@ export default function PrivacyPage() {
     <main className="min-h-screen bg-field">
       <SiteHeader />
       <article className="mx-auto max-w-3xl px-6 py-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">Last reviewed July 14, 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">Last reviewed July 21, 2026</p>
         <h1 className="mt-4 text-4xl font-semibold text-ink">Privacy notice</h1>
         <p className="mt-5 text-base leading-8 text-slate-700">
           Opportunity Scanner collects only the information needed to run requested scans, provide requested guides, operate the beta, and understand which product and content experiences are useful.
@@ -45,23 +45,35 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-ink">Optional product analytics</h2>
             <p className="mt-3">
-              When configured, we may use Vercel Analytics and PostHog to understand page visits and
-              basic product actions, such as starting or completing a scan or opening checkout.
-              PostHog session replay and autocapture are disabled. Our custom analytics events do
-              not include form entries such as email addresses, company URLs, or free-text responses.
-              These analytics providers process usage and technical data to provide and operate
-              their services for us.
+              Vercel Analytics provides aggregate, cookieless traffic information. With your
+              permission, we may also use PostHog and HubSpot to understand product actions and
+              customer journeys, such as starting a scan, opening checkout, using a report action,
+              or sending an opportunity to a workflow. PostHog session replay and autocapture are
+              disabled. Our custom analytics events do not include report contents, form answers,
+              email addresses, company websites, or free-text responses.
             </p>
           </section>
           <section>
             <h2 className="text-xl font-semibold text-ink">First-touch campaign attribution</h2>
             <p className="mt-3">
-              Opportunity Scanner uses a same-site first-party cookie for up to 90 days to remember
-              how a visitor first reached the site. It contains a random anonymous identifier, the
-              landing-page path, referring hostname, timestamp, and standard UTM campaign fields.
+              If you allow analytics, Opportunity Scanner uses a same-site first-party cookie for up
+              to 90 days to remember how a visitor first reached the site. It contains a random
+              anonymous identifier, the landing-page path, referring hostname, timestamp, and
+              standard UTM campaign fields.
               It does not store an email address, company website, payment identifier, authentication
               token, full landing-page query, or full referring URL. We use this information to
               understand which campaigns lead to requested scans and purchased reports.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold text-ink">Known customers and company activity</h2>
+            <p className="mt-3">
+              After someone provides a real email address or signs in, and has allowed analytics, we
+              may associate subsequent website or product activity with that contact and their work
+              email domain in HubSpot or with an internal account identifier in PostHog. This helps
+              us support customers and understand account-level product use. We do not claim that an
+              anonymous company visit identifies a specific person, and the company being scanned is
+              kept separate from the customer account using the product.
             </p>
           </section>
           <section>
@@ -80,7 +92,7 @@ export default function PrivacyPage() {
           </section>
           <section>
             <h2 className="text-xl font-semibold text-ink">Retention and choices</h2>
-            <p className="mt-3">Beta records are retained while needed for product operation, research follow-up, security, and business records. You may request access, correction, deletion, or withdrawal from optional marketing by contacting us. Some records may be retained when required for security, legal, or operational reasons.</p>
+            <p className="mt-3">Analytics permission is optional and can be changed at any time using Cookie choices in the site footer. We honor Global Privacy Control as a necessary-only preference. Beta records are retained while needed for product operation, research follow-up, security, and business records. You may request access, correction, deletion, or withdrawal from optional marketing by contacting us. Some records may be retained when required for security, legal, or operational reasons.</p>
           </section>
           <section>
             <h2 className="text-xl font-semibold text-ink">Contact</h2>

@@ -14,6 +14,7 @@ export function ReportActionLink({
   className,
   target,
   rel,
+  title,
   children
 }: {
   action: ReportValueAction;
@@ -22,6 +23,7 @@ export function ReportActionLink({
   className?: string;
   target?: "_blank";
   rel?: string;
+  title?: string;
   children: ReactNode;
 }) {
   return (
@@ -30,6 +32,7 @@ export function ReportActionLink({
       className={className}
       target={target}
       rel={rel}
+      title={title}
       onClick={() => trackProductEvent("report_value_action_selected", {
         action,
         report_tier: reportTier

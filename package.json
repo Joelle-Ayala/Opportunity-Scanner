@@ -52,6 +52,7 @@
     "test:organization-resolution": "node --experimental-strip-types scripts/test-organization-resolution.mjs",
     "test:enrichment-credits": "node --experimental-strip-types scripts/test-enrichment-credits.mjs",
     "test:product-analytics": "node --experimental-strip-types scripts/test-product-analytics.mjs",
+    "test:company-analytics": "node --experimental-strip-types scripts/test-company-analytics.mjs",
     "test:scan-rate-limit": "node --experimental-strip-types scripts/test-scan-rate-limit.mjs",
     "test:scan-attribution": "node --experimental-strip-types scripts/test-scan-attribution.mjs",
     "test:scan-lifecycle-email": "node --experimental-strip-types scripts/test-scan-lifecycle-email.mjs",

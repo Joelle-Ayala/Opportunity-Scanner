@@ -8,6 +8,10 @@ import {
   parseFirstTouchCookie,
   serializeFirstTouchAttribution
 } from "@/lib/acquisitionAttribution";
+import {
+  TRACKING_CONSENT_BROWSER_EVENT,
+  currentTrackingConsent
+} from "@/lib/trackingConsent";
 
 function cookieValue(name: string): string | undefined {
   const prefix = `${name}=`;
@@ -20,23 +24,30 @@ function cookieValue(name: string): string | undefined {
 
 export function FirstTouchAttributionCapture() {
   useEffect(() => {
-    const now = new Date();
-    const existing = cookieValue(FIRST_TOUCH_COOKIE_NAME);
-    if (parseFirstTouchCookie(existing, now.getTime())) return;
+    const capture = () => {
+      if (currentTrackingConsent() !== "analytics") return;
+      const now = new Date();
+      const existing = cookieValue(FIRST_TOUCH_COOKIE_NAME);
+      if (parseFirstTouchCookie(existing, now.getTime())) return;
 
-    const attribution = firstTouchAttributionFromUrl({
-      firstTouchId: crypto.randomUUID(),
-      firstTouchedAt: now.toISOString(),
-      landingUrl: window.location.href,
-      referrerUrl: document.referrer || undefined,
-      nowMs: now.getTime()
-    });
-    if (!attribution) return;
+      const attribution = firstTouchAttributionFromUrl({
+        firstTouchId: crypto.randomUUID(),
+        firstTouchedAt: now.toISOString(),
+        landingUrl: window.location.href,
+        referrerUrl: document.referrer || undefined,
+        nowMs: now.getTime()
+      });
+      if (!attribution) return;
 
-    const serialized = serializeFirstTouchAttribution(attribution, now.getTime());
-    if (!serialized) return;
+      const serialized = serializeFirstTouchAttribution(attribution, now.getTime());
+      if (!serialized) return;
 
-    document.cookie = firstTouchCookieAssignment(serialized, process.env.NODE_ENV === "production");
+      document.cookie = firstTouchCookieAssignment(serialized, process.env.NODE_ENV === "production");
+    };
+
+    capture();
+    window.addEventListener(TRACKING_CONSENT_BROWSER_EVENT, capture);
+    return () => window.removeEventListener(TRACKING_CONSENT_BROWSER_EVENT, capture);
   }, []);
 
   return null;
