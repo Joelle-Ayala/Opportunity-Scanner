@@ -26,13 +26,16 @@ assert.doesNotMatch(dashboard, /if \(subscription && searches\.length === 0\) re
 assert.match(dashboard, /const needsMonitoringSetup = Boolean\(subscription && capacityUsedCount === 0\)/);
 assert.match(dashboard, /Your plan is active, but monitoring setup is not complete yet\./);
 assert.match(dashboard, />Continue setup<\/a>/);
-assert.match(dashboard, /searchParams\?\.tab === "billing" \? "billing" : "overview"/);
+assert.match(dashboard, /searchParams\?\.tab === "billing" \? "billing"/);
+assert.match(dashboard, /searchParams\?\.tab === "pursuits" \? "pursuits" : "overview"/);
 assert.match(onboarding, /href="\/dashboard\?tab=billing"/);
 assert.match(onboarding, />View account status<\/a>/);
 assert.match(onboarding, /summary\.billing\.stripeCustomerId \? <BillingPortalButton \/>/);
 assert.match(dashboard, />Set up monitoring<\/a>/);
 assert.match(dashboard, />View monitoring plans<\/a>/);
 assert.match(dashboard, /Pick up where you left off/);
+assert.match(dashboard, /Next pursuit action/);
+assert.match(dashboard, /pursuits=\{\{ pursuits \}\}/);
 assert.match(dashboard, /latestReadyReport/);
 assert.match(dashboard, /workspaceCompanyFor\(session\.user\.email, reportRows\)/);
 assert.match(dashboard, />Open report<\/DashboardActionLink>/);

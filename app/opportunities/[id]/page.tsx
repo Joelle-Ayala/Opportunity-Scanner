@@ -16,6 +16,9 @@ import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 import { configuredSupportEmail } from "@/lib/support";
 import { sourceEvidenceText } from "@/lib/reportText";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
+import { canManageCustomerPursuit, loadCustomerPursuitForOpportunity } from "@/lib/dashboard/pursuits";
+import { pursuitApplicationMethod } from "@/lib/pursuits";
+import { PursuitWorkspace } from "@/components/pursuit-workspace";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -153,7 +156,7 @@ export default async function OpportunityPage({
   searchParams
 }: {
   params: { id: string };
-  searchParams: { scanId?: string; enrichment?: string; access?: string };
+  searchParams: { scanId?: string; enrichment?: string; access?: string; pursuit?: string; pursuitError?: string };
 }) {
   const scanId = searchParams.scanId || "";
   if (!scanId) {
@@ -186,9 +189,13 @@ export default async function OpportunityPage({
     }`,
     `${protocol}://${host}`
   ).toString();
-  const pageSessionResolution = await resolveCustomerPageSession(getCustomerAuthConfig(requestUrl), cookies())
-    .catch(() => ({ session: null, refreshRequired: false }));
-  if (pageSessionResolution.refreshRequired) {
+  let pageSessionResolution: Awaited<ReturnType<typeof resolveCustomerPageSession>> | null = null;
+  try {
+    pageSessionResolution = await resolveCustomerPageSession(getCustomerAuthConfig(requestUrl), cookies());
+  } catch {
+    pageSessionResolution = null;
+  }
+  if (pageSessionResolution?.refreshRequired) {
     const next = `/opportunities/${params.id}?scanId=${encodeURIComponent(scan.id)}${
       searchParams.access ? `&access=${encodeURIComponent(searchParams.access)}` : ""
     }`;
@@ -198,11 +205,24 @@ export default async function OpportunityPage({
     requestUrl,
     searchParams.access,
     scan,
-    pageSessionResolution.session?.user.id ?? null
+    pageSessionResolution?.session?.user.id ?? null
   );
   if (!reportAccess.hasAccess) {
     return <LockedOpportunityPreview scanId={scan.id} signal={signal} profile={profile} access={searchParams.access} />;
   }
+
+  const pursuitMethod = pursuitApplicationMethod(signal, profile);
+  const canManagePursuit = pageSessionResolution?.session?.user.id
+    ? await canManageCustomerPursuit(pageSessionResolution.session.user.id, scan)
+    : false;
+  const pursuit = pageSessionResolution?.session?.user.id
+    ? await loadCustomerPursuitForOpportunity({
+        authUserId: pageSessionResolution.session.user.id,
+        scan,
+        signal,
+        profile
+      }).catch(() => null)
+    : null;
 
   const enrichmentRequests = await listOpportunityEnrichmentRequests(scan.id, signal.id);
   const contactEnrichmentRequests = enrichmentRequests.filter((request) => request.enrichment_type === "find_contacts");
@@ -269,6 +289,21 @@ export default async function OpportunityPage({
             Person-level contact enrichment requires a signed-in Growth plan. This opportunity still includes its official contact path and next action.
           </section>
         ) : null}
+        {searchParams.pursuit === "started" ? (
+          <section role="status" aria-live="polite" className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
+            Pursuit started. Qualification, application requirements, ownership, and next steps are ready below.
+          </section>
+        ) : null}
+        {searchParams.pursuit === "saved" ? (
+          <section role="status" aria-live="polite" className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
+            Pursuit saved.
+          </section>
+        ) : null}
+        {searchParams.pursuitError ? (
+          <section role="alert" className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800">
+            {searchParams.pursuitError}
+          </section>
+        ) : null}
 
         <header className="mt-5 rounded-lg border border-line bg-white p-4 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -297,6 +332,17 @@ export default async function OpportunityPage({
             </span>
           </div>
         </header>
+
+        <PursuitWorkspace
+          scanId={scan.id}
+          opportunityId={signal.id}
+          sourceUrl={signal.source_url}
+          sourceName={signal.source_name}
+          method={pursuitMethod}
+          pursuit={pursuit}
+          signedIn={Boolean(pageSessionResolution?.session?.user.email)}
+          canManage={canManagePursuit}
+        />
 
         <section className="mt-5 grid gap-4 md:grid-cols-3">
           <div className="rounded-lg border border-line bg-white p-4">

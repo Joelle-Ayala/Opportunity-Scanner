@@ -64,7 +64,8 @@
     "test:security-headers": "node scripts/test-security-headers.mjs",
     "test:customer-experience": "node scripts/test-customer-experience-audit.mjs",
     "test:growth-hardening": "node scripts/test-growth-hardening.mjs",
-    "test:truthful-enrichment": "node scripts/test-truthful-enrichment-ux.mjs"
+    "test:truthful-enrichment": "node scripts/test-truthful-enrichment-ux.mjs",
+    "test:pursuits": "node --experimental-strip-types --import ./scripts/register-ts-test-hooks.mjs scripts/test-pursuit-workflow.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

@@ -18,6 +18,7 @@ export type ReportValueAction =
   | "research_target"
   | "monitor_signal"
   | "validate_fit"
+  | "review_source"
   | "send_to_workflow"
   | "export_report"
   | "export_outreach_csv"
@@ -138,6 +139,7 @@ const REPORT_VALUE_ACTIONS = [
   "research_target",
   "monitor_signal",
   "validate_fit",
+  "review_source",
   "send_to_workflow",
   "export_report",
   "export_outreach_csv",

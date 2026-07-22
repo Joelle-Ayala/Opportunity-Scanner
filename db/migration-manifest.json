@@ -239,6 +239,14 @@
       "prerequisites": ["v0023"],
       "sha256": "1c9a9b170388794c1c91f906486677291310d46b289a67ecab634ff385459e51",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0030",
+      "file": "db/customer-opportunity-pursuits.sql",
+      "description": "Account-owned, cross-scan-deduplicated opportunity pursuit workspace and application readiness fields.",
+      "prerequisites": ["v0001", "v0009", "v0013", "v0029"],
+      "sha256": "c0c6fd5f8ac7f10e82eb4d9514412fc5412c9a3fbe36795b0bf0a46ba5d3127c",
+      "requiredInProduction": true
     }
   ]
 }

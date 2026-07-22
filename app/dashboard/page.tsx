@@ -17,6 +17,7 @@ import {
 } from "@/lib/dashboard/repository";
 import { workspaceCompanyFor } from "@/lib/dashboard/workspace-identity";
 import { loadCustomerAlertPreferences } from "@/lib/deadlineAlerts/preferences";
+import { loadCustomerPursuits } from "@/lib/dashboard/pursuits";
 
 export const dynamic = "force-dynamic";
 
@@ -95,12 +96,16 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
   if (!session?.user.email) redirect("/auth/sign-in?next=%2Fdashboard");
 
   await ensureCustomerAccount(session.user.id, session.user.email);
-  const [summary, reports, searches, runs, alertPreferences] = await Promise.all([
+  const [summary, reports, searches, runs, alertPreferences, pursuits] = await Promise.all([
     loadDashboardSummary(session.user.id),
     loadDashboardReports(session.user.id),
     loadDashboardSavedSearches(session.user.id),
     loadDashboardMonitoringRuns(session.user.id, { limit: 20 }),
-    loadCustomerAlertPreferences(session.user.id)
+    loadCustomerAlertPreferences(session.user.id),
+    loadCustomerPursuits(session.user.id).catch((error) => {
+      console.error("dashboard.pursuits_unavailable", error);
+      return [];
+    })
   ]);
   const monitoringSubscriptions = summary.billing.subscriptions.filter(
     (item) => item.product === "monitor" || item.product === "growth"
@@ -143,6 +148,13 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     href: `/reports/${report.scanId}`
   }));
   const latestReadyReport = reportRows.find((report) => report.status === "ready" && report.href);
+  const activePursuits = pursuits.filter((pursuit) => !["won", "lost"].includes(pursuit.stage));
+  const nextPursuit = [...activePursuits].sort((left, right) => {
+    if (left.deadline && right.deadline) return left.deadline.localeCompare(right.deadline);
+    if (left.deadline) return -1;
+    if (right.deadline) return 1;
+    return right.updated_at.localeCompare(left.updated_at);
+  })[0];
   const fullReportCount = reportRows.filter((report) => report.reportType === "Full report").length;
   const workspaceCompany = workspaceCompanyFor(session.user.email, reportRows);
   const searchRows: MonitoredSearchRow[] = searches.map((search) => ({
@@ -222,7 +234,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
       <CustomerDashboard
         title={workspaceCompany ? `${workspaceCompany} workspace` : "Opportunity workspace"}
         description="Continue recent reports, run fresh searches, and manage monitoring."
-        initialTab={subscription && (searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError) ? "alerts" : searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : searchParams?.tab === "billing" ? "billing" : "overview"}
+        initialTab={subscription && (searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError) ? "alerts" : searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : searchParams?.tab === "billing" ? "billing" : searchParams?.tab === "reports" ? "reports" : searchParams?.tab === "pursuits" ? "pursuits" : "overview"}
         showAlerts={Boolean(subscription)}
         primaryAction={needsMonitoringSetup
           ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Continue setup</a>
@@ -231,16 +243,22 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           : <DashboardActionLink action="new_report" href="/dashboard/new" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run new report</DashboardActionLink>}
         accountSlot={<CustomerSignOutForm />}
         overview={{
-          focus: latestReadyReport ? {
-            eyebrow: "Pick up where you left off",
-            title: `${latestReadyReport.companyName} opportunity report`,
-            detail: `${latestReadyReport.reportType || "Opportunity report"} / Updated ${latestReadyReport.createdLabel}`,
-            primaryAction: <DashboardActionLink action="open_report" href={latestReadyReport.href || "/dashboard"} className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Open report</DashboardActionLink>,
-            secondaryAction: <DashboardActionLink action="refresh_report" href={`/dashboard/new?from=${encodeURIComponent(latestReadyReport.id)}`} className="rounded-md border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-accent hover:text-accent">Refresh report</DashboardActionLink>
-          } : undefined,
+          focus: nextPursuit ? {
+            eyebrow: "Next pursuit action",
+            title: nextPursuit.opportunity_title,
+            detail: `${nextPursuit.next_step || "Continue qualification"}${nextPursuit.deadline ? ` / Due ${dateLabel(nextPursuit.deadline)}` : ""}`,
+            primaryAction: <a href={`/opportunities/${nextPursuit.opportunity_id}?scanId=${nextPursuit.scan_id}`} className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Open pursuit</a>,
+            secondaryAction: <a href="/dashboard?tab=pursuits" className="rounded-md border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-accent hover:text-accent">View all pursuits</a>
+          } : latestReadyReport ? {
+              eyebrow: "Pick up where you left off",
+              title: `${latestReadyReport.companyName} opportunity report`,
+              detail: `${latestReadyReport.reportType || "Opportunity report"} / Updated ${latestReadyReport.createdLabel}`,
+              primaryAction: <DashboardActionLink action="open_report" href={latestReadyReport.href || "/dashboard"} className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Open report</DashboardActionLink>,
+              secondaryAction: <DashboardActionLink action="refresh_report" href={`/dashboard/new?from=${encodeURIComponent(latestReadyReport.id)}`} className="rounded-md border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-accent hover:text-accent">Refresh report</DashboardActionLink>
+            } : undefined,
           metrics: [
             { id: "reports", label: "Reports", value: summary.reportCount },
-            { id: "searches", label: "Saved searches", value: summary.activeSavedSearchCount },
+            { id: "pursuits", label: "Active pursuits", value: activePursuits.length, tone: activePursuits.length ? "positive" : "default" },
             { id: "monitors", label: "Active monitors", value: activeMonitorCount, tone: activeMonitorCount ? "positive" : "default" },
             { id: "new", label: "New opportunities", value: summary.newOpportunityCount, tone: summary.newOpportunityCount ? "positive" : "default" }
           ],
@@ -279,6 +297,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           reportEmptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>
         }}
         reports={{ reports: reportRows, emptyAction: <a href="/dashboard/new" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">Run first report</a>, renderMenu: (report) => <><a href={`/dashboard/new?from=${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Update preview</a>{hasMonitoringCapacity && eligibleMonitoringReportIds.has(report.id) ? <a href={`/dashboard/onboarding?source_scan_id=${encodeURIComponent(report.id)}`} className="rounded-md border border-accent px-3 py-2 text-sm font-semibold text-accent hover:bg-mist">Monitor</a> : null}{comparableScanIds.has(report.id) ? <a href={`/dashboard/compare/${report.id}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">Compare</a> : null}</> }}
+        pursuits={{ pursuits }}
         savedSearches={{
           searches: searchRows,
           emptyAction: subscription

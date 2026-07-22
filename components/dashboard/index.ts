@@ -6,6 +6,7 @@ export * from "./dashboard-overview";
 export * from "./dashboard-shell";
 export * from "./empty-state";
 export * from "./monitoring-change-feed";
+export * from "./pursuit-list";
 export * from "./report-list";
 export * from "./saved-search-list";
 export * from "./status-badge";

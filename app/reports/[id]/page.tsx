@@ -48,20 +48,21 @@ function companyLogoUrl(companyUrl: string): string | null {
 
 function primaryActionLabel(signal: StoredOpportunitySignal, profile?: CompanyProfile): string {
   const classification = opportunityActionFor(signal, profile);
+  if (classification.time_sensitivity === "expired") return "Research market evidence";
   if (signal.source_type === "active_contract" || classification.contact_strategy === "inspect_procurement_record") {
-    return "Review solicitation";
+    return "Review procurement notice";
   }
-  if (signal.source_type === "active_grant" || signal.revenue_pathway === "direct_apply") {
-    return "Check eligibility";
+  if (signal.source_type === "active_grant" && signal.revenue_pathway === "direct_apply") {
+    return "Qualify application";
   }
   if (signal.revenue_pathway === "sell_to_grantee" || classification.buyer_partner_type === "funded_buyer") {
     return "Research buyer";
   }
-  if (classification.buyer_partner_type === "award_recipient") {
-    return "Research recipient";
-  }
   if (signal.revenue_pathway === "partner_with_recipient") {
     return "Map partner path";
+  }
+  if (classification.buyer_partner_type === "award_recipient") {
+    return "Research recipient";
   }
   if (signal.revenue_pathway === "monitor_policy" || classification.contact_strategy === "monitor_source") {
     return "Monitor signal";
@@ -648,16 +649,12 @@ function PrimaryActionButton({
 }) {
   const classification = opportunityActionFor(signal, profile);
   const label = primaryActionLabel(signal, profile);
-  const opensSource =
-    isPaid &&
-    signal.source_url &&
-    ["Review solicitation", "Check eligibility", "Monitor signal"].includes(label);
-  const href = opensSource ? signal.source_url : `/opportunities/${signal.id}?scanId=${scanId}${accessSuffix(access)}`;
-  const analyticsAction = label === "Review solicitation"
+  const href = `/opportunities/${signal.id}?scanId=${scanId}${accessSuffix(access)}`;
+  const analyticsAction = label === "Review procurement notice"
     ? "review_solicitation"
-    : label === "Check eligibility"
+    : label === "Qualify application"
       ? "check_eligibility"
-      : ["Research buyer", "Research recipient", "Map partner path"].includes(label)
+      : ["Research buyer", "Research recipient", "Map partner path", "Research market evidence"].includes(label)
         ? "research_target"
         : label === "Monitor signal"
           ? "monitor_signal"
@@ -668,8 +665,6 @@ function PrimaryActionButton({
       action={analyticsAction}
       reportTier={isPaid ? "full" : "free"}
       href={href}
-      target={opensSource ? "_blank" : undefined}
-      rel={opensSource ? "noreferrer" : undefined}
       className="rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871]"
       title={classification.manual_research_instruction}
     >
