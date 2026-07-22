@@ -5,6 +5,7 @@ import {
   configuredSupportEmail,
   DEFAULT_SUPPORT_EMAIL,
   isBrandedSupportEmail,
+  supportMailboxIsReady,
   SUPPORT_EMAIL_DOMAIN
 } from "../lib/support.ts";
 
@@ -26,6 +27,18 @@ assert.equal(
 assert.equal(isBrandedSupportEmail("support@opportunityscanner.ai"), true);
 assert.equal(isBrandedSupportEmail("support@subdomain.opportunityscanner.ai"), false);
 assert.equal(isBrandedSupportEmail("founder@gmail.com"), false);
+assert.equal(supportMailboxIsReady({
+  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@opportunityscanner.ai",
+  SUPPORT_MAILBOX_READY: "true"
+}), true);
+assert.equal(supportMailboxIsReady({
+  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@opportunityscanner.ai",
+  SUPPORT_MAILBOX_READY: "false"
+}), false);
+assert.equal(supportMailboxIsReady({
+  OPPORTUNITY_SCANNER_CONTACT_EMAIL: "founder@gmail.com",
+  SUPPORT_MAILBOX_READY: "true"
+}), false);
 
 const publicSupportSources = await Promise.all([
   "../app/auth/sign-in/page.tsx",

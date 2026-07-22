@@ -1,6 +1,6 @@
 # Opportunity Scanner Launch Control
 
-Last audited: 2026-07-21
+Last audited: 2026-07-22
 Integration owner: Chief of Staff Agent
 Status owner: Project Management Agent
 
@@ -10,15 +10,15 @@ This is the source of truth for launch status. Deployed production evidence is k
 
 **Demo-ready: GO. Paid Report checkout: NO-GO. Subscriptions: NO-GO.**
 
-- Production release `d0eb48b6b07f` reports demo readiness and a verified live Stripe catalog.
+- Production release `4bd30e84ce10` reports demo readiness and a verified live Stripe catalog.
 - Paid Report checkout remains fail-closed because branded support readiness is false and the controlled purchase/refund/access proof is incomplete.
 - Monitor and Growth remain fail-closed because the production monitoring scheduler readiness flag is false.
-- Vercel Web Analytics is live. A consent-controlled HubSpot/PostHog and company-account analytics release is in verification and is not counted as deployed until the live release changes.
+- Vercel Web Analytics and consent-controlled company tracking are live.
 - Reparel, SchoolGig, and Jammcard report regression tests pass, but the paid quality bar still needs a stronger guarantee of current pursuits or an explicit market-intelligence classification.
 
 ## Production health
 
-Checked July 21, 2026 at `https://www.opportunityscanner.ai/api/health`:
+Checked July 22, 2026 at `https://www.opportunityscanner.ai/api/health`:
 
 | Capability | Production state |
 |---|---|
@@ -61,7 +61,7 @@ Checked July 21, 2026 at `https://www.opportunityscanner.ai/api/health`:
 
 Only these items require founder ownership or spend approval:
 
-1. Confirm or create the working `support@opportunityscanner.ai` mailbox so the production support readiness check can pass.
+1. Create the working `support@opportunityscanner.ai` mailbox, add its mail DNS records, prove inbound and outbound delivery, then set `SUPPORT_MAILBOX_READY=true`.
 2. Approve and complete one real $49 live purchase/refund proof after the release candidate passes.
 3. Approve the Vercel plan/scheduling capacity needed before Monitor and Growth move from daily proof to the intended production cadence.
 4. In HubSpot, confirm `opportunityscanner.ai` as the tracked domain and configure Buyer Intent target markets/high-intent paths if anonymous company-visit identification is desired.

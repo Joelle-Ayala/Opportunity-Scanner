@@ -23,6 +23,7 @@ const reportReadyEnvironment = {
   RESEND_API_KEY: "resend-test",
   RESEND_FROM_EMAIL: "scanner@example.test",
   OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@opportunityscanner.ai",
+  SUPPORT_MAILBOX_READY: "true",
   VERCEL_WEB_ANALYTICS_ENABLED: "true",
   ENABLE_PAID_REPORT_CHECKOUT: "true",
   CRON_SECRET: "cron-test"
@@ -86,6 +87,16 @@ for (const contactEmail of ["", "not-an-email", "support@example.test", "joelle@
   const health = evaluateLaunchHealth({
     ...reportReadyEnvironment,
     OPPORTUNITY_SCANNER_CONTACT_EMAIL: contactEmail
+  });
+  assert.equal(health.services.support, false);
+  assert.equal(health.ready.paidSignup, false);
+  assert.equal(health.ready.reportCheckout, false);
+}
+
+for (const mailboxReady of [undefined, "", "false", "TRUE", "yes"]) {
+  const health = evaluateLaunchHealth({
+    ...reportReadyEnvironment,
+    SUPPORT_MAILBOX_READY: mailboxReady
   });
   assert.equal(health.services.support, false);
   assert.equal(health.ready.paidSignup, false);
@@ -170,5 +181,6 @@ assert.match(launchCheck, /ENABLE_PAID_REPORT_CHECKOUT/);
 assert.match(launchCheck, /requires all Monitor and Growth Stripe Price IDs/);
 assert.match(launchCheck, /MONITORING_SCHEDULER_READY/);
 assert.match(launchCheck, /documented capacity proof/);
+assert.match(launchCheck, /SUPPORT_MAILBOX_READY/);
 
 console.log("Paid launch gating and health contract passed without exposing configuration values.");

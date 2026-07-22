@@ -31,6 +31,7 @@ const required = [
   "RESEND_API_KEY",
   "RESEND_FROM_EMAIL",
   "OPPORTUNITY_SCANNER_CONTACT_EMAIL",
+  "SUPPORT_MAILBOX_READY",
   "ALERT_UNSUBSCRIBE_SECRET",
   "NURTURE_UNSUBSCRIBE_SECRET",
   "SCAN_RATE_LIMIT_HASH_SECRET"
@@ -76,6 +77,7 @@ try {
   );
   configuredValues.STRIPE_SECRET_KEY = "sk_live_growth_hardening";
   configuredValues.OPPORTUNITY_SCANNER_CONTACT_EMAIL = "support@opportunityscanner.ai";
+  configuredValues.SUPPORT_MAILBOX_READY = "true";
   configuredValues.VERCEL_WEB_ANALYTICS_ENABLED = "true";
   const configured = runPreflight(configuredValues);
   assert.equal(configured.status, 0, `Preflight should pass with required variables configured: ${configured.stderr}`);

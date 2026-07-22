@@ -1,4 +1,4 @@
-import { isBrandedSupportEmail } from "./support.ts";
+import { supportMailboxIsReady } from "./support.ts";
 
 type LaunchHealthEnvironment = Record<string, string | undefined>;
 
@@ -40,7 +40,7 @@ export function evaluateLaunchHealth(env: LaunchHealthEnvironment, reportCatalog
   const mode = stripeMode(env);
   const payments = mode !== "unconfigured" && configured(env, "STRIPE_WEBHOOK_SECRET") && reportPrice;
   const email = configured(env, "RESEND_API_KEY") && validEmail(env.RESEND_FROM_EMAIL);
-  const support = isBrandedSupportEmail(env.OPPORTUNITY_SCANNER_CONTACT_EMAIL);
+  const support = supportMailboxIsReady(env);
   const monitoring = scans && configured(env, "CRON_SECRET");
   const vercelAnalytics = env.VERCEL_WEB_ANALYTICS_ENABLED?.trim() === "true";
   const postHogAnalytics = configured(env, "NEXT_PUBLIC_POSTHOG_KEY") && configured(env, "NEXT_PUBLIC_POSTHOG_HOST");

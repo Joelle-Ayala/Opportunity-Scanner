@@ -149,6 +149,7 @@ test("launch environment rejects test credentials without requiring legacy URL c
     RESEND_API_KEY: "resend-launch-test",
     RESEND_FROM_EMAIL: "scanner@example.test",
     OPPORTUNITY_SCANNER_CONTACT_EMAIL: "support@opportunityscanner.ai",
+    SUPPORT_MAILBOX_READY: "true",
     ALERT_UNSUBSCRIBE_SECRET: "alert-launch-test",
     NURTURE_UNSUBSCRIBE_SECRET: "nurture-launch-test",
     SCAN_RATE_LIMIT_HASH_SECRET: "rate-limit-launch-test",

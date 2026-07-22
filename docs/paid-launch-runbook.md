@@ -88,6 +88,7 @@ Confirm currency, tax behavior, receipt settings, customer statement text, and b
 
 - Verify the sending domain in Resend and set `RESEND_FROM_EMAIL` to an approved address on that domain.
 - Use Google Workspace Business Starter for the monitored `support@opportunityscanner.ai` mailbox. Configure the exact Google-issued MX, SPF, and DKIM records in GoDaddy, then prove the inbox can send and receive customer replies.
+- Set `SUPPORT_MAILBOX_READY=true` only after that inbound and outbound proof passes. A correctly formatted address alone must not open paid checkout.
 - Keep Resend on its provider-issued sending subdomain records for transactional product email. Do not place Resend inbound MX records at the root domain.
 - Configure `RESEND_API_KEY`, `ALERT_UNSUBSCRIBE_SECRET`, and `NURTURE_UNSUBSCRIBE_SECRET` in production.
 - Send one monitoring/deadline alert to the founder test inbox and verify subject, report link, sender identity, and delivery status.

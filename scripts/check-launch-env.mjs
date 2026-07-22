@@ -33,6 +33,7 @@ const required = [
   "RESEND_API_KEY",
   "RESEND_FROM_EMAIL",
   "OPPORTUNITY_SCANNER_CONTACT_EMAIL",
+  "SUPPORT_MAILBOX_READY",
   "ALERT_UNSUBSCRIBE_SECRET",
   "NURTURE_UNSUBSCRIBE_SECRET",
   "SCAN_RATE_LIMIT_HASH_SECRET"
@@ -82,6 +83,14 @@ if (
 ) {
   safetyErrors.push(
     "OPPORTUNITY_SCANNER_CONTACT_EMAIL must use the opportunityscanner.ai support domain."
+  );
+}
+const supportMailboxReady = process.env.SUPPORT_MAILBOX_READY?.trim();
+if (supportMailboxReady && supportMailboxReady !== "true" && supportMailboxReady !== "false") {
+  safetyErrors.push("SUPPORT_MAILBOX_READY must be exactly true or false.");
+} else if (supportMailboxReady !== "true") {
+  safetyErrors.push(
+    "SUPPORT_MAILBOX_READY must be true only after the branded mailbox passes inbound and outbound delivery checks."
   );
 }
 
