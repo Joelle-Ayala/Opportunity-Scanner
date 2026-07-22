@@ -1,4 +1,5 @@
 import type { BillingInterval, PaymentPlan } from "./contract";
+import { evaluateLaunchHealth } from "../launchHealth.ts";
 
 export type StripeServerConfig = {
   secretKey: string;
@@ -71,8 +72,11 @@ export function monitoringSchedulerIsReady(): boolean {
 }
 
 export function subscriptionCheckoutIsEnabled(): boolean {
-  return process.env[SUBSCRIPTION_CHECKOUT_FLAG]?.trim() === "true"
+  const operationsEnabled = process.env[SUBSCRIPTION_CHECKOUT_FLAG]?.trim() === "true"
     && monitoringSchedulerIsReady();
+  if (!operationsEnabled) return false;
+  if (process.env.NODE_ENV !== "production") return true;
+  return evaluateLaunchHealth(process.env).ready.subscriptionCheckout;
 }
 
 export function reportCheckoutIsEnabled(): boolean {

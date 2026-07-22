@@ -61,8 +61,8 @@ export function validateCheckoutInput(body: unknown): ValidationResult<CheckoutI
   if (plan === "report" && !UUID_PATTERN.test(scanId)) {
     return { ok: false, code: "INVALID_SCAN_ID", message: "A valid scan ID is required for report access." };
   }
-  if (plan !== "report" && scanId && !UUID_PATTERN.test(scanId)) {
-    return { ok: false, code: "INVALID_SCAN_ID", message: "Choose a valid report to continue monitoring setup." };
+  if (plan !== "report" && !UUID_PATTERN.test(scanId)) {
+    return { ok: false, code: "INVALID_SCAN_ID", message: "Choose a completed report to continue monitoring setup." };
   }
 
   return {
@@ -72,7 +72,7 @@ export function validateCheckoutInput(body: unknown): ValidationResult<CheckoutI
       billingInterval: plan === "report" ? null : (rawInterval as BillingInterval),
       customerEmail,
       requestId: requestId.toLowerCase(),
-      scanId: scanId ? scanId.toLowerCase() : null
+      scanId: scanId.toLowerCase()
     }
   };
 }

@@ -202,11 +202,9 @@ test("accepts the one-time Report contract and normalizes identity fields", () =
 test("accepts only monthly or annual server-catalog subscriptions", () => {
   for (const plan of ["monitor", "growth"]) {
     for (const billingInterval of ["monthly", "annual"]) {
-      const result = validateCheckoutInput(checkout({ plan, billingInterval, scanId: undefined }));
+      const result = validateCheckoutInput(checkout({ plan, billingInterval }));
       assert.equal(result.ok, true);
-      const reportOrigin = validateCheckoutInput(checkout({ plan, billingInterval }));
-      assert.equal(reportOrigin.ok, true);
-      if (reportOrigin.ok) assert.equal(reportOrigin.value.scanId, "91a3e66c-2c07-46cf-ab0c-3768375e050a");
+      if (result.ok) assert.equal(result.value.scanId, "91a3e66c-2c07-46cf-ab0c-3768375e050a");
     }
   }
   assert.equal(validateCheckoutInput(checkout({ plan: "enterprise" })).ok, false);
@@ -221,9 +219,10 @@ test("rejects client-controlled prices, destinations, customer IDs, and metadata
   }
 });
 
-test("requires a scan for Report, permits an optional valid subscription origin, and requires request idempotency", () => {
+test("requires a completed report origin for every paid plan and requires request idempotency", () => {
   assert.equal(validateCheckoutInput(checkout({ scanId: undefined })).ok, false);
   assert.equal(validateCheckoutInput(checkout({ requestId: "repeat-me" })).ok, false);
+  assert.equal(validateCheckoutInput(checkout({ plan: "growth", billingInterval: "monthly", scanId: undefined })).ok, false);
   assert.equal(validateCheckoutInput(checkout({ plan: "growth", billingInterval: "monthly" })).ok, true);
   assert.equal(validateCheckoutInput(checkout({ plan: "growth", billingInterval: "monthly", scanId: "other-account" })).ok, false);
 });
@@ -363,7 +362,7 @@ test("rejects anonymous subscription checkout before creating a Stripe session",
   const request = new Request("https://scanner.example.test/api/checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(checkout({ plan: "monitor", billingInterval: "monthly", scanId: undefined }))
+    body: JSON.stringify(checkout({ plan: "monitor", billingInterval: "monthly" }))
   });
   const plan = await inspectedCheckoutPlan(request);
   assert.equal(plan, "monitor");
@@ -413,7 +412,7 @@ test("rejects subscription checkout before auth or Stripe when either operations
     const request = new Request("https://scanner.example.test/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(checkout({ plan: "growth", billingInterval: "annual", scanId: undefined }))
+      body: JSON.stringify(checkout({ plan: "growth", billingInterval: "annual" }))
     });
     const response = await dispatchCheckoutWithEligibility(request, "growth", null, null, {
       checkout: async () => {
@@ -437,7 +436,7 @@ test("sends active and trialing subscribers to billing management without creati
     const request = new Request("https://scanner.example.test/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(checkout({ plan: "growth", billingInterval: "annual", scanId: undefined }))
+      body: JSON.stringify(checkout({ plan: "growth", billingInterval: "annual" }))
     });
     const plan = await inspectedCheckoutPlan(request);
     assert.equal(plan, "growth");

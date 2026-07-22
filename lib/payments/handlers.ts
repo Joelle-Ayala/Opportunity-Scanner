@@ -2,6 +2,7 @@ import { getStripeServerConfig, priceFor } from "./config.ts";
 import { validateCheckoutInput } from "./contract.ts";
 import { inspectReportCheckoutEligibility, persistStripeWebhookEvent } from "./persistence.ts";
 import { verifyReportCatalogCached } from "./reportCatalogPreflight.ts";
+import { verifySubscriptionCatalogCached } from "./subscriptionCatalogPreflight.ts";
 import { verifyStripeSignature } from "./signature.ts";
 import { createBillingPortalSession, createCheckoutSession } from "./stripeApi.ts";
 import { deliverPaidReportFulfillment } from "../transactionalEmail/paidReport.ts";
@@ -40,6 +41,7 @@ type CheckoutDependencies = {
   inspectSubscriptionSource: typeof inspectSubscriptionSourceReport;
   createSession: typeof createCheckoutSession;
   verifyReportCatalog: typeof verifyReportCatalogCached;
+  verifySubscriptionCatalog: typeof verifySubscriptionCatalogCached;
 };
 
 const checkoutDependencies: CheckoutDependencies = {
@@ -47,7 +49,8 @@ const checkoutDependencies: CheckoutDependencies = {
   inspectReport: inspectReportCheckoutEligibility,
   inspectSubscriptionSource: inspectSubscriptionSourceReport,
   createSession: createCheckoutSession,
-  verifyReportCatalog: verifyReportCatalogCached
+  verifyReportCatalog: verifyReportCatalogCached,
+  verifySubscriptionCatalog: verifySubscriptionCatalogCached
 };
 
 type SubscriptionSourceEligibility =
@@ -145,6 +148,12 @@ export async function handleCheckout(
       if (!catalog.ok) {
         console.error("Stripe Report catalog preflight failed", { code: catalog.code });
         return error(503, "REPORT_CATALOG_INVALID", catalog.reason);
+      }
+    } else {
+      const catalog = await dependencies.verifySubscriptionCatalog(config);
+      if (!catalog.ok) {
+        console.error("Stripe subscription catalog preflight failed", { code: catalog.code });
+        return error(503, "SUBSCRIPTION_CATALOG_INVALID", catalog.reason);
       }
     }
     const session = await dependencies.createSession({

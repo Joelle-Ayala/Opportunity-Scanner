@@ -10,13 +10,16 @@ type ReportMonitorCheckoutProps = {
   companyName: string;
   defaultEmail?: string;
   scanId: string;
+  initialPlan?: SubscriptionPlan;
+  initialBillingInterval?: BillingInterval;
+  resumeCheckout?: boolean;
 };
 
 type CheckoutResponse = {
   ok?: boolean;
   checkoutUrl?: unknown;
   portalUrl?: unknown;
-  error?: { message?: unknown };
+  error?: { code?: unknown; message?: unknown };
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -61,12 +64,15 @@ function secureStripeCheckoutUrl(value: unknown): string | null {
 export function ReportMonitorCheckout({
   companyName,
   defaultEmail,
-  scanId
+  scanId,
+  initialPlan = "monitor",
+  initialBillingInterval = "monthly",
+  resumeCheckout = false
 }: ReportMonitorCheckoutProps) {
   const accountEmail = defaultEmail?.trim().toLowerCase() ?? "";
   const [email, setEmail] = useState(accountEmail);
-  const [plan, setPlan] = useState<SubscriptionPlan>("monitor");
-  const [billingInterval, setBillingInterval] = useState<BillingInterval>("monthly");
+  const [plan, setPlan] = useState<SubscriptionPlan>(initialPlan);
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>(initialBillingInterval);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const needsEmail = !EMAIL_PATTERN.test(accountEmail);
@@ -110,6 +116,16 @@ export function ReportMonitorCheckout({
       const portalUrl = secureStripeBillingPortalUrl(body?.portalUrl);
 
       if (!response.ok || !body?.ok || (!checkoutUrl && !portalUrl)) {
+        if (body?.error?.code === "AUTHENTICATION_REQUIRED") {
+          const returnParams = new URLSearchParams({
+            checkout: "resume",
+            plan,
+            billing_interval: billingInterval
+          });
+          const nextPath = `/reports/${encodeURIComponent(scanId)}?${returnParams.toString()}#monitor-report-heading`;
+          window.location.assign(`/auth/sign-in?next=${encodeURIComponent(nextPath)}`);
+          return;
+        }
         const message = typeof body?.error?.message === "string"
           ? body.error.message
           : "Checkout could not be started. Please try again.";
@@ -207,6 +223,11 @@ export function ReportMonitorCheckout({
           </p>
 
           <form onSubmit={startCheckout} className="mt-4" noValidate>
+            {resumeCheckout ? (
+              <div role="status" className="mb-3 rounded-md border border-cyan-100 bg-white px-3 py-3 text-xs leading-5 text-steel">
+                You are signed in. Your {selectedOption.name} plan and {billingInterval} billing selection are ready.
+              </div>
+            ) : null}
             {needsEmail ? (
               <>
                 <label htmlFor="report-monitor-email" className="block text-xs font-semibold text-slate-700">

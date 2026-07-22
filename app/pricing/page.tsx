@@ -271,7 +271,7 @@ export default function PricingPage({
                   plan={checkoutPlan}
                   checkoutEnabled={checkoutEnabled}
                   featured={featured}
-                  scanId={plan.name === "Report" ? reportScanId : undefined}
+                  scanId={reportScanId}
                   initialBillingInterval={resumeCheckout
                     ? resumeCheckout.plan === checkoutPlan
                       ? resumeCheckout.billingInterval
@@ -326,7 +326,7 @@ export default function PricingPage({
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 {faq.question === "Can I buy a paid plan today?"
                   ? checkout.subscriptions
-                    ? "Yes. Monitor and Growth can be purchased here through secure Stripe checkout. The $49 report can be purchased from an existing free report so access returns to the correct scan."
+                    ? "Yes. Start with a completed free scan, then choose Monitor or Growth from that report. This ensures your first company profile is ready to monitor as soon as checkout finishes."
                     : checkout.report
                       ? "Yes. The $49 report can be purchased from an existing free report so access returns to the correct scan. Monitor and Growth are not open for purchase yet."
                       : faq.answer

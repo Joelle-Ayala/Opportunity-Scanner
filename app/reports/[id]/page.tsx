@@ -1460,6 +1460,8 @@ export default async function ReportPage({
     session_id?: string;
     purchase?: string;
     claim?: string;
+    plan?: string;
+    billing_interval?: string;
   };
 }) {
   const scan = await getScan(params.id);
@@ -1752,6 +1754,9 @@ export default async function ReportPage({
             companyName={reportCompanyName}
             defaultEmail={customerSession?.user.email}
             scanId={scan.id}
+            initialPlan={searchParams?.checkout === "resume" && searchParams.plan === "growth" ? "growth" : "monitor"}
+            initialBillingInterval={searchParams?.checkout === "resume" && searchParams.billing_interval === "annual" ? "annual" : "monthly"}
+            resumeCheckout={searchParams?.checkout === "resume"}
           />
         ) : null}
 

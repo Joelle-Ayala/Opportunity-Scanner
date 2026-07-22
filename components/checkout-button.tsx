@@ -25,6 +25,7 @@ type CheckoutResponse = {
 type PendingSubscriptionCheckout = {
   plan: "monitor" | "growth";
   billingInterval: BillingInterval;
+  scanId: string;
   createdAt: number;
 };
 
@@ -55,7 +56,7 @@ export function CheckoutButton({
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const canCheckout = checkoutEnabled && (plan !== "report" || UUID_PATTERN.test(scanId ?? ""));
+  const canCheckout = checkoutEnabled && UUID_PATTERN.test(scanId ?? "");
 
   useEffect(() => {
     if (!resumeCheckout || plan === "report") return;
@@ -149,7 +150,7 @@ export function CheckoutButton({
           billingInterval: plan === "report" ? null : billingInterval,
           customerEmail,
           requestId: crypto.randomUUID(),
-          scanId: plan === "report" ? scanId : null
+          scanId
         })
       });
       const body = (await response.json().catch(() => null)) as CheckoutResponse | null;
@@ -161,6 +162,7 @@ export function CheckoutButton({
           const pendingCheckout: PendingSubscriptionCheckout = {
             plan,
             billingInterval,
+            scanId: scanId!,
             createdAt: Date.now()
           };
           try {
@@ -172,7 +174,9 @@ export function CheckoutButton({
           const returnParams = new URLSearchParams({
             checkout: "resume",
             plan,
-            billing_interval: billingInterval
+            billing_interval: billingInterval,
+            source: "report_gate",
+            scanId: scanId!
           });
           const nextPath = `/pricing?${returnParams.toString()}#${plan}-checkout`;
           window.location.assign(`/auth/sign-in?next=${encodeURIComponent(nextPath)}`);
