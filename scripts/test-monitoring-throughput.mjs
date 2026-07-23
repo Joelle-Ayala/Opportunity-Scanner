@@ -184,7 +184,7 @@ test("batch architecture can clear 150 profiles per day when invoked every 15 mi
 
   assert.deepEqual(
     vercel.crons.find((job) => job.path === "/api/cron/monitoring"),
-    { path: "/api/cron/monitoring", schedule: "17 12 * * *" }
+    { path: "/api/cron/monitoring", schedule: "*/15 * * * *" }
   );
 });
 

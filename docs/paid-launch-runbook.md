@@ -120,14 +120,22 @@ Customer plan limits:
 Current operating capacity:
 
 - The worker supports a bounded batch of 1-10 due profiles per invocation, defaults to five, and processes up to three profiles concurrently by default.
-- The production cron is scheduled once daily at `12:17 UTC`.
+- The repository is prepared to invoke the monitoring worker every 15 minutes with `*/15 * * * *`.
+- Do not deploy this cron configuration while the Vercel project is on Hobby. Upgrade to Vercel Pro first and keep `MONITORING_SCHEDULER_READY=false` during deployment and evidence collection.
 - One invocation attempts up to five monitoring alerts and five deadline alerts after the scan work.
-- A failed monitoring scan is scheduled for retry after 15 minutes, but a retry still needs another invocation.
+- A failed monitoring scan is scheduled for retry after 15 minutes and becomes eligible for the next scheduler invocation.
 - Migration `v0028` records service-only, aggregate scheduler heartbeats for authorized invocations, including zero-work and failure outcomes. It records no customer, profile, report, company, or email identifiers and prunes evidence older than 90 days during scheduler writes.
 
-Before selling subscriptions, upgrade the project to Vercel Pro and schedule the monitoring route every 15 minutes. Run it for at least 48 hours, then query `get_monitoring_scheduler_evidence` and prove the schedule interval, successful/zero-work outcomes, throughput, backlog age, retries, dead letters, and alert delivery stay within plan capacity and the 60-second route limit. A single daily invocation is not sufficient for a fully used Growth plan with three daily profiles.
+Before selling subscriptions:
 
-Set `MONITORING_SCHEDULER_READY=true` only after that evidence is recorded. Subscription checkout remains fail-closed without it even when all plan Price IDs are configured.
+1. Upgrade the project to Vercel Pro before deploying the prepared cron configuration.
+2. Deploy the 15-minute schedule with `MONITORING_SCHEDULER_READY=false` and subscription checkout still disabled.
+3. Run it for at least 48 hours, then query `get_monitoring_scheduler_evidence` and prove intervals remain near 900 seconds, successful and zero-work outcomes are recorded, and throughput, backlog age, retries, dead letters, and alert delivery stay within plan capacity and the 60-second route limit.
+4. Validate all four live Stripe subscription Prices without changing checkout flags.
+5. Set `MONITORING_SCHEDULER_READY=true` only after the evidence is accepted, then enable subscription checkout in a separate reviewed production change.
+6. Complete the controlled subscription purchase, entitlement, cancellation, and access-expiration checks before treating subscriptions as generally available.
+
+The repository change alone does not make monitoring launch-ready. Subscription checkout remains fail-closed while `MONITORING_SCHEDULER_READY=false`, even when all plan Price IDs are configured.
 
 If capacity is not proven, choose **Go - Report only**.
 

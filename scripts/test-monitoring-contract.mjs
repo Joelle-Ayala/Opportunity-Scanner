@@ -199,13 +199,12 @@ test("repeated manual runs collapse into one cooldown-protected queue request", 
   assert.equal(canEnqueue(), false, "the same profile cannot be enqueued twice during cooldown");
 });
 
-test("Hobby-compatible Vercel cron runs monitoring once per day", async () => {
+test("Pro-ready Vercel cron runs monitoring every 15 minutes", async () => {
   const config = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
   assert.deepEqual(
     config.crons.find((job) => job.path === "/api/cron/monitoring"),
-    { path: "/api/cron/monitoring", schedule: "17 12 * * *" }
+    { path: "/api/cron/monitoring", schedule: "*/15 * * * *" }
   );
-  assert.ok(config.crons.length <= 2, "Vercel Hobby supports at most two cron jobs");
 });
 
 test("alert delivery migration deduplicates, leases, and resolves Stripe email server-side", async () => {
