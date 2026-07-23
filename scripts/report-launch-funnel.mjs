@@ -48,7 +48,7 @@ if (!baseUrl || !serviceRoleKey) {
 const days = requestedDays();
 const now = new Date();
 const startedAt = new Date(now.getTime() - days * 86_400_000).toISOString();
-const [scans, grants, subscriptions] = await Promise.all([
+const [scans, grants, subscriptions, profiles] = await Promise.all([
   selectRows(baseUrl, serviceRoleKey, "scans", {
     select: "id,status,created_at,completed_at,utm_source,utm_medium,utm_campaign",
     created_at: `gte.${startedAt}`,
@@ -59,8 +59,11 @@ const [scans, grants, subscriptions] = await Promise.all([
     granted_at: `gte.${startedAt}`
   }),
   selectRows(baseUrl, serviceRoleKey, "stripe_subscriptions", {
-    select: "product,billing_interval,status,livemode,created_at,canceled_at",
+    select: "stripe_customer_id,product,billing_interval,status,livemode,created_at,canceled_at",
     livemode: "eq.true"
+  }),
+  selectRows(baseUrl, serviceRoleKey, "monitored_profiles", {
+    select: "stripe_customer_id,status,created_at"
   })
 ]);
 
@@ -68,12 +71,14 @@ const snapshot = buildLaunchFunnelSnapshot({
   scans,
   grants,
   subscriptions,
+  profiles,
   days,
   now,
   capped:
     scans.length === QUERY_LIMIT ||
     grants.length === QUERY_LIMIT ||
-    subscriptions.length === QUERY_LIMIT
+    subscriptions.length === QUERY_LIMIT ||
+    profiles.length === QUERY_LIMIT
 });
 
 console.log(JSON.stringify(snapshot, null, 2));

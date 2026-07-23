@@ -1,4 +1,9 @@
-import { supabaseRpc, supabaseUpdate, withSupabaseRequestBudget } from "../supabaseRest.ts";
+import {
+  supabaseRpc,
+  supabaseRpcVoid,
+  supabaseUpdate,
+  withSupabaseRequestBudget
+} from "../supabaseRest.ts";
 import type { StoredOpportunitySignal } from "../types.ts";
 import {
   monitoringOpportunityKey,
@@ -309,7 +314,7 @@ export async function recordMonitoringSchedulerHeartbeat(
 ): Promise<void> {
   const queueHealth = heartbeat.queueHealth;
   await withSupabaseRequestBudget({ timeoutMs: 3_000 }, () =>
-    supabaseRpc<null>("record_monitoring_scheduler_run", {
+    supabaseRpcVoid("record_monitoring_scheduler_run", {
       p_invocation_id: heartbeat.invocationId,
       p_started_at: heartbeat.startedAt,
       p_completed_at: heartbeat.completedAt,

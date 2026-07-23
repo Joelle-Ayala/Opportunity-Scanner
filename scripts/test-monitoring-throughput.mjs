@@ -53,7 +53,7 @@ function heartbeat(overrides = {}) {
   };
 }
 
-async function captureHeartbeatPayload(input, responseStatus = 200) {
+async function captureHeartbeatPayload(input, responseStatus = 204) {
   const originalUrl = process.env.SUPABASE_URL;
   const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const originalFetch = globalThis.fetch;
@@ -62,7 +62,7 @@ async function captureHeartbeatPayload(input, responseStatus = 200) {
   process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-test-key";
   globalThis.fetch = async (_url, init) => {
     payload = JSON.parse(init.body);
-    return new Response(responseStatus === 200 ? "null" : "write failed", {
+    return new Response(responseStatus === 204 ? null : "write failed", {
       status: responseStatus,
       headers: { "content-type": "application/json" }
     });
@@ -259,6 +259,11 @@ test("successful scheduler work records aggregate timing, counts, and queue capa
     JSON.stringify(payload),
     /profileId|profile_id|scanId|scan_id|company|email|recipient/i
   );
+});
+
+test("void heartbeat RPC accepts PostgREST 204 No Content", async () => {
+  await assert.doesNotReject(captureHeartbeatPayload(heartbeat(), 204));
+  assert.match(storage, /supabaseRpcVoid\("record_monitoring_scheduler_run"/);
 });
 
 test("authorized zero-work scheduler runs still record a durable heartbeat", async () => {

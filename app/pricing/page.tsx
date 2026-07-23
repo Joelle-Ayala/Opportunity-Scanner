@@ -279,6 +279,11 @@ export default function PricingPage({
                     : nurtureBillingIntent(searchParams)}
                   resumeCheckout={resumeCheckout?.plan === checkoutPlan}
                 />
+                {checkoutPlan === "growth" ? (
+                  <p className={`mt-3 text-xs leading-5 ${featured ? "text-slate-300" : "text-muted"}`}>
+                    Best fit when you need daily checks, multiple company profiles, or contact enrichment.
+                  </p>
+                ) : null}
               </article>
             );
           })}

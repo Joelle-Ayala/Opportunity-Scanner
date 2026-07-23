@@ -55,7 +55,10 @@ assert.match(billing, /label: "Past due"/);
 assert.match(billing, /label: "Activation pending"/);
 assert.match(billing, /label: "Cancels at period end"/);
 assert.match(billing, /DashboardStatusBadge tone=\{status\.tone\}/);
-assert.match(dashboard, /summary\.billing\.stripeCustomerId \? <BillingPortalButton \/>/);
+assert.match(
+  dashboard,
+  /manageAction: summary\.billing\.stripeCustomerId[\s\S]*?<BillingPortalButton/
+);
 assert.match(billing, /hasPaymentMethodData/);
 assert.match(billing, /invoices !== undefined/);
 assert.doesNotMatch(billing, /No payment method on file/);

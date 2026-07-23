@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CustomerDashboard, DashboardActionLink, type DashboardReportRow, type MonitoredSearchRow } from "@/components/dashboard";
 import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
+import { GrowthPlanPrompt } from "@/components/growth-plan-prompt";
 import type { BillingSummaryProps } from "@/components/dashboard/billing-summary";
 import { DashboardAnalytics } from "@/components/page-analytics";
 import { KnownCompanyAnalytics } from "@/components/known-company-analytics";
@@ -123,6 +124,8 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     : 0;
   const hasMonitoringCapacity = Boolean(subscription && capacityUsedCount < profileLimit);
   const needsMonitoringSetup = Boolean(subscription && capacityUsedCount === 0);
+  const isMonitorPlan = subscription?.product === "monitor";
+  const monitorPlanLimitReached = Boolean(isMonitorPlan && capacityUsedCount >= profileLimit);
   const monitoredSourceScanIds = new Set(
     searches.flatMap((search) => search.monitoredProfile ? [search.monitoredProfile.sourceScanId] : [])
   );
@@ -231,6 +234,28 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           </div>
         </div>
       ) : null}
+      {subscriptionStatus === "past_due" ? (
+        <div className="border-b border-red-300 bg-red-50 px-5 py-4 text-red-950">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
+            <div>
+              <p role="alert" className="text-sm font-semibold">Payment needed to restore monitoring</p>
+              <p className="mt-1 text-sm">Update your payment method so scheduled scans and new opportunity alerts can resume.</p>
+            </div>
+            <BillingPortalButton label="Update payment method" variant="danger" />
+          </div>
+        </div>
+      ) : null}
+      {subscriptionStatus === "canceling" ? (
+        <div className="border-b border-amber-300 bg-amber-50 px-5 py-4 text-amber-950">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
+            <div>
+              <p role="status" className="text-sm font-semibold">{renewal || "Your monitoring access is scheduled to end"}</p>
+              <p className="mt-1 text-sm">Reports remain available, and monitoring continues until the end of your current billing period.</p>
+            </div>
+            <BillingPortalButton label="Review cancellation" />
+          </div>
+        </div>
+      ) : null}
       <CustomerDashboard
         title={workspaceCompany ? `${workspaceCompany} workspace` : "Opportunity workspace"}
         description="Continue recent reports, run fresh searches, and manage monitoring."
@@ -283,6 +308,12 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
             { id: "searches", label: "Saved searches", used: summary.activeSavedSearchCount, limit: null }
           ],
           usageAction: <DashboardActionLink action="view_plans" href="/pricing" className="text-sm font-semibold text-accent">View plans</DashboardActionLink>,
+          planPrompt: monitorPlanLimitReached
+            ? <GrowthPlanPrompt
+                context="capacity"
+                action={<BillingPortalButton label="Upgrade to Growth" />}
+              />
+            : undefined,
           recentReports: reportRows.slice(0, 5),
           monitoringChanges: runs.map((run) => ({ id: run.id, title: run.status === "failed" ? "Monitoring run needs attention" : `${run.newOpportunityCount} new opportunities found`, summary: run.errorMessage || "Your saved search was checked against the latest public records.", occurredLabel: dateLabel(run.completedAt || run.startedAt), kind: run.status === "failed" ? "system" as const : "new" as const, href: comparableScanIds.has(run.scanId) ? `/dashboard/compare/${run.scanId}` : `/reports/${run.scanId}` })),
           monitoringDescription: subscription
@@ -308,10 +339,25 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           addMonitoringAction: hasMonitoringCapacity
             ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-[#0A6871]">Add monitored search</a>
             : undefined,
-          monitoringCapacity: subscription ? { used: capacityUsedCount, limit: profileLimit } : undefined
+          monitoringCapacity: subscription ? { used: capacityUsedCount, limit: profileLimit } : undefined,
+          capacityAction: monitorPlanLimitReached
+            ? <BillingPortalButton label="Upgrade to Growth" />
+            : undefined
         }}
         alerts={{ preferences: alertPreferences, emailVerified: Boolean(session.user.email_confirmed_at) }}
-        billing={{ planName, subscriptionStatus, planIntervalLabel: billingSubscription?.billingInterval || undefined, renewalLabel: renewal, manageAction: summary.billing.stripeCustomerId ? <BillingPortalButton /> : undefined, upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">{billingSubscription ? "Compare plans" : "View plans"}</a> }}
+        billing={{
+          planName,
+          subscriptionStatus,
+          planIntervalLabel: billingSubscription?.billingInterval || undefined,
+          renewalLabel: renewal,
+          manageAction: summary.billing.stripeCustomerId
+            ? <BillingPortalButton
+                label={subscriptionStatus === "past_due" ? "Update payment method" : subscriptionStatus === "canceling" ? "Review cancellation" : "Manage billing"}
+                variant={subscriptionStatus === "past_due" ? "danger" : "default"}
+              />
+            : undefined,
+          upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">{billingSubscription ? "Compare plans" : "View plans"}</a>
+        }}
       />
     </main>
   );

@@ -51,7 +51,8 @@ function requestTimeoutMs(inheritedBudget: SupabaseRequestBudget | undefined): n
 async function supabaseRequest<T>(
   url: string,
   init: RequestInit,
-  failureLabel: string
+  failureLabel: string,
+  responseMode: "json" | "void" = "json"
 ): Promise<T> {
   const inheritedBudget = requestBudgetStorage.getStore();
   const timeoutMs = requestTimeoutMs(inheritedBudget);
@@ -86,6 +87,9 @@ async function supabaseRequest<T>(
     const response = await fetch(url, { ...init, signal: controller.signal });
     if (!response.ok) {
       throw new Error(`${failureLabel}: ${await response.text()}`);
+    }
+    if (responseMode === "void") {
+      return undefined as T;
     }
     return (await response.json()) as T;
   } catch (error) {
@@ -228,5 +232,31 @@ export async function supabaseRpc<T>(
       cache: "no-store"
     },
     "Supabase RPC failed"
+  );
+}
+
+export async function supabaseRpcVoid(
+  functionName: string,
+  payload: Record<string, unknown>
+): Promise<void> {
+  const config = getSupabaseConfig();
+  if (!config) {
+    throw new Error("Supabase is not configured.");
+  }
+
+  return supabaseRequest<void>(
+    `${config.url}/rest/v1/rpc/${functionName}`,
+    {
+      method: "POST",
+      headers: {
+        apikey: config.key,
+        Authorization: `Bearer ${config.key}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store"
+    },
+    "Supabase RPC failed",
+    "void"
   );
 }

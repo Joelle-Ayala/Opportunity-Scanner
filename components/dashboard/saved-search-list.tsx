@@ -40,6 +40,7 @@ export interface SavedSearchListProps {
     used: number;
     limit: number;
   };
+  capacityAction?: ReactNode;
   onOpen?: (search: MonitoredSearchRow) => void;
   onToggleStatus?: (search: MonitoredSearchRow) => void;
   onEdit?: (search: MonitoredSearchRow) => void;
@@ -62,6 +63,7 @@ export function SavedSearchList({
   emptyAction,
   addMonitoringAction,
   monitoringCapacity,
+  capacityAction,
   onOpen,
   onToggleStatus,
   onEdit,
@@ -98,9 +100,12 @@ export function SavedSearchList({
             <span className="text-sm font-medium text-muted">{searches.length} saved</span>
           )}
           {monitoringLimitReached ? (
-            <span role="status" className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900">
-              Plan limit reached
-            </span>
+            <>
+              <span role="status" className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900">
+                Plan limit reached
+              </span>
+              {capacityAction}
+            </>
           ) : addMonitoringAction}
         </div>
       </div>

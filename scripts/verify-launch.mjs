@@ -43,6 +43,7 @@ const checks = [
   ["Stripe catalog preflight", ["--experimental-strip-types", "scripts/test-stripe-catalog-preflight.mjs"]],
   ["Payment access", ["--experimental-strip-types", "scripts/test-payment-access.mjs"]],
   ["Subscription handoff", ["--experimental-strip-types", "scripts/test-subscription-checkout-handoff.mjs"]],
+  ["Subscription activation recovery", ["--experimental-strip-types", "scripts/test-subscription-activation-recovery.mjs"]],
   ["Anonymous subscription recovery", ["scripts/test-anonymous-subscription-checkout-recovery.mjs"]],
   ["Anonymous Report recovery", ["scripts/test-anonymous-report-checkout-recovery.mjs"]],
   ["Repeat Report purchase recovery", ["--experimental-strip-types", "scripts/test-repeat-report-purchase-recovery.mjs"]],

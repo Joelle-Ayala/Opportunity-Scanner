@@ -71,6 +71,26 @@ export function BillingSummary({
   }[subscriptionStatus];
   const hasPlanRecord = subscriptionStatus !== "none";
   const hasPaymentMethodData = Boolean(paymentMethodLabel || paymentMethodDetail);
+  const showBillingAttention = ["past_due", "incomplete", "canceling"].includes(subscriptionStatus);
+  const attention = subscriptionStatus === "past_due"
+    ? {
+        title: "Payment needs attention",
+        description: "Update your payment method to restore monitoring and keep new opportunity alerts running.",
+        className: "border-red-200 bg-red-50 text-red-950"
+      }
+    : subscriptionStatus === "incomplete"
+      ? {
+          title: "Finish activating your subscription",
+          description: "Complete billing setup before recurring monitoring can begin.",
+          className: "border-amber-200 bg-amber-50 text-amber-950"
+        }
+      : subscriptionStatus === "canceling"
+        ? {
+            title: renewalLabel || "Your monitoring access is scheduled to end",
+            description: "Your reports remain available, and monitoring continues until that date. You can review the cancellation in billing before access ends.",
+            className: "border-amber-200 bg-amber-50 text-amber-950"
+          }
+        : null;
 
   return (
     <div className="grid gap-6">
@@ -86,12 +106,21 @@ export function BillingSummary({
           </div>
           {hasPlanRecord && planIntervalLabel ? <p className="text-sm font-semibold capitalize text-steel">{planIntervalLabel} billing</p> : null}
         </div>
+        {showBillingAttention && attention ? (
+          <div className={`m-4 flex flex-wrap items-center justify-between gap-4 rounded-md border px-4 py-4 ${attention.className}`}>
+            <div>
+              <p className="text-sm font-semibold">{attention.title}</p>
+              <p className="mt-1 max-w-2xl text-sm leading-6">{attention.description}</p>
+            </div>
+            {manageAction}
+          </div>
+        ) : null}
         {hasPaymentMethodData || manageAction || upgradeAction ? <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
           {hasPaymentMethodData ? <div>
             <p className="text-sm font-semibold text-ink">Payment method</p>
             <p className="mt-1 text-sm text-muted">{[paymentMethodLabel, paymentMethodDetail].filter(Boolean).join(" / ")}</p>
           </div> : <div />}
-          <div className="flex flex-wrap gap-2">{manageAction}{upgradeAction}</div>
+          <div className="flex flex-wrap gap-2">{showBillingAttention ? null : manageAction}{upgradeAction}</div>
         </div> : null}
       </section>
 

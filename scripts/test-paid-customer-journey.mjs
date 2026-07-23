@@ -286,7 +286,10 @@ test("subscription checkout hands the customer to sign-in-protected monitoring o
   assert.match(reportPage, /<ReportMonitorCheckout/);
   assert.doesNotMatch(reportPage, /action="\/api\/dashboard\/searches"/);
   assert.match(dashboard, /\/dashboard\/compare\/\$\{run\.scanId\}/);
-  assert.match(dashboard, /<BillingPortalButton \/>/);
+  assert.match(
+    dashboard,
+    /manageAction: summary\.billing\.stripeCustomerId[\s\S]*?<BillingPortalButton/
+  );
 });
 
 let passed = 0;

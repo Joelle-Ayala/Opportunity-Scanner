@@ -28,6 +28,7 @@ export interface DashboardOverviewProps {
   recentReports: DashboardReportRow[];
   monitoringChanges: MonitoringChangeItem[];
   focus?: DashboardFocus;
+  planPrompt?: ReactNode;
   usageAction?: ReactNode;
   reportEmptyAction?: ReactNode;
   monitoringEmptyAction?: ReactNode;
@@ -55,6 +56,7 @@ export function DashboardOverview({
   recentReports,
   monitoringChanges,
   focus,
+  planPrompt,
   usageAction,
   reportEmptyAction,
   monitoringEmptyAction,
@@ -101,6 +103,8 @@ export function DashboardOverview({
         metrics={usage}
         action={usageAction}
       />
+
+      {planPrompt}
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] xl:items-start">
         <ReportList

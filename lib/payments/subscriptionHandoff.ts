@@ -1,6 +1,10 @@
 import { verifiedPaidSubscriptionCheckout } from "./accessContract.ts";
 import { getStripeServerConfig } from "./config.ts";
 import { fulfillVerifiedSubscriptionCheckout } from "./persistence.ts";
+import {
+  registerSubscriptionActivationRecovery,
+  type SubscriptionActivationCapture
+} from "./subscriptionActivationRecovery.ts";
 import { retrieveCheckoutSession, type StripeCheckoutSession } from "./stripeApi.ts";
 
 export type SubscriptionHandoffResult = {
@@ -12,12 +16,14 @@ type SubscriptionHandoffDependencies = {
   getConfig: typeof getStripeServerConfig;
   retrieveSession: (secretKey: string, sessionId: string) => Promise<StripeCheckoutSession>;
   fulfillCheckout: typeof fulfillVerifiedSubscriptionCheckout;
+  registerActivation: (capture: SubscriptionActivationCapture) => Promise<boolean>;
 };
 
 const defaultDependencies: SubscriptionHandoffDependencies = {
   getConfig: getStripeServerConfig,
   retrieveSession: retrieveCheckoutSession,
-  fulfillCheckout: fulfillVerifiedSubscriptionCheckout
+  fulfillCheckout: fulfillVerifiedSubscriptionCheckout,
+  registerActivation: registerSubscriptionActivationRecovery
 };
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -59,14 +65,21 @@ export async function verifySubscriptionCheckoutHandoff(
     const checkout = verifiedPaidSubscriptionCheckout(session, input.verifiedEmail, config.prices);
     if (!checkout) return { status: "invalid", sourceScanId: null };
     const sourceScanId = verifiedSourceScanId(session);
-    if (sourceScanId === undefined) return { status: "invalid", sourceScanId: null };
+    if (!sourceScanId) return { status: "invalid", sourceScanId: null };
     const fulfilled = await dependencies.fulfillCheckout(
       { authUserId: input.authUserId, accountId: input.customerAccountId },
       checkout
     );
-    return fulfilled
+    if (!fulfilled) return { status: "invalid", sourceScanId: null };
+    const registered = await dependencies.registerActivation({
+      customerId: checkout.customerId,
+      customerEmail: checkout.customerEmail,
+      subscriptionId: checkout.subscriptionId,
+      sourceScanId
+    });
+    return registered
       ? { status: "fulfilled", sourceScanId }
-      : { status: "invalid", sourceScanId: null };
+      : { status: "unavailable", sourceScanId: null };
   } catch (cause) {
     console.error("Subscription checkout activation failed", {
       error: cause instanceof Error ? cause.message : "Unknown subscription activation error"

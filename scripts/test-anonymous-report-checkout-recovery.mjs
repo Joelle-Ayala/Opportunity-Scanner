@@ -86,7 +86,7 @@ assert.match(report, /checkoutAvailability === "paused"/);
 assert.match(report, /Checkout paused/);
 assert.match(report, /!isPaid && !checkoutHandoffFailed/);
 assert.match(pricing, /searchParams\?\.source === "report_gate" \|\| searchParams\?\.source === "checkout_return"/);
-assert.match(pricing, /scanId=\{plan\.name === "Report" \? reportScanId : undefined\}/);
+assert.match(pricing, /scanId=\{reportScanId\}/);
 assert.match(checkoutButton, /if \(!checkoutEnabled\)/);
 assert.match(checkoutButton, /plan === "report" \? "Checkout Paused"/);
 assert.ok(

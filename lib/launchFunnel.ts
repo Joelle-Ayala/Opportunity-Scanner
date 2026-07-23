@@ -1,4 +1,9 @@
 import type { BillingInterval, PaymentPlan } from "./payments/contract";
+import {
+  buildSubscriptionLifecycleAnalytics,
+  type SubscriptionAnalyticsProfile,
+  type SubscriptionLifecycleAnalytics
+} from "./subscriptionAnalytics.ts";
 
 export type LaunchFunnelScan = {
   id: string;
@@ -16,6 +21,7 @@ export type LaunchFunnelGrant = {
 };
 
 export type LaunchFunnelSubscription = {
+  stripe_customer_id?: string | null;
   product?: string | null;
   billing_interval?: string | null;
   status: string;
@@ -60,6 +66,7 @@ export type LaunchFunnelMrrScorecard = {
   newSubscriptions: number;
   canceledSubscriptions: number;
   pastDueSubscriptions: number;
+  lifecycle: SubscriptionLifecycleAnalytics;
   notes: string[];
 };
 
@@ -170,6 +177,8 @@ function subscriptionCatalogEntry(subscription: LaunchFunnelSubscription): Subsc
 
 function buildMrrScorecard(input: {
   subscriptions: LaunchFunnelSubscription[];
+  profiles?: SubscriptionAnalyticsProfile[];
+  subscriptionDataAvailable: boolean;
   startedAt: Date;
   now: Date;
 }): LaunchFunnelMrrScorecard {
@@ -243,6 +252,12 @@ function buildMrrScorecard(input: {
     newSubscriptions,
     canceledSubscriptions,
     pastDueSubscriptions,
+    lifecycle: buildSubscriptionLifecycleAnalytics({
+      subscriptions: input.subscriptionDataAvailable ? input.subscriptions : undefined,
+      profiles: input.profiles,
+      startedAt: input.startedAt,
+      now: input.now
+    }),
     notes: [
       "MRR uses the fixed Monitor and Growth catalog values; annual contract value is divided by 12.",
       "Only live-mode, server-normalized catalog subscriptions with active status contribute to MRR and plan mix.",
@@ -255,6 +270,7 @@ export function buildLaunchFunnelSnapshot(input: {
   scans: LaunchFunnelScan[];
   grants: LaunchFunnelGrant[];
   subscriptions?: LaunchFunnelSubscription[];
+  profiles?: SubscriptionAnalyticsProfile[];
   days: number;
   now?: Date;
   capped?: boolean;
@@ -303,6 +319,8 @@ export function buildLaunchFunnelSnapshot(input: {
     segments,
     mrrScorecard: buildMrrScorecard({
       subscriptions: input.subscriptions ?? [],
+      profiles: input.profiles,
+      subscriptionDataAvailable: input.subscriptions !== undefined,
       startedAt,
       now
     }),

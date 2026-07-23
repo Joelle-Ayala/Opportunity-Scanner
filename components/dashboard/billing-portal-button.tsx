@@ -11,7 +11,17 @@ type BillingPortalResponse = {
   error?: { message?: unknown };
 };
 
-export function BillingPortalButton({ className = "" }: { className?: string }) {
+type BillingPortalButtonProps = {
+  className?: string;
+  label?: string;
+  variant?: "default" | "danger";
+};
+
+export function BillingPortalButton({
+  className = "",
+  label = "Manage billing",
+  variant = "default"
+}: BillingPortalButtonProps) {
   const errorId = useId();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -51,9 +61,13 @@ export function BillingPortalButton({ className = "" }: { className?: string }) 
         type="submit"
         disabled={loading}
         aria-describedby={error ? errorId : undefined}
-        className={`rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:border-accent hover:text-accent disabled:cursor-wait disabled:opacity-70 ${className}`}
+        className={`rounded-md border px-3 py-2 text-sm font-semibold disabled:cursor-wait disabled:opacity-70 ${
+          variant === "danger"
+            ? "border-red-700 bg-red-700 text-white hover:border-red-800 hover:bg-red-800"
+            : "border-line bg-white text-ink hover:border-accent hover:text-accent"
+        } ${className}`}
       >
-        {loading ? "Opening billing..." : "Manage billing"}
+        {loading ? "Opening billing..." : label}
       </button>
       <div aria-live="polite" aria-atomic="true">
         {error ? (

@@ -8,7 +8,7 @@ const [checkoutButton, pricingPage] = await Promise.all([
 
 assert.match(checkoutButton, /body\?\.error\?\.code === "AUTHENTICATION_REQUIRED" && plan !== "report"/);
 assert.match(checkoutButton, /window\.sessionStorage\.setItem\(PENDING_CHECKOUT_KEY, JSON\.stringify\(pendingCheckout\)\)/);
-assert.match(checkoutButton, /plan,\s*billingInterval,\s*createdAt: Date\.now\(\)/);
+assert.match(checkoutButton, /plan,\s*billingInterval,\s*scanId: scanId!,\s*createdAt: Date\.now\(\)/);
 assert.doesNotMatch(checkoutButton, /type PendingSubscriptionCheckout = \{[\s\S]*customerEmail:/);
 assert.match(checkoutButton, /const nextPath = `\/pricing\?\$\{returnParams\.toString\(\)\}#\$\{plan\}-checkout`/);
 assert.match(checkoutButton, /window\.location\.assign\(`\/auth\/sign-in\?next=\$\{encodeURIComponent\(nextPath\)\}`\)/);

@@ -247,6 +247,30 @@
       "prerequisites": ["v0001", "v0009", "v0013", "v0029"],
       "sha256": "c0c6fd5f8ac7f10e82eb4d9514412fc5412c9a3fbe36795b0bf0a46ba5d3127c",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0031",
+      "file": "db/monitoring-deadline-rpc-reliability.sql",
+      "description": "Repair deadline alert cryptographic function resolution and PL/pgSQL column ambiguity.",
+      "prerequisites": ["v0014", "v0028"],
+      "sha256": "e5d6a09df4fbfdc71c438cbabe91835cb48062231ad66947343c05a383b0aa3e",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0032",
+      "file": "db/subscription-activation-recovery.sql",
+      "description": "Service-only subscription activation recovery, bounded retries, idempotent setup reminders, and aggregate operations health.",
+      "prerequisites": ["v0017", "v0025"],
+      "sha256": "1025299c3b390e4d36e7af59d0f982f9b3573cee418d757f70939771d1bb6f0b",
+      "requiredInProduction": true
+    },
+    {
+      "version": "v0033",
+      "file": "db/subscription-activation-recovery-hardening.sql",
+      "description": "Require live subscriptions, finalize exhausted recovery leases, reconcile self-activation, and preserve the v0032 checksum correction.",
+      "prerequisites": ["v0032"],
+      "sha256": "553c621a0a4fe2b76f877c16d9e81912e2189177b4ac642421522ea26a02906f",
+      "requiredInProduction": true
     }
   ]
 }

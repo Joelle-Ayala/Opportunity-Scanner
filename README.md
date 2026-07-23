@@ -64,9 +64,9 @@ Repeat that shape for each manifest entry using its exact metadata. The URL rema
 ### Upgrade
 
 1. Re-run `db/schema-migrations.sql` so the latest idempotent ledger contract exists.
-2. Read `public.schema_migrations` ordered by `version` and compare each recorded file and checksum with the manifest.
+2. Read `public.schema_migration_effective_checksums` ordered by `version` and compare each file and effective checksum with the manifest. For databases that predate v0033, compare `public.schema_migrations` directly.
 3. Apply only unrecorded manifest entries, in order, after confirming all listed prerequisites are recorded.
-4. Record each successful entry in the same transaction as its SQL. Stop if a checksum or existing ledger record differs; do not edit or relabel an applied migration.
+4. Record each successful entry in the same transaction as its SQL. Stop if a checksum or existing ledger record differs; do not edit or relabel an applied migration. The sole documented exception is the known v0032 provisional checksum `a291754b0456a734d41881e6b439b11c21200795e3d30eef84083dbfd6311e4a`: apply v0033, which validates that exact value and appends a correction to the final v0032 checksum, then compare through the effective-checksum view. Any other mismatch remains a hard stop.
 5. Run `node scripts/test-migration-manifest.mjs`, then the normal launch checks.
 
 For a database created before the ledger existed, do not assume that every historical migration ran. Verify the expected tables, columns, functions, and deployment history for each manifest entry, then call `public.record_schema_migration` in order only for versions confirmed present. Apply any first missing version and all later required versions through the normal upgrade flow.

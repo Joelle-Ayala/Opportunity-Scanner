@@ -10,6 +10,10 @@ import {
 import { findNewMonitoringSignals } from "@/lib/monitoring/core";
 import { getMonitoringEmailConfig, sendMonitoringAlertEmail } from "@/lib/monitoring/delivery";
 import {
+  processSubscriptionActivationRecoveries,
+  type SubscriptionActivationRecoverySummary
+} from "@/lib/payments/subscriptionActivationRecovery";
+import {
   claimPendingMonitoringAlerts,
   claimDueMonitoredProfiles,
   claimMonitoredProfileById,
@@ -65,6 +69,7 @@ type MonitoringCronSummary = {
   failed: number;
   deferred: number;
   health: MonitoringQueueHealth | null;
+  subscriptionActivation: SubscriptionActivationRecoverySummary;
   delivery: {
     configured: boolean;
     claimed: number;
@@ -90,6 +95,31 @@ type MonitoringCronSummary = {
   results: MonitoringResult[];
   durationMs: number;
 };
+
+function failedSubscriptionActivationSummary(): SubscriptionActivationRecoverySummary {
+  return {
+    recovery: {
+      claimed: 0,
+      activated: 0,
+      retrying: 0,
+      deadLettered: 0,
+      canceled: 0,
+      staleClaims: 0,
+      claimFailed: true,
+      attemptFailed: 0,
+      releaseFailed: 0
+    },
+    reminders: {
+      configured: false,
+      claimed: 0,
+      delivered: 0,
+      retried: 0,
+      deadLettered: 0,
+      claimFailed: false,
+      releaseFailed: 0
+    }
+  };
+}
 
 async function respondWithSummary(
   summary: MonitoringCronSummary,
@@ -295,6 +325,15 @@ export async function GET(request: Request): Promise<Response> {
   const invocationId = randomUUID();
   const emailConfig = getMonitoringEmailConfig();
   const deadlineEmailConfig = getDeadlineEmailConfig();
+  let subscriptionActivation: SubscriptionActivationRecoverySummary;
+  try {
+    subscriptionActivation = await processSubscriptionActivationRecoveries();
+  } catch (cause) {
+    subscriptionActivation = failedSubscriptionActivationSummary();
+    console.error("Subscription activation recovery failed", {
+      error: cause instanceof Error ? cause.message : "Unknown subscription activation recovery error"
+    });
+  }
   let alertsClaimed = 0;
   let alertsDelivered = 0;
   let alertsFailed = 0;
@@ -332,6 +371,7 @@ export async function GET(request: Request): Promise<Response> {
       failed: 0,
       deferred: 0,
       health: null,
+      subscriptionActivation,
       delivery: {
         configured: Boolean(emailConfig),
         claimed: 0,
@@ -460,6 +500,11 @@ export async function GET(request: Request): Promise<Response> {
   }
   const configurationFailed = !emailConfig || !deadlineEmailConfig;
   const storageFailed = deadlineAlertsEnqueueFailed
+    || subscriptionActivation.recovery.claimFailed
+    || subscriptionActivation.recovery.attemptFailed > 0
+    || subscriptionActivation.recovery.releaseFailed > 0
+    || subscriptionActivation.reminders.claimFailed
+    || subscriptionActivation.reminders.releaseFailed > 0
     || alertsClaimFailed
     || alertsReleaseFailed > 0
     || deadlineAlertsClaimFailed
@@ -468,6 +513,8 @@ export async function GET(request: Request): Promise<Response> {
     || queueHealthFailed;
   const deliveryFailed = alertsFailed > 0
     || alertsDeadLettered > 0
+    || subscriptionActivation.reminders.retried > 0
+    || subscriptionActivation.reminders.deadLettered > 0
     || deadlineAlertsFailed > 0
     || deadlineAlertsDeadLettered > 0;
   const ok = !configurationFailed && !storageFailed && !deliveryFailed && failed === 0;
@@ -489,6 +536,7 @@ export async function GET(request: Request): Promise<Response> {
     failed,
     deferred,
     health: queueHealth,
+    subscriptionActivation,
     delivery: {
       configured: Boolean(emailConfig),
       claimed: alertsClaimed,

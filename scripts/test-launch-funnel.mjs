@@ -41,6 +41,7 @@ const snapshot = buildLaunchFunnelSnapshot({
   ],
   subscriptions: [
     {
+      stripe_customer_id: "customer-a",
       product: "monitor",
       billing_interval: "monthly",
       status: "active",
@@ -49,6 +50,7 @@ const snapshot = buildLaunchFunnelSnapshot({
       client_supplied_amount: 999_999
     },
     {
+      stripe_customer_id: "customer-b",
       product: "monitor",
       billing_interval: "annual",
       status: "active",
@@ -56,6 +58,7 @@ const snapshot = buildLaunchFunnelSnapshot({
       created_at: "2026-07-10T12:00:00.000Z"
     },
     {
+      stripe_customer_id: "customer-c",
       product: "growth",
       billing_interval: "annual",
       status: "active",
@@ -63,6 +66,7 @@ const snapshot = buildLaunchFunnelSnapshot({
       created_at: "2026-06-10T12:00:00.000Z"
     },
     {
+      stripe_customer_id: "customer-d",
       product: "growth",
       billing_interval: "monthly",
       status: "trialing",
@@ -70,6 +74,7 @@ const snapshot = buildLaunchFunnelSnapshot({
       created_at: "2026-07-12T12:00:00.000Z"
     },
     {
+      stripe_customer_id: "customer-e",
       product: "growth",
       billing_interval: "monthly",
       status: "past_due",
@@ -77,6 +82,7 @@ const snapshot = buildLaunchFunnelSnapshot({
       created_at: "2026-07-11T12:00:00.000Z"
     },
     {
+      stripe_customer_id: "customer-f",
       product: "monitor",
       billing_interval: "monthly",
       status: "canceled",
@@ -85,6 +91,7 @@ const snapshot = buildLaunchFunnelSnapshot({
       canceled_at: "2026-07-13T18:00:00.000Z"
     },
     {
+      stripe_customer_id: "customer-test",
       product: "monitor",
       billing_interval: "monthly",
       status: "active",
@@ -92,6 +99,7 @@ const snapshot = buildLaunchFunnelSnapshot({
       created_at: "2026-07-13T12:00:00.000Z"
     },
     {
+      stripe_customer_id: "customer-invalid-plan",
       product: "client_supplied_plan",
       billing_interval: "monthly",
       status: "active",
@@ -99,11 +107,29 @@ const snapshot = buildLaunchFunnelSnapshot({
       created_at: "2026-07-13T12:00:00.000Z"
     },
     {
+      stripe_customer_id: "customer-incomplete",
       product: "monitor",
       billing_interval: "monthly",
       status: "incomplete",
       livemode: true,
       created_at: "2026-07-13T12:00:00.000Z"
+    }
+  ],
+  profiles: [
+    {
+      stripe_customer_id: "customer-a",
+      status: "active",
+      created_at: "2026-07-13T14:00:00.000Z"
+    },
+    {
+      stripe_customer_id: "customer-d",
+      status: "active",
+      created_at: "2026-07-12T22:00:00.000Z"
+    },
+    {
+      stripe_customer_id: "customer-f",
+      status: "canceled",
+      created_at: "2026-07-10T12:00:00.000Z"
     }
   ],
   capped: true
@@ -154,6 +180,49 @@ assert.deepEqual(snapshot.mrrScorecard, {
   newSubscriptions: 5,
   canceledSubscriptions: 1,
   pastDueSubscriptions: 1,
+  lifecycle: {
+    purchaseToActivationRate: {
+      status: "available",
+      value: { numerator: 3, denominator: 5, percent: 60 }
+    },
+    medianActivationHours: {
+      status: "available",
+      value: 10
+    },
+    activeWithZeroProfileCount: {
+      status: "available",
+      value: 2
+    },
+    expansionMrr: {
+      status: "unavailable",
+      value: null,
+      reason: "Unavailable: stored subscriptions contain only the latest state, not prior plan or status transitions."
+    },
+    contractionMrr: {
+      status: "unavailable",
+      value: null,
+      reason: "Unavailable: stored subscriptions contain only the latest state, not prior plan or status transitions."
+    },
+    churnMrr: { status: "available", value: 99 },
+    pastDueRecoveryRate: {
+      status: "unavailable",
+      value: null,
+      reason: "Unavailable: stored subscriptions contain only the latest state, not prior plan or status transitions."
+    },
+    retentionByPlan: {
+      status: "available",
+      value: {
+        monitor: { retainedSubscriptions: 2, cohortSubscriptions: 3, retentionRate: 66.7 },
+        growth: { retainedSubscriptions: 1, cohortSubscriptions: 2, retentionRate: 50 }
+      }
+    },
+    notes: [
+      "Activation means a live subscription purchase was followed by creation of a monitoring profile for the same customer.",
+      "Retention is the share of subscriptions created in this reporting window that remain active or trialing, grouped by their latest stored plan.",
+      "Churn MRR uses the final stored catalog plan for subscriptions canceled during this reporting window.",
+      "All output is aggregate; customer, subscription, profile, and report identifiers are excluded."
+    ]
+  },
   notes: [
     "MRR uses the fixed Monitor and Growth catalog values; annual contract value is divided by 12.",
     "Only live-mode, server-normalized catalog subscriptions with active status contribute to MRR and plan mix.",

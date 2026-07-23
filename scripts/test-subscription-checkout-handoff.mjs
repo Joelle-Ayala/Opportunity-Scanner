@@ -59,10 +59,15 @@ assert.equal(verified?.subscriptionId, "sub_subscription123");
 assert.equal(verified?.product, "monitor");
 assert.equal(verified?.billingInterval, "monthly");
 
+let registeredActivation = null;
 const handoffDependencies = {
   getConfig: () => ({ secretKey: "sk_test_handoff", prices }),
   retrieveSession: async () => session(),
-  fulfillCheckout: async () => true
+  fulfillCheckout: async () => true,
+  registerActivation: async (activation) => {
+    registeredActivation = activation;
+    return true;
+  }
 };
 assert.deepEqual(
   await verifySubscriptionCheckoutHandoff({
@@ -74,6 +79,12 @@ assert.deepEqual(
   { status: "fulfilled", sourceScanId },
   "a verified subscription return preserves its server-recorded report"
 );
+assert.deepEqual(registeredActivation, {
+  customerId: "cus_customer123",
+  customerEmail: "buyer@example.com",
+  subscriptionId: "sub_subscription123",
+  sourceScanId
+});
 
 let mismatchFulfillments = 0;
 assert.deepEqual(
@@ -94,6 +105,20 @@ assert.deepEqual(
   "mismatched Stripe source metadata fails closed"
 );
 assert.equal(mismatchFulfillments, 0);
+
+assert.deepEqual(
+  await verifySubscriptionCheckoutHandoff({
+    authUserId: "cfda4281-4662-4eba-b304-88ea42125cec",
+    customerAccountId: "1c65ed91-a079-46b3-9446-d607e91875ad",
+    verifiedEmail: "buyer@example.com",
+    sessionId: "cs_test_subscription123"
+  }, {
+    ...handoffDependencies,
+    registerActivation: async () => false
+  }),
+  { status: "unavailable", sourceScanId: null },
+  "a fulfilled payment stays in recovery when activation registration is unavailable"
+);
 
 const originalFetch = globalThis.fetch;
 let checkoutForm;

@@ -241,7 +241,10 @@ const expectedOrder = [
   "db/scan-nurture-first-touch-delay.sql",
   "db/monitoring-scheduler-heartbeats.sql",
   "db/report-quality-publication-fence.sql",
-  "db/customer-opportunity-pursuits.sql"
+  "db/customer-opportunity-pursuits.sql",
+  "db/monitoring-deadline-rpc-reliability.sql",
+  "db/subscription-activation-recovery.sql",
+  "db/subscription-activation-recovery-hardening.sql"
 ];
 
 const requiredDependencies = {
@@ -323,7 +326,18 @@ const requiredDependencies = {
   "db/monitoring-scheduler-heartbeats.sql": [
     "db/monitoring-throughput-reliability.sql"
   ],
-  "db/report-quality-publication-fence.sql": ["db/stripe-report-payment-lifecycle.sql"]
+  "db/report-quality-publication-fence.sql": ["db/stripe-report-payment-lifecycle.sql"],
+  "db/monitoring-deadline-rpc-reliability.sql": [
+    "db/deadline-alerts.sql",
+    "db/monitoring-scheduler-heartbeats.sql"
+  ],
+  "db/subscription-activation-recovery.sql": [
+    "db/monitoring-setup-transaction.sql",
+    "db/monitoring-throughput-reliability.sql"
+  ],
+  "db/subscription-activation-recovery-hardening.sql": [
+    "db/subscription-activation-recovery.sql"
+  ]
 };
 
 const [manifestSource, readme, workflow] = await Promise.all([

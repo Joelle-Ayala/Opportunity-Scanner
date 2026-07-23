@@ -69,7 +69,13 @@ assert.match(dashboardPage, /subscription\.status === "incomplete" \|\| subscrip
 assert.match(dashboardPage, /\["active", "trialing"\]\.includes\(subscription\.status\) && subscription\.cancelAtPeriodEnd/);
 assert.match(dashboardPage, /const activeMonitorCount = subscription \? summary\.activeMonitorCount : 0/);
 assert.match(dashboardPage, /search\.monitoredProfile\?\.status === "active" && subscription/);
-assert.match(dashboardPage, /manageAction: summary\.billing\.stripeCustomerId \? <BillingPortalButton \/>/);
+assert.match(
+  dashboardPage,
+  /manageAction: summary\.billing\.stripeCustomerId[\s\S]*<BillingPortalButton/,
+  "customers with a Stripe customer record must retain billing portal access"
+);
+assert.match(dashboardPage, /label=\{subscriptionStatus === "past_due" \? "Update payment method"/);
+assert.match(dashboardPage, /variant=\{subscriptionStatus === "past_due" \? "danger" : "default"\}/);
 assert.doesNotMatch(dashboardPage, /manageAction: subscription \?/);
 
 console.log("Billing management tests passed.");

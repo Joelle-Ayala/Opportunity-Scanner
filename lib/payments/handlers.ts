@@ -5,6 +5,10 @@ import { verifyReportCatalogCached } from "./reportCatalogPreflight.ts";
 import { verifySubscriptionCatalogCached } from "./subscriptionCatalogPreflight.ts";
 import { verifyStripeSignature } from "./signature.ts";
 import { createBillingPortalSession, createCheckoutSession } from "./stripeApi.ts";
+import {
+  registerSubscriptionActivationRecovery,
+  subscriptionActivationFromStripeEvent
+} from "./subscriptionActivationRecovery.ts";
 import { deliverPaidReportFulfillment } from "../transactionalEmail/paidReport.ts";
 import { dashboardSelectOne } from "../dashboard/rest.ts";
 import { trackVerifiedStripePurchase } from "./analytics.ts";
@@ -245,6 +249,21 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
 
   try {
     const processed = await persistStripeWebhookEvent(event as Record<string, unknown>, config.prices);
+    const activation = subscriptionActivationFromStripeEvent(
+      event as Record<string, unknown>,
+      config.prices
+    );
+    if (activation) {
+      const registered = await registerSubscriptionActivationRecovery(activation);
+      if (!registered) {
+        console.error("Subscription activation recovery registration requires webhook retry");
+        return error(
+          503,
+          "SUBSCRIPTION_ACTIVATION_RETRY_REQUIRED",
+          "Subscription activation could not be registered yet."
+        );
+      }
+    }
     const delivery = await deliverPaidReportFulfillment(event as Record<string, unknown>, config);
     if (delivery.status === "failed") {
       console.error("Paid Report fulfillment requires webhook retry", {

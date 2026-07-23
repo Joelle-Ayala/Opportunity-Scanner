@@ -10,6 +10,8 @@ import { getStripeServerConfig, reportCheckoutIsEnabled } from "@/lib/payments/c
 import { claimActiveReportPurchaseByEmail } from "@/lib/payments/persistence";
 import { CheckoutReturnAnalytics, ReportAnalytics } from "@/components/page-analytics";
 import { ReportMonitorCheckout } from "@/components/report-monitor-checkout";
+import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
+import { GrowthPlanPrompt } from "@/components/growth-plan-prompt";
 import { ReportActionLink } from "@/components/report-action-link";
 import { signalLane } from "@/lib/actionability";
 import { contactDiscoverySummary, contactTargetsForSignal } from "@/lib/contactTargeting";
@@ -1529,6 +1531,7 @@ export default async function ReportPage({
   }
   let comparisonHref: string | null = null;
   let hasActiveMonitoringPlan = false;
+  let hasActiveMonitorPlan = false;
   let hasActiveGrowthPlan = false;
   let growthCreditBalance: ContactLookupAccess["creditBalance"] = null;
   if (customerSession?.user.email) {
@@ -1548,6 +1551,12 @@ export default async function ReportPage({
       dashboardSummary?.billing.subscriptions.some(
         (subscription) =>
           subscription.product === "growth" && ["active", "trialing"].includes(subscription.status)
+      )
+    );
+    hasActiveMonitorPlan = Boolean(
+      dashboardSummary?.billing.subscriptions.some(
+        (subscription) =>
+          subscription.product === "monitor" && ["active", "trialing"].includes(subscription.status)
       )
     );
     if (hasActiveGrowthPlan && dashboardSummary) {
@@ -1748,6 +1757,14 @@ export default async function ReportPage({
           access={searchParams?.access}
           isPaid={isPaid}
         />
+
+        {isPaid && !isAdminView && hasActiveMonitorPlan ? (
+          <GrowthPlanPrompt
+            context="report"
+            companyName={reportCompanyName}
+            action={<BillingPortalButton label="Upgrade to Growth" />}
+          />
+        ) : null}
 
         {showReportMonitorUpsell ? (
           <ReportMonitorCheckout
