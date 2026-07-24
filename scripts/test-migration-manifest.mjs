@@ -244,7 +244,8 @@ const expectedOrder = [
   "db/customer-opportunity-pursuits.sql",
   "db/monitoring-deadline-rpc-reliability.sql",
   "db/subscription-activation-recovery.sql",
-  "db/subscription-activation-recovery-hardening.sql"
+  "db/subscription-activation-recovery-hardening.sql",
+  "db/customer-demo-entitlements.sql"
 ];
 
 const requiredDependencies = {
@@ -337,6 +338,9 @@ const requiredDependencies = {
   ],
   "db/subscription-activation-recovery-hardening.sql": [
     "db/subscription-activation-recovery.sql"
+  ],
+  "db/customer-demo-entitlements.sql": [
+    "db/subscription-activation-recovery-hardening.sql"
   ]
 };
 

@@ -10,6 +10,7 @@ import {
   updateSavedSearch
 } from "@/lib/dashboard/repository";
 import type { SavedSearchConfiguration } from "@/lib/dashboard/types";
+import { activeMonitoringPlan } from "@/lib/dashboard/effectivePlan";
 
 export const runtime = "nodejs";
 
@@ -100,7 +101,7 @@ export async function POST(request: Request, { params }: { params: { searchId: s
         ]);
         const search = searches.find((item) => item.id === params.searchId && item.status !== "archived");
         if (!search) throw new Error("That saved search is not available to this account.");
-        const subscription = billing.subscriptions.find((item) => ["active", "trialing"].includes(item.status));
+        const subscription = activeMonitoringPlan(billing);
         const limit = subscription?.product === "growth" ? 3 : subscription?.product === "monitor" ? 1 : 0;
         const activeCount = searches.filter((item) => item.id !== params.searchId && item.monitoredProfile?.status === "active").length;
         if (!search.monitoredProfile || activeCount >= limit) throw new Error("Your monitored profile plan limit has been reached.");

@@ -7,7 +7,7 @@ import { workspaceCompanyFor } from "../lib/dashboard/workspace-identity.ts";
 const ROOT = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, ROOT), "utf8");
 
-const [dashboard, onboarding, activationProgress, savedSearches, monitoringFeed, dashboardShell, alertPreferences, newReport, billing, signIn, signInRoute, dashboardLoading, dashboardError, reportLoading, reportError, reportPage, opportunityPage] = await Promise.all([
+const [dashboard, onboarding, activationProgress, savedSearches, monitoringFeed, dashboardShell, alertPreferences, newReport, billing, effectivePlan, signIn, signInRoute, dashboardLoading, dashboardError, reportLoading, reportError, reportPage, opportunityPage] = await Promise.all([
   source("app/dashboard/page.tsx"),
   source("app/dashboard/onboarding/page.tsx"),
   source("components/dashboard/subscription-activation-progress.tsx"),
@@ -17,6 +17,7 @@ const [dashboard, onboarding, activationProgress, savedSearches, monitoringFeed,
   source("components/dashboard/alert-preferences.tsx"),
   source("app/dashboard/new/page.tsx"),
   source("components/dashboard/billing-summary.tsx"),
+  source("lib/dashboard/effectivePlan.ts"),
   source("app/auth/sign-in/page.tsx"),
   source("app/api/auth/sign-in/route.ts"),
   source("app/dashboard/loading.tsx"),
@@ -27,7 +28,8 @@ const [dashboard, onboarding, activationProgress, savedSearches, monitoringFeed,
   source("app/opportunities/[id]/page.tsx")
 ]);
 
-assert.match(dashboard, /item\.product === "monitor" \|\| item\.product === "growth"/);
+assert.match(dashboard, /activeMonitoringPlan\(summary\.billing\)/);
+assert.match(effectivePlan, /subscription\.product === "monitor" \|\| subscription\.product === "growth"/);
 assert.doesNotMatch(dashboard, /if \(subscription && searches\.length === 0\) redirect\("\/dashboard\/onboarding"\)/);
 assert.match(dashboard, /const needsMonitoringSetup = Boolean\(subscription && capacityUsedCount === 0\)/);
 assert.match(dashboard, /Your plan is active, but monitoring setup is not complete yet\./);
@@ -36,7 +38,7 @@ assert.match(dashboard, /searchParams\?\.tab === "billing" \? "billing"/);
 assert.match(dashboard, /searchParams\?\.tab === "pursuits" \? "pursuits" : "overview"/);
 assert.match(onboarding, /href="\/dashboard\?tab=billing"/);
 assert.match(onboarding, />View account status<\/a>/);
-assert.match(onboarding, /summary\.billing\.stripeCustomerId \? <BillingPortalButton \/>/);
+assert.match(onboarding, /summary\.billing\.billingPortalAvailable && subscription\.source === "stripe"/);
 assert.match(onboarding, /<SubscriptionActivationProgress nextHref=\{next\} \/>/);
 assert.match(activationProgress, /MAX_AUTOMATIC_CHECKS = 5/);
 assert.match(activationProgress, /window\.setTimeout/);
@@ -86,7 +88,7 @@ assert.match(billing, /label: "Cancels at period end"/);
 assert.match(billing, /DashboardStatusBadge tone=\{status\.tone\}/);
 assert.match(
   dashboard,
-  /manageAction: summary\.billing\.stripeCustomerId[\s\S]*?<BillingPortalButton/
+  /manageAction: summary\.billing\.billingPortalAvailable && billingSubscription\?\.source === "stripe"[\s\S]*?<BillingPortalButton/
 );
 assert.match(billing, /hasPaymentMethodData/);
 assert.match(billing, /invoices !== undefined/);

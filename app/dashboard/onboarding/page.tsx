@@ -11,6 +11,7 @@ import {
   loadDashboardSavedSearches,
   loadDashboardSummary
 } from "@/lib/dashboard/repository";
+import { activeMonitoringPlan } from "@/lib/dashboard/effectivePlan";
 import { verifySubscriptionCheckoutHandoff } from "@/lib/payments/subscriptionHandoff";
 
 export const dynamic = "force-dynamic";
@@ -58,7 +59,7 @@ export default async function MonitoringOnboardingPage({
     loadDashboardReports(session.user.id),
     loadDashboardSavedSearches(session.user.id)
   ]);
-  const subscription = summary.billing.subscriptions.find((item) => ["active", "trialing"].includes(item.status));
+  const subscription = activeMonitoringPlan(summary.billing);
   if (!subscription?.product && handoff?.status !== "unavailable") redirect("/pricing?source=onboarding");
   if (!subscription?.product) {
     return (
@@ -117,7 +118,9 @@ export default async function MonitoringOnboardingPage({
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <a href="/dashboard?tab=billing" className="text-sm font-semibold text-accent hover:text-ink">View account status</a>
-          {summary.billing.stripeCustomerId ? <BillingPortalButton /> : null}
+          {summary.billing.billingPortalAvailable && subscription.source === "stripe"
+            ? <BillingPortalButton />
+            : null}
         </div>
 
         {capacityUsedCount >= limit ? (

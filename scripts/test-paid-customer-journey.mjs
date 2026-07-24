@@ -125,7 +125,7 @@ test("monitoring onboarding requires an active plan, owned report, and plan capa
     source("app/api/dashboard/searches/route.ts")
   ]);
 
-  assert.match(onboarding, /subscriptions\.find\(\(item\) => \["active", "trialing"\]\.includes\(item\.status\)\)/);
+  assert.match(onboarding, /activeMonitoringPlan\(summary\.billing\)/);
   assert.match(onboarding, /subscription\.product === "growth" \? 3 : 1/);
   assert.match(onboarding, /loadDashboardReports\(session\.user\.id\)/);
   assert.match(onboarding, /report\.status === "completed"/);
@@ -288,7 +288,7 @@ test("subscription checkout hands the customer to sign-in-protected monitoring o
   assert.match(dashboard, /\/dashboard\/compare\/\$\{run\.scanId\}/);
   assert.match(
     dashboard,
-    /manageAction: summary\.billing\.stripeCustomerId[\s\S]*?<BillingPortalButton/
+    /manageAction: summary\.billing\.billingPortalAvailable && billingSubscription\?\.source === "stripe"[\s\S]*?<BillingPortalButton/
   );
 });
 

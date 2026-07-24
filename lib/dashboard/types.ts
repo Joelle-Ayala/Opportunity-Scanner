@@ -46,6 +46,8 @@ export type DashboardMonitoredProfile = {
   id: string;
   sourceScanId: string;
   latestScanId: string | null;
+  entitlementSource: "stripe" | "demo";
+  entitlementActive: boolean;
   cadence: "daily" | "weekly";
   status: "active" | "paused" | "canceled";
   nextRunAt: string;
@@ -64,10 +66,26 @@ export type DashboardMonitoringRun = {
   completedAt: string | null;
 };
 
+export type DashboardDemoPlan = {
+  source: "demo";
+  plan: "growth";
+  status: "active";
+  startsAt: string;
+  expiresAt: string;
+  capabilities: {
+    fullReports: true;
+    monitoring: true;
+    contactEnrichment: false;
+    billingPortal: false;
+  };
+};
+
 export type DashboardBillingState = {
   stripeCustomerId: string | null;
   customerEmail: string;
   stripeEmail: string | null;
+  demoPlan: DashboardDemoPlan | null;
+  billingPortalAvailable: boolean;
   subscriptions: Array<{
     id: string;
     product: "monitor" | "growth" | null;

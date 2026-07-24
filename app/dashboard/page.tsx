@@ -16,6 +16,10 @@ import {
   loadDashboardSavedSearches,
   loadDashboardSummary
 } from "@/lib/dashboard/repository";
+import {
+  activeMonitoringPlan,
+  displayedMonitoringPlan
+} from "@/lib/dashboard/effectivePlan";
 import { workspaceCompanyFor } from "@/lib/dashboard/workspace-identity";
 import { loadCustomerAlertPreferences } from "@/lib/deadlineAlerts/preferences";
 import { loadCustomerPursuits } from "@/lib/dashboard/pursuits";
@@ -69,7 +73,7 @@ type BillingSubscription = {
   cancelAtPeriodEnd: boolean;
 };
 
-function billingStatusFor(subscription?: BillingSubscription): BillingSummaryProps["subscriptionStatus"] {
+function billingStatusFor(subscription?: BillingSubscription | null): BillingSummaryProps["subscriptionStatus"] {
   if (!subscription) return "none";
   if (["active", "trialing"].includes(subscription.status) && subscription.cancelAtPeriodEnd) return "canceling";
   if (subscription.status === "active" || subscription.status === "trialing") return subscription.status;
@@ -125,16 +129,20 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
       return [];
     })
   ]);
-  const monitoringSubscriptions = summary.billing.subscriptions.filter(
-    (item) => item.product === "monitor" || item.product === "growth"
-  );
-  const subscription = monitoringSubscriptions.find((item) => ["active", "trialing"].includes(item.status));
-  const billingSubscription = subscription || monitoringSubscriptions[0];
+  const subscription = activeMonitoringPlan(summary.billing);
+  const billingSubscription = displayedMonitoringPlan(summary.billing);
+  const demoPlan = summary.billing.demoPlan;
   const subscriptionStatus = billingStatusFor(billingSubscription);
   const activeMonitorCount = subscription ? summary.activeMonitorCount : 0;
 
   const subscriptionPlan = subscription?.product === "growth" ? "growth" : subscription?.product === "monitor" ? "monitor" : "none";
-  const planName = billingSubscription?.product === "growth" ? "Growth" : billingSubscription?.product === "monitor" ? "Monitor" : "Report access";
+  const planName = demoPlan
+    ? "Growth demo"
+    : billingSubscription?.product === "growth"
+      ? "Growth"
+      : billingSubscription?.product === "monitor"
+        ? "Monitor"
+        : "Report access";
   const profileLimit = subscription?.product === "growth" ? 3 : subscription?.product === "monitor" ? 1 : 0;
   const capacityUsedCount = subscription
     ? searches.filter((search) => search.monitoredProfile && search.monitoredProfile.status !== "canceled").length
@@ -220,7 +228,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     }
   }));
   const renewal = billingSubscription?.currentPeriodEnd && ["active", "trialing", "canceling"].includes(subscriptionStatus)
-    ? `${subscriptionStatus === "canceling" ? "Access ends" : "Renews"} ${dateLabel(billingSubscription.currentPeriodEnd)}`
+    ? `${demoPlan ? "Demo access ends" : subscriptionStatus === "canceling" ? "Access ends" : "Renews"} ${dateLabel(billingSubscription.currentPeriodEnd)}`
     : undefined;
   const sourceScanByProfile = new Map(
     searches.flatMap((search) => search.monitoredProfile
@@ -440,7 +448,9 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
             { id: "new", label: "New opportunities", value: summary.newOpportunityCount, tone: summary.newOpportunityCount ? "positive" : "default" }
           ],
           planName,
-          planDescription: planDescriptionFor(subscriptionStatus),
+          planDescription: demoPlan
+            ? "Full report and monitoring access for product demonstrations. Contact enrichment is not included."
+            : planDescriptionFor(subscriptionStatus),
           renewalLabel: renewal,
           usage: subscription ? [
             { id: "profiles", label: "Monitored profiles", used: capacityUsedCount, limit: profileLimit },
@@ -499,16 +509,17 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
         alerts={{ preferences: alertPreferences, emailVerified: Boolean(session.user.email_confirmed_at) }}
         billing={{
           planName,
+          planLabel: demoPlan ? "Demo access" : "Subscription",
           subscriptionStatus,
           planIntervalLabel: billingSubscription?.billingInterval || undefined,
           renewalLabel: renewal,
-          manageAction: summary.billing.stripeCustomerId
+          manageAction: summary.billing.billingPortalAvailable && billingSubscription?.source === "stripe"
             ? <BillingPortalButton
                 label={subscriptionStatus === "past_due" ? "Update payment method" : subscriptionStatus === "canceling" ? "Review cancellation" : "Manage billing"}
                 variant={subscriptionStatus === "past_due" ? "danger" : "default"}
               />
             : undefined,
-          upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">{billingSubscription ? "Compare plans" : "View plans"}</a>
+          upgradeAction: <a href="/pricing" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white">{demoPlan ? "View paid plans" : billingSubscription ? "Compare plans" : "View plans"}</a>
         }}
       />
     </main>

@@ -11,6 +11,7 @@ export interface BillingInvoiceRow {
 
 export interface BillingSummaryProps {
   planName: string;
+  planLabel?: string;
   subscriptionStatus: "active" | "trialing" | "canceling" | "past_due" | "incomplete" | "canceled" | "none";
   planIntervalLabel?: string;
   renewalLabel?: string;
@@ -23,6 +24,7 @@ export interface BillingSummaryProps {
 
 export function BillingSummary({
   planName,
+  planLabel = "Subscription",
   subscriptionStatus,
   planIntervalLabel,
   renewalLabel,
@@ -98,7 +100,7 @@ export function BillingSummary({
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line px-5 py-5">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-xs font-semibold uppercase text-muted">Subscription</p>
+              <p className="text-xs font-semibold uppercase text-muted">{planLabel}</p>
               <DashboardStatusBadge tone={status.tone}>{status.label}</DashboardStatusBadge>
             </div>
             <h2 id="billing-plan-title" className="mt-2 text-xl font-semibold text-ink">{planName}</h2>

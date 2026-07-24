@@ -22,6 +22,7 @@ import { ensureProfileRefinementFields } from "@/lib/profileRefinement";
 import { sourceCatalog } from "@/lib/sourceRegistry";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import { ensureCustomerAccount, loadDashboardSummary, loadOwnedMonitoringComparisonPair } from "@/lib/dashboard/repository";
+import { activeMonitoringPlan } from "@/lib/dashboard/effectivePlan";
 import {
   buildWorkflowPayload,
   opportunityHeadline,
@@ -1532,25 +1533,12 @@ export default async function ReportPage({
       loadDashboardSummary(customerSession.user.id).catch(() => null)
     ]);
     if (pair) comparisonHref = `/dashboard/compare/${scan.id}`;
-    hasActiveMonitoringPlan = Boolean(
-      dashboardSummary?.billing.subscriptions.some(
-        (subscription) =>
-          Boolean(subscription.product && ["monitor", "growth"].includes(subscription.product)) &&
-          ["active", "trialing"].includes(subscription.status)
-      )
-    );
-    hasActiveGrowthPlan = Boolean(
-      dashboardSummary?.billing.subscriptions.some(
-        (subscription) =>
-          subscription.product === "growth" && ["active", "trialing"].includes(subscription.status)
-      )
-    );
-    hasActiveMonitorPlan = Boolean(
-      dashboardSummary?.billing.subscriptions.some(
-        (subscription) =>
-          subscription.product === "monitor" && ["active", "trialing"].includes(subscription.status)
-      )
-    );
+    const activePlan = dashboardSummary
+      ? activeMonitoringPlan(dashboardSummary.billing)
+      : null;
+    hasActiveMonitoringPlan = Boolean(activePlan);
+    hasActiveGrowthPlan = dashboardSummary?.enrichmentCredits.entitled === true;
+    hasActiveMonitorPlan = activePlan?.source === "stripe" && activePlan.product === "monitor";
     if (hasActiveGrowthPlan && dashboardSummary) {
       growthCreditBalance = dashboardSummary.enrichmentCredits;
     }

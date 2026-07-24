@@ -38,6 +38,8 @@ type ScanOpportunityRow = { scan_id: string };
 type MonitoredOwnershipRow = { monitored_profile_id: string };
 type MonitoredProfileRow = {
   id: string;
+  stripe_customer_id: string | null;
+  customer_demo_entitlement_id: string | null;
   source_scan_id: string;
   latest_scan_id: string | null;
   cadence: "daily" | "weekly";
@@ -45,6 +47,15 @@ type MonitoredProfileRow = {
   next_run_at: string;
   last_run_at: string | null;
 };
+type DemoEntitlementRow = {
+  id: string;
+  customer_account_id: string;
+  plan: "growth";
+  status: "active" | "expired" | "revoked";
+  starts_at: string;
+  expires_at: string;
+};
+type DemoEntitlementScanRow = { scan_id: string };
 type MonitoredVersionRow = { monitored_profile_id: string; saved_search_version_id: string };
 type SavedSearchRow = {
   id: string;
@@ -105,6 +116,33 @@ const MONITORING_SETUP_MESSAGES: Record<MonitoringSetupErrorCode, string> = {
   REPORT_NOT_ELIGIBLE: "Choose a completed report owned by this account that is not already monitored.",
   TEMPORARY_SETUP_FAILURE: "Monitoring setup is temporarily unavailable. Your plan is still active; please try again."
 };
+
+async function loadActiveDemoEntitlement(
+  accountId: string,
+  now = new Date()
+): Promise<DemoEntitlementRow | null> {
+  const timestamp = now.toISOString();
+  return dashboardSelectOne<DemoEntitlementRow>("customer_demo_entitlements", {
+    select: "id,customer_account_id,plan,status,starts_at,expires_at",
+    customer_account_id: `eq.${accountId}`,
+    plan: "eq.growth",
+    status: "eq.active",
+    starts_at: `lte.${timestamp}`,
+    expires_at: `gt.${timestamp}`,
+    order: "expires_at.desc"
+  });
+}
+
+async function loadDemoEntitledScanIds(
+  entitlement: DemoEntitlementRow | null
+): Promise<Set<string>> {
+  if (!entitlement) return new Set();
+  const rows = await dashboardSelect<DemoEntitlementScanRow>("customer_demo_entitlement_scans", {
+    select: "scan_id",
+    customer_demo_entitlement_id: `eq.${entitlement.id}`
+  });
+  return new Set(rows.map((row) => row.scan_id));
+}
 
 export class MonitoringSetupError extends Error {
   readonly code: MonitoringSetupErrorCode;
@@ -262,7 +300,8 @@ async function requireOwnedSavedSearch(
   const profileId = profileLinks[0]?.monitored_profile_id;
   const profile = profileId
     ? await dashboardSelectOne<MonitoredProfileRow>("monitored_profiles", {
-        select: "id,source_scan_id,latest_scan_id,cadence,status,next_run_at,last_run_at",
+        select:
+          "id,stripe_customer_id,customer_demo_entitlement_id,source_scan_id,latest_scan_id,cadence,status,next_run_at,last_run_at",
         id: `eq.${profileId}`
       })
     : null;
@@ -339,6 +378,13 @@ export async function requestSavedSearchRunNow(
   if (!owned.profile || owned.profile.status !== "active") {
     throw new Error("Resume this saved search before running it.");
   }
+  if (owned.profile.customer_demo_entitlement_id) {
+    const demoEntitlement = await loadActiveDemoEntitlement(owned.account.id);
+    const entitledScanIds = await loadDemoEntitledScanIds(demoEntitlement);
+    if (!entitledScanIds.has(owned.profile.source_scan_id)) {
+      throw new MonitoringSetupError("PLAN_REQUIRED");
+    }
+  }
   const requestedAt = new Date();
   const cooldownCutoff = new Date(requestedAt.getTime() - MONITORING_MANUAL_RUN_COOLDOWN_MS);
   const updated = await dashboardUpdate<{ id: string }>(
@@ -392,8 +438,12 @@ export async function loadDashboardReports(
   const ownership = await ownedScans(account.id);
   const scanIds = ownership.map((row) => row.scan_id);
   if (scanIds.length === 0) return [];
+  const demoEntitlement = await loadActiveDemoEntitlement(account.id);
+  const demoEntitledScanIds = await loadDemoEntitledScanIds(demoEntitlement);
   const fullAccessScanIds = new Set(
-    ownership.filter((row) => row.access_level === "full").map((row) => row.scan_id)
+    ownership
+      .filter((row) => demoEntitledScanIds.has(row.scan_id) || row.access_level === "full")
+      .map((row) => row.scan_id)
   );
 
   const page = pageParameters(options);
@@ -482,7 +532,8 @@ async function ownedMonitoredProfiles(accountId: string): Promise<MonitoredProfi
   const ids = ownership.map((row) => row.monitored_profile_id);
   if (ids.length === 0) return [];
   return dashboardSelect<MonitoredProfileRow>("monitored_profiles", {
-    select: "id,source_scan_id,latest_scan_id,cadence,status,next_run_at,last_run_at",
+    select:
+      "id,stripe_customer_id,customer_demo_entitlement_id,source_scan_id,latest_scan_id,cadence,status,next_run_at,last_run_at",
     id: inFilter(ids),
     order: "created_at.desc"
   });
@@ -490,15 +541,17 @@ async function ownedMonitoredProfiles(accountId: string): Promise<MonitoredProfi
 
 export async function loadDashboardSavedSearches(authUserId: string): Promise<DashboardSavedSearch[]> {
   const account = await requireAccount(authUserId);
-  const [searches, profiles] = await Promise.all([
+  const [searches, profiles, demoEntitlement] = await Promise.all([
     dashboardSelect<SavedSearchRow>("customer_saved_searches", {
       select: "id,name,status,current_version_id,created_at,updated_at",
       customer_account_id: `eq.${account.id}`,
       order: "updated_at.desc"
     }),
-    ownedMonitoredProfiles(account.id)
+    ownedMonitoredProfiles(account.id),
+    loadActiveDemoEntitlement(account.id)
   ]);
   if (searches.length === 0) return [];
+  const demoEntitledScanIds = await loadDemoEntitledScanIds(demoEntitlement);
 
   const [versions, profileVersions] = await Promise.all([
     dashboardSelect<SavedSearchVersionRow>("customer_saved_search_versions", {
@@ -555,6 +608,10 @@ export async function loadDashboardSavedSearches(authUserId: string): Promise<Da
             id: monitored.profile.id,
             sourceScanId: monitored.profile.source_scan_id,
             latestScanId: monitored.profile.latest_scan_id,
+            entitlementSource: monitored.profile.customer_demo_entitlement_id ? "demo" : "stripe",
+            entitlementActive: monitored.profile.customer_demo_entitlement_id
+              ? demoEntitledScanIds.has(monitored.profile.source_scan_id)
+              : true,
             cadence: monitored.profile.cadence,
             status: monitored.profile.status,
             nextRunAt: monitored.profile.next_run_at,
@@ -637,7 +694,8 @@ export async function loadOwnedMonitoringComparisonPair(
     };
   }
   const profile = await dashboardSelectOne<MonitoredProfileRow>("monitored_profiles", {
-    select: "id,source_scan_id,latest_scan_id,cadence,status,next_run_at,last_run_at",
+    select:
+      "id,stripe_customer_id,customer_demo_entitlement_id,source_scan_id,latest_scan_id,cadence,status,next_run_at,last_run_at",
     id: `eq.${currentRun.monitored_profile_id}`
   });
   if (!profile || profile.source_scan_id === currentScanId) return null;
@@ -658,7 +716,7 @@ export async function loadDashboardBillingState(authUserId: string): Promise<Das
     }
   );
   const grantIds = grantOwnership.map((row) => row.report_access_grant_id);
-  const [customer, subscriptions, grants] = await Promise.all([
+  const [customer, subscriptions, grants, demoEntitlement] = await Promise.all([
     account.stripe_customer_id
       ? dashboardSelectOne<StripeCustomerRow>("stripe_customers", {
           select: "stripe_customer_id,email",
@@ -670,6 +728,7 @@ export async function loadDashboardBillingState(authUserId: string): Promise<Das
           select:
             "stripe_subscription_id,product,billing_interval,status,cancel_at_period_end,current_period_end",
           stripe_customer_id: `eq.${account.stripe_customer_id}`,
+          livemode: "eq.true",
           order: "created_at.desc"
         })
       : Promise.resolve([]),
@@ -678,13 +737,30 @@ export async function loadDashboardBillingState(authUserId: string): Promise<Das
           select: "id,scan_id,status",
           id: inFilter(grantIds)
         })
-      : Promise.resolve([])
+      : Promise.resolve([]),
+    loadActiveDemoEntitlement(account.id)
   ]);
 
   return {
     stripeCustomerId: account.stripe_customer_id,
     customerEmail: account.email,
     stripeEmail: customer?.email ?? null,
+    demoPlan: demoEntitlement
+      ? {
+          source: "demo",
+          plan: "growth",
+          status: "active",
+          startsAt: demoEntitlement.starts_at,
+          expiresAt: demoEntitlement.expires_at,
+          capabilities: {
+            fullReports: true,
+            monitoring: true,
+            contactEnrichment: false,
+            billingPortal: false
+          }
+        }
+      : null,
+    billingPortalAvailable: Boolean(account.stripe_customer_id),
     subscriptions: subscriptions.map((subscription) => ({
       id: subscription.stripe_subscription_id,
       product: subscription.product,
@@ -724,7 +800,9 @@ export async function loadDashboardSummary(authUserId: string): Promise<Dashboar
     completedReportCount: allScans.filter((scan) => scan.status === "completed").length,
     activeSavedSearchCount: savedSearches.filter((search) => search.status === "active").length,
     activeMonitorCount: savedSearches.filter(
-      (search) => search.monitoredProfile?.status === "active"
+      (search) =>
+        search.monitoredProfile?.status === "active"
+        && search.monitoredProfile.entitlementActive
     ).length,
     newOpportunityCount: runs.reduce((total, run) => total + run.newOpportunityCount, 0),
     billing,

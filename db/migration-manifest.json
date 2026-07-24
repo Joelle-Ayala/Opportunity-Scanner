@@ -271,6 +271,14 @@
       "prerequisites": ["v0032"],
       "sha256": "553c621a0a4fe2b76f877c16d9e81912e2189177b4ac642421522ea26a02906f",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0034",
+      "file": "db/customer-demo-entitlements.sql",
+      "description": "Service-only, expiring account demo entitlements for explicitly assigned full reports and monitored searches without fabricated Stripe records.",
+      "prerequisites": ["v0033"],
+      "sha256": "1e53b021fb2ae14f019c4dabefd5f76b43493765eb7f4dd131383f941fe84596",
+      "requiredInProduction": true
     }
   ]
 }

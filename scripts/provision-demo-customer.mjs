@@ -7,6 +7,16 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_SELECTED_SCANS = 100;
 const PROTECTED_DEMO_IDENTITY = "jammcard";
+const DEFAULT_ENTITLEMENT_DAYS = 30;
+const MAX_ENTITLEMENT_DAYS = 90;
+const ALLOWED_DEMO_RECIPIENTS = new Set([
+  "joelle@reparel.com",
+  "joelle@schoolgig.us"
+]);
+const ALLOWED_DEMO_COMPANIES = new Map([
+  ["joelle@reparel.com", ["reparel"]],
+  ["joelle@schoolgig.us", ["schoolgig", "civicstage"]]
+]);
 
 class OperatorError extends Error {
   constructor(message, status = null) {
@@ -75,6 +85,18 @@ function optionValue(argv, index, inlineValue, name) {
   return { value, nextIndex: index + 1 };
 }
 
+function boundedInteger(value, name, minimum, maximum) {
+  const normalized = requiredValue(String(value), name);
+  if (!/^[0-9]+$/.test(normalized)) {
+    throw new OperatorError(`${name} must be a whole number.`);
+  }
+  const parsed = Number.parseInt(normalized, 10);
+  if (parsed < minimum || parsed > maximum) {
+    throw new OperatorError(`${name} must be between ${minimum} and ${maximum}.`);
+  }
+  return parsed;
+}
+
 export function parseOptions(argv, env = process.env) {
   const cli = { scanIds: [], scanEmails: [] };
   for (let index = 0; index < argv.length; index += 1) {
@@ -82,13 +104,24 @@ export function parseOptions(argv, env = process.env) {
     const [name, inlineValue] = argument.split(/=(.*)/s, 2);
     if (name === "--apply" && inlineValue === undefined) cli.apply = true;
     else if ((name === "--help" || name === "-h") && inlineValue === undefined) cli.help = true;
-    else if (["--email", "--scan-id", "--scan-email", "--app-url"].includes(name)) {
+    else if ([
+      "--email",
+      "--scan-id",
+      "--scan-email",
+      "--app-url",
+      "--expires-in-days",
+      "--created-by",
+      "--note"
+    ].includes(name)) {
       const parsed = optionValue(argv, index, inlineValue, name);
       index = parsed.nextIndex;
       if (name === "--email") cli.email = parsed.value;
       if (name === "--scan-id") cli.scanIds.push(parsed.value);
       if (name === "--scan-email") cli.scanEmails.push(parsed.value);
       if (name === "--app-url") cli.appUrl = parsed.value;
+      if (name === "--expires-in-days") cli.expiresInDays = parsed.value;
+      if (name === "--created-by") cli.createdBy = parsed.value;
+      if (name === "--note") cli.note = parsed.value;
     } else {
       throw new OperatorError("An unsupported command-line argument was provided.");
     }
@@ -106,15 +139,39 @@ export function parseOptions(argv, env = process.env) {
     throw new OperatorError("At least one --scan-id or --scan-email selector is required.");
   }
 
+  const customerEmail = normalizeEmail(cli.email || env.DEMO_CUSTOMER_EMAIL, "Customer email");
+  if (!ALLOWED_DEMO_RECIPIENTS.has(customerEmail)) {
+    throw new OperatorError("Customer email is not on the approved demo recipient allowlist.");
+  }
+
+  const createdBy = requiredValue(
+    cli.createdBy || env.DEMO_ENTITLEMENT_CREATED_BY || "provision-demo-customer",
+    "Created by"
+  );
+  const note = requiredValue(
+    cli.note || env.DEMO_ENTITLEMENT_NOTE || "Founder-approved full-feature customer demo.",
+    "Demo entitlement note"
+  );
+  if (createdBy.length > 120) throw new OperatorError("Created by must be 120 characters or fewer.");
+  if (note.length > 500) throw new OperatorError("Demo entitlement note must be 500 characters or fewer.");
+
   return {
     help: false,
     apply: cli.apply === true,
-    customerEmail: normalizeEmail(cli.email || env.DEMO_CUSTOMER_EMAIL, "Customer email"),
+    customerEmail,
     scanIds,
     scanEmails,
     appOrigin: normalizeOrigin(cli.appUrl || env.APP_URL, "APP_URL"),
     supabaseOrigin: normalizeOrigin(env.SUPABASE_URL, "SUPABASE_URL"),
-    serviceRoleKey: requiredValue(env.SUPABASE_SERVICE_ROLE_KEY, "SUPABASE_SERVICE_ROLE_KEY")
+    serviceRoleKey: requiredValue(env.SUPABASE_SERVICE_ROLE_KEY, "SUPABASE_SERVICE_ROLE_KEY"),
+    expiresInDays: boundedInteger(
+      cli.expiresInDays || env.DEMO_ENTITLEMENT_DAYS || DEFAULT_ENTITLEMENT_DAYS,
+      "Demo entitlement days",
+      1,
+      MAX_ENTITLEMENT_DAYS
+    ),
+    createdBy,
+    note
   };
 }
 
@@ -173,6 +230,13 @@ function createSupabaseClient(options, fetchImpl) {
       return request(`/rest/v1/${table}`, {
         method: "PATCH",
         query,
+        body,
+        prefer: "return=representation"
+      });
+    },
+    rpc(functionName, body) {
+      return request(`/rest/v1/rpc/${functionName}`, {
+        method: "POST",
         body,
         prefer: "return=representation"
       });
@@ -299,9 +363,24 @@ function validateScan(row) {
   if (isProtectedIdentity) {
     throw new OperatorError("Jammcard scans are protected customer/regression data and cannot be attached to a demo account.");
   }
+  const companyIdentity = `${companyName} ${companyHostname}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
   return {
-    id: row.id.toLowerCase()
+    id: row.id.toLowerCase(),
+    companyIdentity
   };
+}
+
+function assertAllowedDemoCompanies(customerEmail, scans) {
+  const allowedCompanies = ALLOWED_DEMO_COMPANIES.get(customerEmail) || [];
+  for (const scan of scans) {
+    if (!allowedCompanies.some((company) => scan.companyIdentity.includes(company))) {
+      throw new OperatorError(
+        "A selected scan does not match the approved companies for this demo account."
+      );
+    }
+  }
 }
 
 async function resolveScans(client, scanIds, scanEmails) {
@@ -381,20 +460,77 @@ async function attachScan(client, accountId, scanId) {
   }
 }
 
-async function grantAccountReportAccess(client, accountId, scanId) {
-  const updated = await client.update("customer_scan_ownership", {
+function validateDemoEntitlement(row, accountId) {
+  if (
+    !row
+    || !UUID_PATTERN.test(row.id || "")
+    || row.customer_account_id?.toLowerCase() !== accountId
+    || row.plan !== "growth"
+    || !["active", "expired", "revoked"].includes(row.status)
+    || !Number.isFinite(Date.parse(row.starts_at))
+    || !Number.isFinite(Date.parse(row.expires_at))
+  ) {
+    throw new OperatorError("Supabase returned invalid demo entitlement data.");
+  }
+  return {
+    id: row.id.toLowerCase(),
+    accountId,
+    plan: row.plan,
+    status: row.status,
+    startsAt: row.starts_at,
+    expiresAt: row.expires_at
+  };
+}
+
+function isActiveDemoEntitlement(entitlement, now = new Date()) {
+  return Boolean(
+    entitlement
+    && entitlement.status === "active"
+    && Date.parse(entitlement.startsAt) <= now.getTime()
+    && Date.parse(entitlement.expiresAt) > now.getTime()
+  );
+}
+
+async function loadActiveDemoEntitlement(client, accountId, now) {
+  const rows = await client.select("customer_demo_entitlements", {
+    select: "id,customer_account_id,plan,status,starts_at,expires_at",
     customer_account_id: `eq.${accountId}`,
-    scan_id: `eq.${scanId}`
-  }, { access_level: "full" });
-  if (Array.isArray(updated) && updated.some((row) => row.scan_id?.toLowerCase() === scanId)) return;
-  const row = oneRow(await client.select("customer_scan_ownership", {
-    select: "customer_account_id,scan_id,access_level",
-    customer_account_id: `eq.${accountId}`,
-    scan_id: `eq.${scanId}`,
+    status: "eq.active",
+    order: "expires_at.desc",
     limit: 2
-  }), "scan ownership");
-  if (!row || row.access_level !== "full") {
-    throw new OperatorError("Account-scoped report access could not be safely granted.");
+  });
+  if (!Array.isArray(rows)) throw new OperatorError("Supabase returned invalid demo entitlement data.");
+  if (rows.length > 1) throw new OperatorError("Multiple active demo entitlements were found.");
+  const entitlement = rows[0] ? validateDemoEntitlement(rows[0], accountId) : null;
+  return isActiveDemoEntitlement(entitlement, now) ? entitlement : null;
+}
+
+async function grantDemoEntitlement(client, accountId, options, startsAt, expiresAt) {
+  const rows = await client.rpc("grant_customer_demo_entitlement", {
+    p_customer_account_id: accountId,
+    p_plan: "growth",
+    p_starts_at: startsAt.toISOString(),
+    p_expires_at: expiresAt.toISOString(),
+    p_created_by: options.createdBy,
+    p_note: options.note
+  });
+  const row = oneRow(rows, "demo entitlement");
+  const entitlement = validateDemoEntitlement(row, accountId);
+  if (!isActiveDemoEntitlement(entitlement, startsAt)) {
+    throw new OperatorError("Demo entitlement was not active after provisioning.");
+  }
+  return entitlement;
+}
+
+async function assignDemoEntitlementScans(client, entitlementId, scans) {
+  for (const scan of scans) {
+    const assigned = await client.rpc("assign_customer_demo_entitlement_scan", {
+      p_entitlement_id: entitlementId,
+      p_scan_id: scan.id
+    });
+    if (assigned !== true) {
+      throw new OperatorError("A demo report could not be scoped to the entitlement.");
+    }
   }
 }
 
@@ -411,8 +547,13 @@ export async function runProvisioning({
 } = {}) {
   const options = parseOptions(argv, env);
   if (options.help) return { help: true };
+  const startsAt = new Date();
+  const expiresAt = new Date(
+    startsAt.getTime() + options.expiresInDays * 24 * 60 * 60 * 1000
+  );
   const client = createSupabaseClient(options, fetchImpl);
   const scans = await resolveScans(client, options.scanIds, options.scanEmails);
+  assertAllowedDemoCompanies(options.customerEmail, scans);
   let authUser = await findAuthUser(client, options.customerEmail);
   let account = await loadAccountState(client, authUser?.id || null, options.customerEmail);
   if (account && !authUser) {
@@ -420,20 +561,36 @@ export async function runProvisioning({
   }
   const ownership = await loadOwnership(client, scans);
   assertOwnershipAvailable(ownership, account?.id || null);
+  let demoEntitlement = account
+    ? await loadActiveDemoEntitlement(client, account.id, startsAt)
+    : null;
 
   const plannedAttachments = scans.filter((scan) => !ownership.has(scan.id)).map((scan) => scan.id);
-  const plannedGrants = scans.filter((scan) => ownership.get(scan.id)?.accessLevel !== "full").map((scan) => scan.id);
   const authState = authUser ? "existing" : options.apply ? "created" : "would_create";
   const accountState = account ? "existing" : options.apply ? "created" : "would_create";
+  let entitlementState = demoEntitlement ? "existing" : options.apply ? "created" : "would_create";
 
   if (options.apply) {
     if (!authUser) authUser = await createAuthUser(client, options.customerEmail);
     if (!account) account = await upsertAccount(client, authUser.id, options.customerEmail);
     assertOwnershipAvailable(ownership, account.id);
     for (const scanId of plannedAttachments) await attachScan(client, account.id, scanId);
-    for (const scanId of plannedGrants) await grantAccountReportAccess(client, account.id, scanId);
+    if (!demoEntitlement) {
+      demoEntitlement = await grantDemoEntitlement(
+        client,
+        account.id,
+        options,
+        startsAt,
+        expiresAt
+      );
+    } else {
+      entitlementState = "existing";
+    }
+    await assignDemoEntitlementScans(client, demoEntitlement.id, scans);
   }
 
+  const effectiveStartsAt = demoEntitlement?.startsAt || startsAt.toISOString();
+  const effectiveExpiresAt = demoEntitlement?.expiresAt || expiresAt.toISOString();
   return {
     mode: options.apply ? "applied" : "dry-run",
     authUser: { state: authState, id: authUser?.id || null },
@@ -441,19 +598,32 @@ export async function runProvisioning({
     scans: {
       selectedIds: scans.map((scan) => scan.id),
       alreadyAttachedIds: scans.filter((scan) => ownership.has(scan.id)).map((scan) => scan.id),
-      [options.apply ? "attachedIds" : "wouldAttachIds"]: plannedAttachments,
-      alreadyFullAccessIds: scans.filter((scan) => ownership.get(scan.id)?.accessLevel === "full").map((scan) => scan.id),
-      [options.apply ? "grantedFullAccessIds" : "wouldGrantFullAccessIds"]: plannedGrants
+      [options.apply ? "attachedIds" : "wouldAttachIds"]: plannedAttachments
     },
-    accessScope: "account-scoped full access for selected reports only",
+    demoEntitlement: {
+      state: entitlementState,
+      id: demoEntitlement?.id || null,
+      source: "demo",
+      plan: "growth",
+      startsAt: effectiveStartsAt,
+      expiresAt: effectiveExpiresAt,
+      capabilities: {
+        ownedFullReports: true,
+        monitoring: true,
+        contactEnrichment: false,
+        billingPortal: false
+      }
+    },
+    accessScope: "time-bounded full access for explicitly approved reports assigned to this demo entitlement",
     billingState: "unchanged; no Stripe customer, charge, grant, subscription, or credit was created",
-    monitoringSubscription: "not provisioned; monitoring requires truthful active billing",
+    monitoringState: "Growth demo monitoring is available until the entitlement expires or is revoked",
+    enrichmentState: "not included; demo contact-enrichment credits are not fabricated",
     nextLoginUrl: loginUrl(options.appOrigin)
   };
 }
 
 export function helpText() {
-  return `Provision a demo customer with report-level access only.
+  return `Provision a truthful, expiring full-feature demo customer.
 
 Dry-run (default):
   node scripts/provision-demo-customer.mjs --email CUSTOMER_EMAIL --scan-id SCAN_UUID
@@ -466,12 +636,19 @@ Selectors may be repeated or comma-separated:
   --scan-email EMAIL         Attach all completed scans with that scan email
 
 Configuration:
-  --email EMAIL              Demo customer's sign-in email (or DEMO_CUSTOMER_EMAIL)
+  --email EMAIL              Approved demo recipient (or DEMO_CUSTOMER_EMAIL)
   --app-url HTTPS_ORIGIN     Login origin (or APP_URL)
+  --expires-in-days 1-90     Demo access window (default: 30)
+  --created-by OPERATOR      Audit label for the grant
+  --note NOTE                Required audit reason for the grant
   DEMO_SCAN_IDS              Comma-separated scan IDs
   DEMO_SCAN_EMAILS           Comma-separated scan emails
   SUPABASE_URL               Supabase project origin
   SUPABASE_SERVICE_ROLE_KEY  Service role credential (never printed)
+
+Approved recipients:
+  joelle@reparel.com
+  joelle@schoolgig.us
 `;
 }
 

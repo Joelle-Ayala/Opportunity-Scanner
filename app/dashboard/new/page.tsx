@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/brand";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import { ensureCustomerAccount, loadDashboardReports, loadDashboardSummary } from "@/lib/dashboard/repository";
+import { activeMonitoringPlan } from "@/lib/dashboard/effectivePlan";
 import { getScan } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
@@ -18,11 +19,7 @@ export default async function NewDashboardReportPage({ searchParams }: { searchP
     loadDashboardSummary(session.user.id)
   ]);
   const source = searchParams?.from && ownedReports.some((item) => item.scanId === searchParams.from) ? await getScan(searchParams.from) : null;
-  const hasActiveSubscription = summary.billing.subscriptions.some(
-    (subscription) =>
-      ["monitor", "growth"].includes(subscription.product || "") &&
-      ["active", "trialing"].includes(subscription.status)
-  );
+  const hasActiveSubscription = Boolean(activeMonitoringPlan(summary.billing));
 
   return (
     <main className="min-h-screen bg-field">
