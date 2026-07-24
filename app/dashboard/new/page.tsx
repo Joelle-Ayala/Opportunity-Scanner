@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/brand";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
-import { ensureCustomerAccount, loadDashboardReports } from "@/lib/dashboard/repository";
+import { ensureCustomerAccount, loadDashboardReports, loadDashboardSummary } from "@/lib/dashboard/repository";
 import { getScan } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,71 @@ export default async function NewDashboardReportPage({ searchParams }: { searchP
   const session = resolution.session;
   if (!session?.user.email) redirect("/auth/sign-in?next=%2Fdashboard%2Fnew");
   await ensureCustomerAccount(session.user.id, session.user.email);
-  const ownedReports = await loadDashboardReports(session.user.id);
+  const [ownedReports, summary] = await Promise.all([
+    loadDashboardReports(session.user.id),
+    loadDashboardSummary(session.user.id)
+  ]);
   const source = searchParams?.from && ownedReports.some((item) => item.scanId === searchParams.from) ? await getScan(searchParams.from) : null;
-  return <main className="min-h-screen bg-field"><SiteHeader rightSlot={<a href="/dashboard" className="text-sm font-semibold text-steel hover:text-accent">Dashboard</a>} /><section className="mx-auto max-w-3xl px-5 py-10 sm:px-6"><p className="text-xs font-semibold uppercase text-accent">New report</p><h1 className="mt-3 text-3xl font-semibold text-ink">{source ? "Update this opportunity search" : "Run another opportunity report"}</h1><p className="mt-3 text-sm leading-6 text-muted">Change any criteria below. Your previous report remains unchanged. This run starts as a free preview; full results from scheduled saved searches are included with active monitoring, while other full reports are purchased separately.</p><form action="/api/scans" method="post" className="mt-7 grid gap-5 rounded-lg border border-line bg-white p-6 shadow-panel"><input type="hidden" name="reportType" value="quick" /><input type="hidden" name="email" value={session.user.email} />{source ? <input type="hidden" name="sourceScanId" value={source.id} /> : null}<label className="grid gap-2"><span className="text-sm font-semibold text-ink">Company website</span><input required type="url" name="companyUrl" defaultValue={source?.company_url || ""} className="rounded-md border border-line px-3 py-3 focus:border-accent" /></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-semibold text-ink">Company name</span><input name="companyName" defaultValue={source?.company_name || ""} className="rounded-md border border-line px-3 py-3" /></label><label className="grid gap-2"><span className="text-sm font-semibold text-ink">Industry</span><input name="industry" defaultValue={source?.industry || ""} className="rounded-md border border-line px-3 py-3" /></label></div><label className="grid gap-2"><span className="text-sm font-semibold text-ink">Target geography</span><input name="targetStates" defaultValue={source?.target_states || ""} placeholder="National, MD, CA" className="rounded-md border border-line px-3 py-3" /></label><label className="grid gap-2"><span className="text-sm font-semibold text-ink">What do you sell, and who should we find as buyers or partners?</span><textarea required minLength={15} maxLength={2000} name="opportunityFocus" rows={4} defaultValue={source?.opportunity_focus || ""} className="rounded-md border border-line px-3 py-3" /></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-semibold text-ink">Include terms</span><input name="includeTerms" defaultValue={source?.include_terms || ""} className="rounded-md border border-line px-3 py-3" /></label><label className="grid gap-2"><span className="text-sm font-semibold text-ink">Exclude terms</span><input name="excludeTerms" defaultValue={source?.exclude_terms || ""} className="rounded-md border border-line px-3 py-3" /></label></div><button className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Run free preview</button></form></section></main>;
+  const hasActiveSubscription = summary.billing.subscriptions.some(
+    (subscription) =>
+      ["monitor", "growth"].includes(subscription.product || "") &&
+      ["active", "trialing"].includes(subscription.status)
+  );
+
+  return (
+    <main className="min-h-screen bg-field">
+      <SiteHeader rightSlot={<a href="/dashboard" className="text-sm font-semibold text-steel hover:text-accent">Dashboard</a>} />
+      <section className="mx-auto max-w-3xl px-5 py-10 sm:px-6">
+        <p className="text-xs font-semibold uppercase text-accent">New report</p>
+        <h1 className="mt-3 text-3xl font-semibold text-ink">
+          {source ? "Update this opportunity search" : "Run another opportunity report"}
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-muted">
+          {hasActiveSubscription
+            ? "Change any criteria below. Your previous report remains unchanged. Scheduled results for your monitored profiles are included with your plan; scans outside those profiles can be reviewed before a separate full-report purchase."
+            : "Change any criteria below. Your previous report remains unchanged. You can review a focused preview before deciding whether to unlock the full report."}
+        </p>
+        <form action="/api/scans" method="post" className="mt-7 grid gap-5 rounded-lg border border-line bg-white p-6 shadow-panel">
+          <input type="hidden" name="reportType" value="quick" />
+          <input type="hidden" name="email" value={session.user.email} />
+          {source ? <input type="hidden" name="sourceScanId" value={source.id} /> : null}
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold text-ink">Company website</span>
+            <input required type="url" name="companyUrl" defaultValue={source?.company_url || ""} className="rounded-md border border-line px-3 py-3 focus:border-accent" />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold text-ink">Company name</span>
+              <input name="companyName" defaultValue={source?.company_name || ""} className="rounded-md border border-line px-3 py-3" />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold text-ink">Industry</span>
+              <input name="industry" defaultValue={source?.industry || ""} className="rounded-md border border-line px-3 py-3" />
+            </label>
+          </div>
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold text-ink">Target geography</span>
+            <input name="targetStates" defaultValue={source?.target_states || ""} placeholder="National, MD, CA" className="rounded-md border border-line px-3 py-3" />
+          </label>
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold text-ink">What do you sell, and who should we find as buyers or partners?</span>
+            <textarea required minLength={15} maxLength={2000} name="opportunityFocus" rows={4} defaultValue={source?.opportunity_focus || ""} className="rounded-md border border-line px-3 py-3" />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold text-ink">Include terms</span>
+              <input name="includeTerms" defaultValue={source?.include_terms || ""} className="rounded-md border border-line px-3 py-3" />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold text-ink">Exclude terms</span>
+              <input name="excludeTerms" defaultValue={source?.exclude_terms || ""} className="rounded-md border border-line px-3 py-3" />
+            </label>
+          </div>
+          <button className="rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+            {hasActiveSubscription ? "Run opportunity scan" : "Run free preview"}
+          </button>
+        </form>
+      </section>
+    </main>
+  );
 }

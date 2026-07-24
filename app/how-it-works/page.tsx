@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingCard, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingCard, MarketingHero, SectionIntro } from "@/components/marketing";
+import { SampleReportPreview } from "@/components/sample-report";
+import { getSampleReportByExampleSlug } from "@/lib/sampleReports";
 
 const title = "How It Works | Opportunity Scanner";
 const description =
-  "See how Opportunity Scanner turns a company website into sourced public-sector opportunity signals, contact paths, and next best actions.";
+  "See how Opportunity Scanner builds a company profile, finds sourced public-sector opportunities, routes next actions, and monitors what changes.";
 
 export const metadata: Metadata = {
   title: "How It Works",
@@ -41,14 +43,16 @@ const steps = [
       "Each useful signal becomes an opportunity row with a target organization, source evidence, revenue motion, actionability, contact path, and next best action."
   },
   {
-    title: "Move it into outreach",
+    title: "Pursue or monitor",
     badge: "Step 4",
     copy:
-      "Paid reports add the deeper action layer: CRM-ready notes, outreach angles, workflow export, source-native contact paths, and capped contact enrichment where appropriate."
+      "Save the row to a pursuit, follow the official application or vendor path, export CRM-ready context, or monitor the search for new and updated signals."
   }
 ];
 
 export default function HowItWorksPage() {
+  const civicStage = getSampleReportByExampleSlug("creative-economy-live-events-opportunity-scan");
+
   return (
     <main className="min-h-screen bg-field">
       <SiteHeader
@@ -66,13 +70,12 @@ export default function HowItWorksPage() {
         secondaryHref="/public-sector-revenue"
       >
         <p>
-          Scan your website, match your business to public-sector money signals, and get
-          prioritized opportunity rows with source links, revenue motions, contact paths, and next
-          best actions.
+          Start with a company website. The product builds a focused profile, finds sourced public
+          records, explains the commercial path, and gives each opportunity a useful next action.
         </p>
       </MarketingHero>
 
-      <ReportPreview />
+      {civicStage ? <SampleReportPreview report={civicStage} /> : null}
 
       <section className="mx-auto grid max-w-7xl gap-5 px-6 py-12 md:grid-cols-2 lg:grid-cols-4">
         {steps.map((step) => (
@@ -110,6 +113,30 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
+      <section className="border-b border-line bg-field">
+        <div className="mx-auto max-w-7xl px-6 py-12">
+          <SectionIntro title="One signal can lead to different next actions" eyebrow="Opportunity routing">
+            <p>
+              The product does not treat every public record as an application. It identifies the
+              practical route based on the source, buyer, timing, and revenue motion.
+            </p>
+          </SectionIntro>
+          <div className="mt-6 grid border-y border-line md:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-line">
+            {[
+              ["Start application", "Open the official instructions when the company is an eligible direct applicant."],
+              ["Register as vendor", "Follow the procurement or vendor-registration path when the buyer purchases from suppliers."],
+              ["Contact buyer or partner", "Use the program office, funded recipient, prime, or source-native contact route."],
+              ["Monitor the signal", "Save a focused search when timing is early, recurring, or not yet open for action."]
+            ].map(([title, copy]) => (
+              <article key={title} className="border-b border-line py-5 last:border-b-0 md:px-5 lg:border-b-0 lg:first:pl-0 lg:last:pr-0">
+                <h3 className="text-base font-semibold text-ink">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-7xl px-6 py-12">
         <SectionIntro title="The product is not trying to force every signal into one path" eyebrow="Contact strategy">
           <p>
@@ -132,10 +159,40 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      <CTASection title="Start with a lightweight scan.">
+      <section className="border-y border-line bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-12">
+          <SectionIntro title="The account becomes the operating layer" eyebrow="After the report">
+            <p>
+              Customers can return to reports, organize pursuits, manage saved searches and alert
+              preferences, compare report snapshots, export rows, and manage billing from one account.
+            </p>
+          </SectionIntro>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              ["Dashboard", "See reports, pursuits, saved searches, alerts, plan status, and usage in one place."],
+              ["Monitoring", "Run a qualified company profile on the plan cadence and review new or updated signals."],
+              ["Pursuit workspace", "Keep source evidence, contact strategy, next action, notes, and status attached to the opportunity."],
+              ["Alerts and comparisons", "Review what appeared or changed instead of rereading the entire public-source landscape."],
+              ["Exports and workflows", "Download structured rows or send opportunity context to a secure webhook destination."],
+              ["Billing and growth", "Review plan status and manage billing; Growth adds profiles, daily checks, and capped enrichment."]
+            ].map(([title, copy]) => (
+              <article key={title} className="rounded-lg border border-line bg-field p-5">
+                <h3 className="text-base font-semibold text-ink">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-4 text-xs leading-5 text-muted">
+            Monitor and Growth plan availability is shown in real time on the pricing page.
+          </p>
+        </div>
+      </section>
+
+      <CTASection title="Start with a focused scan.">
         <p>
           You do not need a government sales team to check whether public-sector demand exists
-          around what your company already sells.
+          around what your company already sells. Review the CivicStage sample first, or scan a real
+          company website.
         </p>
       </CTASection>
 

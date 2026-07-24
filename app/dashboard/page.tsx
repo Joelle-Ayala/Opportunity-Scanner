@@ -19,6 +19,8 @@ import {
 import { workspaceCompanyFor } from "@/lib/dashboard/workspace-identity";
 import { loadCustomerAlertPreferences } from "@/lib/deadlineAlerts/preferences";
 import { loadCustomerPursuits } from "@/lib/dashboard/pursuits";
+import { compareStoredOpportunitySignals } from "@/lib/monitoring/comparison";
+import { listScanOpportunitySignals } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +54,7 @@ type DashboardSearchParams = {
   alertError?: string;
   tab?: string;
   setup?: string;
+  runRequested?: string;
 };
 
 function configurationValue(configuration: Record<string, unknown> | undefined, key: string): string {
@@ -83,6 +86,20 @@ function planDescriptionFor(status: BillingSummaryProps["subscriptionStatus"]): 
   if (status === "incomplete") return "Complete billing setup before monitoring can begin.";
   if (status === "canceled") return "This monitoring subscription is canceled.";
   return "Full access to your purchased reports.";
+}
+
+function closingSoonCount(
+  signals: Awaited<ReturnType<typeof listScanOpportunitySignals>>,
+  comparisonDate: string
+): number {
+  const start = Date.parse(comparisonDate);
+  if (!Number.isFinite(start)) return 0;
+  const end = start + 30 * 24 * 60 * 60 * 1000;
+  return signals.filter((signal) => {
+    if (signal.show_in_report === false || !signal.deadline) return false;
+    const deadline = Date.parse(signal.deadline);
+    return Number.isFinite(deadline) && deadline >= start && deadline <= end;
+  }).length;
 }
 
 export default async function DashboardPage({ searchParams }: { searchParams?: DashboardSearchParams }) {
@@ -160,6 +177,10 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
   })[0];
   const fullReportCount = reportRows.filter((report) => report.reportType === "Full report").length;
   const workspaceCompany = workspaceCompanyFor(session.user.email, reportRows);
+  const latestRunByProfile = new Map<string, (typeof runs)[number]>();
+  for (const run of runs) {
+    if (!latestRunByProfile.has(run.monitoredProfileId)) latestRunByProfile.set(run.monitoredProfileId, run);
+  }
   const searchRows: MonitoredSearchRow[] = searches.map((search) => ({
     id: search.id,
     name: search.name,
@@ -175,6 +196,17 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     lastRunLabel: search.monitoredProfile?.lastRunAt ? `Last run ${dateLabel(search.monitoredProfile.lastRunAt)}` : undefined,
     nextRunLabel: subscription && search.monitoredProfile?.status === "active" && search.monitoredProfile.nextRunAt
       ? `Next run ${dateLabel(search.monitoredProfile.nextRunAt)}`
+      : undefined,
+    latestResultsHref: search.monitoredProfile
+      ? `/reports/${search.monitoredProfile.latestScanId || search.monitoredProfile.sourceScanId}`
+      : undefined,
+    runState: search.monitoredProfile && latestRunByProfile.get(search.monitoredProfile.id)?.status === "running"
+      ? "running"
+      : searchParams?.runRequested === search.id
+        ? "queued"
+        : undefined,
+    newSignalCount: search.monitoredProfile
+      ? latestRunByProfile.get(search.monitoredProfile.id)?.newOpportunityCount || undefined
       : undefined,
     currentVersion: search.currentVersion?.version,
     criteria: {
@@ -202,12 +234,132 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     completedRunsByProfile.set(run.monitoredProfileId, existing);
   }
   const comparableScanIds = new Set<string>();
+  const comparisonPairsByCurrentScanId = new Map<string, string>();
   for (const [profileId, profileRuns] of completedRunsByProfile) {
     profileRuns.forEach((run, index) => {
       const previousScanId = profileRuns[index + 1]?.scanId || sourceScanByProfile.get(profileId);
-      if (previousScanId && previousScanId !== run.scanId) comparableScanIds.add(run.scanId);
+      if (previousScanId && previousScanId !== run.scanId) {
+        comparableScanIds.add(run.scanId);
+        comparisonPairsByCurrentScanId.set(run.scanId, previousScanId);
+      }
     });
   }
+  const comparisonScanIds = new Set(
+    [...comparisonPairsByCurrentScanId].flatMap(([currentScanId, previousScanId]) => [
+      currentScanId,
+      previousScanId
+    ])
+  );
+  const signalsByScanId = new Map(
+    await Promise.all(
+      [...comparisonScanIds].map(async (scanId) => [
+        scanId,
+        await listScanOpportunitySignals(scanId).catch((error) => {
+          console.error("dashboard.monitoring_comparison_unavailable", { scanId, error });
+          return [];
+        })
+      ] as const)
+    )
+  );
+  const searchNameByProfile = new Map(
+    searches.flatMap((search) => search.monitoredProfile
+      ? [[search.monitoredProfile.id, search.name] as const]
+      : [])
+  );
+  const latestResultsByProfile = new Map(
+    searches.flatMap((search) => search.monitoredProfile
+      ? [[
+          search.monitoredProfile.id,
+          `/reports/${search.monitoredProfile.latestScanId || search.monitoredProfile.sourceScanId}`
+        ] as const]
+      : [])
+  );
+  const monitoringChanges = runs.map((run) => {
+    const occurredAt = run.completedAt || run.startedAt;
+    const previousScanId = comparisonPairsByCurrentScanId.get(run.scanId);
+    const currentSignals = signalsByScanId.get(run.scanId) || [];
+    const previousSignals = previousScanId ? signalsByScanId.get(previousScanId) || [] : [];
+    const comparison = previousScanId && currentSignals.length + previousSignals.length > 0
+      ? compareStoredOpportunitySignals(previousSignals, currentSignals, occurredAt)
+      : null;
+    const updatedCount = comparison?.summary.changed || 0;
+    const closingCount = closingSoonCount(currentSignals, occurredAt);
+    const href = run.status === "completed"
+      ? comparableScanIds.has(run.scanId)
+        ? `/dashboard/compare/${run.scanId}`
+        : `/reports/${run.scanId}`
+      : latestResultsByProfile.get(run.monitoredProfileId);
+
+    if (run.status === "failed") {
+      return {
+        id: run.id,
+        title: "Monitoring check needs attention",
+        summary: run.errorMessage || "The latest check did not finish. Your last completed results remain available.",
+        occurredLabel: dateLabel(occurredAt),
+        searchName: searchNameByProfile.get(run.monitoredProfileId),
+        kind: "system" as const,
+        href
+      };
+    }
+    if (run.status === "running") {
+      return {
+        id: run.id,
+        title: "Monitoring check in progress",
+        summary: "Opportunity Scanner is checking the latest public records. Your last completed results remain available.",
+        occurredLabel: dateLabel(occurredAt),
+        searchName: searchNameByProfile.get(run.monitoredProfileId),
+        kind: "system" as const,
+        href
+      };
+    }
+    if (run.newOpportunityCount > 0) {
+      return {
+        id: run.id,
+        title: `${run.newOpportunityCount} new ${run.newOpportunityCount === 1 ? "opportunity" : "opportunities"} found`,
+        summary: [
+          updatedCount ? `${updatedCount} existing ${updatedCount === 1 ? "record was" : "records were"} also updated.` : "",
+          closingCount ? `${closingCount} ${closingCount === 1 ? "opportunity has" : "opportunities have"} a deadline within 30 days.` : ""
+        ].filter(Boolean).join(" ") || "Open the latest results to review the new matches.",
+        occurredLabel: dateLabel(occurredAt),
+        searchName: searchNameByProfile.get(run.monitoredProfileId),
+        kind: "new" as const,
+        href
+      };
+    }
+    if (updatedCount > 0) {
+      return {
+        id: run.id,
+        title: `${updatedCount} ${updatedCount === 1 ? "opportunity was" : "opportunities were"} updated`,
+        summary: closingCount
+          ? `${closingCount} ${closingCount === 1 ? "opportunity has" : "opportunities have"} a deadline within 30 days.`
+          : "Open the comparison to review what changed.",
+        occurredLabel: dateLabel(occurredAt),
+        searchName: searchNameByProfile.get(run.monitoredProfileId),
+        kind: "updated" as const,
+        href
+      };
+    }
+    if (closingCount > 0) {
+      return {
+        id: run.id,
+        title: `${closingCount} ${closingCount === 1 ? "opportunity is" : "opportunities are"} closing soon`,
+        summary: "No new matches were found, but these deadlines fall within the next 30 days.",
+        occurredLabel: dateLabel(occurredAt),
+        searchName: searchNameByProfile.get(run.monitoredProfileId),
+        kind: "closing" as const,
+        href
+      };
+    }
+    return {
+      id: run.id,
+      title: "No new opportunities found",
+      summary: "The latest public records were checked and your saved results remain current.",
+      occurredLabel: dateLabel(occurredAt),
+      searchName: searchNameByProfile.get(run.monitoredProfileId),
+      kind: "none" as const,
+      href
+    };
+  });
 
   return (
     <main className="min-h-screen bg-field">
@@ -259,7 +411,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
       <CustomerDashboard
         title={workspaceCompany ? `${workspaceCompany} workspace` : "Opportunity workspace"}
         description="Continue recent reports, run fresh searches, and manage monitoring."
-        initialTab={subscription && (searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError) ? "alerts" : searchParams?.searchNotice || searchParams?.searchError ? "saved-searches" : searchParams?.tab === "billing" ? "billing" : searchParams?.tab === "reports" ? "reports" : searchParams?.tab === "pursuits" ? "pursuits" : "overview"}
+        initialTab={subscription && (searchParams?.tab === "alerts" || searchParams?.alertNotice || searchParams?.alertError) ? "alerts" : searchParams?.searchNotice || searchParams?.searchError || searchParams?.tab === "saved-searches" ? "saved-searches" : searchParams?.tab === "billing" ? "billing" : searchParams?.tab === "reports" ? "reports" : searchParams?.tab === "pursuits" ? "pursuits" : "overview"}
         showAlerts={Boolean(subscription)}
         primaryAction={needsMonitoringSetup
           ? <a href="/dashboard/onboarding" className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">Continue setup</a>
@@ -315,7 +467,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
               />
             : undefined,
           recentReports: reportRows.slice(0, 5),
-          monitoringChanges: runs.map((run) => ({ id: run.id, title: run.status === "failed" ? "Monitoring run needs attention" : `${run.newOpportunityCount} new opportunities found`, summary: run.errorMessage || "Your saved search was checked against the latest public records.", occurredLabel: dateLabel(run.completedAt || run.startedAt), kind: run.status === "failed" ? "system" as const : "new" as const, href: comparableScanIds.has(run.scanId) ? `/dashboard/compare/${run.scanId}` : `/reports/${run.scanId}` })),
+          monitoringChanges,
           monitoringDescription: subscription
             ? "Recent changes across your active saved searches."
             : "Recurring checks and deadline alerts.",

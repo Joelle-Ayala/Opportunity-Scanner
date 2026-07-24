@@ -5,6 +5,7 @@ import { CheckoutButton } from "@/components/checkout-button";
 import { CTASection, SectionIntro } from "@/components/marketing";
 import { PricingAnalytics } from "@/components/page-analytics";
 import { PricingCheckoutNotice } from "@/components/pricing-checkout-notice";
+import { evaluateLaunchHealth } from "@/lib/launchHealth";
 import { getStripeServerConfig, reportCheckoutIsEnabled } from "@/lib/payments/config";
 import type { BillingInterval } from "@/lib/payments/contract";
 
@@ -82,9 +83,10 @@ const plans = [
 function checkoutAvailability(): { report: boolean; subscriptions: boolean } {
   try {
     const config = getStripeServerConfig();
+    const health = evaluateLaunchHealth(process.env);
     return {
-      report: reportCheckoutIsEnabled(),
-      subscriptions: config.subscriptionCheckoutEnabled
+      report: reportCheckoutIsEnabled() && health.ready.reportCheckout,
+      subscriptions: config.subscriptionCheckoutEnabled && health.ready.subscriptionCheckout
     };
   } catch {
     return { report: false, subscriptions: false };
@@ -164,6 +166,23 @@ export default function PricingPage({
     ? searchParams.scanId
     : undefined;
   const analyticsSource = pricingAnalyticsSource(searchParams);
+  const availabilityMessage = checkout.subscriptions
+    ? {
+        label: "Reports and monitoring are available",
+        detail: "Start from a completed free scan, then choose a one-time Report, Monitor, or Growth.",
+        tone: "border-emerald-200 bg-emerald-50 text-emerald-950"
+      }
+    : checkout.report
+      ? {
+          label: "One-time Reports are available",
+          detail: "Monitor and Growth are shown for planning and will open after monitoring readiness is verified.",
+          tone: "border-cyan-200 bg-cyan-50 text-cyan-950"
+        }
+      : {
+          label: "Free scans are available",
+          detail: "Paid checkout is paused while launch checks are completed. No payment can be started from this page.",
+          tone: "border-amber-200 bg-amber-50 text-amber-950"
+        };
 
   return (
     <main className="min-h-screen bg-field">
@@ -202,6 +221,13 @@ export default function PricingPage({
           checkout={searchParams?.checkout}
           checkoutSessionId={searchParams?.session_id}
         />
+        <div
+          role="status"
+          className={`mb-5 flex flex-col justify-between gap-2 rounded-md border px-4 py-3 sm:flex-row sm:items-center ${availabilityMessage.tone}`}
+        >
+          <p className="text-sm font-semibold">{availabilityMessage.label}</p>
+          <p className="max-w-2xl text-xs leading-5 sm:text-right">{availabilityMessage.detail}</p>
+        </div>
         <h2 id="plans-heading" className="sr-only">
           Opportunity Scanner plans
         </h2>
@@ -233,7 +259,11 @@ export default function PricingPage({
                         : "border-line bg-white text-accent"
                     }`}
                   >
-                    {checkoutPlan !== "report" && !checkout.subscriptions ? "Coming soon" : plan.badge}
+                    {!checkoutEnabled
+                      ? checkoutPlan === "report"
+                        ? "Checkout paused"
+                        : "Preview plan"
+                      : plan.badge}
                   </span>
                 </div>
 
@@ -319,6 +349,49 @@ export default function PricingPage({
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="border-b border-line bg-field">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-12">
+          <SectionIntro eyebrow="Recurring value" title="Monitoring keeps a qualified search working after the first report">
+            <p>
+              Monitor and Growth are for teams that want to keep company profiles current, review
+              what changed, and move new opportunities into pursuit without starting from zero.
+            </p>
+          </SectionIntro>
+          <div className="mt-6 overflow-x-auto rounded-lg border border-line bg-white">
+            <table className="w-full min-w-[44rem] text-left text-sm">
+              <thead className="bg-ink text-white">
+                <tr>
+                  {["Capability", "Report", "Monitor", "Growth"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 font-semibold">{heading}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {[
+                  ["Company profiles", "One report profile", "1 saved profile", "Up to 3 saved profiles"],
+                  ["Search cadence", "Single scan", "Weekly monitoring", "Daily monitoring"],
+                  ["Change review", "Report snapshot", "New and updated alerts", "New and updated alerts"],
+                  ["Action workflow", "Pursuits, exports, CRM notes", "Included", "Included"],
+                  ["Contact enrichment", "Source-native paths", "Source-native paths", "30 monthly credits"]
+                ].map((row) => (
+                  <tr key={row[0]}>
+                    {row.map((cell, index) => (
+                      <td key={`${row[0]}-${index}`} className={`px-4 py-3 leading-6 ${index === 0 ? "font-semibold text-ink" : "text-slate-600"}`}>
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs leading-5 text-muted">
+            Plan details are visible for evaluation. The availability notice above reflects whether
+            checkout is currently open.
+          </p>
         </div>
       </section>
 

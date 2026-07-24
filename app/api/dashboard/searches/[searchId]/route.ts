@@ -15,9 +15,19 @@ export const runtime = "nodejs";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function dashboardRedirect(request: Request, kind: "searchNotice" | "searchError", message: string) {
+function dashboardRedirect(
+  request: Request,
+  kind: "searchNotice" | "searchError",
+  message: string,
+  searchId?: string
+) {
   const url = new URL("/dashboard", request.url);
   url.searchParams.set(kind, message);
+  if (searchId) {
+    url.searchParams.set("tab", "saved-searches");
+    url.searchParams.set("runRequested", searchId);
+    url.hash = "saved-searches-title";
+  }
   return NextResponse.redirect(url, 303);
 }
 
@@ -110,8 +120,9 @@ export async function POST(request: Request, { params }: { params: { searchId: s
         request,
         "searchNotice",
         result.enqueued
-          ? "Monitoring run queued for the next scheduled check."
-          : "A monitoring run is already queued or this profile is in its cooldown window."
+          ? "Monitoring check queued. You can keep working while it runs; the latest completed results remain available."
+          : "A monitoring check is already queued or recently completed. The latest completed results remain available.",
+        result.enqueued ? params.searchId : undefined
       );
     }
 

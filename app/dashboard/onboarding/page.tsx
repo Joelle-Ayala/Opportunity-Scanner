@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/brand";
 import { BillingPortalButton } from "@/components/dashboard/billing-portal-button";
+import { SubscriptionActivationProgress } from "@/components/dashboard/subscription-activation-progress";
 import { CheckoutReturnAnalytics, MonitoringOnboardingAnalytics } from "@/components/page-analytics";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import {
@@ -67,9 +68,9 @@ export default async function MonitoringOnboardingPage({
           <p className="text-xs font-semibold uppercase text-accent">Plan activation</p>
           <h1 className="mt-3 text-3xl font-semibold text-ink">Your payment is complete. We are activating monitoring.</h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-muted">
-            Stripe confirmation is taking a little longer than usual. Your purchase is not lost; refresh this page in a moment to continue setup.
+            Stripe confirmation is taking a little longer than usual. Your purchase is not lost, and setup will continue as soon as your plan is confirmed.
           </p>
-          <a href={next} className="mt-7 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white">Check activation</a>
+          <SubscriptionActivationProgress nextHref={next} />
         </section>
       </main>
     );

@@ -108,14 +108,18 @@ const direct = opportunity();
 assert.equal(pursuitApplicationMethod(direct), "direct_application");
 assert.equal(pursuitStageFor("direct_application"), "qualifying");
 assert.equal(pursuitMethodLabel("direct_application"), "Direct application");
-assert.equal(sourceActionLabel("direct_application"), "Review official instructions");
+assert.equal(sourceActionLabel("direct_application"), "Start application");
 
 const procurement = opportunity(
   { source_type: "active_contract", revenue_pathway: "procurement_bid", source_name: "SAM.gov" },
   { revenue_motion: "Direct Apply", contact_strategy: "inspect_procurement_record" }
 );
 assert.equal(pursuitApplicationMethod(procurement), "procurement_response");
-assert.equal(sourceActionLabel("procurement_response"), "Review procurement notice");
+assert.equal(sourceActionLabel("procurement_response"), "View bid instructions");
+assert.equal(sourceActionLabel("vendor_registration"), "Register as a vendor");
+assert.equal(sourceActionLabel("buyer_outreach"), "Contact the buyer");
+assert.equal(sourceActionLabel("partner_outreach"), "Contact the partner");
+assert.equal(sourceActionLabel("monitor"), "Monitor official source");
 
 const indirectGrant = opportunity(
   { source_type: "active_grant", revenue_pathway: "sell_to_grantee" },

@@ -1,5 +1,7 @@
 import { listAdminScansWithProfiles } from "@/lib/storage";
-import { hasAdminAccess } from "@/lib/access";
+import { AdminAccessState } from "@/components/admin/admin-access-state";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { requireAdminPage } from "@/lib/admin/page";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -17,69 +19,46 @@ function formatDate(value?: string | null) {
   }).format(new Date(value));
 }
 
-function AdminRequired() {
-  return (
-    <main className="min-h-screen bg-field px-6 py-8">
-      <section className="mx-auto max-w-xl rounded-lg border border-line bg-white p-6">
-        <h1 className="text-2xl font-semibold text-ink">Admin access required</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
-          This workspace is only available to approved Opportunity Scanner operators.
-        </p>
-      </section>
-    </main>
-  );
-}
-
 export default async function AdminReportsPage({
   searchParams
 }: {
   searchParams?: { access?: string; resolution?: string };
 }) {
-  if (!hasAdminAccess(searchParams?.access)) return <AdminRequired />;
+  const access = await requireAdminPage("/admin/reports", searchParams?.access);
+  if (access.status !== "authorized") {
+    return <AdminAccessState unavailable={access.status === "unavailable"} />;
+  }
 
   const rows = await listAdminScansWithProfiles();
   const heldCount = rows.filter(({ scan }) => scan.status === "quality_review").length;
   const completedCount = rows.length - heldCount;
-  const accessParam = `access=${encodeURIComponent(searchParams?.access ?? "")}`;
   const resolutionMessage =
     searchParams?.resolution === "published"
       ? "The held report was published and its completion email was processed."
       : searchParams?.resolution === "revision_requested"
-        ? "The held report was closed and its revised-scan email was processed."
+        ? "The held report was closed as needing revision. No replacement scan was started."
         : null;
 
   return (
-    <main className="min-h-screen px-6 py-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <a href="/" className="text-sm font-medium text-accent">
-              Back to scan form
-            </a>
-            <a href={`/admin/sources?${accessParam}`} className="ml-4 text-sm font-medium text-accent">
-              Source coverage
-            </a>
-            <a href={`/admin/feedback?${accessParam}`} className="ml-4 text-sm font-medium text-accent">
-              Feedback
-            </a>
-            <h1 className="mt-4 text-3xl font-semibold text-ink">Report Review</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Review held scans before release while keeping completed reports available for source
-              coverage and opportunity-quality checks.
-            </p>
-          </div>
+    <>
+      <AdminPageHeader
+        eyebrow="Quality"
+        title="Report review"
+        description="Review held scans before release while keeping completed reports available for source coverage and opportunity-quality checks."
+        aside={
           <div className="rounded-md border border-line bg-white px-3 py-2 text-sm text-slate-600">
             {heldCount} held / {completedCount} completed
           </div>
+        }
+      />
+
+      {resolutionMessage ? (
+        <div className="mt-5 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">
+          {resolutionMessage}
         </div>
+      ) : null}
 
-        {resolutionMessage ? (
-          <div className="mt-5 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">
-            {resolutionMessage}
-          </div>
-        ) : null}
-
-        <section className="mt-6 overflow-hidden rounded-lg border border-line bg-white">
+      <section className="mt-6 overflow-hidden rounded-lg border border-line bg-white">
           {rows.length === 0 ? (
             <div className="p-6 text-sm text-slate-600">
               No completed or held scans yet. Run a scan from the form to populate this view.
@@ -95,7 +74,7 @@ export default async function AdminReportsPage({
                   >
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-lg font-semibold text-ink">
+                        <h2 className="break-words text-lg font-semibold text-ink">
                           {profile?.profile_json.company_name || scan.company_name || scan.company_url}
                         </h2>
                         <span
@@ -111,7 +90,7 @@ export default async function AdminReportsPage({
                           {scan.report_type === "deep" ? "Deep Scan" : "Quick Scan"}
                         </span>
                       </div>
-                      <p className="mt-2 text-sm text-slate-500">{scan.company_url}</p>
+                      <p className="mt-2 break-all text-sm text-slate-500">{scan.company_url}</p>
                       <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-700">
                         {profile?.profile_json.summary || "Profile summary unavailable."}
                       </p>
@@ -152,7 +131,7 @@ export default async function AdminReportsPage({
                         {isHeld ? `Held ${formatDate(scan.created_at)}` : formatDate(scan.completed_at)}
                       </p>
                       <a
-                        href={`/reports/${scan.id}?${accessParam}`}
+                        href={`/admin/reports/${scan.id}${searchParams?.access ? `?access=${encodeURIComponent(searchParams.access)}` : ""}`}
                         className="rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:text-accent"
                       >
                         {isHeld ? "Inspect held report" : "View full report"}
@@ -182,7 +161,7 @@ export default async function AdminReportsPage({
                               type="submit"
                               className="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50"
                             >
-                              Request revised scan
+                              Close as needs revision
                             </button>
                           </form>
                         </div>
@@ -193,8 +172,7 @@ export default async function AdminReportsPage({
               })}
             </div>
           )}
-        </section>
-      </div>
-    </main>
+      </section>
+    </>
   );
 }

@@ -84,7 +84,7 @@ export function AlertPreferences({ preferences, emailVerified }: AlertPreference
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
           <p className="text-xs leading-5 text-muted">
-            {preferences.unsubscribedAt ? "Alerts are currently unsubscribed." : "Changes apply before the next delivery claim."}
+            {preferences.unsubscribedAt ? "Alerts are currently unsubscribed." : "Changes will apply to future alerts."}
           </p>
           <button type="submit" className="min-h-11 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0A6871] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
             Save alert preferences
@@ -94,4 +94,3 @@ export function AlertPreferences({ preferences, emailVerified }: AlertPreference
     </section>
   );
 }
-

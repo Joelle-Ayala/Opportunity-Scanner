@@ -349,7 +349,6 @@ function ReportHeader({
   scan,
   profile,
   sourceMatches,
-  actionTableRows,
   shownRows,
   lockedRows,
   isPaid,
@@ -359,7 +358,6 @@ function ReportHeader({
   scan: ScanRecord;
   profile?: CompanyProfile;
   sourceMatches: number;
-  actionTableRows: number;
   shownRows: number;
   lockedRows: number;
   isPaid: boolean;
@@ -379,7 +377,7 @@ function ReportHeader({
             Dashboard
           </a>
           <a href={`/dashboard/new?from=${encodeURIComponent(scan.id)}`} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
-            Run Free Preview
+            {isPaid ? "Run New Report" : "Run Free Preview"}
           </a>
           {comparisonHref ? (
             <a href={comparisonHref} className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink hover:text-accent">
@@ -427,7 +425,7 @@ function ReportHeader({
           <p className="mt-1 break-all text-sm text-muted">{scan.company_url}</p>
         </div>
       </div>
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+      <div className={`mt-6 grid gap-3 sm:grid-cols-2 ${isPaid ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
         <div className="rounded-md border border-line bg-field p-3">
           <p className="text-xs font-semibold uppercase text-muted">Scan date</p>
           <p className="mt-1 text-sm font-semibold text-ink">
@@ -435,30 +433,24 @@ function ReportHeader({
           </p>
         </div>
         <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">Source matches</p>
+          <p className="text-xs font-semibold uppercase text-muted">Public records found</p>
           <p className="mt-1 text-sm font-semibold text-ink">{sourceMatches}</p>
         </div>
         <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">Action-table rows</p>
-          <p className="mt-1 text-sm font-semibold text-ink">{actionTableRows}</p>
-        </div>
-        <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">Rows shown</p>
+          <p className="text-xs font-semibold uppercase text-muted">Priority opportunities</p>
           <p className="mt-1 text-sm font-semibold text-ink">{shownRows}</p>
         </div>
-        <div className="rounded-md border border-line bg-field p-3">
-          <p className="text-xs font-semibold uppercase text-muted">Rows locked</p>
-          <p className="mt-1 text-sm font-semibold text-ink">{lockedRows}</p>
-        </div>
+        {!isPaid ? (
+          <div className="rounded-md border border-line bg-field p-3">
+            <p className="text-xs font-semibold uppercase text-muted">More opportunities</p>
+            <p className="mt-1 text-sm font-semibold text-ink">{lockedRows}</p>
+          </div>
+        ) : null}
         <div className="rounded-md border border-line bg-field p-3">
           <p className="text-xs font-semibold uppercase text-muted">Status</p>
           <p className="mt-1 text-sm font-semibold text-ink">{reportStatusLabel(scan.status)}</p>
         </div>
       </div>
-      <p className="mt-3 text-xs leading-5 text-muted">
-        Source matches include every stored public-source result. Action-table rows are the promoted
-        pipeline; rows shown plus rows locked equal the action-table total.
-      </p>
     </header>
   );
 }
@@ -882,7 +874,7 @@ function OpportunityActionTable({
             action, CRM note, outreach angle, and workflow-ready handoff.
           </p>
         </div>
-        <Badge tone="blue">{signals.length} rows shown</Badge>
+        <Badge tone="blue">{signals.length} opportunities</Badge>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-[1280px] border-collapse text-left text-sm">
@@ -1631,7 +1623,6 @@ export default async function ReportPage({
           scan={scan}
           profile={profile}
           sourceMatches={reportCounts.sourceMatches}
-          actionTableRows={reportCounts.actionTableRows}
           shownRows={reportCounts.shownRows}
           lockedRows={reportCounts.lockedRows}
           isPaid={isPaid}

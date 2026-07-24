@@ -101,7 +101,7 @@ for (const completedSurface of ["<ReportAnalytics", "<ReportHeader", "<Executive
   assert.ok(pageEntry.includes(completedSurface), `Completed report must preserve ${completedSurface}`);
 }
 
-for (const summaryLabel of ["Source matches", "Action-table rows", "Rows shown", "Rows locked"]) {
+for (const summaryLabel of ["Public records found", "Priority opportunities", "More opportunities"]) {
   assert.match(reportPage, new RegExp(summaryLabel), `Completed reports must label ${summaryLabel}`);
 }
 assert.match(pageEntry, /sourceMatches: signals\.length/);
@@ -114,10 +114,10 @@ assert.doesNotMatch(
   /fallbackSignals|moveForwardSignals\.length > 0/,
   "A report with no qualified rows must show the truthful empty state instead of unrelated fallback results"
 );
-assert.match(
-  reportPage,
-  /rows shown plus rows locked equal the action-table total/,
-  "The report must explain how preview counts reconcile"
-);
+assert.doesNotMatch(reportPage, />Source matches</);
+assert.doesNotMatch(reportPage, />Action-table rows</);
+assert.doesNotMatch(reportPage, />Rows shown</);
+assert.doesNotMatch(reportPage, />Rows locked</);
+assert.match(reportPage, /\{isPaid \? "Run New Report" : "Run Free Preview"\}/);
 
 console.log("Report scan state contract tests passed.");

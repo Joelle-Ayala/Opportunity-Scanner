@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { DashboardStatusBadge, type DashboardStatusTone } from "./status-badge";
 
-export type MonitoringChangeKind = "new" | "updated" | "closing" | "system";
+export type MonitoringChangeKind = "new" | "updated" | "closing" | "none" | "system";
 
 export interface MonitoringChangeItem {
   id: string;
@@ -27,6 +27,7 @@ const kindDisplay: Record<MonitoringChangeKind, { label: string; tone: Dashboard
   new: { label: "New signal", tone: "success" },
   updated: { label: "Updated", tone: "info" },
   closing: { label: "Closing soon", tone: "warning" },
+  none: { label: "No new matches", tone: "neutral" },
   system: { label: "Monitoring", tone: "neutral" }
 };
 

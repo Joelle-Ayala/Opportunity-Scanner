@@ -1,6 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { trackProductEvent } from "@/lib/productAnalytics";
 import { DashboardEmptyState } from "./empty-state";
 import { DashboardStatusBadge } from "./status-badge";
@@ -25,6 +26,8 @@ export interface MonitoredSearchRow {
   status: MonitoredSearchStatus;
   lastRunLabel?: string;
   nextRunLabel?: string;
+  latestResultsHref?: string;
+  runState?: "queued" | "running";
   newSignalCount?: number;
   currentVersion?: number;
   criteria: SavedSearchCriteria;
@@ -69,6 +72,17 @@ export function SavedSearchList({
   onEdit,
   renderMenu
 }: SavedSearchListProps) {
+  const router = useRouter();
+  const hasQueuedSearch = searches.some((search) => search.runState === "queued");
+
+  useEffect(() => {
+    if (!hasQueuedSearch) return;
+    const timeout = window.setTimeout(() => {
+      router.replace("/dashboard?tab=saved-searches#saved-searches-title");
+    }, 8_000);
+    return () => window.clearTimeout(timeout);
+  }, [hasQueuedSearch, router]);
+
   if (searches.length === 0) {
     return (
       <DashboardEmptyState
@@ -132,15 +146,32 @@ export function SavedSearchList({
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-700">{search.cadence}</p>
-                  <p className="mt-0.5 text-xs text-muted">{search.nextRunLabel || search.lastRunLabel || "Schedule pending"}</p>
+                  <p className="mt-0.5 text-xs text-muted">
+                    {search.runState === "running"
+                      ? "Checking public sources now"
+                      : search.runState === "queued"
+                        ? "Queued for the next monitoring check"
+                        : search.nextRunLabel || search.lastRunLabel || "Schedule pending"}
+                  </p>
                 </div>
                 <div><DashboardStatusBadge tone={status.tone}>{status.label}</DashboardStatusBadge></div>
                 <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                  {search.latestResultsHref ? (
+                    <a
+                      href={search.latestResultsHref}
+                      className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                    >
+                      View latest results
+                    </a>
+                  ) : null}
                   {search.status === "active" ? (
                     <form action={`/api/dashboard/searches/${search.id}`} method="post" onSubmit={() => trackProductEvent("saved_search_run_requested", { source: "dashboard" })}>
                       <input type="hidden" name="action" value="run" />
-                      <button className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
-                        Run now
+                      <button
+                        disabled={Boolean(search.runState)}
+                        className="rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:border-accent hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-wait disabled:border-line disabled:bg-field disabled:text-muted"
+                      >
+                        {search.runState === "running" ? "Checking..." : search.runState === "queued" ? "Queued" : "Run now"}
                       </button>
                     </form>
                   ) : null}

@@ -26,7 +26,19 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
       title: report.title,
       description: report.summary,
       url: `${siteUrl}/examples/${report.exampleSlug}`,
-      type: "website"
+      type: "website",
+      images: [{
+        url: `${siteUrl}/opportunity-scanner-social-banner.png`,
+        width: 1200,
+        height: 630,
+        alt: "Opportunity Scanner public-sector revenue intelligence"
+      }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: report.title,
+      description: report.summary,
+      images: [`${siteUrl}/opportunity-scanner-social-banner.png`]
     }
   };
 }
@@ -52,7 +64,8 @@ export default function SampleReportPage({ params }: { params: { slug: string } 
       <CTASection title="Want one of these for a real company?">
         <p>
           Run a free scan from the company website. The full version turns sourced signals into
-          contact paths, outreach drafts, CRM-ready notes, and workflow-ready rows.
+          opportunity-specific action paths, pursuits, outreach drafts, CRM-ready notes, and
+          workflow-ready rows. Current paid-plan availability is shown on pricing.
         </p>
       </CTASection>
 

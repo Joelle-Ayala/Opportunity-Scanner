@@ -1,6 +1,7 @@
 "use client";
 
 import type { KeyboardEvent, ReactNode } from "react";
+import { OpportunityScannerLogo } from "@/components/brand";
 
 export type DashboardTabId = "overview" | "reports" | "pursuits" | "saved-searches" | "alerts" | "billing";
 
@@ -58,14 +59,11 @@ export function DashboardShell({
   return (
     <div className="min-h-screen bg-field text-ink">
       <header className="border-b border-line bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <a href="/" className="flex min-w-0 items-center gap-3" aria-label="Opportunity Scanner home">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-ink text-xs font-bold text-white">
-              OS
-            </span>
-            <span className="truncate text-sm font-semibold text-ink sm:text-base">Opportunity Scanner</span>
-          </a>
-          <div className="flex min-w-0 items-center gap-3">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:flex-nowrap sm:px-6 lg:px-8">
+          <div className="min-w-0 flex-1">
+            <OpportunityScannerLogo />
+          </div>
+          <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto sm:flex-nowrap">
             {accountSlot}
             {primaryAction}
           </div>

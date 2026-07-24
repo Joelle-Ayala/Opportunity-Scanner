@@ -83,10 +83,12 @@ export function pursuitStageLabel(stage: PursuitStage): string {
 }
 
 export function sourceActionLabel(method: PursuitApplicationMethod): string {
-  if (method === "direct_application") return "Review official instructions";
-  if (method === "procurement_response") return "Review procurement notice";
-  if (method === "vendor_registration") return "Review procurement source";
-  return "Review official source";
+  if (method === "direct_application") return "Start application";
+  if (method === "procurement_response") return "View bid instructions";
+  if (method === "vendor_registration") return "Register as a vendor";
+  if (method === "buyer_outreach") return "Contact the buyer";
+  if (method === "partner_outreach") return "Contact the partner";
+  return "Monitor official source";
 }
 
 export function isPursuitStage(value: unknown): value is PursuitStage {

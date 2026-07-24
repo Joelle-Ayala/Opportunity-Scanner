@@ -19,7 +19,10 @@ assert.match(adminPageSource, /Internal blocker summary/);
 assert.match(adminPageSource, /Inspect held report/);
 assert.match(adminPageSource, /name="access"/);
 assert.match(adminPageSource, /Publish report/);
-assert.match(adminPageSource, /Request revised scan/);
+assert.match(adminPageSource, /Close as needs revision/);
+assert.match(routeSource, /authorizeAdminMutation/);
+assert.match(routeSource, /Cache-Control/);
+assert.doesNotMatch(routeSource, /hasAdminAccess/);
 assert.match(storageSource, /status: "eq\.quality_review"/);
 assert.match(storageSource, /listCompletedScans\(limit\)/);
 
@@ -38,12 +41,21 @@ const mocks = {
       return Response.json(body, init);
     },
     redirect(url, status = 307) {
-      return Response.redirect(url, status);
+      return new Response(null, {
+        status,
+        headers: { Location: String(url) }
+      });
     }
   },
-  hasAdminAccess(access) {
-    activeState.calls.access.push({ access });
-    return activeState.hasAccess;
+  async authorizeAdminMutation(request, access) {
+    activeState.calls.access.push({ access, origin: request.headers.get("origin") });
+    return {
+      authorized: activeState.hasAccess,
+      refreshedTokens: activeState.refreshedTokens ?? null
+    };
+  },
+  setSessionCookies(response, tokens) {
+    activeState.calls.cookies.push(tokens);
   },
   async getScan(id) {
     activeState.calls.getScan.push(id);
@@ -64,7 +76,8 @@ const moduleUnderTest = { exports: {} };
 const routeRequire = (specifier) => {
   const modules = {
     "next/server": { NextResponse: mocks.NextResponse },
-    "@/lib/access": { hasAdminAccess: mocks.hasAdminAccess },
+    "@/lib/admin/access": { authorizeAdminMutation: mocks.authorizeAdminMutation },
+    "@/lib/customer-auth/cookies": { setSessionCookies: mocks.setSessionCookies },
     "@/lib/storage": {
       getScan: mocks.getScan,
       resolveQualityReviewScan: mocks.resolveQualityReviewScan
@@ -94,7 +107,7 @@ function freshState(overrides = {}) {
     },
     hasAccess: true,
     transitionConflict: false,
-    calls: { access: [], getScan: [], resolve: [], email: [] },
+    calls: { access: [], getScan: [], resolve: [], email: [], cookies: [] },
     ...overrides
   };
 }
@@ -102,6 +115,10 @@ function freshState(overrides = {}) {
 function request(action = "publish", access = "admin-token") {
   return new Request("https://scanner.example.test/api/admin/scans/scan-1/quality-review", {
     method: "POST",
+    headers: {
+      Origin: "https://scanner.example.test",
+      "Sec-Fetch-Site": "same-origin"
+    },
     body: new URLSearchParams({ action, access })
   });
 }
@@ -120,7 +137,10 @@ response = await POST(request(), { params: { id: activeState.scan.id } });
 assert.equal(response.status, 403);
 assert.deepEqual(activeState.calls.resolve, []);
 assert.deepEqual(activeState.calls.email, []);
-assert.deepEqual(activeState.calls.access, [{ access: "admin-token" }]);
+assert.deepEqual(activeState.calls.access, [{
+  access: "admin-token",
+  origin: "https://scanner.example.test"
+}]);
 
 for (const status of ["queued", "scraping", "profiling", "discovering", "completed", "failed"]) {
   activeState = freshState({ scan: { ...freshState().scan, status } });
@@ -149,6 +169,7 @@ assert.equal(
   response.headers.get("location"),
   "https://scanner.example.test/admin/reports?access=admin-token&resolution=published"
 );
+assert.equal(response.headers.get("cache-control"), "private, no-store");
 
 activeState = freshState();
 response = await POST(request("request_revision"), { params: { id: activeState.scan.id } });
@@ -157,6 +178,7 @@ const revisionResolution = activeState.calls.resolve[0].resolution;
 assert.equal(revisionResolution.status, "failed");
 assert.match(revisionResolution.error_message, /human review/i);
 assert.match(revisionResolution.error_message, /did not meet the publication bar/i);
+assert.match(revisionResolution.error_message, /closed without publishing/i);
 assert.equal(Number.isNaN(Date.parse(revisionResolution.completed_at)), false);
 assert.equal(activeState.calls.email[0].state, "failed");
 assert.equal(
@@ -169,5 +191,17 @@ response = await POST(request(), { params: { id: activeState.scan.id } });
 assert.equal(response.status, 409);
 assert.deepEqual(activeState.calls.email, []);
 assert.match((await responseJson(response)).error, /no longer held/i);
+
+activeState = freshState({
+  refreshedTokens: {
+    accessToken: "fresh-access",
+    refreshToken: "fresh-refresh",
+    expiresIn: 3600,
+    tokenType: "bearer"
+  }
+});
+response = await POST(request("publish"), { params: { id: activeState.scan.id } });
+assert.equal(response.status, 303);
+assert.equal(activeState.calls.cookies.length, 1);
 
 console.log("Admin quality-review recovery tests passed.");

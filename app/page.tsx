@@ -262,6 +262,21 @@ function ProductProof() {
             View the full sample report
           </a>
         </div>
+
+        <div className="mt-8 grid border-y border-line md:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-line">
+          {[
+            ["01", "Build the profile", "Translate CivicStage's website and customer context into buyers, programs, source patterns, and search language."],
+            ["02", "Route the opportunity", "Distinguish an application from agency sales, funded-recipient partnership, vendor registration, or monitoring."],
+            ["03", "Work the pursuit", "Keep source evidence, contact strategy, outreach angle, notes, and next action together."],
+            ["04", "Watch what changes", "Save the qualified search, review alerts and comparisons, then export or send workflow-ready context."]
+          ].map(([number, title, copy]) => (
+            <article key={number} className="border-b border-line py-5 last:border-b-0 md:px-5 lg:border-b-0 lg:first:pl-0 lg:last:pr-0">
+              <p className="text-xs font-semibold text-ember">{number}</p>
+              <h3 className="mt-2 text-base font-semibold text-ink">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -415,7 +430,8 @@ export default async function HomePage({ searchParams }: { searchParams?: HomeSe
             <h2 className="mt-2 text-3xl font-semibold leading-tight text-ink">Start free. Unlock the action layer when the signals are worth pursuing.</h2>
             <p className="mt-4 text-sm leading-6 text-slate-600">
               Buy one complete report or choose monitoring when you need an ongoing source of new
-              opportunities. Pricing and billing terms are shown before checkout.
+              opportunities. Pricing, billing terms, and current checkout availability are shown
+              before any payment can begin.
             </p>
             <a href="/pricing" className="mt-6 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
               View Pricing
