@@ -394,7 +394,10 @@ export async function processSubscriptionActivationRecoveries(
   try {
     recoveries = await dependencies.claimRecoveries(5);
     summary.recovery.claimed = recoveries.length;
-  } catch {
+  } catch (cause) {
+    console.error("Subscription activation recovery claim failed", {
+      error: cause instanceof Error ? cause.message : "Unknown RPC error"
+    });
     summary.recovery.claimFailed = true;
   }
 

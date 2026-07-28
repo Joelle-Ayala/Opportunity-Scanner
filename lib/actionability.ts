@@ -1,4 +1,5 @@
 import type { StoredOpportunitySignal } from "./types";
+import { classifyOpportunityRecord } from "./opportunityRecordClassification";
 
 const CURRENT_ACTION_DATE = new Date().toISOString().slice(0, 10);
 
@@ -72,10 +73,44 @@ function signalEvidence(signal: StoredOpportunitySignal): string {
     .toLowerCase();
 }
 
+function classifiedRecord(signal: StoredOpportunitySignal) {
+  return classifyOpportunityRecord({
+    recordClass: signal.record_class,
+    currentValidatedAt: signal.current_validated_at,
+    sourceName: signal.source_name,
+    sourceType: signal.source_type,
+    deadline: signal.deadline,
+    awardYear: signal.award_year,
+    periodEnd: signal.period_end
+  });
+}
+
+function hasConcreteRecipient(signal: StoredOpportunitySignal): boolean {
+  const candidates = [
+    signal.likely_buyer_or_partner,
+    signal.raw_json?.["Recipient Name"],
+    signal.raw_json?.recipient,
+    signal.raw_json?.recipient_name
+  ];
+
+  return candidates.some((value) => {
+    if (typeof value !== "string") return false;
+    const recipient = value.trim().toLowerCase();
+    return (
+      recipient.length >= 3 &&
+      !/^(?:n\/?a|none|unknown|undisclosed|public agency|government agency|federal agency|state agency|local agency)$/.test(
+        recipient
+      ) &&
+      !/domestic awardees? \(?undisclosed\)?|miscellaneous foreign|foreign recipients?/.test(recipient)
+    );
+  });
+}
+
 export function directRevenueFitScore(signal: StoredOpportunitySignal): number {
   const lane = signalLane(signal).toLowerCase();
   const evidence = signalEvidence(signal);
-  const endDate = signal.deadline || signalDate(signal, "End Date");
+  const record = classifiedRecord(signal);
+  const endDate = record.recordClass === "current" ? record.deadline || "" : "";
   let score = signal.relevance_score + signal.confidence_score + signal.novelty_score;
 
   if (endDate >= CURRENT_ACTION_DATE) score += 45;
@@ -251,7 +286,8 @@ export function assessActionability(signal: StoredOpportunitySignal): Actionabil
   ]
     .join(" ")
     .toLowerCase();
-  const endDate = comparableDate(signal.deadline || signalDate(signal, "End Date"));
+  const record = classifiedRecord(signal);
+  const endDate = record.recordClass === "current" ? comparableDate(record.deadline || "") : "";
   const startDate = comparableDate(signalDate(signal, "Start Date"));
   const currentDate = CURRENT_ACTION_DATE;
   const recentStart = startDate >= "2024-01-01";
@@ -297,6 +333,35 @@ export function assessActionability(signal: StoredOpportunitySignal): Actionabil
       actionability: "unlikely",
       reason: "This is infrastructure or policy context, not a buyer/channel the company can reasonably pursue now.",
       bestNextStep: "Do not surface as a lead; use only for background market mapping."
+    };
+  }
+
+  if (record.recordClass === "evidence") {
+    const historicalFundedBuyer =
+      signal.source_type === "historical_award" || signal.source_type === "funded_buyer";
+    const concreteRecipient = hasConcreteRecipient(signal);
+    const credibleDirectEvidence =
+      directProcurementLane &&
+      signal.relevance_score >= 64 &&
+      signal.confidence_score >= 70 &&
+      concreteRecipient;
+
+    if (credibleDirectEvidence) {
+      return {
+        actionability: "maybe",
+        reason: historicalFundedBuyer
+          ? "Historical funded-buyer evidence identifies a concrete recipient in a directly relevant lane. It supports recipient or partner research, not deadline urgency."
+          : "Source-backed evidence supports a directly relevant buyer or partner lane, but current timing must be verified before pursuit.",
+        bestNextStep: bestNextStepForLane(lane)
+      };
+    }
+
+    return {
+      actionability: "unlikely",
+      reason: !concreteRecipient
+        ? "The evidence does not identify a concrete recipient that can support funded-buyer or partner research."
+        : "The evidence is too indirect or weakly matched to recommend as a funded-buyer, buyer, or partner signal.",
+      bestNextStep: "Hide from the report unless a human analyst confirms a concrete buyer or partner path."
     };
   }
 

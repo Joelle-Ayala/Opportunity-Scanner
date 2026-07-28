@@ -49,6 +49,8 @@ function signal(title: string, evidence: string, query: string, lane: string): S
     id: title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
     created_at: "2026-07-15T00:00:00.000Z",
     opportunity_title: title,
+    record_class: "current",
+    current_validated_at: new Date().toISOString(),
     source_type: "active_grant",
     source_name: "Grants.gov",
     source_url: "https://example.gov/source",

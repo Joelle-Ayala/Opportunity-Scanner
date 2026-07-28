@@ -413,6 +413,39 @@ function excludeTerms(input: ScanInput): string[] {
   return unique(phraseTerms(input.excludeTerms));
 }
 
+function deterministicFallbackConfidence(input: ScanInput, profile: CompanyProfile): number {
+  const focusTermCount = pickTerms(input.opportunityFocus ?? "", 20).length;
+  const included = phraseTerms(input.includeTerms);
+  const excluded = excludeTerms(input);
+  const hasSpecificIndustry = Boolean(
+    input.industry?.trim() && !/^(general|other|unknown|unspecified)$/i.test(input.industry.trim())
+  );
+  const hasCorroboratedPlaybook =
+    hasSpecificIndustry &&
+    included.length > 0 &&
+    excluded.length > 0 &&
+    (profile.selected_playbooks ?? []).length > 0;
+
+  let score = 27;
+  if (focusTermCount >= 7) score += 8;
+  else if (focusTermCount >= 4) score += 4;
+
+  if (included.length >= 3) score += 7;
+  else if (included.length > 0) score += 3;
+
+  if (excluded.length >= 2) score += 5;
+  else if (excluded.length > 0) score += 2;
+
+  if (hasSpecificIndustry) score += 5;
+  if (hasCorroboratedPlaybook) score += 8;
+  if (input.companyName?.trim()) score += 2;
+  if (input.customerType && input.customerType !== "Other") score += 2;
+  if (input.headquartersState?.trim() || input.targetStates?.trim()) score += 2;
+  if ((input.prioritySignals ?? []).length > 0) score += 3;
+
+  return Math.min(85, score);
+}
+
 function inferPublicSectorTerms(keywords: string[], industry?: string, input?: ScanInput): string[] {
   const haystack = `${keywords.join(" ")} ${industry ?? ""} ${input ? intentText(input) : ""}`.toLowerCase();
   const terms = new Set<string>();
@@ -596,6 +629,7 @@ async function generateWithOpenAi(
     options.signal?.addEventListener("abort", abortFromParent, { once: true });
   }
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -605,7 +639,7 @@ async function generateWithOpenAi(
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+        model,
         response_format: { type: "json_object" },
         messages: [
           {
@@ -673,6 +707,10 @@ async function generateWithOpenAi(
     });
 
     if (!response.ok) {
+      console.warn("OpenAI company profile request failed", {
+        status: response.status,
+        model
+      });
       return null;
     }
 
@@ -750,18 +788,24 @@ export async function generateCompanyProfile(
     likely_revenue_motions: [],
     suggested_contact_roles: [],
     report_guidance: [],
-    profile_confidence_score: 35
+    profile_confidence_score: 0
   }, input), input);
+  const fallbackConfidence = deterministicFallbackConfidence(input, fallbackProfile);
+  const needsReview = fallbackConfidence < 55;
 
   return {
     ...fallbackProfile,
-    profile_confidence_score: 35,
+    profile_confidence_score: fallbackConfidence,
     profile_assumptions_summary: [
-      "The AI profile step was unavailable, so these assumptions were generated from submitted text and website keywords only.",
+      needsReview
+        ? "The AI profile step was unavailable, so these assumptions were generated from limited submitted text and website keywords only."
+        : "The AI profile step was unavailable, so these assumptions were generated from the detailed submitted scan intent and website keywords.",
       fallbackProfile.profile_assumptions_summary
     ].filter(Boolean).join(" "),
     report_guidance: unique([
-      "Keyword-only fallback profile. Hold results for review until the company's offering and buyer assumptions are verified.",
+      needsReview
+        ? "Low-confidence fallback profile. Hold results for review until the company's offering and buyer assumptions are verified."
+        : "Deterministic fallback profile supported by detailed scan inputs and a matching industry playbook.",
       ...(fallbackProfile.report_guidance ?? [])
     ])
   };

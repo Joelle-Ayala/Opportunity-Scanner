@@ -287,6 +287,14 @@
       "prerequisites": ["v0031", "v0034"],
       "sha256": "ac30112923e6bd7e920c27c9fdafd531e19c5d76ac12016a4a61702327526707",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0036",
+      "file": "db/subscription-activation-recovery-uuid-claim-fix.sql",
+      "description": "Repair the subscription activation recovery claim's unsupported UUID aggregate while preserving its unambiguous-source guard.",
+      "prerequisites": ["v0033", "v0035"],
+      "sha256": "c9e6e035fb2845c3eee79fdfbd42ea3bf513c1cbef75b2991d0f6092c4707589",
+      "requiredInProduction": true
     }
   ]
 }

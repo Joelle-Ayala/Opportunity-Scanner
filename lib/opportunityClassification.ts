@@ -154,6 +154,37 @@ function sourceRecordText(signal: StoredOpportunitySignal): string {
     .toLowerCase();
 }
 
+function synthesizedSignalText(signal: StoredOpportunitySignal): string {
+  return [
+    signal.opportunity_title,
+    signal.query_used,
+    signalLane(signal)
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
+function hasConcreteTarget(signal: StoredOpportunitySignal): boolean {
+  const candidates = [
+    signal.likely_buyer_or_partner,
+    signal.raw_json?.["Recipient Name"],
+    signal.raw_json?.recipient,
+    signal.raw_json?.recipient_name
+  ];
+
+  return candidates.some((value) => {
+    if (typeof value !== "string") return false;
+    const target = value.trim().toLowerCase();
+    return (
+      target.length >= 3 &&
+      !/^(?:n\/?a|none|unknown|undisclosed|public agency|government agency|federal agency|state agency|local agency)$/.test(
+        target
+      ) &&
+      !/domestic awardees? \(?undisclosed\)?|miscellaneous foreign|foreign recipients?/.test(target)
+    );
+  });
+}
+
 function playbookIds(profile?: CompanyProfile | null): string[] {
   return profile?.selected_playbooks?.map((playbook) => playbook.playbook_id) ?? [];
 }
@@ -455,8 +486,24 @@ function creativeOnlyScreen(signal: StoredOpportunitySignal, profile?: CompanyPr
   reason: string;
 } | null {
   if (!isCreativeCommerceProfile(profile)) return null;
-  const text = sourceRecordText(signal);
+  const sourceText = sourceRecordText(signal);
+  const sourceBacksCreativeDelivery =
+    /live music|music performance|musical performance|musician services|performer services|performing artist|artist booking|event entertainment|festival entertainment|concert|public event production|event production services|cultural programming|live events?/.test(
+      sourceText
+    );
+  const text = sourceBacksCreativeDelivery
+    ? `${sourceText} ${synthesizedSignalText(signal)}`
+    : sourceText;
   const deadline = verifiedSourceDeadline(signal);
+  const recordClass = classifyOpportunityRecord({
+    recordClass: signal.record_class,
+    currentValidatedAt: signal.current_validated_at,
+    sourceName: signal.source_name,
+    sourceType: signal.source_type,
+    deadline: signal.deadline,
+    awardYear: signal.award_year,
+    periodEnd: signal.period_end
+  }).recordClass;
   const liveMusicFit =
     /live music|music performance|musical performance|musician services|performer services|performing artist|artist booking|event entertainment|festival entertainment|concert|summer concert|public concerts|public event production|event production services|tourism|placemaking|parks recreation|parks and recreation|public event|cultural programming|downtown activation/.test(
       text
@@ -464,7 +511,10 @@ function creativeOnlyScreen(signal: StoredOpportunitySignal, profile?: CompanyPr
   const clearBuyerFit =
     /city of|county|department of parks|parks recreation|parks and recreation|tourism|downtown|business improvement district|bid programming|public plaza|public space|open streets|night market|neighborhood festival|public venue|cultural affairs|arts commission|symphony|booking|events/.test(
       text
-    );
+    ) ||
+    (signal.source_type === "historical_award" &&
+      sourceBacksCreativeDelivery &&
+      hasConcreteTarget(signal));
   const tooIndirect =
     /creative workforce|arts workforce|school and district arts programming|arts education|music education|legal services|heritage center|creative tech exchange|talent program|grants for arts projects|policy signal|federal register/.test(
       text
@@ -507,9 +557,12 @@ function creativeOnlyScreen(signal: StoredOpportunitySignal, profile?: CompanyPr
   return {
     show: true,
     path: clearBuyerFit ? "Clear revenue path" : "Revenue path needs validation",
-    reason: clearBuyerFit
-      ? "Current source evidence points to a buyer, funded recipient, or vendor path for live music or public event programming."
-      : "The signal is current and relevant, but outreach ownership should be validated before acting."
+    reason:
+      recordClass === "evidence"
+        ? "Historical funded-buyer evidence identifies a concrete recipient and a source-backed live-music, cultural-programming, event-production, or public-event lane."
+        : clearBuyerFit
+        ? "Current source evidence points to a buyer, funded recipient, or vendor path for live music or public event programming."
+        : "The signal is current and relevant, but outreach ownership should be validated before acting."
   };
 }
 
