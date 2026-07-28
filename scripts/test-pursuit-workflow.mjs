@@ -53,6 +53,8 @@ function opportunity(overrides = {}, actionOverrides = {}) {
     source_name: "Grants.gov",
     source_url: "https://Grants.gov/opportunity/123?b=2&a=1#summary",
     agency_or_funder: "Example Public Agency",
+    record_class: "current",
+    current_validated_at: "2026-07-27T12:00:00.000Z",
     deadline: "2026-09-30",
     geography: "Federal",
     external_evidence_summary: "Official opportunity instructions and deadline.",

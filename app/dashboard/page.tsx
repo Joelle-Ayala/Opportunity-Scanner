@@ -25,6 +25,7 @@ import { loadCustomerAlertPreferences } from "@/lib/deadlineAlerts/preferences";
 import { loadCustomerPursuits } from "@/lib/dashboard/pursuits";
 import { compareStoredOpportunitySignals } from "@/lib/monitoring/comparison";
 import { listScanOpportunitySignals } from "@/lib/storage";
+import { classifyOpportunityRecord } from "@/lib/opportunityRecordClassification";
 
 export const dynamic = "force-dynamic";
 
@@ -100,8 +101,21 @@ function closingSoonCount(
   if (!Number.isFinite(start)) return 0;
   const end = start + 30 * 24 * 60 * 60 * 1000;
   return signals.filter((signal) => {
-    if (signal.show_in_report === false || !signal.deadline) return false;
-    const deadline = Date.parse(signal.deadline);
+    if (signal.show_in_report === false) return false;
+    const record = classifyOpportunityRecord(
+      {
+        recordClass: signal.record_class,
+        currentValidatedAt: signal.current_validated_at,
+        sourceName: signal.source_name,
+        sourceType: signal.source_type,
+        deadline: signal.deadline,
+        awardYear: signal.award_year,
+        periodEnd: signal.period_end
+      },
+      new Date(start)
+    );
+    if (record.recordClass !== "current" || !record.deadline) return false;
+    const deadline = Date.parse(record.deadline);
     return Number.isFinite(deadline) && deadline >= start && deadline <= end;
   }).length;
 }
@@ -290,6 +304,24 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
     const comparison = previousScanId && currentSignals.length + previousSignals.length > 0
       ? compareStoredOpportunitySignals(previousSignals, currentSignals, occurredAt)
       : null;
+    const newEntries = comparison?.current.filter((entry) => entry.status === "new") || [];
+    const newLiveCount = newEntries.filter((entry) => {
+      const signal = entry.signal;
+      return classifyOpportunityRecord(
+        {
+          recordClass: signal.record_class,
+          currentValidatedAt: signal.current_validated_at,
+          sourceName: signal.source_name,
+          sourceType: signal.source_type,
+          deadline: signal.deadline,
+          awardYear: signal.award_year,
+          periodEnd: signal.period_end
+        },
+        new Date(occurredAt)
+      ).recordClass === "current";
+    }).length;
+    const newEvidenceCount = newEntries.length - newLiveCount;
+    const newSignalCount = comparison ? newEntries.length : run.newOpportunityCount;
     const updatedCount = comparison?.summary.changed || 0;
     const closingCount = closingSoonCount(currentSignals, occurredAt);
     const href = run.status === "completed"
@@ -320,10 +352,17 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
         href
       };
     }
-    if (run.newOpportunityCount > 0) {
+    if (newSignalCount > 0) {
+      const title = comparison
+        ? newLiveCount > 0 && newEvidenceCount > 0
+          ? `${newLiveCount} new live ${newLiveCount === 1 ? "opportunity" : "opportunities"} and ${newEvidenceCount} funded-buyer ${newEvidenceCount === 1 ? "signal" : "signals"}`
+          : newLiveCount > 0
+            ? `${newLiveCount} new live ${newLiveCount === 1 ? "opportunity" : "opportunities"} found`
+            : `${newEvidenceCount} new funded-buyer ${newEvidenceCount === 1 ? "signal" : "signals"} found`
+        : `${newSignalCount} new ${newSignalCount === 1 ? "signal" : "signals"} found`;
       return {
         id: run.id,
-        title: `${run.newOpportunityCount} new ${run.newOpportunityCount === 1 ? "opportunity" : "opportunities"} found`,
+        title,
         summary: [
           updatedCount ? `${updatedCount} existing ${updatedCount === 1 ? "record was" : "records were"} also updated.` : "",
           closingCount ? `${closingCount} ${closingCount === 1 ? "opportunity has" : "opportunities have"} a deadline within 30 days.` : ""

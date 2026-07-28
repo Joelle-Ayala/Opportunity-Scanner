@@ -197,7 +197,7 @@ test("all bypass surfaces invoke readiness before exposing or acting on report d
 
   const workflowRoute = sources[paths[3]];
   assert.ok(workflowRoute.indexOf("await hasRequestReportAccess") < workflowRoute.indexOf("await getCompletedReportReadiness"));
-  assert.ok(workflowRoute.indexOf("await getCompletedReportReadiness") < workflowRoute.indexOf("const payload = buildWorkflowPayload"));
+  assert.ok(workflowRoute.indexOf("await getCompletedReportReadiness") < workflowRoute.indexOf("const builtPayload = buildWorkflowPayload"));
   assert.match(workflowRoute, /jsonError\(readiness\.status, readiness\.code, readiness\.message\)/);
 
   const enrichmentRoute = sources[paths[4]];

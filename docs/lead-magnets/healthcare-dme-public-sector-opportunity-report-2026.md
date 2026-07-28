@@ -4,7 +4,7 @@ Subtitle: A practical guide to VA procurement, Medicare supplier signals, funded
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 11, 2026. Time-sensitive Medicare enrollment and competitive-bidding information must be rechecked before publication and on every update.
+Updated July 27, 2026. Time-sensitive Medicare enrollment and competitive-bidding information must be rechecked before publication and on every update.
 
 ## Offer and audience
 
@@ -21,6 +21,18 @@ National health spending provides context for the scale and policy importance of
 The highest-value work is separating these lanes before outreach. A reimbursement rule may require Monitor Policy or supplier-readiness work. A VA schedule may support a contracting pathway. A HRSA recipient may support funded-buyer or partner research. A prior award may reveal an incumbent, distributor, or agency pattern without proving current demand.
 
 The correct output is a focused action table in which every row identifies offer fit, official evidence and period, target, route, constraint, and next validation task. A compliance requirement can be strategically important without being a sales lead.
+
+## What the real scan data shows
+
+An anonymized scan of a compression-garment and recovery-products brand surfaced 14 sourced signals across five federal agencies and two source systems. These are historical award records, not open opportunities. They show that the DME-adjacent market has several different buyer and partner routes:
+
+| Award year | Public record | Amount | What it proves |
+|---|---|---:|---|
+| 2018 | Peraton Enterprise Solutions, HHS/CMS | $95,922,714 | Medicare claims-processing infrastructure included durable medical equipment. This is enterprise ecosystem evidence, not a direct product order. [USAspending record](https://www.usaspending.gov/award/CONT_AWD_75FCMC18F0001_7530_HHSM500201600002I_7530) |
+| 2021 | Valiant Construction LLC, Department of Veterans Affairs | $17,139,378 | VA funded design-build work for an Omaha physical-therapy and prosthetics clinic. This proves facility investment around the care pathway, not an open medical-supply purchase. [USAspending record](https://www.usaspending.gov/award/CONT_AWD_36C77621C0052_3600_-NONE-_-NONE-) |
+| 2019 | BSN Medical Inc., NASA | $133,587 | A medical-products supplier received a NASA award, showing that relevant direct buyers can appear outside the agencies a seller would normally target. [USAspending record](https://www.usaspending.gov/award/CONT_AWD_80NSSC19P2099_8000_-NONE-_-NONE-) |
+
+The operating implication is a three-tier buyer map: reimbursement infrastructure, VA care and facility ecosystems, and direct agency supply buying. Each tier needs a different target, contact path, and qualification step.
 
 ## State of the market and opportunity signals
 

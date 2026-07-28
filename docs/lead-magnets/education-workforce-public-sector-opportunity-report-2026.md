@@ -4,7 +4,7 @@ Subtitle: A source-backed guide to school systems, workforce boards, training pr
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 11, 2026. Funding notices, allotments, approved plans, provider lists, and procurement status should be rechecked before publication or action.
+Updated July 27, 2026. Funding notices, allotments, approved plans, provider lists, and procurement status should be rechecked before publication or action.
 
 ## Offer and audience
 
@@ -19,6 +19,17 @@ The education and workforce market is not a single buyer category. Federal agenc
 Strong July 2026 signals include WIOA allotments, modified 2026-27 state plans, estimated FY2026 Perkins V allocations, adult-education state funding, and apprenticeship records. They evidence active systems and priorities, not necessarily open competitions or vendor market size.
 
 The commercial advantage comes from tracing money and responsibility. A state allotment points to local planning; a plan names priorities and structures; a local record may reveal a purchasing route; and an award may reveal a funded buyer or partner. A school or district dataset defines the market but does not prove purchasing intent. Opportunity Scanner should preserve those differences and the next validation task.
+
+## What the real scan data shows
+
+An anonymized scan of an arts-educator staffing platform born out of California Prop 28 surfaced 21 sourced signals across 11 federal agencies and two source systems. The records below are historical funded-buyer evidence, not open staffing requests.
+
+| Award year | Public record | Amount | What it proves |
+|---|---|---:|---|
+| 2011 | Westat, Inc., Department of Education | $9,954,119 | Federal education-workforce work included school staffing, teacher follow-up, workforce conditions, and educator attrition research. Staffing intermediaries and service firms can sit inside the funded ecosystem. [USAspending record](https://www.usaspending.gov/award/CONT_AWD_0001_9100_EDIES12D0005_9100) |
+| 2018 | FM Talent Source, LLC, Department of Education | $547,714 | A staffing and logistics intermediary supported arts-education and related grant competitions. The route can be recipient or implementation partnership, not only a direct district sale. [USAspending record](https://www.usaspending.gov/award/CONT_AWD_91990018F0331_9100_EDOII15A0003_9100) |
+
+The strategic takeaway is that educator-workforce money reaches intermediaries as well as districts. Prop 28 remains a California demand driver, but these federal records are historical proof of buyer and partner patterns and must not be presented as current openings.
 
 ## State of the market in July 2026
 

@@ -41,7 +41,11 @@ def report(slug, title, subtitle, stats, lanes, path):
     return {
         "source": ROOT / "docs" / "lead-magnets" / f"{slug}.md",
         "output": OUTPUT_DIR / f"{slug}.pdf",
-        "eyebrow": "OPPORTUNITY SCANNER INDUSTRY REPORT",
+        "eyebrow": (
+            "OPPORTUNITY SCANNER INDUSTRY PLAYBOOK"
+            if "Playbook" in title
+            else "OPPORTUNITY SCANNER INDUSTRY REPORT"
+        ),
         "title": title,
         "subtitle": subtitle,
         "stats": stats,
@@ -72,9 +76,9 @@ DOCUMENTS = [
         "title": "The 2026 Healthcare and DME Public-Sector Opportunity Report",
         "subtitle": "A practical guide to VA procurement, Medicare supplier signals, funded providers, recipients, channel partners, and source-backed next actions.",
         "stats": [
-            ("6 lanes", "Procurement, reimbursement, recipients, channels, grants, and policy"),
-            ("2026", "Current CMS enrollment constraint clearly separated from sales paths"),
-            ("30 days", "A focused operating plan for qualifying the first target list"),
+            ("14 signals", "Sourced in a real healthcare and DME company scan"),
+            ("5 agencies", "Distinct federal buyers or funders surfaced"),
+            ("$95.9M", "Largest historical award record in the evidence set"),
         ],
         "lanes": ["VA procurement", "CMS signals", "Funded providers", "Award recipients", "Distribution", "Policy demand"],
         "path": ["Confirm product fit", "Separate six lanes", "Qualify buyer or partner", "Route to right office", "Run 30-day test"],
@@ -83,7 +87,7 @@ DOCUMENTS = [
         "education-workforce-public-sector-opportunity-report-2026",
         "The 2026 Education, Workforce, and Training Opportunity Report",
         "A field guide to districts, workforce boards, state agencies, funded providers, implementation partners, and training demand.",
-        [("6 lanes", "District, workforce, grant, recipient, partner, and policy routes"), ("30 days", "A practical first-market operating plan"), ("2 layers", "Direct buyers and publicly funded implementers")],
+        [("21 signals", "Sourced in a real education-workforce company scan"), ("11 agencies", "Distinct federal buyers or funders surfaced"), ("$9.95M", "Largest historical award record in the evidence set")],
         ["District buying", "Workforce boards", "State programs", "Grant recipients", "Training partners", "Policy demand"],
         ["Define learner outcome", "Find funding signal", "Name implementer", "Confirm buying path", "Start focused outreach"],
     ),
@@ -91,13 +95,13 @@ DOCUMENTS = [
         "creative-economy-live-events-public-sector-opportunity-report-2026",
         "The 2026 Creative Economy and Live Events Opportunity Report",
         "A source-backed guide to arts agencies, tourism, parks, civic events, cultural grants, recipients, and production partners.",
-        [("6 lanes", "Agency, event, grant, recipient, tourism, and partner routes"), ("Local first", "City and regional implementation matters"), ("30 days", "A focused market-entry plan")],
+        [("28 signals", "Sourced in a real creative-economy company scan"), ("9 agencies", "Distinct federal buyers or funders surfaced"), ("$24M", "Largest historical award record in the evidence set")],
         ["Arts agencies", "Civic events", "Tourism", "Parks and venues", "Grant recipients", "Production partners"],
         ["Define offer", "Find local signal", "Map funded organizer", "Choose role", "Build timely outreach"],
     ),
     report(
         "software-ai-public-sector-opportunity-report-2026",
-        "The 2026 Software and AI Public-Sector Opportunity Report",
+        "The 2026 Software and AI Public-Sector Opportunity Playbook",
         "A practical guide to acquisition signals, modernization demand, funded agencies, primes, compliance paths, and responsible AI opportunities.",
         [("6 lanes", "Acquisition, modernization, awards, primes, grants, and policy"), ("Fit first", "Security and acquisition constraints shape the route"), ("30 days", "A qualification-led market test")],
         ["Active acquisition", "Modernization", "Award history", "Prime partners", "Funded programs", "AI policy"],
@@ -105,7 +109,7 @@ DOCUMENTS = [
     ),
     report(
         "infrastructure-construction-public-sector-opportunity-report-2026",
-        "The 2026 Infrastructure, Construction, and Engineering Opportunity Report",
+        "The 2026 Infrastructure, Construction, and Engineering Opportunity Playbook",
         "A field guide to capital plans, federal funding flows, local projects, prime contractors, subcontract routes, and pre-bid intelligence.",
         [("6 lanes", "Capital, grant, project, prime, subcontract, and planning routes"), ("Flow down", "Funding must be traced to implementers"), ("30 days", "A geography-led pursuit plan")],
         ["Capital plans", "Federal grants", "Local projects", "Prime awards", "Subcontracting", "Planning signals"],
@@ -113,7 +117,7 @@ DOCUMENTS = [
     ),
     report(
         "clean-energy-facilities-public-sector-opportunity-report-2026",
-        "The 2026 Clean Energy, Facilities, and Sustainability Opportunity Report",
+        "The 2026 Clean Energy, Facilities, and Sustainability Opportunity Playbook",
         "A source-backed guide to public buildings, resilience programs, energy funding, implementation partners, contractors, and funded buyers.",
         [("6 lanes", "Facilities, grants, recipients, projects, partners, and policy"), ("Buyer map", "Owners and implementers may differ"), ("30 days", "A focused account plan")],
         ["Facility plans", "Energy grants", "Funded owners", "Implementation projects", "Prime partners", "Policy demand"],
@@ -121,7 +125,7 @@ DOCUMENTS = [
     ),
     report(
         "manufacturing-supply-chain-public-sector-opportunity-report-2026",
-        "The 2026 Manufacturing and Supply Chain Opportunity Report",
+        "The 2026 Manufacturing and Supply Chain Opportunity Playbook",
         "A practical guide to public procurement, industrial-base demand, award history, primes, suppliers, reshoring programs, and logistics signals.",
         [("6 lanes", "Procurement, awards, primes, suppliers, programs, and policy"), ("Route matters", "Direct and subcontract paths differ"), ("30 days", "A capability-led pursuit plan")],
         ["Procurement", "Award history", "Prime contractors", "Supplier gaps", "Industrial programs", "Policy demand"],
@@ -129,11 +133,19 @@ DOCUMENTS = [
     ),
     report(
         "nonprofit-community-services-public-sector-opportunity-report-2026",
-        "The 2026 Nonprofit and Community Services Opportunity Report",
+        "The 2026 Nonprofit and Community Services Opportunity Playbook",
         "A source-backed guide to grants, cooperative agreements, contracts, subawards, intermediaries, local implementation, and policy signals.",
         [("6 lanes", "Grant, contract, subaward, intermediary, local, and policy routes"), ("Fit first", "Mission alignment is not eligibility"), ("30 days", "A capacity-aware funding plan")],
         ["Federal grants", "Service contracts", "Subawards", "Intermediaries", "Local programs", "Policy signals"],
         ["Define service outcome", "Check eligibility", "Map funding chain", "Assess capacity", "Pursue best-fit route"],
+    ),
+    report(
+        "marketing-advertising-digital-services-public-sector-opportunity-report-2026",
+        "The 2026 Marketing, Advertising, Content, Website & Digital Services Public-Sector Opportunity Playbook",
+        "A source-backed guide to communications procurement, public-information campaigns, accessible digital services, funded recipients, prime partners, and buyer routes.",
+        [("8 lanes", "Communications, outreach, content, web, accessibility, analytics, recipient, and prime routes"), ("3 systems", "SAM.gov, USAspending, and Grants.gov evidence paths"), ("30 days", "A qualification-led pursuit plan")],
+        ["Communications", "Public outreach", "Content", "Web services", "Accessibility", "Analytics", "Funded recipients", "Prime partners"],
+        ["Define capability", "Find official evidence", "Verify current status", "Choose buyer or partner", "Open qualified pursuit"],
     ),
 ]
 
@@ -225,7 +237,7 @@ def draw_page(canvas, doc) -> None:
         canvas.setFillColor(MUTED)
         canvas.setFont("Helvetica", 8)
         canvas.drawRightString(letter[0] - doc.rightMargin, 24, f"{page}")
-        canvas.drawString(doc.leftMargin, 24, "Source-backed opportunity intelligence | As of July 11, 2026")
+        canvas.drawString(doc.leftMargin, 24, "Source-backed opportunity intelligence | Updated July 27, 2026")
     canvas.restoreState()
 
 
@@ -285,6 +297,11 @@ def styles():
 
 def inline(text: str) -> str:
     text = html.escape(text.strip())
+    text = re.sub(
+        r"\[([^\]]+)\]\((https?://[^)]+)\)",
+        lambda m: f'<link href="{m.group(2)}" color="#0E7C86">{m.group(1)}</link>',
+        text,
+    )
     text = re.sub(
         r"`(https?://[^`]+)`",
         lambda m: f'<link href="{m.group(1)}" color="#0E7C86">official source</link>',
@@ -364,7 +381,7 @@ def cover(document: dict, style_map: dict) -> list:
         Spacer(1, 0.65 * inch),
         Paragraph("Opportunity Scanner by Opportunity Systems", style_map["h3"]),
         Paragraph(
-            "Research current as of July 11, 2026. Always recheck time-sensitive official sources before acting.",
+            "Research current as of July 27, 2026. Always recheck time-sensitive official sources before acting.",
             style_map["cover_note"],
         ),
         PageBreak(),
@@ -439,7 +456,7 @@ def build(document: dict) -> None:
             style_map["body"],
         ),
         Spacer(1, 8),
-        ProcessDiagram("Six evidence lanes to investigate", document["lanes"]),
+        ProcessDiagram(f"{len(document['lanes'])} evidence lanes to investigate", document["lanes"]),
         Spacer(1, 14),
         ProcessDiagram("From signal to an owned revenue action", document["path"], SIGNAL),
         Spacer(1, 10),

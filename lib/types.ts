@@ -273,6 +273,10 @@ export type NormalizedOpportunityAction = {
 
 export type OpportunitySignal = {
   opportunity_title: string;
+  record_class?: "current" | "evidence";
+  current_validated_at?: string | null;
+  award_year?: number | null;
+  period_end?: string | null;
   source_type:
     | "active_grant"
     | "active_contract"
@@ -360,6 +364,10 @@ export type OpportunityRecord = {
   url?: string | null;
   agency?: string | null;
   category?: string | null;
+  record_class?: "current" | "evidence";
+  current_validated_at?: string | null;
+  award_year?: number | null;
+  period_end?: string | null;
   deadline?: string | null;
   geography?: string | null;
   raw_json: Record<string, unknown>;

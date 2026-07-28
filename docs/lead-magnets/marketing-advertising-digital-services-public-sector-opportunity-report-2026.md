@@ -1,10 +1,10 @@
-# The 2026 Marketing, Advertising, Content, Website & Digital Services Public-Sector Opportunity Report
+# The 2026 Marketing, Advertising, Content, Website & Digital Services Public-Sector Opportunity Playbook
 
 Subtitle: A source-backed field guide to communications procurement, public-information campaigns, accessible digital services, funded recipients, prime partners, and practical next actions.
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 13, 2026. Regulations, acquisition forecasts, notices, awards, budgets, and vendor routes are time-sensitive and must be rechecked before publication and before action.
+Updated July 27, 2026. Regulations, acquisition forecasts, notices, awards, budgets, and vendor routes are time-sensitive and must be rechecked before publication and before action.
 
 ## Offer and audience
 

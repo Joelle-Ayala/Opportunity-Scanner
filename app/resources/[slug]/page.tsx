@@ -9,7 +9,17 @@ import { ArticleMetadata } from "@/components/resources/article-metadata";
 import { ArticleStructuredData } from "@/components/resources/article-structured-data";
 import { ArticleTableOfContents, articleSectionId } from "@/components/resources/article-table-of-contents";
 import { RelatedReads } from "@/components/resources/related-reads";
+import {
+  RealScanFindings,
+  type RealScanVertical
+} from "@/components/resources/real-scan-findings";
 import { getResourceArticle, resourceArticles, siteUrl } from "@/lib/marketingContent";
+
+const realScanVerticalByResource: Partial<Record<string, RealScanVertical>> = {
+  "creative-economy-funding-opportunities": "creative-economy",
+  "education-workforce-opportunity-signals": "education-workforce",
+  "healthcare-public-sector-opportunities": "healthcare-dme"
+};
 
 export function generateStaticParams() {
   return resourceArticles.map((article) => ({ slug: article.slug }));
@@ -58,6 +68,7 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
     ...resourceArticles.filter((candidate) => candidate.slug !== article.slug && candidate.category === article.category),
     ...resourceArticles.filter((candidate) => candidate.slug !== article.slug && candidate.category !== article.category)
   ].slice(0, 3);
+  const realScanVertical = realScanVerticalByResource[article.slug];
 
   return (
     <main className="min-h-screen bg-field">
@@ -104,6 +115,10 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
             <ArticleAnswer article={article} />
             <ArticleTableOfContents article={article} />
           </div>
+
+          {realScanVertical ? (
+            <RealScanFindings vertical={realScanVertical} className="mt-10" />
+          ) : null}
 
           <div className="mt-10 grid gap-10">
             {article.sections.map((section) => (

@@ -4,7 +4,7 @@ Subtitle: A source-backed guide to finding agencies, funded buyers, recipients, 
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 11, 2026.
+Updated July 27, 2026.
 
 ## Offer and audience
 

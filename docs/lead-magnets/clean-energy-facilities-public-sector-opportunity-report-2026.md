@@ -1,10 +1,10 @@
-# The 2026 Clean Energy and Facilities Public-Sector Opportunity Report
+# The 2026 Clean Energy and Facilities Public-Sector Opportunity Playbook
 
 Subtitle: A practical guide to finding funded facilities, public owners, energy-service channels, construction packages, and source-backed next actions.
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 11, 2026. Program status, appropriations, recipient plans, solicitations, and deadlines are time-sensitive and must be rechecked before publication and before action.
+Updated July 27, 2026. Program status, appropriations, recipient plans, solicitations, and deadlines are time-sensitive and must be rechecked before publication and before action.
 
 ## Offer and audience
 

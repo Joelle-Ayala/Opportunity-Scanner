@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import ts from "typescript";
+import { classifyOpportunityRecord } from "../lib/opportunityRecordClassification.ts";
 import { HTTPS_OUTBOUND_PROTOCOLS, parseOutboundUrl } from "../lib/url.ts";
 
 const routeUrl = new URL("../app/api/workflow/send/route.ts", import.meta.url);
@@ -80,6 +81,9 @@ const workflowRequire = (specifier) => {
     "@/lib/workflowPayload": {
       buildWorkflowPayload: globalThis.__workflowRouteTestMocks.buildWorkflowPayload
     },
+    "@/lib/opportunityRecordClassification": {
+      classifyOpportunityRecord
+    },
     "@/lib/url": {
       HTTPS_OUTBOUND_PROTOCOLS,
       parseOutboundUrl,
@@ -97,6 +101,10 @@ new Function("require", "module", "exports", executableRouteSource)(
 const { POST } = moduleUnderTest.exports;
 assert.equal(typeof POST, "function", "Workflow route must export POST");
 
+const currentValidatedAt = new Date().toISOString();
+const futureDeadline = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+  .toISOString()
+  .slice(0, 10);
 const validPayload = Object.freeze({
   scanId: "scan-1",
   opportunityId: "opportunity-1",
@@ -105,6 +113,8 @@ const validPayload = Object.freeze({
   targetAccount: "Server-owned target",
   source: "Server-owned source",
   signalType: "Active procurement",
+  recordClass: "current",
+  currentValidatedAt,
   revenueMotion: "Sell to Agency",
   actionability: "High Actionability",
   contactPath: "Procurement office",
@@ -113,6 +123,8 @@ const validPayload = Object.freeze({
   nextBestAction: "Review the solicitation",
   crmNote: "Server-generated CRM note",
   outreachAngle: "Server-generated outreach angle",
+  sourceStatus: "Open",
+  sourceDeadline: futureDeadline,
   sourceEvidence: "Server-owned evidence",
   workflowPayloadReady: true,
   workflowPayloadReason: "Ready for workflow"
@@ -366,6 +378,63 @@ test("rejects a server-built opportunity that is not workflow ready", async () =
   const body = await assertError(await POST(validRequest()), 422, "OPPORTUNITY_NOT_WORKFLOW_READY");
   assert.equal(body.error.message, "Manual procurement research is still required.");
   assert.equal(state.calls.fetch.length, 0);
+});
+
+test("preserves valid evidence metadata and normalizes outbound messaging", async () => {
+  const state = freshState();
+  state.payload = {
+    ...validPayload,
+    recordClass: "evidence",
+    currentValidatedAt: undefined,
+    sourceDeadline: undefined,
+    awardYear: 2022,
+    periodEnd: "2023-06-30",
+    timeSensitivity: "urgent",
+    sourceStatus: "Open",
+    sourceEvidence: "The current opportunity closes in 5 days."
+  };
+  installBoundaries(state);
+
+  const response = await POST(validRequest());
+  assert.equal(response.status, 200);
+  const delivered = JSON.parse(state.calls.fetch[0].options.body).opportunity;
+  assert.equal(delivered.recordClass, "evidence");
+  assert.equal(delivered.awardYear, 2022);
+  assert.equal(delivered.periodEnd, "2023-06-30");
+  assert.equal(delivered.currentValidatedAt, undefined);
+  assert.equal(delivered.sourceDeadline, undefined);
+  assert.equal(delivered.signalType, "Funded-buyer evidence");
+  assert.equal(delivered.revenueMotion, "Sell to Funded Buyer");
+  assert.equal(delivered.timeSensitivity, "historical");
+  assert.equal(delivered.sourceStatus, "Funded-buyer evidence");
+  assert.match(delivered.crmNote, /received public funding in 2022/i);
+  assert.match(delivered.outreachAngle, /handling the same need now/i);
+  assert.match(delivered.nextStep, /present needs/i);
+  assert.doesNotMatch(JSON.stringify(delivered), /\b(deadline|closing soon|closes in|urgent)\b/i);
+});
+
+test("rejects mixed evidence and current date semantics", async () => {
+  for (const payload of [
+    {
+      ...validPayload,
+      recordClass: "evidence",
+      currentValidatedAt,
+      sourceDeadline: futureDeadline,
+      timeSensitivity: "historical",
+      sourceStatus: "Funded-buyer evidence"
+    },
+    {
+      ...validPayload,
+      recordClass: "current",
+      awardYear: 2022
+    }
+  ]) {
+    const state = freshState();
+    state.payload = payload;
+    installBoundaries(state);
+    await assertError(await POST(validRequest()), 422, "INVALID_RECORD_FRESHNESS");
+    assert.equal(state.calls.fetch.length, 0);
+  }
 });
 
 test("rejects a server-built payload over the beta size limit", async () => {

@@ -2,6 +2,10 @@ import { signalLane } from "./actionability";
 import { contactTargetsForSignal } from "./contactTargeting";
 import { opportunityActionFor } from "./opportunityAction";
 import { classificationLabel } from "./opportunityClassification";
+import {
+  classifyOpportunityRecord,
+  type ClassifiedOpportunityRecord
+} from "./opportunityRecordClassification";
 import { listOpportunityEnrichmentRequests } from "./storage";
 import {
   CompanyProfile,
@@ -45,6 +49,33 @@ function opportunityHeadline(signal: StoredOpportunitySignal): string {
     return `${signalLane(signal)}: ${recipient} funded ${amount}`;
   }
   return signal.opportunity_title;
+}
+
+function recordFor(signal: StoredOpportunitySignal): ClassifiedOpportunityRecord {
+  return classifyOpportunityRecord({
+    recordClass: signal.record_class,
+    currentValidatedAt: signal.current_validated_at,
+    sourceName: signal.source_name,
+    sourceType: signal.source_type,
+    deadline: signal.deadline,
+    awardYear: signal.award_year,
+    periodEnd: signal.period_end
+  });
+}
+
+function targetFor(signal: StoredOpportunitySignal): string {
+  return signal.likely_buyer_or_partner || signal.agency_or_funder || "the recipient";
+}
+
+function evidenceFundingContext(
+  signal: StoredOpportunitySignal,
+  record: ClassifiedOpportunityRecord
+): string {
+  const target = targetFor(signal);
+  const amount = awardAmount(signal);
+  const amountText = amount === "Not stated" ? "public funding" : `${amount} in public funding`;
+  const yearText = record.awardYear ? ` in ${record.awardYear}` : "";
+  return `${target} received ${amountText}${yearText}. This historical record is proof of past buyer budget; verify present needs before outreach.`;
 }
 
 function awardAmount(signal: StoredOpportunitySignal): string {
@@ -174,8 +205,20 @@ function recommendedOwnerFor(signal: StoredOpportunitySignal, profile?: CompanyP
     .join(", ");
 }
 
-function subjectFor(signal: StoredOpportunitySignal): string {
+function subjectFor(signal: StoredOpportunitySignal, record: ClassifiedOpportunityRecord): string {
   const lane = signalLane(signal).toLowerCase();
+  if (record.recordClass === "evidence") {
+    if (/music|artist|arts|culture|event|festival|performance/.test(lane)) {
+      return "Question about your present arts and programming needs";
+    }
+    if (/school|education|teacher|workforce|training/.test(lane)) {
+      return "Question about your present education and workforce needs";
+    }
+    if (/health|medical|rehab|dme|clinical/.test(lane)) {
+      return "Question about your present healthcare and rehab needs";
+    }
+    return "Question about your present program needs";
+  }
   if (/music|artist|arts|culture|event|festival|performance/.test(lane)) {
     return "Talent support for public-sector programming";
   }
@@ -188,12 +231,32 @@ function subjectFor(signal: StoredOpportunitySignal): string {
   return "Potential support for your funded public-sector work";
 }
 
-function emailBodyFor(scan: ScanRecord, signal: StoredOpportunitySignal, profile?: CompanyProfile): string {
+function emailBodyFor(
+  scan: ScanRecord,
+  signal: StoredOpportunitySignal,
+  record: ClassifiedOpportunityRecord,
+  profile?: CompanyProfile
+): string {
   const company = profile?.company_name || scan.company_name || "our team";
   const classification = opportunityActionFor(signal, profile);
-  const target = signal.likely_buyer_or_partner || signal.agency_or_funder || "your team";
+  const target = targetFor(signal);
   const sourceContext = signal.external_evidence_summary || opportunityHeadline(signal);
   const angle = classification.outreach_angle || contactTargetsForSignal(signal)[0]?.outreachAngle;
+
+  if (record.recordClass === "evidence") {
+    return [
+      "Hi [Name],",
+      "",
+      evidenceFundingContext(signal, record),
+      "",
+      `${company} may be relevant as a vendor, partner, or implementation resource. I wanted to ask how ${target} is handling this need now and whether there are any present priorities where support could be useful.`,
+      "",
+      "Would you be the right person to discuss present needs, or is there someone else who owns the program, partnership, procurement, or vendor path?",
+      "",
+      "Best,",
+      "[Sender]"
+    ].join("\n");
+  }
 
   return [
     "Hi [Name],",
@@ -211,9 +274,18 @@ function emailBodyFor(scan: ScanRecord, signal: StoredOpportunitySignal, profile
   ].join("\n");
 }
 
-function followUpOne(scan: ScanRecord, signal: StoredOpportunitySignal, profile?: CompanyProfile): string {
+function followUpOne(
+  scan: ScanRecord,
+  signal: StoredOpportunitySignal,
+  record: ClassifiedOpportunityRecord,
+  profile?: CompanyProfile
+): string {
   const company = profile?.company_name || scan.company_name || "our team";
-  const target = signal.likely_buyer_or_partner || signal.agency_or_funder || "this program";
+  const target = targetFor(signal);
+  if (record.recordClass === "evidence") {
+    const yearText = record.awardYear ? ` from ${record.awardYear}` : "";
+    return `Hi [Name] - quick follow-up on the historical funding record${yearText}. Is ${target} addressing a similar need now, and could ${company} be useful?`;
+  }
   return `Hi [Name] - quick follow-up on whether ${company} could be relevant for ${target} based on the public-source signal I shared.`;
 }
 
@@ -230,23 +302,35 @@ export async function buildOutreachPackage(input: {
   const rows = await Promise.all(
     input.signals.map(async (signal, index): Promise<OutreachPackageRow> => {
       const classification = opportunityActionFor(signal, input.profile);
+      const record = recordFor(signal);
       const requests = await listOpportunityEnrichmentRequests(input.scan.id, signal.id);
+      const evidenceContext = evidenceFundingContext(signal, record);
+      const evidenceNextStep = `Research ${targetFor(signal)} and ask about present needs before proposing a vendor or partnership path.`;
       return {
         priority: index + 1,
         targetOrganization: signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review",
-        opportunityContext: `${opportunityHeadline(signal)} - ${classification.next_best_action}`,
+        opportunityContext:
+          record.recordClass === "current"
+            ? `${opportunityHeadline(signal)} - ${classification.next_best_action}`
+            : `${evidenceContext} ${evidenceNextStep}`,
         awardAmount: awardAmount(signal),
         contactInfo: contactInfoFor(signal, requests) || "No named contacts yet; use contact path and manual research task.",
         contactType: contactTypeFor(signal, requests),
         sendability: sendabilityFor(signal, requests),
         recommendedOwner: recommendedOwnerFor(signal, input.profile),
         sourceUrl: signal.source_url,
-        firstEmailSubject: subjectFor(signal),
-        firstEmailBody: emailBodyFor(input.scan, signal, input.profile),
-        followUp1: followUpOne(input.scan, signal, input.profile),
+        firstEmailSubject: subjectFor(signal, record),
+        firstEmailBody: emailBodyFor(input.scan, signal, record, input.profile),
+        followUp1: followUpOne(input.scan, signal, record, input.profile),
         followUp2: followUpTwo(signal),
-        crmNote: classification.crm_note,
-        workflowNote: `${classificationLabel(classification.revenue_motion)} | ${classificationLabel(classification.contact_strategy)} | ${classification.workflow_payload_ready ? "Workflow ready" : classification.workflow_payload_reason}`
+        crmNote:
+          record.recordClass === "current"
+            ? classification.crm_note
+            : `${evidenceContext} Verify present needs and the responsible buyer, partner, or procurement path before outreach.`,
+        workflowNote:
+          record.recordClass === "current"
+            ? `${classificationLabel(classification.revenue_motion)} | ${classificationLabel(classification.contact_strategy)} | ${classification.workflow_payload_ready ? "Workflow ready" : classification.workflow_payload_reason}`
+            : `Funded-buyer evidence | ${classificationLabel(classification.contact_strategy)} | Present-needs research required`
       };
     })
   );

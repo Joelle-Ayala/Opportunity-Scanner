@@ -321,14 +321,21 @@ export async function searchUsaSpending(
           ? "sell_to_agency"
           : "sell_to_grantee";
       const infrastructure = isInfrastructureSignal(text);
+      const awardYear = Number(
+        (award["Start Date"] ?? "").match(/\b(20\d{2})\b/)?.[1] ?? 0
+      );
 
       signals.push({
         opportunity_title: `${recipient} received ${amount}: ${lane}`,
+        record_class: "evidence",
+        current_validated_at: null,
+        award_year: awardYear || null,
+        period_end: award["End Date"] ?? null,
         source_type: "historical_award",
         source_name: "USAspending.gov",
         source_url: awardUrl(award),
         agency_or_funder: agency,
-        deadline: award["End Date"] ?? "",
+        deadline: "",
         geography: award["Place of Performance State Code"] ?? "",
         external_evidence_summary: description,
         why_it_matters:

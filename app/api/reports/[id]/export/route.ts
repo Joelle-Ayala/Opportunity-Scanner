@@ -7,6 +7,7 @@ import { classificationLabel } from "@/lib/opportunityClassification";
 import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
 import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 import type { StoredOpportunitySignal } from "@/lib/types";
+import { classifyOpportunityRecord } from "@/lib/opportunityRecordClassification";
 
 export const runtime = "nodejs";
 
@@ -16,13 +17,6 @@ function csvCell(value: unknown): string {
 }
 
 function sourceLabel(signal: StoredOpportunitySignal): string {
-  const endDate =
-    signal.deadline || (typeof signal.raw_json?.["End Date"] === "string" ? signal.raw_json["End Date"] : "");
-
-  if (signal.source_type === "historical_award" && endDate >= new Date().toISOString().slice(0, 10)) {
-    return `${signal.source_name} - current funded program`;
-  }
-
   return `${signal.source_name} - ${signal.source_type.replaceAll("_", " ")}`;
 }
 
@@ -68,6 +62,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
       "Signal",
       "Lane",
       "Opportunity Type",
+      "Record Class",
+      "Award Year",
+      "Period End",
+      "Verified Deadline",
       "Source",
       "Source Status",
       "Time Sensitivity",
@@ -100,14 +98,29 @@ export async function GET(request: Request, { params }: { params: { id: string }
     ],
     ...sortedSignals.map((signal) => {
       const classification = opportunityActionFor(signal, profile);
+      const record = classifyOpportunityRecord({
+        recordClass: signal.record_class,
+        currentValidatedAt: signal.current_validated_at,
+        sourceName: signal.source_name,
+        sourceType: signal.source_type,
+        deadline: signal.deadline,
+        awardYear: signal.award_year,
+        periodEnd: signal.period_end
+      });
       const contactTarget = primaryContactTarget(signal);
       return [
         opportunityHeadline(signal),
         signalLane(signal),
         classificationLabel(classification.estimated_opportunity_type),
+        record.recordClass,
+        record.awardYear || "",
+        record.periodEnd || "",
+        record.recordClass === "current" ? record.deadline || "" : "",
         sourceLabel(signal),
-        classification.source_status,
-        classificationLabel(classification.time_sensitivity),
+        record.recordClass === "current" ? classification.source_status : "Funded-buyer evidence",
+        record.recordClass === "current"
+          ? classificationLabel(classification.time_sensitivity)
+          : "historical",
         classification.pursuit_difficulty,
         signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review",
         classificationLabel(classification.buyer_partner_type),

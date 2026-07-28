@@ -1,4 +1,5 @@
 import type { CompanyProfile, NormalizedOpportunityAction, OpportunitySignal } from "./types";
+import { classifyOpportunityRecord } from "./opportunityRecordClassification";
 import { parseOutboundUrl } from "./url";
 
 export type ReportQualityTier = "preview" | "full";
@@ -10,6 +11,7 @@ export type ReportQualityRequirement =
   | "validRevenueMotion"
   | "nextActionAndContactPath"
   | "actionability"
+  | "validRecordFreshness"
   | "uniqueOpportunity"
   | "noHtmlLeakage";
 
@@ -24,6 +26,7 @@ export type ReportQualityBlockingCode =
   | "REVENUE_MOTION_MISSING"
   | "NEXT_ACTION_OR_CONTACT_PATH_MISSING"
   | "ACTIONABILITY_MISSING"
+  | "INVALID_RECORD_FRESHNESS"
   | "DUPLICATE_OPPORTUNITY"
   | "HTML_LEAKAGE";
 
@@ -65,6 +68,7 @@ const REQUIREMENTS: readonly ReportQualityRequirement[] = [
   "validRevenueMotion",
   "nextActionAndContactPath",
   "actionability",
+  "validRecordFreshness",
   "uniqueOpportunity",
   "noHtmlLeakage"
 ];
@@ -251,6 +255,25 @@ function hasActionability(action: Partial<NormalizedOpportunityAction>): boolean
   );
 }
 
+function hasValidRecordFreshness(opportunity: OpportunitySignal): boolean {
+  if (opportunity.record_class !== "current" && opportunity.record_class !== "evidence") {
+    return false;
+  }
+  const record = classifyOpportunityRecord({
+    recordClass: opportunity.record_class,
+    currentValidatedAt: opportunity.current_validated_at,
+    sourceName: opportunity.source_name,
+    sourceType: opportunity.source_type,
+    deadline: opportunity.deadline,
+    awardYear: opportunity.award_year,
+    periodEnd: opportunity.period_end
+  });
+  if (record.recordClass !== opportunity.record_class) return false;
+  return record.recordClass === "current"
+    ? Boolean(record.deadline && record.currentValidatedAt)
+    : !opportunity.deadline;
+}
+
 function displayedStrings(opportunity: OpportunitySignal, action: Partial<NormalizedOpportunityAction>): string[] {
   return [
     opportunity.opportunity_title,
@@ -320,6 +343,10 @@ const BLOCKING_DETAILS: Record<ReportQualityRequirement, { code: ReportQualityBl
     code: "ACTIONABILITY_MISSING",
     message: "Every opportunity must be reportable and include a valid actionability score and label."
   },
+  validRecordFreshness: {
+    code: "INVALID_RECORD_FRESHNESS",
+    message: "Every opportunity must be classified as verified-current or historical evidence with matching date semantics."
+  },
   uniqueOpportunity: {
     code: "DUPLICATE_OPPORTUNITY",
     message: "Every opportunity must be unique by normalized title and target organization."
@@ -348,6 +375,7 @@ export function evaluateReportQuality(
       validRevenueMotion: validRevenueMotion(action),
       nextActionAndContactPath: hasNextActionAndContactPath(action),
       actionability: hasActionability(action),
+      validRecordFreshness: hasValidRecordFreshness(opportunity),
       uniqueOpportunity: !duplicates.has(index),
       noHtmlLeakage: !displayedStrings(opportunity, action).some((value) => HTML_PATTERN.test(value))
     };

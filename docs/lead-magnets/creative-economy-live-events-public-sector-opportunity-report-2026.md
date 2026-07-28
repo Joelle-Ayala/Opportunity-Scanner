@@ -4,7 +4,7 @@ Subtitle: A practical guide to arts funding, city and county events, creative pl
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 11, 2026. Grant cycles, event procurements, award status, agency guidance, and local budgets should be rechecked before publication or action.
+Updated July 27, 2026. Grant cycles, event procurements, award status, agency guidance, and local budgets should be rechecked before publication or action.
 
 ## Offer and audience
 
@@ -19,6 +19,19 @@ Public-sector creative-economy opportunity includes direct grants, state and reg
 The Bureau of Economic Analysis reported that arts and cultural production accounted for $1.17 trillion, or 4.2 percent of GDP, in 2023; the release appeared April 2, 2025. In February 2026, BEA said it would no longer regularly produce the statistics. The figure is not a 2026 estimate or a measure of public spending, event demand, grant availability, or addressable market.
 
 Current evidence is more specific: NEA grant cycles and awards, NPS preservation funding, federal recipient records, and state or local budgets, plans, calendars, and procurement portals. The research task is to separate market context, open funding, procurement, recipient money flow, and planning evidence. Opportunity Scanner should not turn a festival calendar into a confirmed need or a funded organization into a buyer without a purchasing path.
+
+## What the real scan data shows
+
+An anonymized scan of a musician-booking marketplace surfaced 28 sourced signals across nine federal agencies and three source systems. The records below are historical funded-buyer evidence, not current bookings, grants, or solicitations.
+
+| Award year | Public record | Amount | What it proves |
+|---|---|---:|---|
+| 2018 | John F. Kennedy Center for the Performing Arts, Department of Education | $24,000,000 | Cultural institutions can become funded program operators and potential partner ecosystems, not only venues. [USAspending record](https://www.usaspending.gov/award/ASST_NON_U351F180007_091) |
+| 2022 | Hargrove, LLC, Department of State | $9,267,988 | Federal live-programming money can flow through direct event-production contractors. [USAspending record](https://www.usaspending.gov/award/CONT_AWD_19AQMM22C0085_1900_-NONE-_-NONE-) |
+| 2018 | Isom Events LLC, Department of the Interior | $1,152,925 | Public live-performance work can create a contractor and partner route outside traditional arts agencies. [USAspending record](https://www.usaspending.gov/award/CONT_AWD_140P3018C0028_1443_-NONE-_-NONE-) |
+| 2023 | Chevo Studios Inc., Department of the Interior | $381,588 | Creative-workforce and artist-services programs create a different implementation and partnership motion. [USAspending record](https://www.usaspending.gov/award/CONT_AWD_140P1523C0003_1443_-NONE-_-NONE-) |
+
+The buyer map is broader than "arts grants": direct event contractors, cultural institutions, and workforce or artist-services programs each imply a different sell or partner motion.
 
 ## State of the market in July 2026
 

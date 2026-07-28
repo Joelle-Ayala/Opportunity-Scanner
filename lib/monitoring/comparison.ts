@@ -4,7 +4,10 @@ import { monitoringOpportunityKey } from "./core.ts";
 export type ReportComparisonField =
   | "title"
   | "agency_or_funder"
+  | "record_class"
   | "deadline"
+  | "award_year"
+  | "period_end"
   | "geography"
   | "source_status"
   | "source_type"
@@ -52,20 +55,20 @@ export type ReportComparison = {
 type FieldDefinition = {
   field: ReportComparisonField;
   label: string;
-  value: (signal: StoredOpportunitySignal) => string | null | undefined;
-  normalize?: (value: string | null | undefined) => string;
+  value: (signal: StoredOpportunitySignal) => string | number | null | undefined;
+  normalize?: (value: string | number | null | undefined) => string;
 };
 
-function normalizeText(value: string | null | undefined): string {
-  return (value ?? "").trim().replace(/\s+/g, " ");
+function normalizeText(value: string | number | null | undefined): string {
+  return String(value ?? "").trim().replace(/\s+/g, " ");
 }
 
-function displayValue(value: string | null | undefined): string | null {
+function displayValue(value: string | number | null | undefined): string | null {
   const normalized = normalizeText(value);
   return normalized || null;
 }
 
-function normalizeUrl(value: string | null | undefined): string {
+function normalizeUrl(value: string | number | null | undefined): string {
   const normalized = normalizeText(value);
   if (!normalized) return "";
 
@@ -79,10 +82,39 @@ function normalizeUrl(value: string | null | undefined): string {
   }
 }
 
+function comparisonRecordClass(signal: StoredOpportunitySignal): "current" | "evidence" {
+  if (signal.record_class === "current" || signal.record_class === "evidence") {
+    return signal.record_class;
+  }
+  if (
+    ["historical_award", "funded_buyer", "policy_signal"].includes(signal.source_type) ||
+    signal.source_name.toLowerCase().includes("usaspending") ||
+    signal.source_name.toLowerCase().includes("federal register")
+  ) {
+    return "evidence";
+  }
+  return "current";
+}
+
 const COMPARISON_FIELDS: readonly FieldDefinition[] = [
   { field: "title", label: "Title", value: (signal) => signal.opportunity_title },
   { field: "agency_or_funder", label: "Agency/funder", value: (signal) => signal.agency_or_funder },
-  { field: "deadline", label: "Deadline", value: (signal) => signal.deadline },
+  { field: "record_class", label: "Record class", value: comparisonRecordClass },
+  {
+    field: "deadline",
+    label: "Deadline",
+    value: (signal) => comparisonRecordClass(signal) === "current" ? signal.deadline : null
+  },
+  {
+    field: "award_year",
+    label: "Award year",
+    value: (signal) => comparisonRecordClass(signal) === "evidence" ? signal.award_year : null
+  },
+  {
+    field: "period_end",
+    label: "Period of performance end",
+    value: (signal) => comparisonRecordClass(signal) === "evidence" ? signal.period_end : null
+  },
   { field: "geography", label: "Geography", value: (signal) => signal.geography },
   { field: "source_status", label: "Source status", value: (signal) => signal.source_status },
   { field: "source_type", label: "Source type", value: (signal) => signal.source_type },
@@ -166,6 +198,7 @@ function comparisonInstant(comparisonDate: Date | string): number {
 }
 
 function isExpired(signal: StoredOpportunitySignal, comparisonDate: number): boolean {
+  if (comparisonRecordClass(signal) !== "current") return false;
   const deadline = normalizeText(signal.deadline);
   if (!deadline) return false;
   const parsed = Date.parse(deadline);

@@ -1,0 +1,181 @@
+{
+  "_policy": {
+    "classification": "evidence",
+    "rules": [
+      "These are historical award records = funded-buyer evidence. NEVER render or write urgency (\"closing soon\", \"deadline\") from this data.",
+      "Scanned companies are anonymized exactly as the asset file specifies; award recipients and amounts are public record and cited as-is."
+    ]
+  },
+  "label": "From real scans - public records surfaced by Opportunity Scanner",
+  "as_of": "2026-07-26",
+  "as_of_display": "July 26, 2026",
+  "verticals": {
+    "creative-economy": {
+      "name": "Arts / Creative Economy / Live Events",
+      "anonymized_company": "a musician-booking marketplace",
+      "aggregate": {
+        "sourced_signals": 28,
+        "distinct_federal_agencies": 9,
+        "source_system_count": 3,
+        "source_systems": [
+          "USAspending",
+          "Grants.gov",
+          "Federal Register"
+        ]
+      },
+      "narrative": "Federal money funds live programming through at least three distinct routes - direct event contractors, cultural institutions, and workforce programs - each implying a different partner/sell motion.",
+      "findings": [
+        {
+          "recipient": "John F. Kennedy Center for the Performing Arts",
+          "amount": 24000000,
+          "amount_display": "$24,000,000",
+          "award_year": 2018,
+          "agency": "Dept. of Education",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/ASST_NON_U351F180007_091",
+          "evidence": "arts and culture grant",
+          "implication": "Cultural institutions can be funded buyers or channel partners, not only grant makers."
+        },
+        {
+          "recipient": "Hargrove, LLC",
+          "amount": 9267988,
+          "amount_display": "$9,267,988",
+          "award_year": 2022,
+          "agency": "Dept. of State",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/CONT_AWD_19AQMM22C0085_1900_-NONE-_-NONE-",
+          "evidence": "cultural programming and live events",
+          "implication": "Direct event contractors create a distinct public-sector sell and partner motion."
+        },
+        {
+          "recipient": "Isom Events LLC",
+          "amount": 1152925,
+          "amount_display": "$1,152,925",
+          "award_year": 2018,
+          "agency": "Dept. of the Interior",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/CONT_AWD_140P3018C0028_1443_-NONE-_-NONE-",
+          "evidence": "city/county live performance work",
+          "implication": "Local live-performance work creates a contractor route beyond federal arts agencies."
+        },
+        {
+          "recipient": "Chevo Studios Inc.",
+          "amount": 381588,
+          "amount_display": "$381,588",
+          "award_year": 2023,
+          "agency": "Dept. of the Interior",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/CONT_AWD_140P1523C0003_1443_-NONE-_-NONE-",
+          "evidence": "creative workforce development",
+          "implication": "Creative workforce programs can support a workforce-development partnership motion."
+        }
+      ]
+    },
+    "education-workforce": {
+      "name": "Education / Workforce / Training",
+      "anonymized_company": "an arts-educator staffing platform born out of California Prop 28",
+      "aggregate": {
+        "sourced_signals": 21,
+        "distinct_federal_agencies": 11,
+        "source_system_count": 2,
+        "source_systems": [
+          "USAspending",
+          "Grants.gov"
+        ]
+      },
+      "narrative": "Educator-workforce money flows to staffing intermediaries, not only districts - a services company can enter as a recipient partner, not just a district vendor. Prop 28 (California) is a live state-level driver for arts-educator demand.",
+      "findings": [
+        {
+          "recipient": "Westat, Inc.",
+          "amount": 9954119,
+          "amount_display": "$9,954,119",
+          "award_year": 2011,
+          "agency": "Dept. of Education",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/CONT_AWD_0001_9100_EDIES12D0005_9100",
+          "evidence": "K-12 hiring, teacher staffing, and educator workforce work",
+          "implication": "Staffing intermediaries can receive educator-workforce funding outside a direct district sale."
+        },
+        {
+          "recipient": "FM Talent Source, LLC",
+          "amount": 547714,
+          "amount_display": "$547,714",
+          "award_year": 2018,
+          "agency": "Dept. of Education",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/CONT_AWD_91990018F0331_9100_EDOII15A0003_9100",
+          "evidence": "arts education and teaching-artist staffing",
+          "implication": "Teaching-artist staffing can enter through recipient partnerships as well as district procurement."
+        }
+      ]
+    },
+    "healthcare-dme": {
+      "name": "Healthcare / DME / Medical Supply",
+      "anonymized_company": "a compression-garment and recovery products brand",
+      "aggregate": {
+        "sourced_signals": 14,
+        "distinct_federal_agencies": 5,
+        "source_system_count": 2,
+        "source_systems": [
+          "USAspending",
+          "Grants.gov"
+        ]
+      },
+      "narrative": "DME demand shows up in three tiers - reimbursement infrastructure (nine figures), VA clinical purchasing (eight figures), and direct agency supply buys (five-six figures). The surprising buyer (NASA) is the shareable hook.",
+      "findings": [
+        {
+          "recipient": "Peraton Enterprise Solutions",
+          "amount": 95922714,
+          "amount_display": "$95,922,714",
+          "award_year": 2018,
+          "agency": "HHS",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/CONT_AWD_75FCMC18F0001_7530_HHSM500201600002I_7530",
+          "evidence": "DME, Medicare, and reimbursement infrastructure",
+          "implication": "Reimbursement infrastructure can create an enterprise partner route around DME purchasing."
+        },
+        {
+          "recipient": "Valiant Construction LLC",
+          "amount": 17139378,
+          "amount_display": "$17,139,378",
+          "award_year": 2021,
+          "agency": "Dept. of Veterans Affairs",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/CONT_AWD_36C77621C0052_3600_-NONE-_-NONE-",
+          "evidence": "award adjacent to prosthetics and orthotics purchasing",
+          "implication": "A VA prosthetics-clinic design-build award proves facility investment around the care pathway; it does not prove an open medical-supply purchase."
+        },
+        {
+          "recipient": "BSN Medical Inc.",
+          "amount": 133587,
+          "amount_display": "$133,587",
+          "award_year": 2019,
+          "agency": "NASA",
+          "source_system": "USAspending",
+          "source_url": "https://www.usaspending.gov/award/CONT_AWD_80NSSC19P2099_8000_-NONE-_-NONE-",
+          "evidence": "funded-buyer signal",
+          "implication": "Direct medical-supply demand can appear in agencies a seller would not normally target."
+        }
+      ]
+    }
+  },
+  "cross_site_aggregates": {
+    "opportunities_surfaced": 178,
+    "source_system_count": 3,
+    "source_systems": [
+      "USAspending",
+      "Grants.gov",
+      "Federal Register"
+    ],
+    "distinct_agencies_per_scan": {
+      "minimum": 5,
+      "maximum": 11,
+      "display": "5-11 distinct agencies per scan"
+    },
+    "award_evidence_range": {
+      "minimum": 23000,
+      "maximum": 95922714,
+      "display": "$23K to $95.9M"
+    }
+  }
+}

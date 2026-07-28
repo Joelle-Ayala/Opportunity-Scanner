@@ -18,6 +18,7 @@ import { sourceEvidenceText } from "@/lib/reportText";
 import { getCustomerAuthConfig, resolveCustomerPageSession } from "@/lib/customer-auth";
 import { canManageCustomerPursuit, loadCustomerPursuitForOpportunity } from "@/lib/dashboard/pursuits";
 import { pursuitApplicationMethod } from "@/lib/pursuits";
+import { classifyOpportunityRecord } from "@/lib/opportunityRecordClassification";
 import { PursuitWorkspace } from "@/components/pursuit-workspace";
 
 export const dynamic = "force-dynamic";
@@ -255,7 +256,19 @@ export default async function OpportunityPage({
     creditBalance.entitled &&
     creditBalance.remaining > 0;
   const startDate = signalDate(signal, "Start Date");
-  const endDate = classification.source_deadline || signal.deadline || signalDate(signal, "End Date");
+  const recordDates = classifyOpportunityRecord({
+    recordClass: signal.record_class,
+    currentValidatedAt: signal.current_validated_at,
+    sourceName: signal.source_name,
+    sourceType: signal.source_type,
+    deadline: signal.deadline,
+    awardYear: signal.award_year,
+    periodEnd: signal.period_end
+  });
+  const endDate =
+    recordDates.recordClass === "current"
+      ? recordDates.deadline
+      : recordDates.periodEnd;
 
   return (
     <main className="min-h-screen px-4 py-5 sm:px-6 sm:py-8">
@@ -547,9 +560,18 @@ export default async function OpportunityPage({
               <p>
                 <span className="font-semibold text-ink">Start:</span> {startDate || "Unknown"}
               </p>
-              <p>
-                <span className="font-semibold text-ink">End/deadline:</span> {endDate || "Unknown"}
-              </p>
+              {recordDates.recordClass === "current" ? (
+                <p>
+                  <span className="font-semibold text-ink">Deadline:</span> {endDate || "Unknown"}
+                </p>
+              ) : (
+                <p>
+                  <span className="font-semibold text-ink">
+                    {recordDates.awardYear ? "Award year:" : "Period of performance:"}
+                  </span>{" "}
+                  {recordDates.awardYear || endDate || "Historical record"}
+                </p>
+              )}
             </div>
             <a
               href={signal.source_url}

@@ -1,6 +1,6 @@
-# The 2026 Software and AI Public-Sector Opportunity Report
+# The 2026 Software and AI Public-Sector Opportunity Playbook
 
-**Research cutoff:** July 11, 2026
+**Updated:** July 27, 2026
 
 **Audience:** U.S. software, SaaS, cloud, data, cybersecurity, automation, and AI companies pursuing federal, state, local, tribal, education, or publicly funded buyers
 

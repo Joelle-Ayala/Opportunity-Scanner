@@ -49,7 +49,10 @@ export default async function DashboardComparisonPage({ params }: { params: { sc
       id: `${entry.status}-${entry.key}`,
       title: entry.signal.opportunity_title,
       agency: entry.signal.agency_or_funder || "Agency or funder not stated",
+      recordClass: entry.signal.record_class || "evidence",
       deadline: entry.signal.deadline,
+      awardYear: entry.signal.award_year,
+      periodEnd: entry.signal.period_end,
       source: entry.signal.source_name,
       sourceHref: entry.signal.source_url,
       opportunityHref: `/opportunities/${entry.signal.id}?scanId=${pair.currentScanId}`,
@@ -60,7 +63,10 @@ export default async function DashboardComparisonPage({ params }: { params: { sc
       id: `${entry.status}-${entry.key}`,
       title: entry.signal.opportunity_title,
       agency: entry.signal.agency_or_funder || "Agency or funder not stated",
+      recordClass: entry.signal.record_class || "evidence",
       deadline: entry.signal.deadline,
+      awardYear: entry.signal.award_year,
+      periodEnd: entry.signal.period_end,
       source: entry.signal.source_name,
       sourceHref: entry.signal.source_url,
       opportunityHref: `/opportunities/${entry.signal.id}?scanId=${pair.previousScanId}`,
@@ -78,7 +84,7 @@ export default async function DashboardComparisonPage({ params }: { params: { sc
         <p className="text-xs font-semibold uppercase text-accent">Monitoring intelligence</p>
         <h1 className="mt-3 text-3xl font-semibold text-ink">What changed since the previous scan</h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
-          Review new opportunities, meaningful record changes, expired deadlines, and signals no longer returned by the latest scan.
+          Review new live opportunities, funded-buyer evidence, meaningful record changes, verified deadline expirations, and signals no longer returned by the latest scan.
         </p>
         <ReportComparisonView
           className="mt-8"

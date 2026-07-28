@@ -48,6 +48,10 @@ const fields: FieldRow[] = [
   { name: "targetAccount", type: "string", delivery: "Conditional", description: "CRM-oriented alias for the target organization. At least this field or targetOrganization is required." },
   { name: "source", type: "string", delivery: "Required", description: "Name of the public source behind the signal." },
   { name: "signalType", type: "string", delivery: "Optional", description: "Display label for the source category, such as Active procurement or Funded buyer." },
+  { name: "recordClass", type: "\"current\" | \"evidence\"", delivery: "Required", description: "Separates verified live postings from historical funded-buyer evidence." },
+  { name: "currentValidatedAt", type: "string", delivery: "Current only", description: "ISO timestamp of the latest source validation. Omitted for evidence records." },
+  { name: "awardYear", type: "number", delivery: "Evidence only", description: "Public award year when the historical record provides one." },
+  { name: "periodEnd", type: "string", delivery: "Evidence only", description: "Historical period-of-performance end. This is not a deadline." },
   { name: "opportunityType", type: "string", delivery: "Optional", description: "Estimated commercial opportunity classification." },
   { name: "buyerPartnerType", type: "string", delivery: "Optional", description: "Classification of the likely buyer, recipient, partner, or channel target." },
   { name: "revenueMotion", type: "string", delivery: "Required", description: "Recommended route to revenue, such as Sell to Agency, Direct Apply, or Partner with Recipient." },
@@ -67,7 +71,7 @@ const fields: FieldRow[] = [
   { name: "workflowPayloadReady", type: "boolean", delivery: "Required", description: "Always true for a delivered webhook. Opportunities that are not ready are rejected before delivery." },
   { name: "workflowPayloadReason", type: "string", delivery: "Required", description: "Explanation of why the opportunity is ready for workflow or what must be checked first." },
   { name: "sourceStatus", type: "string", delivery: "Optional", description: "Current status classification for the source record." },
-  { name: "sourceDeadline", type: "string", delivery: "Optional", description: "Deadline as represented by the source analysis. Treat as text and verify against the live source." },
+  { name: "sourceDeadline", type: "string", delivery: "Current only", description: "Verified future close date for a current record. Never delivered for funded-buyer evidence." },
   { name: "sourceEvidence", type: "string", delivery: "Required", description: "Evidence summary grounded in the public source record." },
   { name: "sourceUrl", type: "string", delivery: "Optional", description: "Public source URL. Included when a full-report opportunity is sent." }
 ];
@@ -83,6 +87,8 @@ const samplePayload = `{
     "targetAccount": "Example County Health Department",
     "source": "SAM.gov",
     "signalType": "Active procurement",
+    "recordClass": "current",
+    "currentValidatedAt": "2026-07-12T15:40:02.000Z",
     "opportunityType": "Agency procurement",
     "buyerPartnerType": "Public agency",
     "revenueMotion": "Sell to Agency",

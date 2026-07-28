@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import ts from "typescript";
+import { classifyOpportunityRecord } from "../lib/opportunityRecordClassification.ts";
 import { scrapeCompanyWebsite } from "../lib/scraper.ts";
 import {
   fetchSafeOutboundUrl,
@@ -284,6 +285,10 @@ const [scraperSource, workflowSource] = await Promise.all([
 let routeLookup: OutboundDnsLookup = lookupWith({});
 let routeFetch: typeof fetch = async () => new Response(null, { status: 204 });
 let routeFetchCalls: string[] = [];
+const workflowValidatedAt = new Date().toISOString();
+const workflowDeadline = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+  .toISOString()
+  .slice(0, 10);
 const validWorkflowPayload = {
   scanId: "scan-1",
   opportunityId: "opportunity-1",
@@ -291,10 +296,19 @@ const validWorkflowPayload = {
   targetOrganization: "Public agency",
   targetAccount: "Public agency",
   source: "Stored source",
+  signalType: "Active procurement",
+  recordClass: "current",
+  currentValidatedAt: workflowValidatedAt,
   revenueMotion: "Sell to Agency",
+  actionability: "High Actionability",
+  contactPath: "Procurement office",
   contactStrategy: "Procurement office",
+  nextStep: "Review the solicitation",
   nextBestAction: "Review the solicitation",
   crmNote: "Server-generated CRM note",
+  outreachAngle: "Server-generated outreach angle",
+  sourceStatus: "Open",
+  sourceDeadline: workflowDeadline,
   sourceEvidence: "Stored evidence",
   workflowPayloadReady: true,
   workflowPayloadReason: "Ready for workflow"
@@ -327,6 +341,7 @@ const workflowRequire = (specifier: string): unknown => {
     },
     "@/lib/profileRefinement": { ensureProfileRefinementFields: (profile: unknown) => profile },
     "@/lib/workflowPayload": { buildWorkflowPayload: () => validWorkflowPayload },
+    "@/lib/opportunityRecordClassification": { classifyOpportunityRecord },
     "@/lib/url": {
       HTTPS_OUTBOUND_PROTOCOLS,
       parseOutboundUrl,

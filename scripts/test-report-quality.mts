@@ -90,6 +90,8 @@ function opportunity(input: {
     source_name: "Official procurement portal",
     source_url: input.sourceUrl,
     agency_or_funder: input.target,
+    record_class: "current",
+    current_validated_at: "2026-07-27T12:00:00.000Z",
     deadline: "2026-12-31",
     geography: "United States",
     external_evidence_summary: input.evidence,

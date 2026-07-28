@@ -36,6 +36,102 @@ import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+type ReportRecordClass = "current" | "evidence";
+
+type SignalFreshnessFields = {
+  record_class?: ReportRecordClass | null;
+  current_validated_at?: string | null;
+  award_year?: number | null;
+  period_end?: string | null;
+  deadline?: string | null;
+};
+
+type SignalFreshness = {
+  recordClass: ReportRecordClass;
+  deadline: Date | null;
+  awardYear: number | null;
+  periodEnd: string | null;
+};
+
+const CURRENT_VALIDATION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+function parseSignalDate(value: string | null | undefined): Date | null {
+  if (!value) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function signalFreshness(signal: StoredOpportunitySignal, now = new Date()): SignalFreshness {
+  const fields = signal as StoredOpportunitySignal & SignalFreshnessFields;
+  const deadline = parseSignalDate(fields.deadline);
+  const validatedAt = parseSignalDate(fields.current_validated_at);
+  const validationAgeMs = validatedAt === null ? null : now.getTime() - validatedAt.getTime();
+  const hasVerifiedFutureDeadline =
+    fields.record_class === "current" &&
+    deadline !== null &&
+    validatedAt !== null &&
+    validationAgeMs !== null &&
+    validationAgeMs >= 0 &&
+    validationAgeMs <= CURRENT_VALIDATION_MAX_AGE_MS &&
+    deadline.getTime() > now.getTime();
+  const awardYear =
+    typeof fields.award_year === "number" && Number.isInteger(fields.award_year)
+      ? fields.award_year
+      : null;
+
+  return {
+    recordClass: hasVerifiedFutureDeadline ? "current" : "evidence",
+    deadline: hasVerifiedFutureDeadline ? deadline : null,
+    awardYear,
+    periodEnd: fields.period_end || null
+  };
+}
+
+function formatReportDate(value: Date): string {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC"
+  }).format(value);
+}
+
+function FreshnessContext({ signal, compact = false }: { signal: StoredOpportunitySignal; compact?: boolean }) {
+  const freshness = signalFreshness(signal);
+
+  if (freshness.recordClass === "current" && freshness.deadline) {
+    return (
+      <div className={compact ? "text-xs leading-5" : "text-sm leading-6"}>
+        <Badge tone="green">Live opportunity</Badge>
+        <p className="mt-1 text-slate-700">
+          <span className="font-semibold text-ink">Deadline:</span>{" "}
+          {formatReportDate(freshness.deadline)}
+        </p>
+      </div>
+    );
+  }
+
+  const periodEnd = parseSignalDate(freshness.periodEnd);
+  return (
+    <div className={compact ? "text-xs leading-5" : "text-sm leading-6"}>
+      <Badge tone="blue">Funded-buyer evidence</Badge>
+      <p className="mt-1 text-slate-700">
+        {freshness.awardYear
+          ? `Award year: ${freshness.awardYear}`
+          : periodEnd
+            ? `Period of performance ended ${formatReportDate(periodEnd)}`
+            : "Historical public funding record"}
+      </p>
+      {!compact ? (
+        <p className="mt-1 text-muted">
+          Proof that this buyer or market has received public funding. Use it for account targeting,
+          not deadline-driven pursuit.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function hostname(value: string): string {
   try {
     return new URL(value).hostname.replace(/^www\./, "");
@@ -50,6 +146,7 @@ function companyLogoUrl(companyUrl: string): string | null {
 }
 
 function primaryActionLabel(signal: StoredOpportunitySignal, profile?: CompanyProfile): string {
+  if (signalFreshness(signal).recordClass === "evidence") return "Research funded buyer";
   const classification = opportunityActionFor(signal, profile);
   if (classification.time_sensitivity === "expired") return "Research market evidence";
   if (signal.source_type === "active_contract" || classification.contact_strategy === "inspect_procurement_record") {
@@ -325,6 +422,57 @@ function actionabilityDisplayLabel(value: string): string {
   return value;
 }
 
+function reportNextBestAction(signal: StoredOpportunitySignal, profile?: CompanyProfile): string {
+  if (signalFreshness(signal).recordClass === "current") {
+    return opportunityActionFor(signal, profile).next_best_action;
+  }
+  const buyer = signal.likely_buyer_or_partner || signal.agency_or_funder || "the funded organization";
+  return `Use this historical funding record to validate demand, research ${buyer}, and identify the current procurement or partnership path.`;
+}
+
+function evidenceCrmNote(signal: StoredOpportunitySignal): string {
+  const buyer = signal.likely_buyer_or_partner || signal.agency_or_funder || "Funded buyer";
+  const freshness = signalFreshness(signal);
+  const recordPeriod = freshness.awardYear
+    ? `${freshness.awardYear} award`
+    : "historical public funding record";
+  return `${buyer}: ${recordPeriod} confirms prior public-sector budget and demand. Research the current buyer, vendor, or partnership path before outreach.`;
+}
+
+function evidenceOutreachAngle(signal: StoredOpportunitySignal): string {
+  const buyer = signal.likely_buyer_or_partner || signal.agency_or_funder || "this organization";
+  return `Use the funded work as account context, then ask how ${buyer} is handling the same need now. Do not frame the historical award as an open solicitation.`;
+}
+
+function reportWorkflowPayload({
+  scanId,
+  signal,
+  profile,
+  includeSourceUrl
+}: {
+  scanId: string;
+  signal: StoredOpportunitySignal;
+  profile?: CompanyProfile;
+  includeSourceUrl: boolean;
+}) {
+  const payload = buildWorkflowPayload({ scanId, signal, profile, includeSourceUrl });
+  if (signalFreshness(signal).recordClass === "current") return payload;
+  const nextBestAction = reportNextBestAction(signal, profile);
+
+  return {
+    ...payload,
+    nextStep: nextBestAction,
+    nextBestAction,
+    manualResearchInstruction: "Verify the current buyer, vendor, or partnership path before outreach.",
+    crmNote: evidenceCrmNote(signal),
+    outreachAngle: evidenceOutreachAngle(signal),
+    followUpTask: "Research the funded buyer and confirm the current opportunity path.",
+    timeSensitivity: "historical",
+    sourceStatus: "Funded-buyer evidence",
+    sourceDeadline: undefined
+  };
+}
+
 function buildExecutiveSummary(signals: StoredOpportunitySignal[], profile?: CompanyProfile) {
   const summarySignals = signals.length > 0 ? signals : [];
   const sorted = [...summarySignals];
@@ -342,7 +490,7 @@ function buildExecutiveSummary(signals: StoredOpportunitySignal[], profile?: Com
       : "No sourced pattern yet.",
     topLane,
     confidence,
-    bestNextAction: best ? opportunityActionFor(best, profile).next_best_action : "Run a broader scan or review source coverage."
+    bestNextAction: best ? reportNextBestAction(best, profile) : "Run a broader scan or review source coverage."
   };
 }
 
@@ -351,7 +499,8 @@ function ReportHeader({
   profile,
   sourceMatches,
   shownRows,
-  lockedRows,
+  lockedLiveRows,
+  lockedEvidenceRows,
   isPaid,
   access,
   comparisonHref
@@ -360,7 +509,8 @@ function ReportHeader({
   profile?: CompanyProfile;
   sourceMatches: number;
   shownRows: number;
-  lockedRows: number;
+  lockedLiveRows: number;
+  lockedEvidenceRows: number;
   isPaid: boolean;
   access?: string;
   comparisonHref?: string | null;
@@ -444,7 +594,9 @@ function ReportHeader({
         {!isPaid ? (
           <div className="rounded-md border border-line bg-field p-3">
             <p className="text-xs font-semibold uppercase text-muted">More opportunities</p>
-            <p className="mt-1 text-sm font-semibold text-ink">{lockedRows}</p>
+            <p className="mt-1 text-sm font-semibold leading-5 text-ink">
+              {lockedLiveRows} live opportunities · {lockedEvidenceRows} funded-buyer signals
+            </p>
           </div>
         ) : null}
         <div className="rounded-md border border-line bg-field p-3">
@@ -643,13 +795,14 @@ function PrimaryActionButton({
   access?: string;
 }) {
   const classification = opportunityActionFor(signal, profile);
+  const isCurrent = signalFreshness(signal).recordClass === "current";
   const label = primaryActionLabel(signal, profile);
   const href = `/opportunities/${signal.id}?scanId=${scanId}${accessSuffix(access)}`;
   const analyticsAction = label === "Review procurement notice"
     ? "review_solicitation"
     : label === "Qualify application"
       ? "check_eligibility"
-      : ["Research buyer", "Research recipient", "Map partner path", "Research market evidence"].includes(label)
+      : ["Research buyer", "Research recipient", "Research funded buyer", "Map partner path", "Research market evidence"].includes(label)
         ? "research_target"
         : label === "Monitor signal"
           ? "monitor_signal"
@@ -661,7 +814,11 @@ function PrimaryActionButton({
       reportTier={isPaid ? "full" : "free"}
       href={href}
       className="rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871]"
-      title={classification.manual_research_instruction}
+      title={
+        isCurrent
+          ? classification.manual_research_instruction
+          : "Research this historical funding record and verify the current buyer path."
+      }
     >
       {label}
     </ReportActionLink>
@@ -778,6 +935,8 @@ function OpportunityDetail({
   access?: string;
 }) {
   const classification = opportunityActionFor(signal, profile);
+  const freshness = signalFreshness(signal);
+  const isCurrent = freshness.recordClass === "current";
   const buyer = signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review";
 
   return (
@@ -811,6 +970,12 @@ function OpportunityDetail({
       </div>
       <div className="grid gap-4">
         <div className="rounded-md border border-line bg-white p-4">
+          <h3 className="text-sm font-semibold text-ink">Record context</h3>
+          <div className="mt-2">
+            <FreshnessContext signal={signal} />
+          </div>
+        </div>
+        <div className="rounded-md border border-line bg-white p-4">
           <h3 className="text-sm font-semibold text-ink">Buyer / partner type</h3>
           <p className="mt-2 text-sm leading-6 text-slate-700">
             {classificationLabel(classification.buyer_partner_type)} for {buyer}
@@ -818,20 +983,38 @@ function OpportunityDetail({
         </div>
         <div className="rounded-md border border-line bg-white p-4">
           <h3 className="text-sm font-semibold text-ink">CRM-ready note</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-700">{isPaid ? classification.crm_note : "Unlock to copy CRM-ready notes."}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">
+            {isPaid
+              ? isCurrent
+                ? classification.crm_note
+                : evidenceCrmNote(signal)
+              : "Unlock to copy CRM-ready notes."}
+          </p>
         </div>
         <div className="rounded-md border border-line bg-white p-4">
           <h3 className="text-sm font-semibold text-ink">Outreach angle</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-700">{isPaid ? classification.outreach_angle : "Unlock to view the recommended outreach angle."}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">
+            {isPaid
+              ? isCurrent
+                ? classification.outreach_angle
+                : evidenceOutreachAngle(signal)
+              : "Unlock to view the recommended outreach angle."}
+          </p>
         </div>
         <div className="rounded-md border border-line bg-white p-4">
           <h3 className="text-sm font-semibold text-ink">Recommended next step</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-700">{classification.next_best_action}</p>
-          <p className="mt-2 text-xs leading-5 text-muted">{classification.manual_research_instruction}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">
+            {reportNextBestAction(signal, profile)}
+          </p>
+          <p className="mt-2 text-xs leading-5 text-muted">
+            {isCurrent
+              ? classification.manual_research_instruction
+              : "Verify the current buyer, vendor, or partnership path before outreach."}
+          </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} access={access} />
             <SendToWorkflowModal
-              payload={buildWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
+              payload={reportWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
               locked={!isPaid}
               access={access}
             />
@@ -853,6 +1036,7 @@ function OpportunityDetail({
 function OpportunityActionTable({
   scanId,
   signals,
+  recordClass,
   isPaid,
   profile,
   lookupAccess,
@@ -860,22 +1044,29 @@ function OpportunityActionTable({
 }: {
   scanId: string;
   signals: StoredOpportunitySignal[];
+  recordClass: ReportRecordClass;
   isPaid: boolean;
   profile?: CompanyProfile;
   lookupAccess: ContactLookupAccess;
   access?: string;
 }) {
+  const isCurrent = recordClass === "current";
   return (
     <section className="hidden overflow-hidden rounded-lg border border-line bg-white shadow-sm md:block">
       <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line p-5">
         <div>
-          <h2 className="text-lg font-semibold text-ink">Opportunity Action Table</h2>
+          <h2 className="text-lg font-semibold text-ink">
+            {isCurrent ? "Live opportunities" : "Funded-buyer evidence"}
+          </h2>
           <p className="mt-2 text-sm leading-6 text-muted">
-            Use these rows to move from public evidence to a target account, contact path, next
-            action, CRM note, outreach angle, and workflow-ready handoff.
+            {isCurrent
+              ? "Open postings with a verified future deadline. Review fit, take the next action, or send a row into your workflow."
+              : "Historical awards and funded activity that prove buyer budget and demand. Use these rows for account targeting, partnership, and market research."}
           </p>
         </div>
-        <Badge tone="blue">{signals.length} opportunities</Badge>
+        <Badge tone={isCurrent ? "green" : "blue"}>
+          {signals.length} {isCurrent ? "live" : "buyer signals"}
+        </Badge>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-[1280px] border-collapse text-left text-sm">
@@ -918,9 +1109,11 @@ function OpportunityActionTable({
                       <Badge tone={badgeTone(classification.estimated_opportunity_type)}>
                         {classificationLabel(classification.estimated_opportunity_type)}
                       </Badge>
-                      <Badge tone={badgeTone(classification.time_sensitivity)}>
-                        {classificationLabel(classification.time_sensitivity)}
-                      </Badge>
+                      {isCurrent ? (
+                        <Badge tone={badgeTone(classification.time_sensitivity)}>
+                          {classificationLabel(classification.time_sensitivity)}
+                        </Badge>
+                      ) : null}
                       <Badge tone={badgeTone(classification.pursuit_difficulty)}>
                         {classification.pursuit_difficulty} difficulty
                       </Badge>
@@ -937,7 +1130,7 @@ function OpportunityActionTable({
                     <Badge tone={badgeTone(classification.actionability_label)}>
                       {actionabilityDisplayLabel(classification.actionability_label)}
                     </Badge>
-                    <p className="mt-2 leading-6">{classification.next_best_action}</p>
+                    <p className="mt-2 leading-6">{reportNextBestAction(signal, profile)}</p>
                   </td>
                   <td className="max-w-[210px] px-4 py-4">
                     <p className="font-semibold text-ink">{classificationLabel(classification.contact_strategy)}</p>
@@ -945,14 +1138,19 @@ function OpportunityActionTable({
                   </td>
                   <td className="max-w-[210px] px-4 py-4 text-slate-700">
                     <p className="font-semibold text-ink">{signal.source_name}</p>
-                    <p className="mt-1 text-xs leading-5 text-muted">{classification.source_status}</p>
+                    <div className="mt-2">
+                      <FreshnessContext signal={signal} compact />
+                    </div>
+                    {isCurrent ? (
+                      <p className="mt-1 text-xs leading-5 text-muted">{classification.source_status}</p>
+                    ) : null}
                     <p className="mt-1 text-xs leading-5 text-muted">{sourceTypeLabel(signal)}</p>
                   </td>
                   <td className="min-w-[190px] px-4 py-4">
                     <div className="flex flex-col gap-2">
                       <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} access={access} />
                       <SendToWorkflowModal
-                        payload={buildWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
+                        payload={reportWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
                         locked={!isPaid}
                         access={access}
                       />
@@ -1013,6 +1211,9 @@ function OpportunitySignalCard({
         <Badge tone="blue">{revenueMotionLabel(signal)}</Badge>
         <Badge>{signalLane(signal)}</Badge>
       </div>
+      <div className="mt-3">
+        <FreshnessContext signal={signal} />
+      </div>
       <h3 className="mt-4 text-lg font-semibold leading-7 text-ink">{opportunityHeadline(signal)}</h3>
       <p className="mt-3 text-sm leading-6 text-slate-700">
         {sourceEvidenceText(signal.external_evidence_summary, opportunityHeadline(signal), 520)}
@@ -1020,10 +1221,15 @@ function OpportunitySignalCard({
       <div className="mt-4 grid gap-3 text-sm md:grid-cols-3">
         <p><span className="font-semibold text-ink">Target:</span> {signal.likely_buyer_or_partner || signal.agency_or_funder || "Needs review"}</p>
         <p><span className="font-semibold text-ink">Contact path:</span> {classificationLabel(classification.contact_strategy)}</p>
-        <p><span className="font-semibold text-ink">Timing:</span> {classification.source_status}</p>
+        {signalFreshness(signal).recordClass === "current" ? (
+          <p><span className="font-semibold text-ink">Status:</span> {classification.source_status}</p>
+        ) : (
+          <p><span className="font-semibold text-ink">Use:</span> Buyer-budget proof and account research</p>
+        )}
       </div>
       <p className="mt-4 rounded-md border border-line bg-field px-3 py-2 text-sm leading-6 text-slate-700">
-        <span className="font-semibold text-ink">Next best action:</span> {classification.next_best_action}
+        <span className="font-semibold text-ink">Next best action:</span>{" "}
+        {reportNextBestAction(signal, profile)}
       </p>
       <div className="mt-4">
         <h4 className="text-sm font-semibold text-ink">Suggested contact roles</h4>
@@ -1046,7 +1252,7 @@ function OpportunitySignalCard({
       <div className="mt-3 grid gap-2 [&>*]:w-full [&_button]:w-full [&_form]:w-full">
         <PrimaryActionButton scanId={scanId} signal={signal} profile={profile} isPaid={isPaid} access={access} />
         <SendToWorkflowModal
-          payload={buildWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
+          payload={reportWorkflowPayload({ scanId, signal, profile, includeSourceUrl: isPaid })}
           locked={!isPaid}
           access={access}
         />
@@ -1060,6 +1266,71 @@ function OpportunitySignalCard({
         />
       </div>
     </article>
+  );
+}
+
+function OpportunityPipelineSection({
+  scanId,
+  signals,
+  recordClass,
+  isPaid,
+  profile,
+  lookupAccess,
+  access
+}: {
+  scanId: string;
+  signals: StoredOpportunitySignal[];
+  recordClass: ReportRecordClass;
+  isPaid: boolean;
+  profile?: CompanyProfile;
+  lookupAccess: ContactLookupAccess;
+  access?: string;
+}) {
+  if (signals.length === 0) return null;
+  const isCurrent = recordClass === "current";
+
+  return (
+    <>
+      <OpportunityActionTable
+        scanId={scanId}
+        signals={signals}
+        recordClass={recordClass}
+        isPaid={isPaid}
+        profile={profile}
+        lookupAccess={lookupAccess}
+        access={access}
+      />
+      <section className="grid gap-4 md:hidden">
+        <div>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-ink">
+              {isCurrent ? "Live opportunities" : "Funded-buyer evidence"}
+            </h2>
+            <Badge tone={isCurrent ? "green" : "blue"}>
+              {signals.length} {isCurrent ? "live" : "buyer signals"}
+            </Badge>
+          </div>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            {isCurrent
+              ? "These records have a verified future deadline."
+              : "These historical records show where public money has flowed and which buyers have demonstrated budget."}
+          </p>
+        </div>
+        <div className="grid gap-4">
+          {signals.map((signal) => (
+            <OpportunitySignalCard
+              key={signal.id}
+              scanId={scanId}
+              signal={signal}
+              isPaid={isPaid}
+              profile={profile}
+              lookupAccess={lookupAccess}
+              access={access}
+            />
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -1077,23 +1348,32 @@ function LockedOpportunityCard({
   checkoutHandoffFailed: boolean;
 }) {
   const classification = opportunityActionFor(signal, profile);
+  const freshness = signalFreshness(signal);
+  const isCurrent = freshness.recordClass === "current";
   return (
     <article className="rounded-lg border border-dashed border-line bg-white p-5">
       <div className="flex flex-wrap gap-2">
         <Badge>{signalLane(signal)}</Badge>
         <Badge>{classificationLabel(classification.estimated_opportunity_type)}</Badge>
-        <Badge tone={badgeTone(classification.time_sensitivity)}>
-          {classificationLabel(classification.time_sensitivity)}
-        </Badge>
+        {isCurrent ? (
+          <Badge tone={badgeTone(classification.time_sensitivity)}>
+            {classificationLabel(classification.time_sensitivity)}
+          </Badge>
+        ) : null}
       </div>
-      <h3 className="mt-4 text-lg font-semibold text-ink">Additional workflow-ready opportunity</h3>
+      <div className="mt-3">
+        <FreshnessContext signal={signal} compact />
+      </div>
+      <h3 className="mt-4 text-lg font-semibold text-ink">
+        {isCurrent ? "Additional live opportunity" : "Additional funded-buyer signal"}
+      </h3>
       <p className="mt-3 text-sm leading-6 text-slate-600">
         Unlock the full report to see the buyer or partner target, source link, contact path,
         CRM-ready note, outreach angle, and workflow-ready payload.
       </p>
       <div className="mt-4 grid gap-2 text-sm text-muted sm:grid-cols-3">
         <p>{classificationLabel(classification.buyer_partner_type)} in full report</p>
-        <p>{classification.source_status}</p>
+        <p>{isCurrent ? classification.source_status : "Historical buyer-budget evidence"}</p>
         <p>{classificationLabel(classification.contact_strategy)} in full report</p>
       </div>
       {checkoutHandoffFailed ? (
@@ -1210,7 +1490,7 @@ function ActionPlan({ signals }: { signals: StoredOpportunitySignal[] }) {
       <h2 className="text-lg font-semibold text-ink">Recommended Action Plan</h2>
       <ol className="mt-4 grid gap-3 text-sm leading-6 text-slate-700">
         <li className="rounded-md border border-line bg-field p-4">
-          <span className="font-semibold text-ink">1. Prioritize the highest actionability rows.</span> Start with opportunities that have a clear buyer, source evidence, and near-term timing.
+          <span className="font-semibold text-ink">1. Prioritize the highest actionability rows.</span> Start with records that have a clear buyer, strong source evidence, and a next step appropriate to their freshness.
         </li>
         <li className="rounded-md border border-line bg-field p-4">
           <span className="font-semibold text-ink">2. Validate contact paths.</span> Use source-native contacts first. Growth-only person lookup can support eligible private-organization targets after the route and roles are verified.
@@ -1302,13 +1582,14 @@ function PursuitPlan({
             {group.signals.length > 0 ? (
               <div className="mt-3 grid gap-3">
                 {group.signals.map((signal) => {
-                  const classification = opportunityActionFor(signal, profile);
                   return (
                     <div key={signal.id} className="rounded-md border border-line bg-white p-3">
                       <p className="line-clamp-2 text-sm font-semibold leading-5 text-ink">
                         {opportunityHeadline(signal)}
                       </p>
-                      <p className="mt-2 text-xs leading-5 text-muted">{classification.next_best_action}</p>
+                      <p className="mt-2 text-xs leading-5 text-muted">
+                        {reportNextBestAction(signal, profile)}
+                      </p>
                     </div>
                   );
                 })}
@@ -1567,20 +1848,47 @@ export default async function ReportPage({
     : await listScanOpportunitySignals(scan.id);
   const moveForwardSignals = signals
     .filter((signal) => opportunityActionFor(signal, profile).show_in_report)
-    .sort(
-      (a, b) =>
+    .sort((a, b) => {
+      const aFreshness = signalFreshness(a);
+      const bFreshness = signalFreshness(b);
+      const classPriority =
+        Number(bFreshness.recordClass === "current") -
+        Number(aFreshness.recordClass === "current");
+      if (classPriority !== 0) return classPriority;
+      if (aFreshness.deadline && bFreshness.deadline) {
+        return aFreshness.deadline.getTime() - bFreshness.deadline.getTime();
+      }
+      return (
         opportunityActionFor(b, profile).actionability_score -
         opportunityActionFor(a, profile).actionability_score
-    );
+      );
+    });
   const reportSignals = moveForwardSignals;
   const visibleCount = isPaid ? reportSignals.length : visibleSignalCount(reportSignals.length);
   const displayedSignals = reportSignals.slice(0, visibleCount);
   const lockedSignals = reportSignals.slice(visibleCount);
+  const displayedLiveSignals = displayedSignals
+    .filter((signal) => signalFreshness(signal).recordClass === "current")
+    .sort(
+      (a, b) =>
+        signalFreshness(a).deadline!.getTime() - signalFreshness(b).deadline!.getTime()
+    );
+  const displayedEvidenceSignals = displayedSignals.filter(
+    (signal) => signalFreshness(signal).recordClass === "evidence"
+  );
+  const lockedLiveSignals = lockedSignals.filter(
+    (signal) => signalFreshness(signal).recordClass === "current"
+  );
+  const lockedEvidenceSignals = lockedSignals.filter(
+    (signal) => signalFreshness(signal).recordClass === "evidence"
+  );
   const reportCounts = {
     sourceMatches: signals.length,
     actionTableRows: reportSignals.length,
     shownRows: displayedSignals.length,
-    lockedRows: lockedSignals.length
+    lockedRows: lockedSignals.length,
+    lockedLiveRows: lockedLiveSignals.length,
+    lockedEvidenceRows: lockedEvidenceSignals.length
   };
   const showReportMonitorUpsell =
     isPaid &&
@@ -1612,7 +1920,8 @@ export default async function ReportPage({
           profile={profile}
           sourceMatches={reportCounts.sourceMatches}
           shownRows={reportCounts.shownRows}
-          lockedRows={reportCounts.lockedRows}
+          lockedLiveRows={reportCounts.lockedLiveRows}
+          lockedEvidenceRows={reportCounts.lockedEvidenceRows}
           isPaid={isPaid}
           access={searchParams?.access}
           comparisonHref={comparisonHref}
@@ -1759,33 +2068,24 @@ export default async function ReportPage({
         {displayedSignals.length > 0 ? (
           <>
             <div id="full-pipeline" className="scroll-mt-24" aria-hidden="true" />
-            <OpportunityActionTable
+            <OpportunityPipelineSection
               scanId={scan.id}
-              signals={displayedSignals}
+              signals={displayedLiveSignals}
+              recordClass="current"
               isPaid={isPaid}
               profile={profile}
               lookupAccess={contactLookupAccess}
               access={searchParams?.access}
             />
-            <section className="grid gap-4 md:hidden">
-              <div>
-                <h2 className="text-lg font-semibold text-ink">Opportunity Pipeline</h2>
-                <p className="mt-2 text-sm text-muted">Review each signal, take the next action, or send it into your workflow.</p>
-              </div>
-              <div className="grid gap-4">
-                {displayedSignals.map((signal) => (
-                  <OpportunitySignalCard
-                    key={signal.id}
-                    scanId={scan.id}
-                    signal={signal}
-                    isPaid={isPaid}
-                    profile={profile}
-                    lookupAccess={contactLookupAccess}
-                    access={searchParams?.access}
-                  />
-                ))}
-              </div>
-            </section>
+            <OpportunityPipelineSection
+              scanId={scan.id}
+              signals={displayedEvidenceSignals}
+              recordClass="evidence"
+              isPaid={isPaid}
+              profile={profile}
+              lookupAccess={contactLookupAccess}
+              access={searchParams?.access}
+            />
           </>
         ) : (
           <section className="rounded-lg border border-amber-200 bg-amber-50 p-5">
@@ -1816,7 +2116,9 @@ export default async function ReportPage({
           <section className="grid gap-4">
             <div>
               <h2 className="text-lg font-semibold text-ink">Full Pipeline Preview</h2>
-              <p className="mt-2 text-sm text-muted">{lockedSignals.length} additional opportunity row(s) are available in the full report.</p>
+              <p className="mt-2 text-sm text-muted">
+                {lockedLiveSignals.length} live opportunities · {lockedEvidenceSignals.length} funded-buyer signals
+              </p>
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               {lockedSignals.slice(0, 4).map((signal) => (

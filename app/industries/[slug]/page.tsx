@@ -4,10 +4,20 @@ import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
 import { LeadMagnetPromo } from "@/components/lead-magnet-promo";
 import { RelatedContentSection } from "@/components/resources/related-content-section";
+import {
+  RealScanFindings,
+  type RealScanVertical
+} from "@/components/resources/real-scan-findings";
 import { SampleReportPreview } from "@/components/sample-report";
 import { getIndustryPage, industryPages, siteUrl } from "@/lib/marketingContent";
 import { getLeadMagnetForIndustry } from "@/lib/leadMagnets";
 import { getSampleReportByIndustry } from "@/lib/sampleReports";
+
+const realScanVerticalByIndustry: Partial<Record<string, RealScanVertical>> = {
+  "arts-creative-economy-live-events": "creative-economy",
+  "education-workforce-training": "education-workforce",
+  "healthcare-dme-medical-supply": "healthcare-dme"
+};
 
 export function generateStaticParams() {
   return industryPages.map((industry) => ({ slug: industry.slug }));
@@ -41,6 +51,7 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
   }
   const sampleReport = getSampleReportByIndustry(industry.slug);
   const industryGuide = getLeadMagnetForIndustry(industry.slug);
+  const realScanVertical = realScanVerticalByIndustry[industry.slug];
 
   return (
     <main className="min-h-screen bg-field">
@@ -77,6 +88,12 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
           ))}
         </div>
       </section>
+
+      {realScanVertical ? (
+        <section className="mx-auto max-w-7xl px-6 pb-12">
+          <RealScanFindings vertical={realScanVertical} />
+        </section>
+      ) : null}
 
       <section className="border-y border-line bg-white">
         <div className="mx-auto max-w-7xl px-6 py-12">

@@ -156,6 +156,10 @@ export async function searchFederalRegister(
 
       signals.push({
         opportunity_title: doc.title ?? `Federal Register policy signal for ${term}`,
+        record_class: "evidence",
+        current_validated_at: null,
+        award_year: null,
+        period_end: null,
         source_type: "policy_signal",
         source_name: "Federal Register",
         source_url: url,

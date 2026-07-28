@@ -67,7 +67,7 @@ test("deadline email is idempotent and carries preference and one-click unsubscr
     recipient_email: "customer@example.test",
     opportunity_title: "City arts grant",
     agency_or_funder: "Example City",
-    deadline_date: "2026-08-01",
+    deadline_date: "2099-08-01",
     reminder_days: 7,
     attempt_count: 1
   };
@@ -87,6 +87,37 @@ test("deadline email is idempotent and carries preference and one-click unsubscr
   assert.match(request.body.text, /dashboard\?tab=alerts/);
   assert.match(request.body.headers["List-Unsubscribe"], /api\/deadline-alerts\/unsubscribe/);
   assert.match(deadlineAlertUnsubscribeUrl(config, ACCOUNT_ID), /alerts\/unsubscribe\?token=/);
+});
+
+test("deadline email refuses a stale queue row before calling Resend", async () => {
+  let called = false;
+  await assert.rejects(
+    sendDeadlineAlertEmail(
+      {
+        apiKey: "re_test",
+        fromEmail: "alerts@example.test",
+        appUrl: "https://scanner.example.test",
+        unsubscribeSecret: SECRET
+      },
+      {
+        alert_id: "stale-alert",
+        customer_account_id: ACCOUNT_ID,
+        scan_id: "scan-123",
+        recipient_email: "customer@example.test",
+        opportunity_title: "Historical award",
+        agency_or_funder: "Example City",
+        deadline_date: "2000-01-01",
+        reminder_days: 7,
+        attempt_count: 1
+      },
+      async () => {
+        called = true;
+        return new Response();
+      }
+    ),
+    /no longer has a verified future deadline/
+  );
+  assert.equal(called, false);
 });
 
 test("migration gates, deduplicates, leases, and suppresses reminders", async () => {

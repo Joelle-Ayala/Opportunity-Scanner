@@ -133,6 +133,7 @@ export async function sendMonitoringAlertEmail(
   const reportUrl = monitoringReportUrl(config, alert.scan_id);
   const agency = alert.agency_or_funder?.trim();
   const deadline = alert.deadline?.trim();
+  const isCurrent = Boolean(deadline);
   const details = [agency ? `Agency or funder: ${agency}` : null, deadline ? `Deadline: ${deadline}` : null]
     .filter(Boolean)
     .join("\n");
@@ -156,9 +157,13 @@ export async function sendMonitoringAlertEmail(
     body: {
       from: `Opportunity Scanner <${config.fromEmail}>`,
       to: [alert.recipient_email],
-      subject: `New opportunity: ${alert.opportunity_title.slice(0, 120)}`,
+      subject: `${
+        isCurrent ? "New live opportunity" : "New funded-buyer signal"
+      }: ${alert.opportunity_title.slice(0, 120)}`,
       text: [
-        "Opportunity Scanner found a new public-sector opportunity.",
+        isCurrent
+          ? "Opportunity Scanner found a new live public-sector opportunity with a verified future deadline."
+          : "Opportunity Scanner found new historical funded-buyer evidence. This is buyer-budget proof, not an open opportunity.",
         "",
         alert.opportunity_title,
         details,
@@ -167,7 +172,11 @@ export async function sendMonitoringAlertEmail(
         `Manage alert preferences: ${preferencesUrl}`,
         `Unsubscribe from Opportunity Scanner alerts: ${unsubscribeUrl}`
       ].filter(Boolean).join("\n"),
-      html: `<p>Opportunity Scanner found a new public-sector opportunity.</p><p><strong>${safeTitle}</strong>${safeDetails ? `<br>${safeDetails}` : ""}</p><p><a href="${escapeHtml(reportUrl)}">View the updated report</a></p><p style="border-top:1px solid #d8dee8;padding-top:18px;font-size:12px;color:#667085"><a href="${escapeHtml(preferencesUrl)}">Manage alert preferences</a> or <a href="${escapeHtml(unsubscribeUrl)}">unsubscribe from alerts</a>.</p>`,
+      html: `<p>${
+        isCurrent
+          ? "Opportunity Scanner found a new live public-sector opportunity with a verified future deadline."
+          : "Opportunity Scanner found new historical funded-buyer evidence. This is buyer-budget proof, not an open opportunity."
+      }</p><p><strong>${safeTitle}</strong>${safeDetails ? `<br>${safeDetails}` : ""}</p><p><a href="${escapeHtml(reportUrl)}">View the updated report</a></p><p style="border-top:1px solid #d8dee8;padding-top:18px;font-size:12px;color:#667085"><a href="${escapeHtml(preferencesUrl)}">Manage alert preferences</a> or <a href="${escapeHtml(unsubscribeUrl)}">unsubscribe from alerts</a>.</p>`,
       ...(oneClickUnsubscribeUrl ? {
         headers: {
           "List-Unsubscribe": `<${oneClickUnsubscribeUrl}>`,

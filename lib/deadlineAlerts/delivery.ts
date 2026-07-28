@@ -41,6 +41,12 @@ export async function sendDeadlineAlertEmail(
   fetchImpl: typeof fetch = fetch,
   options: ResendRequestOptions = {}
 ): Promise<string> {
+  const deadline = new Date(`${alert.deadline_date}T23:59:59.999Z`);
+  const now = new Date();
+  if (!Number.isFinite(deadline.getTime()) || deadline.getTime() <= now.getTime()) {
+    throw new Error("Deadline alert suppressed because the opportunity no longer has a verified future deadline.");
+  }
+
   const reportUrl = `${config.appUrl}/reports/${encodeURIComponent(alert.scan_id)}`;
   const preferencesUrl = `${config.appUrl}/dashboard?tab=alerts`;
   const unsubscribeUrl = deadlineAlertUnsubscribeUrl(config, alert.customer_account_id);

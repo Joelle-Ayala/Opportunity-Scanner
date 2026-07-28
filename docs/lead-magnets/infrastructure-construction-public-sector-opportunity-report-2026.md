@@ -1,6 +1,6 @@
-# The 2026 Infrastructure and Construction Public-Sector Opportunity Report
+# The 2026 Infrastructure and Construction Public-Sector Opportunity Playbook
 
-**Research cutoff:** July 11, 2026
+**Updated:** July 27, 2026
 
 **Audience:** Contractors, specialty trades, engineering and design firms, equipment and material suppliers, construction-technology providers, environmental consultants, and infrastructure service companies
 

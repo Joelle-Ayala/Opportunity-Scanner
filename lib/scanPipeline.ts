@@ -21,6 +21,7 @@ import type {
   CompanyEnrichmentOptions,
   CompanyEnrichmentResult
 } from "./companyEnrichment";
+import { classifyOpportunityRecord } from "./opportunityRecordClassification";
 
 export const SCAN_FUNCTION_MAX_DURATION_MS = 60_000;
 export const SCAN_EXECUTION_DEADLINE_MS = 50_000;
@@ -35,6 +36,66 @@ const persistedFailureErrors = new WeakSet<object>();
 const SCRAPING_STAGE_TIMEOUT_MS = 12_000;
 const PROFILING_STAGE_TIMEOUT_MS = 15_000;
 const STORAGE_STAGE_TIMEOUT_MS = 5_000;
+
+export function scanFocusPrefersCurrentOpportunities(input: ScanInput): boolean {
+  const focusText = [
+    input.opportunityFocus,
+    input.includeTerms,
+    ...(input.prioritySignals ?? [])
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return /\b(current|active|actionable|open|apply|application|bid|solicitation|deadline|closing)\b/.test(
+    focusText
+  );
+}
+
+export function prioritizeOpportunityRecords(
+  signals: OpportunitySignal[],
+  input: ScanInput,
+  asOf = new Date()
+): OpportunitySignal[] {
+  const canonicalSignals = signals.map((signal) => {
+    const record = classifyOpportunityRecord(
+      {
+        recordClass: signal.record_class,
+        currentValidatedAt: signal.current_validated_at,
+        sourceName: signal.source_name,
+        sourceType: signal.source_type,
+        deadline: signal.deadline,
+        awardYear: signal.award_year,
+        periodEnd: signal.period_end
+      },
+      asOf
+    );
+    return {
+      ...signal,
+      record_class: record.recordClass,
+      current_validated_at: record.currentValidatedAt,
+      award_year: record.awardYear,
+      period_end: record.periodEnd,
+      deadline: record.deadline ?? ""
+    };
+  });
+
+  if (!scanFocusPrefersCurrentOpportunities(input)) return canonicalSignals;
+
+  return canonicalSignals
+    .map((signal, index) => ({
+      signal,
+      index,
+      recordClass: signal.record_class
+    }))
+    .sort(
+      (left, right) =>
+        Number(right.recordClass === "current") - Number(left.recordClass === "current") ||
+        right.signal.relevance_score - left.signal.relevance_score ||
+        left.index - right.index
+    )
+    .map(({ signal }) => signal);
+}
 
 type ScanStage =
   | "starting"
@@ -428,7 +489,11 @@ export async function executeScanPipeline(
       true
     );
 
-    const normalizedSignals = dependencies.normalizeOpportunitySignals(discovery.signals, profile);
+    const normalizedSignals = prioritizeOpportunityRecords(
+      dependencies.normalizeOpportunitySignals(discovery.signals, profile),
+      input,
+      new Date(dependencies.now())
+    );
     const reportSignals = normalizedSignals.filter(
       (signal) => signal.normalized_action?.show_in_report === true || signal.show_in_report === true
     );

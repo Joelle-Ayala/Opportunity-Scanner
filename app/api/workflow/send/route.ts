@@ -3,6 +3,7 @@ import { hasRequestReportAccess } from "@/lib/payments/requestAccess";
 import { getScan } from "@/lib/storage";
 import { getCompletedReportReadiness } from "@/lib/reportReadiness";
 import { buildWorkflowPayload, type WorkflowPayload } from "@/lib/workflowPayload";
+import { classifyOpportunityRecord } from "@/lib/opportunityRecordClassification";
 import {
   fetchSafeOutboundUrl,
   HTTPS_OUTBOUND_PROTOCOLS,
@@ -30,6 +31,41 @@ function isObject(value: unknown): value is Record<string, unknown> {
 function stringValue(payload: unknown, key: string): string {
   const value = isObject(payload) ? payload[key] : undefined;
   return typeof value === "string" ? value.trim() : "";
+}
+
+function hasCurrentOpportunityFraming(value: unknown): boolean {
+  if (typeof value !== "string") return false;
+  return /\b(deadline|closing soon|closes? (?:in|on|by)|close date|due date|urgent|urgency|expires?|live opportunity|open opportunity|current opportunity|apply (?:now|before|by))\b/i.test(
+    value
+  );
+}
+
+function classSafeOutboundPayload(payload: WorkflowPayload): WorkflowPayload {
+  if (payload.recordClass !== "evidence") return payload;
+
+  const target = payload.targetAccount || payload.targetOrganization || "the funded recipient";
+  const yearText = payload.awardYear ? ` in ${payload.awardYear}` : "";
+  const fundingContext = `${target} received public funding${yearText}. This historical record is proof of past buyer budget; verify present needs before outreach.`;
+  const presentNeedsStep = `Research ${target} and ask about present needs before proposing a vendor or partnership path.`;
+
+  return {
+    ...payload,
+    opportunity: `Historical funded-buyer evidence: ${target}${yearText}`,
+    signalType: "Funded-buyer evidence",
+    opportunityType: "Historical funded-buyer evidence",
+    buyerPartnerType: "Award recipient / funded buyer",
+    revenueMotion: "Sell to Funded Buyer",
+    nextStep: presentNeedsStep,
+    nextBestAction: presentNeedsStep,
+    manualResearchInstruction: `Verify ${target}'s present needs and identify the responsible program, procurement, or partnership owner.`,
+    crmNote: `${fundingContext} Verify present needs before outreach.`,
+    outreachAngle: `Reference the historical funded work as context and ask how ${target} is handling the same need now.`,
+    followUpTask: `Ask ${target} about present needs and identify the responsible owner.`,
+    timeSensitivity: "historical",
+    sourceStatus: "Funded-buyer evidence",
+    sourceEvidence: fundingContext,
+    workflowPayloadReason: "Historical evidence is ready for present-needs research."
+  };
 }
 
 function isAllowedWebhookUrl(value: string): boolean {
@@ -120,6 +156,78 @@ function validateWorkflowPayload(payload: WorkflowPayload): ValidationError | nu
     };
   }
 
+  if (payload.recordClass !== "current" && payload.recordClass !== "evidence") {
+    return {
+      ok: false,
+      status: 422,
+      code: "INVALID_RECORD_CLASS",
+      message: "Workflow payload must identify the record as current or funded-buyer evidence."
+    };
+  }
+
+  const canonicalRecord = classifyOpportunityRecord({
+    recordClass: payload.recordClass,
+    currentValidatedAt: payload.currentValidatedAt,
+    sourceName: payload.source,
+    sourceType: payload.signalType,
+    deadline: payload.sourceDeadline,
+    awardYear: payload.awardYear,
+    periodEnd: payload.periodEnd
+  });
+
+  const dateFieldsMatch =
+    canonicalRecord.recordClass === payload.recordClass &&
+    (canonicalRecord.currentValidatedAt ?? undefined) === payload.currentValidatedAt &&
+    (canonicalRecord.deadline ?? undefined) === payload.sourceDeadline &&
+    (canonicalRecord.awardYear ?? undefined) === payload.awardYear &&
+    (canonicalRecord.periodEnd ?? undefined) === payload.periodEnd;
+
+  if (!dateFieldsMatch) {
+    return {
+      ok: false,
+      status: 422,
+      code: "INVALID_RECORD_FRESHNESS",
+      message:
+        payload.recordClass === "current"
+          ? "Current opportunities require a recently verified future deadline and cannot include historical award fields."
+          : "Funded-buyer evidence cannot include a deadline or current-validation timestamp, and its historical fields must be valid."
+    };
+  }
+
+  if (
+    payload.recordClass === "evidence" &&
+    (payload.timeSensitivity !== "historical" ||
+      payload.sourceStatus !== "Funded-buyer evidence")
+  ) {
+    return {
+      ok: false,
+      status: 422,
+      code: "INVALID_EVIDENCE_FRAMING",
+      message: "Funded-buyer evidence must use historical status and cannot use current-opportunity framing."
+    };
+  }
+
+  if (
+    payload.recordClass === "evidence" &&
+    [
+      payload.opportunity,
+      payload.nextStep,
+      payload.nextBestAction,
+      payload.crmNote,
+      payload.outreachAngle,
+      payload.followUpTask,
+      payload.sourceEvidence,
+      payload.workflowPayloadReason
+    ].some(hasCurrentOpportunityFraming)
+  ) {
+    return {
+      ok: false,
+      status: 422,
+      code: "INVALID_EVIDENCE_MESSAGING",
+      message: "Funded-buyer evidence contains deadline or urgency language and cannot be sent."
+    };
+  }
+
   const payloadBytes = Buffer.byteLength(JSON.stringify(payload), "utf8");
   if (payloadBytes > MAX_WEBHOOK_PAYLOAD_BYTES) {
     return {
@@ -160,12 +268,13 @@ export async function POST(request: Request) {
     return jsonError(404, "OPPORTUNITY_NOT_FOUND", "Opportunity not found for this scan.");
   }
 
-  const payload = buildWorkflowPayload({
+  const builtPayload = buildWorkflowPayload({
     scanId: validation.scanId,
     signal,
     profile: readiness.profile,
     includeSourceUrl: true
   });
+  const payload = classSafeOutboundPayload(builtPayload);
   const payloadValidation = validateWorkflowPayload(payload);
   if (payloadValidation) {
     return jsonError(payloadValidation.status, payloadValidation.code, payloadValidation.message);

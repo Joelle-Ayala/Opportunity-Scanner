@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useState, type KeyboardEvent } from "react";
 import { trackProductEvent } from "@/lib/productAnalytics";
 
 export type ReportComparisonStatus = "new" | "changed" | "expired" | "removed" | "unchanged";
+export type ReportComparisonRecordClass = "current" | "evidence";
 
 export interface ReportComparisonLink {
   label: string;
@@ -21,7 +22,10 @@ export interface ReportComparisonOpportunity {
   id: string;
   title: string;
   agency: string;
+  recordClass?: ReportComparisonRecordClass;
   deadline?: string | null;
+  awardYear?: number | null;
+  periodEnd?: string | null;
   source: string;
   sourceHref?: string;
   opportunityHref?: string;
@@ -66,7 +70,7 @@ const statusDisplay: Record<ReportComparisonStatus, StatusDisplay> = {
     countClasses: "bg-cyan-100 text-accent"
   },
   expired: {
-    label: "Expired opportunities",
+    label: "Expired live opportunities",
     shortLabel: "Expired",
     badgeClasses: "border-amber-100 bg-amber-50 text-amber-800",
     activeClasses: "border-amber-200 bg-amber-50 text-amber-800",
@@ -90,6 +94,20 @@ const statusDisplay: Record<ReportComparisonStatus, StatusDisplay> = {
 
 function displayValue(value: string | null | undefined) {
   return value && value.trim() ? value : "Not provided";
+}
+
+function dateDisplay(opportunity: ReportComparisonOpportunity): { label: string; value: string } {
+  if (opportunity.recordClass === "evidence" || opportunity.awardYear || opportunity.periodEnd) {
+    if (opportunity.awardYear) {
+      return { label: "Award year", value: String(opportunity.awardYear) };
+    }
+    if (opportunity.periodEnd?.trim()) {
+      return { label: "Period of performance end", value: opportunity.periodEnd };
+    }
+    return { label: "Evidence date", value: "Not provided" };
+  }
+
+  return { label: "Deadline", value: displayValue(opportunity.deadline) };
 }
 
 function ReportLink({ report, emphasis }: { report: ReportComparisonLink; emphasis?: boolean }) {
@@ -134,6 +152,7 @@ function ChangeDetails({ changes }: { changes: ReportComparisonFieldChange[] }) 
 
 function OpportunityRow({ opportunity }: { opportunity: ReportComparisonOpportunity }) {
   const display = statusDisplay[opportunity.status];
+  const date = dateDisplay(opportunity);
 
   return (
     <article className="px-4 py-5 sm:px-5">
@@ -158,8 +177,9 @@ function OpportunityRow({ opportunity }: { opportunity: ReportComparisonOpportun
         </div>
         <p className="hidden min-w-0 break-words text-sm text-slate-700 md:block">{opportunity.agency}</p>
         <p className="text-sm text-slate-700">
-          <span className="mr-2 text-xs font-semibold text-muted md:hidden">Deadline</span>
-          {displayValue(opportunity.deadline)}
+          <span className="mr-2 text-xs font-semibold text-muted md:hidden">{date.label}</span>
+          <span className="hidden text-xs font-semibold text-muted md:block">{date.label}</span>
+          <span className="md:mt-1 md:block">{date.value}</span>
         </p>
         <div className="min-w-0 text-sm">
           <span className="mr-2 text-xs font-semibold text-muted md:hidden">Source</span>
@@ -197,20 +217,28 @@ export function ReportComparisonView({
 }: ReportComparisonViewProps) {
   const [activeFilter, setActiveFilter] = useState<ReportComparisonStatus>(initialFilter);
   const instanceId = useId().replace(/:/g, "");
+  const normalizedOpportunities = useMemo(
+    () => opportunities.map((opportunity) =>
+      opportunity.recordClass === "evidence" && opportunity.status === "expired"
+        ? { ...opportunity, status: "changed" as const }
+        : opportunity
+    ),
+    [opportunities]
+  );
   const counts = useMemo(
     () =>
-      opportunities.reduce<Record<ReportComparisonStatus, number>>(
+      normalizedOpportunities.reduce<Record<ReportComparisonStatus, number>>(
         (result, opportunity) => {
           result[opportunity.status] += 1;
           return result;
         },
         { new: 0, changed: 0, expired: 0, removed: 0, unchanged: 0 }
       ),
-    [opportunities]
+    [normalizedOpportunities]
   );
   const visibleOpportunities = useMemo(
-    () => opportunities.filter((opportunity) => opportunity.status === activeFilter),
-    [activeFilter, opportunities]
+    () => normalizedOpportunities.filter((opportunity) => opportunity.status === activeFilter),
+    [activeFilter, normalizedOpportunities]
   );
   useEffect(() => {
     trackProductEvent("comparison_viewed", { initial_filter: initialFilter });
@@ -239,7 +267,7 @@ export function ReportComparisonView({
           <h2 id={`${instanceId}-title`} className="text-lg font-semibold text-ink">{title}</h2>
           <p className="mt-1 text-sm leading-6 text-muted">{description}</p>
         </div>
-        <p className="text-sm font-medium text-muted">{opportunities.length} total opportunities</p>
+        <p className="text-sm font-medium text-muted">{normalizedOpportunities.length} total opportunities</p>
       </div>
 
       <div className="mt-4 overflow-hidden rounded-lg border border-line bg-white">
@@ -290,7 +318,7 @@ export function ReportComparisonView({
           <div className="hidden grid-cols-[minmax(0,1.6fr)_minmax(140px,1fr)_minmax(120px,0.8fr)_minmax(120px,0.8fr)_90px] gap-4 border-b border-line bg-field px-5 py-3 text-xs font-semibold uppercase text-muted md:grid">
             <span>Opportunity</span>
             <span>Agency</span>
-            <span>Deadline</span>
+            <span>Record date</span>
             <span>Source</span>
             <span>Status</span>
           </div>

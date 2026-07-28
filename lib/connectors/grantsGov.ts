@@ -120,6 +120,14 @@ function isPastDeadline(deadline: string): boolean {
   return iso < currentDate;
 }
 
+function isVerifiedFutureDeadline(deadline: string): boolean {
+  const match = deadline.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/);
+  const parsed = match
+    ? Date.parse(`${match[3]}-${match[1].padStart(2, "0")}-${match[2].padStart(2, "0")}T23:59:59Z`)
+    : Date.parse(deadline);
+  return Number.isFinite(parsed) && parsed > Date.now();
+}
+
 function formatAwardRange(detail: GrantsOpportunityDetail): string {
   const floor = detail.synopsis?.awardFloor;
   const ceiling = detail.synopsis?.awardCeiling;
@@ -247,6 +255,7 @@ export async function searchGrantsGov(
       const contactEmail = synopsis?.agencyContactEmail || "";
       const contactPhone = synopsis?.agencyContactPhone || "";
       const deadline = hit.closeDate || synopsis?.responseDateDesc || "";
+      const isCurrentRecord = isVerifiedFutureDeadline(deadline);
       if (deadline && isPastDeadline(deadline)) {
         continue;
       }
@@ -259,11 +268,15 @@ export async function searchGrantsGov(
 
       signals.push({
         opportunity_title: `Grants.gov ${hit.oppStatus || "opportunity"}: ${title}`,
+        record_class: isCurrentRecord ? "current" : "evidence",
+        current_validated_at: isCurrentRecord ? new Date().toISOString() : null,
+        award_year: null,
+        period_end: null,
         source_type: "active_grant",
         source_name: "Grants.gov",
         source_url: opportunityUrl(id),
         agency_or_funder: agency,
-        deadline,
+        deadline: isCurrentRecord ? deadline : "",
         geography: "Federal",
         external_evidence_summary: [description, awardRange, applicantTypes ? `Eligible applicants: ${applicantTypes}` : ""]
           .filter(Boolean)

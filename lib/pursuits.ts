@@ -2,6 +2,7 @@ import { opportunityActionFor } from "./opportunityAction";
 import { monitoringOpportunityKey } from "./monitoring/core";
 import { parseOutboundUrl } from "./url";
 import type { CompanyProfile, ScanRecord, StoredOpportunitySignal } from "./types";
+import { classifyOpportunityRecord } from "./opportunityRecordClassification";
 import {
   type CustomerOpportunityPursuit,
   type PursuitApplicationMethod,
@@ -14,6 +15,20 @@ export function pursuitApplicationMethod(
   signal: StoredOpportunitySignal,
   profile?: CompanyProfile | null
 ): PursuitApplicationMethod {
+  const record = classifyOpportunityRecord({
+    recordClass: signal.record_class,
+    currentValidatedAt: signal.current_validated_at,
+    sourceName: signal.source_name,
+    sourceType: signal.source_type,
+    deadline: signal.deadline,
+    awardYear: signal.award_year,
+    periodEnd: signal.period_end
+  });
+  if (record.recordClass === "evidence") {
+    return signal.revenue_pathway === "partner_with_recipient"
+      ? "partner_outreach"
+      : "buyer_outreach";
+  }
   const action = opportunityActionFor(signal, profile);
   if (action.time_sensitivity === "expired") return "monitor";
   if (signal.source_type === "active_contract") return "procurement_response";
@@ -85,6 +100,15 @@ export function pursuitDefaults(input: {
 }): Omit<CustomerOpportunityPursuit, "id" | "customer_account_id" | "created_at" | "updated_at"> {
   const action = opportunityActionFor(input.signal, input.profile);
   const method = pursuitApplicationMethod(input.signal, input.profile);
+  const record = classifyOpportunityRecord({
+    recordClass: input.signal.record_class,
+    currentValidatedAt: input.signal.current_validated_at,
+    sourceName: input.signal.source_name,
+    sourceType: input.signal.source_type,
+    deadline: input.signal.deadline,
+    awardYear: input.signal.award_year,
+    periodEnd: input.signal.period_end
+  });
   let companyContextKey = input.profile?.canonical_domain || input.scan.company_url;
   try {
     companyContextKey = new URL(companyContextKey).hostname.replace(/^www\./, "").toLowerCase();
@@ -108,8 +132,14 @@ export function pursuitDefaults(input: {
     source_verified: false,
     fit_decision: "not_reviewed",
     route_verified: false,
-    deadline: normalizedDeadline(action.source_deadline || input.signal.deadline),
-    next_step: action.next_best_action,
+    deadline:
+      record.recordClass === "current"
+        ? normalizedDeadline(record.deadline || "")
+        : null,
+    next_step:
+      record.recordClass === "current"
+        ? action.next_best_action
+        : "Research the funded buyer and verify the current procurement or partnership path.",
     eligibility_notes: method === "direct_application"
       ? "Confirm that the company is an eligible applicant before investing in an application. If it is not eligible, identify the grantee or partner sales path instead."
       : "Confirm the opportunity is current, the target is correct, and the revenue motion matches this company before committing resources.",

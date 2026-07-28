@@ -1,10 +1,10 @@
-# The 2026 Manufacturing and Supply-Chain Public-Sector Opportunity Report
+# The 2026 Manufacturing and Supply-Chain Public-Sector Opportunity Playbook
 
 Subtitle: A practical guide to federal product buys, defense-industrial-base signals, prime subcontracting, funded factories, and source-backed next actions.
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 11, 2026. Solicitations, acquisition rules, cybersecurity clauses, funding notices, award status, and supplier-system requirements must be rechecked before publication and before action.
+Updated July 27, 2026. Solicitations, acquisition rules, cybersecurity clauses, funding notices, award status, and supplier-system requirements must be rechecked before publication and before action.
 
 ## Offer and audience
 

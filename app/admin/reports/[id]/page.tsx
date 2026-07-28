@@ -7,6 +7,7 @@ import {
   getScan,
   listScanOpportunitySignals
 } from "@/lib/storage";
+import { classifyOpportunityRecord } from "@/lib/opportunityRecordClassification";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -104,6 +105,15 @@ export default async function AdminReportInspectionPage({
           <div className="mt-4 divide-y divide-line overflow-hidden rounded-lg border border-line bg-white">
             {visibleSignals.map((signal) => {
               const sourceUrl = safeSourceUrl(signal.source_url);
+              const record = classifyOpportunityRecord({
+                recordClass: signal.record_class,
+                currentValidatedAt: signal.current_validated_at,
+                sourceName: signal.source_name,
+                sourceType: signal.source_type,
+                deadline: signal.deadline,
+                awardYear: signal.award_year,
+                periodEnd: signal.period_end
+              });
               return (
                 <article key={signal.id} className="p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -133,7 +143,13 @@ export default async function AdminReportInspectionPage({
                   </div>
                   <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-600">
                     <span>Buyer or partner: {signal.target_organization || signal.likely_buyer_or_partner}</span>
-                    <span>Deadline: {signal.source_deadline || signal.deadline || "Not stated"}</span>
+                    <span>
+                      {record.recordClass === "current"
+                        ? `Deadline: ${record.deadline}`
+                        : record.awardYear
+                          ? `Award year: ${record.awardYear}`
+                          : `Period of performance: ${record.periodEnd || "Historical record"}`}
+                    </span>
                     {sourceUrl ? (
                       <a
                         href={sourceUrl}

@@ -176,7 +176,7 @@ test("repeated manual runs collapse into one cooldown-protected queue request", 
 
   assert.doesNotMatch(route, /CRON_SECRET|\/api\/cron\/monitoring|fetch\(runUrl/);
   assert.doesNotMatch(route, /Monitoring run completed/);
-  assert.match(route, /Monitoring run queued for the next scheduled check/);
+  assert.match(route, /Monitoring check queued\. You can keep working while it runs/);
   assert.match(requestFunction, /next_run_at: `gt\.\$\{requestedAt\.toISOString\(\)\}`/);
   assert.match(requestFunction, /updated_at: `lt\.\$\{cooldownCutoff\.toISOString\(\)\}`/);
   assert.match(requestFunction, /const enqueued = Boolean\(updated\)/);

@@ -2241,12 +2241,33 @@ export const resourceArticles: ResourceArticle[] = baseResourceArticles.map((bas
     ...baseArticle,
     ...(resourceArticleRefreshes[baseArticle.slug] || {})
   } as ResourceArticle;
-  const visual = resourceFeaturedImages[article.slug] || resourceFeaturedImages["government-spending-growth-channel"];
+  const productProofImages = [
+    {
+      image: "/product-proof/report-overview.png",
+      alt: "Opportunity Scanner report overview showing sourced public-sector findings"
+    },
+    {
+      image: "/product-proof/report-pipeline.png",
+      alt: "Opportunity Scanner opportunity pipeline with prioritized source-backed records"
+    },
+    {
+      image: "/product-proof/report-actions.png",
+      alt: "Opportunity Scanner report actions, contact paths, and recommended next steps"
+    }
+  ];
+  const articleIndex = baseResourceArticles.findIndex((candidate) => candidate.slug === article.slug);
+  const visual = productProofImages[Math.max(0, articleIndex) % productProofImages.length];
 
   return {
     ...article,
-    featuredImage: article.featuredImage || visual.image,
-    featuredImageAlt: article.featuredImageAlt || visual.alt,
+    author: article.author || {
+      name: "Opportunity Scanner Research Team",
+      url: `${siteUrl}/about`
+    },
+    publishedAt: article.publishedAt || "2026-07-11",
+    lastReviewedAt: "2026-07-27",
+    featuredImage: visual.image,
+    featuredImageAlt: visual.alt,
     keyTakeaways: article.keyTakeaways || keyTakeawaysForArticle(article),
     practicalList: article.practicalList || practicalListForArticle(article),
     proofPoints: article.proofPoints || proofPointsForArticle(article),

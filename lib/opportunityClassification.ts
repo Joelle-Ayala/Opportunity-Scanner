@@ -1,5 +1,6 @@
 import { assessActionability, signalDate, signalLane } from "./actionability";
 import { contactTargetsForSignal } from "./contactTargeting";
+import { classifyOpportunityRecord } from "./opportunityRecordClassification";
 import type { CompanyProfile, StoredOpportunitySignal } from "./types";
 
 export type EstimatedOpportunityType =
@@ -64,7 +65,9 @@ export type OpportunityClassification = {
   follow_up_task: string;
 };
 
-const CURRENT_SCAN_DATE = new Date().toISOString().slice(0, 10);
+function currentScanDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 function unique(items: string[]): string[] {
   return [...new Set(items.filter(Boolean))];
@@ -85,14 +88,17 @@ export function comparableDate(value: unknown): string {
   return Number.isNaN(parsed.getTime()) ? "" : parsed.toISOString().slice(0, 10);
 }
 
-function sourceDeadline(signal: StoredOpportunitySignal): string {
-  return (
-    comparableDate(signal.deadline) ||
-    comparableDate(signal.raw_json?.["End Date"]) ||
-    comparableDate(signal.raw_json?.["Close Date"]) ||
-    comparableDate(signal.raw_json?.["Current End Date"]) ||
-    comparableDate(signal.raw_json?.search_hit && (signal.raw_json.search_hit as Record<string, unknown>).closeDate)
-  );
+function verifiedSourceDeadline(signal: StoredOpportunitySignal): string {
+  const record = classifyOpportunityRecord({
+    recordClass: signal.record_class,
+    currentValidatedAt: signal.current_validated_at,
+    sourceName: signal.source_name,
+    sourceType: signal.source_type,
+    deadline: signal.deadline,
+    awardYear: signal.award_year,
+    periodEnd: signal.period_end
+  });
+  return record.recordClass === "current" ? comparableDate(record.deadline) : "";
 }
 
 function sourcePublishedDate(signal: StoredOpportunitySignal): string {
@@ -111,7 +117,7 @@ function sourcePublishedDate(signal: StoredOpportunitySignal): string {
 function daysUntil(date: string): number | null {
   if (!date) return null;
   const target = new Date(`${date}T00:00:00Z`).getTime();
-  const current = new Date(`${CURRENT_SCAN_DATE}T00:00:00Z`).getTime();
+  const current = new Date(`${currentScanDate()}T00:00:00Z`).getTime();
   if (Number.isNaN(target) || Number.isNaN(current)) return null;
   return Math.round((target - current) / (1000 * 60 * 60 * 24));
 }
@@ -221,7 +227,11 @@ function isHealthcareProductProfile(profile?: CompanyProfile | null): boolean {
   );
 }
 
-function estimateOpportunityType(signal: StoredOpportunitySignal, deadline: string): EstimatedOpportunityType {
+function estimateOpportunityType(
+  signal: StoredOpportunitySignal,
+  deadline: string,
+  recordClass: "current" | "evidence"
+): EstimatedOpportunityType {
   const text = evidenceText(signal);
   if (signal.source_name === "State/local portal routing" || /source route to check|portal route/.test(text)) {
     return "source_route";
@@ -229,17 +239,18 @@ function estimateOpportunityType(signal: StoredOpportunitySignal, deadline: stri
   if (signal.source_type === "policy_signal" || signal.revenue_pathway === "monitor_policy") {
     return "policy_signal";
   }
-  if (deadline && deadline < CURRENT_SCAN_DATE) {
-    return "research_only";
-  }
-  if (signal.source_type === "active_grant" || signal.source_type === "active_contract") {
+  if (recordClass === "current") {
     return "active_opportunity";
   }
-  if (signal.source_type === "historical_award" || signal.source_type === "funded_buyer") {
+  if (
+    recordClass === "evidence" &&
+    (signal.source_type === "historical_award" ||
+      signal.source_type === "funded_buyer" ||
+      signal.source_type === "active_grant" ||
+      signal.source_type === "active_contract" ||
+      signal.source_type === "procurement_category")
+  ) {
     return "historical_market_evidence";
-  }
-  if (signal.source_type === "procurement_category" || signal.revenue_pathway === "procurement_bid") {
-    return "active_opportunity";
   }
   return "research_only";
 }
@@ -262,10 +273,8 @@ function buyerPartnerType(signal: StoredOpportunitySignal, type: EstimatedOpport
 function sourceStatus(type: EstimatedOpportunityType, deadline: string): string {
   if (type === "source_route") return "Source route";
   if (type === "policy_signal") return "Policy signal";
-  if (deadline && deadline < CURRENT_SCAN_DATE) return `Ended ${deadline}`;
   if (type === "active_opportunity" && deadline) return `Open through ${deadline}`;
-  if (type === "historical_market_evidence" && deadline) return `Current funded evidence through ${deadline}`;
-  if (type === "historical_market_evidence") return "Market evidence";
+  if (type === "historical_market_evidence") return "Funded-buyer evidence";
   return "Needs review";
 }
 
@@ -447,7 +456,7 @@ function creativeOnlyScreen(signal: StoredOpportunitySignal, profile?: CompanyPr
 } | null {
   if (!isCreativeCommerceProfile(profile)) return null;
   const text = sourceRecordText(signal);
-  const deadline = sourceDeadline(signal);
+  const deadline = verifiedSourceDeadline(signal);
   const liveMusicFit =
     /live music|music performance|musical performance|musician services|performer services|performing artist|artist booking|event entertainment|festival entertainment|concert|summer concert|public concerts|public event production|event production services|tourism|placemaking|parks recreation|parks and recreation|public event|cultural programming|downtown activation/.test(
       text
@@ -461,7 +470,7 @@ function creativeOnlyScreen(signal: StoredOpportunitySignal, profile?: CompanyPr
       text
     );
 
-  if (deadline && deadline < CURRENT_SCAN_DATE) {
+  if (deadline && deadline < currentScanDate()) {
     return { show: false, path: "Expired or ended", reason: `This record ended on ${deadline}.` };
   }
   if (/undisclosed|domestic unknown|foreign|miscellaneous foreign/.test(text)) {
@@ -511,7 +520,7 @@ function educationWorkforceScreen(signal: StoredOpportunitySignal, profile?: Com
 } | null {
   if (!isEducationWorkforceProfile(profile)) return null;
   const text = sourceRecordText(signal);
-  const deadline = sourceDeadline(signal);
+  const deadline = verifiedSourceDeadline(signal);
   const teacherWorkforcePath =
     /substitute teacher|teacher shortage|teacher recruitment|teacher recruiting|teacher hiring|teacher staffing|teacher residency|educator workforce|educator recruitment|educator hiring|school workforce|district workforce|school district recruiting|district recruiting|school hr|district hr/.test(
       text
@@ -550,7 +559,7 @@ function educationWorkforceScreen(signal: StoredOpportunitySignal, profile?: Com
     districtVendorPath ||
     /teaching artist|teaching artists|artist educator|artist educators|prop 28|proposition 28|vapa/.test(text);
 
-  if (deadline && deadline < CURRENT_SCAN_DATE) {
+  if (deadline && deadline < currentScanDate()) {
     return { show: false, path: "Expired or ended", reason: `This record ended on ${deadline}.` };
   }
 
@@ -605,7 +614,7 @@ function healthcareProductScreen(signal: StoredOpportunitySignal, profile?: Comp
 } | null {
   if (!isHealthcareProductProfile(profile)) return null;
   const text = sourceRecordText(signal);
-  const deadline = sourceDeadline(signal);
+  const deadline = verifiedSourceDeadline(signal);
   const productFit =
     /durable medical equipment|dmepos|\bdme\b|medical supplies?|rehabilitation supplies?|physical therapy supplies?|orthotic|prosthetic|compression (?:garment|sleeve)|recovery sleeve|bracing|assistive device/.test(
       text
@@ -613,7 +622,7 @@ function healthcareProductScreen(signal: StoredOpportunitySignal, profile?: Comp
     (/veterans affairs|\bva\b|visn/.test(text) &&
       /medical supplies?|rehabilitation|\bdme\b|orthotic|prosthetic|recovery|bracing|assistive device/.test(text));
 
-  if (deadline && deadline < CURRENT_SCAN_DATE) {
+  if (deadline && deadline < currentScanDate()) {
     return { show: false, path: "Expired or ended", reason: `This record ended on ${deadline}.` };
   }
   if (!productFit) {
@@ -637,9 +646,19 @@ export function classifyOpportunity(
   profile?: CompanyProfile | null
 ): OpportunityClassification {
   const actionability = assessActionability(signal);
-  const deadline = sourceDeadline(signal);
+  const freshness = classifyOpportunityRecord({
+    recordClass: signal.record_class,
+    currentValidatedAt: signal.current_validated_at,
+    sourceName: signal.source_name,
+    sourceType: signal.source_type,
+    deadline: signal.deadline,
+    awardYear: signal.award_year,
+    periodEnd: signal.period_end
+  });
+  const deadline = freshness.deadline ? comparableDate(freshness.deadline) : "";
+  const recordClass = freshness.recordClass;
   const publishedDate = sourcePublishedDate(signal);
-  const type = estimateOpportunityType(signal, deadline);
+  const type = estimateOpportunityType(signal, deadline, recordClass);
   const buyerType = buyerPartnerType(signal, type);
   const time = timeSensitivity(type, deadline);
   const hasSourceContact = sourceNativeContactAvailable(signal);

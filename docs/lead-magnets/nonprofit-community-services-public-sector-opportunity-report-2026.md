@@ -1,10 +1,10 @@
-# The 2026 Nonprofit and Community Services Public-Sector Opportunity Report
+# The 2026 Nonprofit and Community Services Public-Sector Opportunity Playbook
 
 Subtitle: A source-backed guide to grants, cooperative agreements, subawards, contracts, funded intermediaries, local implementation, and practical next actions.
 
 Status: Complete manuscript; ready for designed PDF and gated web delivery.
 
-As-of date: July 11, 2026. Open opportunities, agency forecasts, award status, program rules, and local competitions are time-sensitive and must be rechecked before action.
+Updated July 27, 2026. Open opportunities, agency forecasts, award status, program rules, and local competitions are time-sensitive and must be rechecked before action.
 
 ## Offer and audience
 

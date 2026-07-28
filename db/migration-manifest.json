@@ -279,6 +279,14 @@
       "prerequisites": ["v0033"],
       "sha256": "1e53b021fb2ae14f019c4dabefd5f76b43493765eb7f4dd131383f941fe84596",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0035",
+      "file": "db/opportunity-record-classification.sql",
+      "description": "Typed current-versus-evidence opportunity dates, legacy backfill, ingest normalization, and verified-future deadline alert gates.",
+      "prerequisites": ["v0031", "v0034"],
+      "sha256": "ac30112923e6bd7e920c27c9fdafd531e19c5d76ac12016a4a61702327526707",
+      "requiredInProduction": true
     }
   ]
 }

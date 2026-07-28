@@ -280,6 +280,11 @@ function isInactiveNotice(item: SamOpportunity): boolean {
   return Number.isFinite(deadline) && deadline < Date.now();
 }
 
+function hasVerifiedFutureDeadline(value: string): boolean {
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) && parsed > Date.now();
+}
+
 function procurementSourceType(item: SamOpportunity): OpportunitySignal["source_type"] {
   const type = `${item.type ?? ""} ${item.baseType ?? ""}`.toLowerCase();
   if (type.includes("award")) {
@@ -410,14 +415,22 @@ export async function searchSamGov(
       const isInactive = sourceType !== "funded_buyer" && isInactiveNotice(item);
       const responseDeadline = item.responseDeadLine || "";
       const isBidLike = sourceType === "active_contract" || sourceType === "procurement_category";
+      const recordClass =
+        !isInactive && hasVerifiedFutureDeadline(responseDeadline) ? "current" : "evidence";
 
       signals.push({
         opportunity_title: titleFor(item, lane),
+        record_class: recordClass,
+        current_validated_at: recordClass === "current" ? new Date().toISOString() : null,
+        award_year: sourceType === "funded_buyer"
+          ? Number(`${item.award?.date ?? ""}`.match(/\b(20\d{2})\b/)?.[1] ?? 0) || null
+          : null,
+        period_end: recordClass === "evidence" ? responseDeadline || null : null,
         source_type: sourceType,
         source_name: "SAM.gov",
         source_url: opportunityUrl(item),
         agency_or_funder: agency,
-        deadline: responseDeadline,
+        deadline: recordClass === "current" ? responseDeadline : "",
         geography: geography(item),
         external_evidence_summary:
           summary || "SAM.gov opportunity matched this public-sector search strategy.",

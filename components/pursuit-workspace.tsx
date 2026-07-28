@@ -36,7 +36,7 @@ export function PursuitWorkspace({
           <p className="text-xs font-semibold uppercase text-accent">Move this opportunity</p>
           <h2 id="pursuit-title" className="mt-1 text-lg font-semibold text-ink">Start a tracked pursuit</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
-            Keep qualification, registration requirements, documents, ownership, deadline, and the next step together while your team works the opportunity.
+            Keep qualification, registration requirements, documents, ownership, an internal due date, and the next step together while your team works the opportunity.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-5">
@@ -116,7 +116,7 @@ export function PursuitWorkspace({
             <input name="ownerName" defaultValue={pursuit.owner_name} maxLength={160} placeholder="Person responsible" className="mt-2 h-11 w-full rounded-md border border-line px-3 text-sm font-normal text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-cyan-100" />
           </label>
           <label className="text-sm font-semibold text-ink">
-            Deadline
+            Internal due date
             <input type="date" name="deadline" defaultValue={pursuit.deadline || ""} className="mt-2 h-11 w-full rounded-md border border-line px-3 text-sm font-normal text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-cyan-100" />
           </label>
         </div>

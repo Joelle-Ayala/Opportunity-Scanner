@@ -14,7 +14,10 @@ const payloadTypeByField = new Map(
   [...typeBlock.matchAll(/^\s{2}(\w+)\??:\s*([^;]+);/gm)].map((match) => [match[1], match[2]])
 );
 const documentedTypeByField = new Map(
-  [...pageSource.matchAll(/\{ name: "(\w+)", type: "([^"]+)"/g)].map((match) => [match[1], match[2]])
+  [...pageSource.matchAll(/\{ name: "(\w+)", type: "((?:\\.|[^"])*)"/g)].map((match) => [
+    match[1],
+    JSON.parse(`"${match[2]}"`)
+  ])
 );
 const payloadFields = [...payloadTypeByField.keys()].sort();
 const documentedFields = [...documentedTypeByField.keys()].sort();
