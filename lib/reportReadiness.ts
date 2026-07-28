@@ -131,7 +131,7 @@ export async function getCompletedReportReadiness(
   }
 
   const profile = dependencies.refineProfile(profileRecord.profile_json);
-  let signals = dependencies.normalizeSignals(storedSignals, profile);
+  const signals = dependencies.normalizeSignals(storedSignals, profile);
   let reportSignals = signals.filter(
     (signal) => signal.normalized_action?.show_in_report === true || signal.show_in_report === true
   );
@@ -142,7 +142,6 @@ export async function getCompletedReportReadiness(
     if (passingSignals.length < reportSignals.length) {
       const passingQuality = dependencies.evaluateQuality(profile, passingSignals);
       if (passingQuality.passed) {
-        signals = passingSignals;
         reportSignals = passingSignals;
         quality = passingQuality;
       }
@@ -165,5 +164,5 @@ export async function getCompletedReportReadiness(
     };
   }
 
-  return { ready: true, profile, signals, quality };
+  return { ready: true, profile, signals: reportSignals, quality };
 }

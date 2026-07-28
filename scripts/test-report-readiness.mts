@@ -64,7 +64,11 @@ const profileRecord: CompanyProfileRecord = {
   created_at: "2026-07-15T00:00:00.000Z"
 };
 
-const signal = { id: "opportunity-1", created_at: "2026-07-15T00:00:00.000Z" } as StoredOpportunitySignal;
+const signal = {
+  id: "opportunity-1",
+  created_at: "2026-07-15T00:00:00.000Z",
+  show_in_report: true
+} as StoredOpportunitySignal;
 
 const requirementValues: Record<ReportQualityRequirement, number> = {
   companyCorrectEvidence: 1,
@@ -166,6 +170,25 @@ test("completed quality-passed scans return the shared refined report data", asy
   assert.equal(result.profile, profile);
   assert.deepEqual(result.signals, [signal]);
   assert.equal(result.quality.passed, true);
+});
+
+test("completed reports never return stored rows that are not reportable", async () => {
+  const hiddenSignal = {
+    ...signal,
+    id: "opportunity-hidden",
+    show_in_report: false
+  };
+  const result = await getCompletedReportReadiness(scan("completed"), dependencies({
+    listScanOpportunitySignals: async () => [signal, hiddenSignal],
+    evaluateQuality: (_profile, values) => {
+      assert.deepEqual(values.map((value) => value.id), [signal.id]);
+      return quality(true);
+    }
+  }));
+
+  assert.equal(result.ready, true);
+  if (!result.ready) assert.fail("A quality-passed report should be ready.");
+  assert.deepEqual(result.signals.map((item) => item.id), [signal.id]);
 });
 
 test("completed reports exclude individually failed rows when enough fully qualifying rows remain", async () => {
