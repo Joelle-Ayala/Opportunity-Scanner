@@ -42,6 +42,41 @@ export type ReportReadinessDependencies = {
   ) => ReportQualityEvaluation;
 };
 
+function excludeFailedQualityRows(
+  signals: StoredOpportunitySignal[],
+  reportSignals: StoredOpportunitySignal[],
+  quality: ReportQualityEvaluation
+): StoredOpportunitySignal[] {
+  const failedIds = new Set(
+    quality.opportunities
+      .filter((result) => !result.passed)
+      .map((result) => reportSignals[result.index]?.id)
+      .filter((id): id is string => Boolean(id))
+  );
+
+  if (failedIds.size === 0) return signals;
+
+  return signals.map((signal) => {
+    if (!failedIds.has(signal.id)) return signal;
+    return {
+      ...signal,
+      show_in_report: false,
+      screening_path: "Failed report quality",
+      screening_reason:
+        "Excluded because this row did not pass every source, company-fit, target, action, freshness, and uniqueness requirement.",
+      normalized_action: signal.normalized_action
+        ? {
+            ...signal.normalized_action,
+            show_in_report: false,
+            screening_path: "Failed report quality",
+            screening_reason:
+              "Excluded because this row did not pass every source, company-fit, target, action, freshness, and uniqueness requirement."
+          }
+        : signal.normalized_action
+    };
+  });
+}
+
 const DEPENDENCY_KEYS: Array<keyof ReportReadinessDependencies> = [
   "getCompanyProfile",
   "listScanOpportunitySignals",
@@ -128,11 +163,23 @@ export async function getCompletedReportReadiness(
   }
 
   const profile = dependencies.refineProfile(profileRecord.profile_json);
-  const signals = dependencies.normalizeSignals(storedSignals, profile);
-  const reportSignals = signals.filter(
+  let signals = dependencies.normalizeSignals(storedSignals, profile);
+  let reportSignals = signals.filter(
     (signal) => signal.normalized_action?.show_in_report === true || signal.show_in_report === true
   );
-  const quality = dependencies.evaluateQuality(profile, reportSignals);
+  let quality = dependencies.evaluateQuality(profile, reportSignals);
+
+  if (
+    !quality.passed &&
+    quality.metrics.qualifyingOpportunityCount >= quality.metrics.minimumQualifyingOpportunityCount &&
+    quality.metrics.qualifyingOpportunityCount < quality.metrics.opportunityCount
+  ) {
+    signals = excludeFailedQualityRows(signals, reportSignals, quality);
+    reportSignals = signals.filter(
+      (signal) => signal.normalized_action?.show_in_report === true || signal.show_in_report === true
+    );
+    quality = dependencies.evaluateQuality(profile, reportSignals);
+  }
 
   if (!quality.passed) {
     console.warn("Completed report failed production readiness", {

@@ -73,6 +73,7 @@ const requirementValues: Record<ReportQualityRequirement, number> = {
   validRevenueMotion: 1,
   nextActionAndContactPath: 1,
   actionability: 1,
+  validRecordFreshness: 1,
   uniqueOpportunity: 1,
   noHtmlLeakage: 1
 };
@@ -165,6 +166,49 @@ test("completed quality-passed scans return the shared refined report data", asy
   assert.equal(result.profile, profile);
   assert.deepEqual(result.signals, [signal]);
   assert.equal(result.quality.passed, true);
+});
+
+test("completed reports exclude individually failed rows when enough fully qualifying rows remain", async () => {
+  const signals = Array.from({ length: 4 }, (_, index) => ({
+    ...signal,
+    id: `opportunity-${index + 1}`,
+    show_in_report: true
+  }));
+  let evaluationCount = 0;
+  const result = await getCompletedReportReadiness(scan("completed"), dependencies({
+    listScanOpportunitySignals: async () => signals,
+    normalizeSignals: (values) => [...values],
+    evaluateQuality: (_profile, values) => {
+      evaluationCount += 1;
+      if (evaluationCount === 1) {
+        return {
+          ...quality(false),
+          metrics: {
+            ...quality(false).metrics,
+            opportunityCount: 4,
+            qualifyingOpportunityCount: 3
+          },
+          opportunities: values.map((value, index) => ({
+            index,
+            title: value.opportunity_title ?? value.id,
+            passed: index !== 3,
+            requirements: Object.fromEntries(
+              Object.keys(requirementValues).map((requirement) => [requirement, index !== 3])
+            ) as Record<ReportQualityRequirement, boolean>
+          }))
+        };
+      }
+
+      assert.equal(values.length, 3);
+      return quality(true);
+    }
+  }));
+
+  assert.equal(result.ready, true);
+  if (!result.ready) assert.fail("A report with three fully qualifying rows should be ready.");
+  assert.equal(evaluationCount, 2);
+  assert.equal(result.signals.filter((item) => item.show_in_report === true).length, 3);
+  assert.equal(result.signals.find((item) => item.id === "opportunity-4")?.show_in_report, false);
 });
 
 test("all bypass surfaces invoke readiness before exposing or acting on report data", async () => {
