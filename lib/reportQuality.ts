@@ -61,6 +61,25 @@ export type ReportQualityEvaluation = {
   opportunities: ReportQualityOpportunityResult[];
 };
 
+export function selectPassingReportQualityRows<T extends OpportunitySignal>(
+  opportunities: readonly T[],
+  quality: ReportQualityEvaluation
+): T[] {
+  if (quality.opportunities.length !== opportunities.length) return [];
+
+  const resultsByIndex = new Map(
+    quality.opportunities.map((result) => [result.index, result])
+  );
+  if (
+    resultsByIndex.size !== opportunities.length ||
+    opportunities.some((_, index) => !resultsByIndex.has(index))
+  ) {
+    return [];
+  }
+
+  return opportunities.filter((_, index) => resultsByIndex.get(index)?.passed === true);
+}
+
 const REQUIREMENTS: readonly ReportQualityRequirement[] = [
   "companyCorrectEvidence",
   "validSourceUrl",

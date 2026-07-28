@@ -207,8 +207,8 @@ test("completed reports exclude individually failed rows when enough fully quali
   assert.equal(result.ready, true);
   if (!result.ready) assert.fail("A report with three fully qualifying rows should be ready.");
   assert.equal(evaluationCount, 2);
-  assert.equal(result.signals.filter((item) => item.show_in_report === true).length, 3);
-  assert.equal(result.signals.find((item) => item.id === "opportunity-4")?.show_in_report, false);
+  assert.equal(result.signals.length, 3);
+  assert.equal(result.signals.some((item) => item.id === "opportunity-4"), false);
 });
 
 test("all bypass surfaces invoke readiness before exposing or acting on report data", async () => {

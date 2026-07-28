@@ -8,7 +8,11 @@ import type {
   ScrapedPage
 } from "./types";
 import type { ConnectorRunStatus } from "./connectors/runtime";
-import type { ReportQualityEvaluation, ReportQualityTier } from "./reportQuality";
+import {
+  selectPassingReportQualityRows,
+  type ReportQualityEvaluation,
+  type ReportQualityTier
+} from "./reportQuality";
 import {
   appendExternalCompanyEvidenceContext,
   appendWebsiteEvidenceContext,
@@ -498,7 +502,13 @@ export async function executeScanPipeline(
       (signal) => signal.normalized_action?.show_in_report === true || signal.show_in_report === true
     );
     // Every scan can become a paid report, so completion must meet the full-report standard.
-    const quality = dependencies.evaluateReportQuality(profile, reportSignals, "full");
+    let quality = dependencies.evaluateReportQuality(profile, reportSignals, "full");
+    if (!quality.passed) {
+      const passingSignals = selectPassingReportQualityRows(reportSignals, quality);
+      if (passingSignals.length < reportSignals.length) {
+        quality = dependencies.evaluateReportQuality(profile, passingSignals, "full");
+      }
+    }
 
     await storageStage(
       "connector status storage",

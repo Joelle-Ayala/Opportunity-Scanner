@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { generateCompanyProfile, profileGenerationInput } from "../lib/profile.ts";
-import { evaluateReportQuality } from "../lib/reportQuality.ts";
+import {
+  evaluateReportQuality,
+  selectPassingReportQualityRows
+} from "../lib/reportQuality.ts";
 import type { CompanyProfile, NormalizedOpportunityAction, OpportunitySignal } from "../lib/types.ts";
 
 function profile(companyName: string, services: string[], playbookId: string): CompanyProfile {
@@ -187,6 +190,24 @@ test("Jammcard paid/full report passes with live music buyer opportunities", () 
 
   assert.equal(result.passed, true);
   assert.equal(result.score, 100);
+});
+
+test("quality selection keeps fully passing rows and removes a weak row before publication", () => {
+  const candidates = [
+    opportunity({ title: "Summer concert artist booking", evidence: "The city needs live music and artist booking for its summer concert series.", target: "City of Chicago Department of Cultural Affairs", sourceUrl: "https://www.chicago.gov/procurement/music-selection-1" }),
+    opportunity({ title: "Public concert entertainment", evidence: "The parks department is buying public concert entertainment and live music programming.", target: "Los Angeles County Department of Parks and Recreation", sourceUrl: "https://parks.lacounty.gov/contracts/music-selection-2" }),
+    opportunity({ title: "Festival musician services", evidence: "The tourism office seeks musician services and artist booking for a public festival.", target: "Visit Seattle", sourceUrl: "https://visitseattle.org/vendor/music-selection-3" }),
+    opportunity({ title: "Quantum networking research", evidence: "The laboratory is researching qubits and quantum networking.", target: "National Science Foundation", sourceUrl: "https://nsf.gov/award/quantum-selection" })
+  ];
+
+  const initial = evaluateReportQuality(jammcard, candidates, "full");
+  assert.equal(initial.passed, false);
+  assert.equal(initial.metrics.qualifyingOpportunityCount, 3);
+
+  const selected = selectPassingReportQualityRows(candidates, initial);
+  assert.equal(selected.length, 3);
+  assert.ok(selected.every((item) => !item.opportunity_title.includes("Quantum")));
+  assert.equal(evaluateReportQuality(jammcard, selected, "full").passed, true);
 });
 
 test("preview/free and paid/full tiers enforce different minimum counts", () => {

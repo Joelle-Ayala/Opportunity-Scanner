@@ -315,7 +315,14 @@ test("mixed connector outcomes preserve usable signals and diagnostics", async (
     })
   });
 
-  assert.deepEqual(savedSignals, [signal]);
+  assert.deepEqual(savedSignals, [{
+    ...signal,
+    record_class: "evidence",
+    current_validated_at: null,
+    award_year: null,
+    period_end: null,
+    deadline: ""
+  }]);
   assert.deepEqual(savedRuns, runs);
   assert.equal(updates.at(-1)?.status, "completed");
   assert.ok(updates.at(-1)?.completed_at);
@@ -434,6 +441,70 @@ test("quality gate holds a scan from completion without discarding source diagno
   assert.equal(updates.at(-1)?.completed_at, null);
   assert.match(updates.at(-1)?.error_message ?? "", /QUALITY_REVIEW_REQUIRED/);
   assert.ok(!updates.some((update) => update.status === "completed"));
+});
+
+test("quality gate completes with the passing subset while retaining every discovered row", async () => {
+  const updates = [];
+  const savedSignals = [];
+  let evaluationCount = 0;
+  const discoveredSignals = Array.from({ length: 4 }, (_, index) => ({
+    opportunity_title: `Candidate ${index + 1}`,
+    id: `candidate-${index + 1}`,
+    show_in_report: true
+  }));
+
+  const result = await executeScanPipeline("quality-selection", input, {
+    deadlineAtMs: Date.now() + 1_000,
+    terminalDeadlineAtMs: Date.now() + 1_500,
+    postDiscoveryReserveMs: 100,
+    dependencies: dependencies({
+      updateScan: async (_scanId, payload) => {
+        updates.push(payload);
+        return payload;
+      },
+      discoverExternalSignalsWithStatus: async () => ({
+        signals: discoveredSignals,
+        runs: [{ source_name: "USAspending.gov", status: "active", outcome: "matches_found" }]
+      }),
+      saveOpportunitySignals: async (_scanId, signals) => {
+        savedSignals.push(...signals);
+        return [];
+      },
+      evaluateReportQuality: (_profile, signals, tier) => {
+        evaluationCount += 1;
+        const allPass = signals.length === 3;
+        return {
+          passed: allPass,
+          score: allPass ? 100 : 92,
+          blockingReasons: allPass
+            ? []
+            : [{ code: "COMPANY_EVIDENCE_MISSING", message: "One row lacks company-fit evidence.", opportunityIndexes: [3] }],
+          metrics: {
+            tier,
+            opportunityCount: signals.length,
+            minimumOpportunityCount: 3,
+            qualifyingOpportunityCount: 3,
+            minimumQualifyingOpportunityCount: 3,
+            requirementPassCounts: {},
+            requirementCoverage: {}
+          },
+          opportunities: signals.map((signal, index) => ({
+            index,
+            title: signal.opportunity_title,
+            passed: allPass || index < 3,
+            requirements: {}
+          }))
+        };
+      }
+    })
+  });
+
+  assert.equal(result.status, "completed");
+  assert.equal(result.quality.passed, true);
+  assert.equal(evaluationCount, 2);
+  assert.equal(savedSignals.length, 4, "all discovered rows remain stored for admin diagnosis");
+  assert.equal(updates.at(-1)?.status, "completed");
+  assert.ok(!updates.some((update) => update.status === "quality_review"));
 });
 
 test("all attempted sources failing persists diagnostics and fails terminally", async () => {
