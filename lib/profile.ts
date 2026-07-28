@@ -390,11 +390,10 @@ function phraseTerms(value?: string): string[] {
   ).slice(0, 24);
 }
 
-function intentText(input: ScanInput): string {
+function positiveIntentText(input: ScanInput): string {
   return [
     input.opportunityFocus,
     input.includeTerms,
-    input.excludeTerms,
     ...(input.prioritySignals ?? [])
   ]
     .filter(Boolean)
@@ -447,7 +446,7 @@ function deterministicFallbackConfidence(input: ScanInput, profile: CompanyProfi
 }
 
 function inferPublicSectorTerms(keywords: string[], industry?: string, input?: ScanInput): string[] {
-  const haystack = `${keywords.join(" ")} ${industry ?? ""} ${input ? intentText(input) : ""}`.toLowerCase();
+  const haystack = `${keywords.join(" ")} ${industry ?? ""} ${input ? positiveIntentText(input) : ""}`.toLowerCase();
   const terms = new Set<string>();
 
   if (input) {
@@ -469,7 +468,7 @@ function inferPublicSectorTerms(keywords: string[], industry?: string, input?: S
 }
 
 function inferOpportunityLanes(keywords: string[], rawText: string, industry?: string, input?: ScanInput) {
-  const haystack = `${keywords.join(" ")} ${industry ?? ""} ${input ? intentText(input) : ""} ${rawText.slice(0, 6000)}`.toLowerCase();
+  const haystack = `${keywords.join(" ")} ${industry ?? ""} ${input ? positiveIntentText(input) : ""} ${rawText.slice(0, 6000)}`.toLowerCase();
   const laneSearchTerms: Record<string, string[]> = {};
 
   for (const rule of opportunityLaneRules) {
@@ -650,6 +649,7 @@ async function generateWithOpenAi(
               "Keep products and buyer types as precise multi-word phrases; do not promote adjacent website topics into offerings. " +
               "Good-fit examples must describe records with a credible path to revenue, while bad-fit examples must name tempting but irrelevant matches. " +
               "Search terms should be language an agency, grant program, prime, or funded recipient would use in an official record. " +
+              "Treat opportunityFocus, includeTerms, and prioritySignals as positive intent. Treat excludeTerms only as negative keywords or bad-fit guidance; never use them to infer offerings, industries, playbooks, search terms, or opportunity lanes. " +
               "Use a profile confidence score below 55 when the offering, buyer, or requested scan focus is ambiguous. " +
               "Do not invent external opportunities, contracts, grants, buyers, eligibility, or company capabilities. Return only the requested JSON object."
           },

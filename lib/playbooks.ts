@@ -616,7 +616,6 @@ function normalizedText(profile: CompanyProfile, input?: ScanInput): string {
     ...(profile.keywords ?? []),
     input?.opportunityFocus,
     input?.includeTerms,
-    input?.excludeTerms,
     ...(input?.prioritySignals ?? []),
     input?.companyName,
     input?.industry,
