@@ -8,6 +8,15 @@ const checks = [
   ["Company website metadata", ["--experimental-strip-types", "scripts/test-company-website-metadata.mts"]],
   ["Company enrichment", ["--experimental-strip-types", "scripts/test-company-enrichment.mts"]],
   ["Company profile evidence", ["--experimental-strip-types", "scripts/test-company-profile-evidence.mts"]],
+  [
+    "Playbook exclusion intent",
+    [
+      "--experimental-strip-types",
+      "--import",
+      "./scripts/register-ts-test-hooks.mjs",
+      "scripts/test-playbook-exclusion-intent.mts"
+    ]
+  ],
   ["Report scan states", ["scripts/test-report-scan-states.mjs"]],
   [
     "Report quality gate",

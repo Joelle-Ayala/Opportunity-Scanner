@@ -23,6 +23,7 @@
     "test:public-connectors": "node scripts/test-public-connector-regressions.mjs",
     "test:lead-magnets": "node scripts/test-lead-magnet-contract.mjs",
     "test:marketing-playbook": "node --experimental-strip-types scripts/test-marketing-playbook.mts",
+    "test:playbook-exclusion-intent": "node --experimental-strip-types --import ./scripts/register-ts-test-hooks.mjs scripts/test-playbook-exclusion-intent.mts",
     "test:billing-management": "node --experimental-strip-types scripts/test-billing-management.mjs",
     "test:subscription-retention-ui": "node --experimental-strip-types scripts/test-subscription-retention-ui.mjs",
     "test:subscription-handoff": "node --experimental-strip-types scripts/test-subscription-checkout-handoff.mjs",
