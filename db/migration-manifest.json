@@ -277,7 +277,7 @@
       "file": "db/customer-demo-entitlements.sql",
       "description": "Service-only, expiring account demo entitlements for explicitly assigned full reports and monitored searches without fabricated Stripe records.",
       "prerequisites": ["v0033"],
-      "sha256": "1e53b021fb2ae14f019c4dabefd5f76b43493765eb7f4dd131383f941fe84596",
+      "sha256": "9f11a2098fb3e82b0a54e1954473ab10aa0b3250d6ebe49efe9971d092921ddb",
       "requiredInProduction": true
     },
     {

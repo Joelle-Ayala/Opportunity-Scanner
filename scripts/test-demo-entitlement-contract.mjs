@@ -175,8 +175,9 @@ test("v0034 manifest checksum and append order match the migration", async () =>
     source("db/customer-demo-entitlements.sql")
   ]);
   const manifest = JSON.parse(manifestSource);
-  const entry = manifest.migrations.at(-1);
+  const entry = manifest.migrations.find(({ version }) => version === "v0034");
 
+  assert.ok(entry);
   assert.equal(entry.version, "v0034");
   assert.equal(entry.file, "db/customer-demo-entitlements.sql");
   assert.deepEqual(entry.prerequisites, ["v0033"]);

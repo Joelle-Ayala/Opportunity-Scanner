@@ -531,6 +531,9 @@ begin
 end;
 $$;
 
+-- The prior monitoring alert claim returned customer_account_id. PostgreSQL
+-- cannot replace a function when its OUT row shape changes, so recreate it.
+drop function if exists public.claim_pending_monitoring_alerts(integer);
 create or replace function public.claim_pending_monitoring_alerts(
   p_limit integer default 5
 ) returns table (
