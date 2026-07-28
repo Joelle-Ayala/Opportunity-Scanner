@@ -135,6 +135,12 @@ export async function getCompletedReportReadiness(
   const quality = dependencies.evaluateQuality(profile, reportSignals);
 
   if (!quality.passed) {
+    console.warn("Completed report failed production readiness", {
+      scanId: scan.id,
+      company: scan.company_name,
+      blockingCodes: quality.blockingReasons.map((reason) => reason.code),
+      metrics: quality.metrics
+    });
     return {
       ready: false,
       status: 409,
