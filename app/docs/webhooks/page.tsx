@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 type FieldRow = {
   name: keyof WorkflowPayload;
   type: string;
-  delivery: "Required" | "Conditional" | "Optional";
+  delivery: "Required" | "Conditional" | "Optional" | "Current only" | "Evidence only";
   description: string;
 };
 

@@ -4,11 +4,12 @@ import { readFile } from "node:fs/promises";
 const ROOT = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, ROOT), "utf8");
 
-const [route, opportunityPage, reportPage, homePage] = await Promise.all([
+const [route, opportunityPage, reportPage, homePage, effectivePlan] = await Promise.all([
   source("app/api/opportunities/enrich/route.ts"),
   source("app/opportunities/[id]/page.tsx"),
   source("app/reports/[id]/page.tsx"),
-  source("app/page.tsx")
+  source("app/page.tsx"),
+  source("lib/dashboard/effectivePlan.ts")
 ]);
 
 assert.match(route, /enrichmentType !== "find_contacts"/);
@@ -34,7 +35,9 @@ const reportLookupStart = reportPage.indexOf("function GrowthContactLookupContro
 const reportLookupEnd = reportPage.indexOf("function PrimaryActionButton", reportLookupStart);
 const reportLookup = reportPage.slice(reportLookupStart, reportLookupEnd);
 assert.ok(reportLookupStart >= 0 && reportLookupEnd > reportLookupStart, "report lookup control must exist");
-assert.match(reportPage, /subscription\.product === "growth"[\s\S]*\["active", "trialing"\]/);
+assert.match(reportPage, /activeMonitoringPlan\(dashboardSummary\.billing\)/);
+assert.match(effectivePlan, /subscription\.product === "monitor" \|\| subscription\.product === "growth"/);
+assert.match(effectivePlan, /subscription\.status === "active" \|\| subscription\.status === "trialing"/);
 assert.match(reportLookup, /if \(!isPaid \|\| !lookupAccess\.hasGrowthPlan\)[\s\S]*Person-level contact lookup is Growth-only/);
 assert.ok(
   reportLookup.indexOf("if (!isPaid || !lookupAccess.hasGrowthPlan)") < reportLookup.indexOf('<form action="/api/opportunities/enrich"'),

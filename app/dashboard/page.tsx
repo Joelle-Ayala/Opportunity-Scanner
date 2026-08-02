@@ -552,7 +552,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: D
           subscriptionStatus,
           planIntervalLabel: billingSubscription?.billingInterval || undefined,
           renewalLabel: renewal,
-          manageAction: summary.billing.billingPortalAvailable && billingSubscription?.source === "stripe"
+          manageAction: summary.billing.stripeCustomerId
             ? <BillingPortalButton
                 label={subscriptionStatus === "past_due" ? "Update payment method" : subscriptionStatus === "canceling" ? "Review cancellation" : "Manage billing"}
                 variant={subscriptionStatus === "past_due" ? "danger" : "default"}

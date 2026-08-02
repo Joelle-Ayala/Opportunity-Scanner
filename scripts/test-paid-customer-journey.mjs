@@ -288,7 +288,7 @@ test("subscription checkout hands the customer to sign-in-protected monitoring o
   assert.match(dashboard, /\/dashboard\/compare\/\$\{run\.scanId\}/);
   assert.match(
     dashboard,
-    /manageAction: summary\.billing\.billingPortalAvailable && billingSubscription\?\.source === "stripe"[\s\S]*?<BillingPortalButton/
+    /manageAction: summary\.billing\.stripeCustomerId[\s\S]*?<BillingPortalButton/
   );
 });
 

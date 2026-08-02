@@ -88,7 +88,7 @@ assert.match(billing, /label: "Cancels at period end"/);
 assert.match(billing, /DashboardStatusBadge tone=\{status\.tone\}/);
 assert.match(
   dashboard,
-  /manageAction: summary\.billing\.billingPortalAvailable && billingSubscription\?\.source === "stripe"[\s\S]*?<BillingPortalButton/
+  /manageAction: summary\.billing\.stripeCustomerId[\s\S]*?<BillingPortalButton/
 );
 assert.match(billing, /hasPaymentMethodData/);
 assert.match(billing, /invoices !== undefined/);
