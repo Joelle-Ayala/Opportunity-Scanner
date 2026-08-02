@@ -6,10 +6,11 @@ import ts from "typescript";
 const root = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, root), "utf8");
 
-const [jsonSource, componentSource, guidelinesSource] = await Promise.all([
+const [jsonSource, componentSource, guidelinesSource, peopleIndustriesSource] = await Promise.all([
   source("content/real-scan-findings.json"),
   source("components/resources/real-scan-findings.tsx"),
-  source("CONTENT_GUIDELINES.md")
+  source("CONTENT_GUIDELINES.md"),
+  source("lib/resourceArticleRefreshes/peopleIndustries.ts")
 ]);
 
 const data = JSON.parse(jsonSource);
@@ -21,7 +22,10 @@ const expectedVerticals = [
 
 assert.equal(data._policy.classification, "evidence");
 assert.deepEqual(Object.keys(data.verticals), expectedVerticals);
-assert.equal(data.label, "From real scans - public records surfaced by Opportunity Scanner");
+assert.equal(
+  data.label,
+  "From real scans — public records surfaced by Opportunity Scanner"
+);
 assert.equal(data.as_of, "2026-07-26");
 assert.equal(data.as_of_display, "July 26, 2026");
 
@@ -129,6 +133,81 @@ for (const vertical of Object.values(data.verticals)) {
   }
 }
 
+const articleEvidence = [
+  {
+    company: "a compression-garment and recovery products brand",
+    aggregate: "14 sourced signals across five federal agencies and two source systems",
+    findings: [
+      ["Peraton Enterprise Solutions", "$95,922,714", "2018"],
+      ["Valiant Construction LLC", "$17,139,378", "2021"],
+      ["BSN Medical Inc.", "$133,587", "2019"]
+    ],
+    socialSeed: "In 2019, BSN Medical Inc. received a $133,587 medical-supply award from NASA."
+  },
+  {
+    company: "a musician-booking marketplace",
+    aggregate: "28 sourced signals across nine federal agencies and three source systems",
+    findings: [
+      ["John F. Kennedy Center for the Performing Arts", "$24,000,000", "2018"],
+      ["Hargrove, LLC", "$9,267,988", "2022"],
+      ["Isom Events LLC", "$1,152,925", "2018"],
+      ["Chevo Studios Inc.", "$381,588", "2023"]
+    ],
+    socialSeed: "In 2018, the Kennedy Center received a $24,000,000 arts and culture grant"
+  },
+  {
+    company: "an arts-educator staffing platform born out of California Prop 28",
+    aggregate: "21 sourced signals across 11 federal agencies and two source systems",
+    findings: [
+      ["Westat, Inc.", "$9,954,119", "2011"],
+      ["FM Talent Source, LLC", "$547,714", "2018"]
+    ],
+    socialSeed: "In 2011, Westat, Inc. received $9,954,119 from the Department of Education"
+  }
+];
+
+for (const article of articleEvidence) {
+  assert.match(peopleIndustriesSource, new RegExp(article.company.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(peopleIndustriesSource, new RegExp(article.aggregate));
+  assert.match(peopleIndustriesSource, new RegExp(article.socialSeed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+
+  for (const [recipient, amount, awardYear] of article.findings) {
+    const evidencePattern = new RegExp(
+      `${recipient.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^"\\n]*${amount.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^"\\n]*${awardYear}`
+    );
+    assert.match(
+      peopleIndustriesSource,
+      evidencePattern,
+      `${recipient} article evidence must carry its exact amount and award year`
+    );
+  }
+}
+
+for (const removedIllustrativeExample of [
+  "An illustrative DME row might begin",
+  "An illustrative event-production row might say",
+  "An illustrative training-company row might pair"
+]) {
+  assert.doesNotMatch(
+    peopleIndustriesSource,
+    new RegExp(removedIllustrativeExample),
+    `Replace hypothetical article example: ${removedIllustrativeExample}`
+  );
+}
+
+assert.match(
+  peopleIndustriesSource,
+  /These awards proved[\s\S]*They did not establish a current purchase, open opportunity, or response date\./
+);
+assert.match(
+  peopleIndustriesSource,
+  /These records supported funded-buyer, contractor, and partner research\.[\s\S]*They did not establish that any recipient was currently purchasing or accepting proposals\./
+);
+assert.match(
+  peopleIndustriesSource,
+  /These records supported funded-buyer and recipient-partner research; they did not establish a current staffing request, open application, or purchasing cycle\./
+);
+
 assert.match(componentSource, /DATA FRESHNESS POLICY/);
 assert.match(componentSource, /export function getRealScanVertical/);
 assert.match(componentSource, /export function getRealScanFindings/);
@@ -158,8 +237,11 @@ const parsedConfig = ts.parseJsonConfigFileContent(
 const componentPath = fileURLToPath(
   new URL("../components/resources/real-scan-findings.tsx", import.meta.url)
 );
+const peopleIndustriesPath = fileURLToPath(
+  new URL("../lib/resourceArticleRefreshes/peopleIndustries.ts", import.meta.url)
+);
 const program = ts.createProgram({
-  rootNames: [componentPath],
+  rootNames: [componentPath, peopleIndustriesPath],
   options: {
     ...parsedConfig.options,
     incremental: false,
@@ -168,14 +250,16 @@ const program = ts.createProgram({
 });
 const diagnostics = ts
   .getPreEmitDiagnostics(program)
-  .filter((diagnostic) => diagnostic.file?.fileName === componentPath);
+  .filter((diagnostic) =>
+    [componentPath, peopleIndustriesPath].includes(diagnostic.file?.fileName || "")
+  );
 
 assert.deepEqual(
   diagnostics.map((diagnostic) =>
     ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
   ),
   [],
-  "The real scan findings component must typecheck"
+  "The real scan findings component and people/industries article refreshes must typecheck"
 );
 
 console.log("Real scan content evidence checks passed.");

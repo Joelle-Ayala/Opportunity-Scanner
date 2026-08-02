@@ -58,7 +58,7 @@ export const peopleIndustryArticleRefreshes = {
         heading: "Build an industry-specific Opportunity Action Table",
         body: [
           "Every retained healthcare row should include the source and retrieval date, target organization, care setting, product or service category, evidence summary, status, revenue motion, eligibility or vehicle check, contact path, next action, owner, due date, and disqualifier. Add reimbursement or policy fields only when they materially affect the route. Keep source-native contacts and official vendor instructions ahead of paid contact enrichment.",
-          "An illustrative DME row might begin with a current VA notice, classify the motion as Sell to Agency, route the team to the listed contracting contact, and assign attachment and vehicle review before any response. An illustrative HRSA row might begin with a verified health-center awardee, use Sell to Funded Buyer Research, and assign a review of the award purpose and the organization's vendor process. Neither example assumes a response, meeting, purchase, or award.",
+          "A real Opportunity Scanner scan for a compression-garment and recovery products brand surfaced 14 sourced signals across five federal agencies and two source systems. The historical records showed three tiers of funded-buyer evidence: Peraton Enterprise Solutions received a $95,922,714 HHS award in 2018 for DME, Medicare, and reimbursement infrastructure; Valiant Construction LLC received a $17,139,378 Department of Veterans Affairs award in 2021 adjacent to prosthetics and orthotics purchasing; and BSN Medical Inc. received a $133,587 NASA award in 2019. These awards proved that budgets existed around reimbursement infrastructure, VA care pathways, and direct agency medical-supply buying. They did not establish a current purchase, open opportunity, or response date.",
           "Opportunity Scanner's role is to perform this translation consistently: source to target, target to motion, motion to contact path, and contact path to next action. The result should help a healthcare operator decide where to invest diligence, where a channel partner is required, and where the honest answer is to monitor or reject the record."
         ]
       }
@@ -108,6 +108,21 @@ export const peopleIndustryArticleRefreshes = {
         stat: "Grants.gov states that legal eligibility comes from the application instructions attached to each funding opportunity.",
         source: "Grants.gov - Applicant Eligibility",
         url: "https://www.grants.gov/applicants/applicant-eligibility"
+      },
+      {
+        stat: "Peraton Enterprise Solutions received a $95,922,714 HHS award in 2018 for DME, Medicare, and reimbursement infrastructure; this is historical funded-buyer evidence, not a current opportunity.",
+        source: "USAspending - Peraton Enterprise Solutions award",
+        url: "https://www.usaspending.gov/award/CONT_AWD_75FCMC18F0001_7530_HHSM500201600002I_7530"
+      },
+      {
+        stat: "Valiant Construction LLC received a $17,139,378 Department of Veterans Affairs award in 2021 adjacent to prosthetics and orthotics purchasing; it evidences facility investment around the care pathway.",
+        source: "USAspending - Valiant Construction LLC award",
+        url: "https://www.usaspending.gov/award/CONT_AWD_36C77621C0052_3600_-NONE-_-NONE-"
+      },
+      {
+        stat: "BSN Medical Inc. received a $133,587 NASA award in 2019, showing that direct medical-supply demand has appeared outside the agencies a DME seller might normally target.",
+        source: "USAspending - BSN Medical Inc. award",
+        url: "https://www.usaspending.gov/award/CONT_AWD_80NSSC19P2099_8000_-NONE-_-NONE-"
       }
     ],
     chartAssets: [
@@ -131,6 +146,7 @@ export const peopleIndustryArticleRefreshes = {
       source: "CMS, HRSA, VA, SAM.gov, and Grants.gov",
       url: "https://data.cms.gov/"
     },
+    // Social-post seed: "In 2019, BSN Medical Inc. received a $133,587 medical-supply award from NASA. Public-sector demand can hide in agencies a recovery-products brand would never think to target."
     cta: "Run a free scan to turn your healthcare offer and official public records into qualified agency, provider, channel, and policy action rows."
   },
   "creative-economy-funding-opportunities": {
@@ -182,7 +198,7 @@ export const peopleIndustryArticleRefreshes = {
         heading: "Match the contact path to the operating model",
         body: [
           "A grant opportunity routes to the application instructions and program contact. A city solicitation routes to the procurement portal and named contracting contact. A funded nonprofit may route to its program, operations, partnerships, or production leadership. A school arts program may route through district procurement, enrichment, curriculum, or a lead nonprofit. The right route depends on who owns the work and what the source authorizes.",
-          "Creative outreach should reference the public objective and the company's relevant delivery proof. An illustrative event-production row might say that a city has issued an official solicitation for a public program, classify the motion as Sell to Agency, and assign registration and scope review. An illustrative NEA recipient row might use Partner with Recipient Research and assign review of the award narrative and the recipient's public partner process. Neither implies a response, engagement, or contract.",
+          "A real Opportunity Scanner scan for a musician-booking marketplace surfaced 28 sourced signals across nine federal agencies and three source systems. Historical award evidence showed several distinct routes: the John F. Kennedy Center for the Performing Arts received a $24,000,000 Department of Education arts and culture grant in 2018; Hargrove, LLC received a $9,267,988 Department of State award in 2022 for cultural programming and live events; Isom Events LLC received a $1,152,925 Department of the Interior award in 2018 for city and county live-performance work; and Chevo Studios Inc. received a $381,588 Department of the Interior award in 2023 for creative workforce development. These records supported funded-buyer, contractor, and partner research. They did not establish that any recipient was currently purchasing or accepting proposals.",
           "Avoid outreach that claims access to public money or asks a recipient to redirect restricted funds. The first message should demonstrate that the team understands the project, timing, audience, and delivery requirement. Where no official purchasing or partnership route exists, keep the row in research rather than enriching personal contacts."
         ]
       },
@@ -240,6 +256,26 @@ export const peopleIndustryArticleRefreshes = {
         stat: "Grants.gov directs applicants to the official opportunity instructions for controlling legal eligibility.",
         source: "Grants.gov - Applicant Eligibility",
         url: "https://www.grants.gov/applicants/applicant-eligibility"
+      },
+      {
+        stat: "The John F. Kennedy Center for the Performing Arts received a $24,000,000 Department of Education arts and culture grant in 2018, providing historical funded-buyer evidence for the cultural-institution route.",
+        source: "USAspending - Kennedy Center award",
+        url: "https://www.usaspending.gov/award/ASST_NON_U351F180007_091"
+      },
+      {
+        stat: "Hargrove, LLC received a $9,267,988 Department of State award in 2022 for cultural programming and live events, evidencing a direct event-contractor route.",
+        source: "USAspending - Hargrove, LLC award",
+        url: "https://www.usaspending.gov/award/CONT_AWD_19AQMM22C0085_1900_-NONE-_-NONE-"
+      },
+      {
+        stat: "Isom Events LLC received a $1,152,925 Department of the Interior award in 2018 for city and county live-performance work.",
+        source: "USAspending - Isom Events LLC award",
+        url: "https://www.usaspending.gov/award/CONT_AWD_140P3018C0028_1443_-NONE-_-NONE-"
+      },
+      {
+        stat: "Chevo Studios Inc. received a $381,588 Department of the Interior award in 2023 for creative workforce development.",
+        source: "USAspending - Chevo Studios Inc. award",
+        url: "https://www.usaspending.gov/award/CONT_AWD_140P1523C0003_1443_-NONE-_-NONE-"
       }
     ],
     chartAssets: [
@@ -263,6 +299,7 @@ export const peopleIndustryArticleRefreshes = {
       source: "NEA, NEH, IMLS, Grants.gov, BEA, and official state and local sources",
       url: "https://www.arts.gov/grants"
     },
+    // Social-post seed: "In 2018, the Kennedy Center received a $24,000,000 arts and culture grant from the Department of Education, not the NEA. If you sell into arts and events, your public-sector buyer map may be too narrow."
     cta: "Run a free scan to turn your creative offer and official cultural records into qualified grant, buyer, partner, event, and monitoring actions."
   },
   "education-workforce-opportunity-signals": {
@@ -315,7 +352,7 @@ export const peopleIndustryArticleRefreshes = {
         body: [
           "Education and workforce buyers are role-specific. A district technology procurement may route through the purchasing office and technology leadership. Staffing may involve HR and an approved vendor process. Professional learning can involve curriculum, student services, special education, or a grant program. A workforce initiative may route through a local board, fiscal agent, American Job Center operator, college, recipient nonprofit, or employer partnership.",
           "Start with the official record. For an RFP, use the named procurement contact and question process. For a grant, use the program contact for eligibility questions and wait for official awards before labeling recipients as funded. For a public plan, identify the responsible agency or board and assign research or monitoring. For a named funded provider, verify the award purpose and public vendor or partnership route before enriching individuals.",
-          "An illustrative training-company row might pair a local workforce plan with an official solicitation and use Sell to Agency, with the procurement portal as the contact path. An illustrative EdTech row might pair a Department of Education award with a verified district recipient and use Sell to Funded Buyer Research while the team reviews the award scope. Neither example assumes access, a meeting, a response, or revenue."
+          "A real Opportunity Scanner scan for an arts-educator staffing platform born out of California Prop 28 surfaced 21 sourced signals across 11 federal agencies and two source systems. Historical award evidence showed that educator-workforce money had flowed to staffing intermediaries as well as public institutions: Westat, Inc. received a $9,954,119 Department of Education award in 2011 for K-12 hiring, teacher staffing, and educator workforce work, while FM Talent Source, LLC received a $547,714 Department of Education award in 2018 tied to arts education and teaching-artist staffing. These records supported funded-buyer and recipient-partner research; they did not establish a current staffing request, open application, or purchasing cycle."
         ]
       },
       {
@@ -372,6 +409,16 @@ export const peopleIndustryArticleRefreshes = {
         stat: "BLS cautions that occupational projections are subject to uncertainty and should not be the sole basis for a career or market decision.",
         source: "U.S. Bureau of Labor Statistics - Employment Projections Data Overview",
         url: "https://www.bls.gov/emp/documentation/data-overview.htm"
+      },
+      {
+        stat: "Westat, Inc. received a $9,954,119 Department of Education award in 2011 for K-12 hiring, teacher staffing, and educator workforce work, showing that staffing intermediaries have received public education funding.",
+        source: "USAspending - Westat, Inc. award",
+        url: "https://www.usaspending.gov/award/CONT_AWD_0001_9100_EDIES12D0005_9100"
+      },
+      {
+        stat: "FM Talent Source, LLC received a $547,714 Department of Education award in 2018 tied to arts education and teaching-artist staffing, providing historical recipient-partner evidence.",
+        source: "USAspending - FM Talent Source, LLC award",
+        url: "https://www.usaspending.gov/award/CONT_AWD_91990018F0331_9100_EDOII15A0003_9100"
       }
     ],
     chartAssets: [
@@ -395,6 +442,7 @@ export const peopleIndustryArticleRefreshes = {
       source: "U.S. Department of Education, NCES, DOL, BLS, Grants.gov, and official state and local sources",
       url: "https://www.ed.gov/grants-and-programs"
     },
+    // Social-post seed: "In 2011, Westat, Inc. received $9,954,119 from the Department of Education for educator-workforce work. Public education funding has reached staffing intermediaries, not only districts."
     cta: "Run a free scan to turn your education or workforce offer into qualified district, agency, board, provider, and funded-recipient action rows."
   }
 } satisfies Record<string, ResourceArticleRefresh>;

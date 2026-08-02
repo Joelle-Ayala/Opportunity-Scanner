@@ -1,34 +1,19 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
-import { createRequire } from "node:module";
-import { tmpdir } from "node:os";
-import path from "node:path";
 
-const testBuildDir = mkdtempSync(path.join(tmpdir(), "opportunity-scanner-sam-test-"));
-process.on("exit", () => rmSync(testBuildDir, { recursive: true, force: true }));
-
-const compile = spawnSync(
-  process.execPath,
-  [
-    path.join(process.cwd(), "node_modules/typescript/bin/tsc"),
-    "lib/connectors/samGov.ts",
-    "--outDir",
-    testBuildDir,
-    "--module",
-    "commonjs",
-    "--moduleResolution",
-    "node",
-    "--target",
-    "es2022",
-    "--esModuleInterop",
-    "--skipLibCheck"
-  ],
-  { cwd: process.cwd(), encoding: "utf8" }
-);
-assert.equal(compile.status, 0, compile.stderr || compile.stdout || "Unable to compile SAM test target");
-
-const require = createRequire(import.meta.url);
+if (!process.execArgv.includes("--experimental-strip-types")) {
+  const rerun = spawnSync(
+    process.execPath,
+    [
+      "--experimental-strip-types",
+      "--import",
+      "./scripts/register-ts-test-hooks.mjs",
+      process.argv[1]
+    ],
+    { cwd: process.cwd(), encoding: "utf8", stdio: "inherit" }
+  );
+  process.exit(rerun.status ?? 1);
+}
 
 const {
   buildSamQueryPlan,
@@ -36,8 +21,8 @@ const {
   SAM_MAX_REQUESTS,
   SAM_MAX_SEARCH_TERMS,
   searchSamGov
-} = require(path.join(testBuildDir, "connectors/samGov.js"));
-const { ConnectorDiagnostics, runConnector } = require(path.join(testBuildDir, "connectors/runtime.js"));
+} = await import("../lib/connectors/samGov.ts");
+const { ConnectorDiagnostics, runConnector } = await import("../lib/connectors/runtime.ts");
 
 function profile(companyName, lane, laneTerms, publicTerms = laneTerms) {
   return {
@@ -89,11 +74,11 @@ const profiles = {
 for (const [company, regressionProfile] of Object.entries(profiles)) {
   const terms = collectSamSearchTerms(regressionProfile);
   const plan = buildSamQueryPlan(regressionProfile);
-  assert.equal(terms.length, SAM_MAX_SEARCH_TERMS, `${company} should retain four specific terms`);
+  assert.equal(terms.length, SAM_MAX_SEARCH_TERMS, `${company} should retain three prioritized terms`);
   assert.equal(new Set(terms.map((term) => term.toLowerCase().trim())).size, terms.length);
   assert.ok(plan.length <= SAM_MAX_REQUESTS, `${company} exceeded the SAM request cap`);
   assert.equal(plan.filter((entry) => entry.semantics === "active_notice").length, terms.length);
-  assert.equal(plan.filter((entry) => entry.semantics === "award_notice").length, 2);
+  assert.equal(plan.filter((entry) => entry.semantics === "award_notice").length, 1);
 }
 
 assert.ok(collectSamSearchTerms(profiles.Reparel).some((term) => /prosthetic|orthotic|medical equipment/i.test(term)));
@@ -177,13 +162,17 @@ try {
     execute: (context) => searchSamGov(profiles.Reparel, context)
   });
 
-  assert.equal(requests.length, SAM_MAX_REQUESTS);
-  assert.equal(result.run.request_count, SAM_MAX_REQUESTS);
+  assert.equal(
+    requests.length,
+    SAM_MAX_SEARCH_TERMS,
+    "a verified live result should avoid the SAM award fallback"
+  );
+  assert.equal(result.run.request_count, SAM_MAX_SEARCH_TERMS);
   assert.equal(result.run.outcome, "matches_found");
   assert.equal(result.run.partial_failure_count, 0);
-  assert.equal(result.signals.length, 4, "duplicate notice IDs should be removed across query groups");
+  assert.equal(result.signals.length, 3, "live search duplicates should be removed across query groups");
   assert.deepEqual(requests[0].searchParams.getAll("ptype"), ["o", "k", "r", "s", "p"]);
-  assert.deepEqual(requests.at(-1).searchParams.getAll("ptype"), ["a"]);
+  assert.notDeepEqual(requests.at(-1).searchParams.getAll("ptype"), ["a"]);
 
   const solicitation = result.signals.find((signal) => signal.raw_json.noticeId === "active-1");
   assert.equal(solicitation?.source_type, "active_contract");
@@ -197,10 +186,47 @@ try {
   assert.equal(sourcesSought?.revenue_pathway, "sell_to_agency");
   assert.equal(sourcesSought?.source_url, "https://sam.gov/opp/sought-1/view");
 
-  const award = result.signals.find((signal) => signal.raw_json.noticeId === "award-1");
+  const awardRequests = [];
+  globalThis.fetch = async (input) => {
+    const url = new URL(String(input));
+    awardRequests.push(url);
+    const isAwardRequest = url.searchParams.getAll("ptype").includes("a");
+    return new Response(JSON.stringify({
+      opportunitiesData: isAwardRequest
+        ? [{
+            noticeId: "award-1",
+            title: "Orthotic supply award",
+            department: "Department of Veterans Affairs",
+            type: "Award Notice",
+            active: "No",
+            award: {
+              amount: 25000,
+              date: "2025-09-15",
+              awardee: { name: "Example Medical Supplier" }
+            }
+          }]
+        : []
+    }), { status: 200 });
+  };
+  const awardFallback = await runConnector({
+    sourceId: "sam.gov",
+    sourceName: "SAM.gov",
+    enabled: true,
+    credentialRequired: true,
+    credentialConfigured: true,
+    nextTest: "Run the evidence fallback regression.",
+    notes: "Deterministic SAM evidence fallback.",
+    execute: (context) => searchSamGov(profiles.Reparel, context)
+  });
+  assert.equal(awardRequests.length, SAM_MAX_REQUESTS);
+  assert.deepEqual(awardRequests.at(-1).searchParams.getAll("ptype"), ["a"]);
+  const award = awardFallback.signals.find((signal) => signal.raw_json.noticeId === "award-1");
   assert.equal(award?.source_type, "funded_buyer");
   assert.equal(award?.revenue_pathway, "sell_to_grantee");
   assert.equal(award?.actionability, "maybe");
+  assert.equal(award?.record_class, "evidence");
+  assert.equal(award?.award_year, 2025);
+  assert.equal(award?.deadline, "");
 
   const closed = result.signals.find((signal) => signal.raw_json.noticeId === "closed-1");
   assert.equal(closed?.source_type, "procurement_category");
@@ -224,7 +250,14 @@ try {
   assert.equal(zeroMatch.run.outcome, "no_matches");
   assert.equal(zeroMatch.run.request_count, SAM_MAX_REQUESTS);
 
-  globalThis.fetch = async () => new Response(JSON.stringify({ error: "quota" }), { status: 429 });
+  let quotaRequests = 0;
+  globalThis.fetch = async () => {
+    quotaRequests += 1;
+    return new Response(JSON.stringify({ error: "quota" }), {
+      status: 429,
+      headers: { "Retry-After": "60" }
+    });
+  };
   const quotaFailure = await runConnector({
     sourceId: "sam.gov",
     sourceName: "SAM.gov",
@@ -238,7 +271,51 @@ try {
   assert.equal(quotaFailure.run.status, "failing");
   assert.equal(quotaFailure.run.outcome, "failed");
   assert.equal(quotaFailure.run.error_code, "http_error");
+  assert.equal(quotaFailure.run.request_count, 1, "SAM should stop after the first quota response");
+  assert.equal(quotaRequests, 1, "SAM should not spend more query budget after a 429");
+  assert.match(quotaFailure.run.error_message ?? "", /retry after 60 second/i);
   assert.doesNotMatch(quotaFailure.run.error_message ?? "", /test-key|api_key/i);
+
+  let partialRequests = 0;
+  globalThis.fetch = async () => {
+    partialRequests += 1;
+    if (partialRequests === 1) {
+      return new Response(JSON.stringify({ opportunitiesData: [
+        {
+          noticeId: "partial-active-1",
+          title: "Orthotic and prosthetic supplies",
+          solicitationNumber: "VA-PARTIAL-1",
+          fullParentPathName: "Department of Veterans Affairs / Prosthetics Office",
+          responseDeadLine: "2099-08-15",
+          type: "Solicitation",
+          active: "Yes",
+          uiLink: "https://sam.gov/opp/partial-active-1/view"
+        }
+      ] }), { status: 200 });
+    }
+    return new Response(JSON.stringify({ error: "quota" }), {
+      status: 429,
+      headers: { "Retry-After": "120" }
+    });
+  };
+  const partialQuota = await runConnector({
+    sourceId: "sam.gov",
+    sourceName: "SAM.gov",
+    enabled: true,
+    credentialRequired: true,
+    credentialConfigured: true,
+    nextTest: "Preserve usable results before quota exhaustion.",
+    notes: "Partial quota regression.",
+    execute: (context) => searchSamGov(profiles.Reparel, context)
+  });
+  assert.equal(partialQuota.run.status, "active");
+  assert.equal(partialQuota.run.outcome, "matches_found");
+  assert.equal(partialQuota.run.request_count, 2);
+  assert.equal(partialQuota.run.partial_failure_count, 1);
+  assert.equal(partialQuota.signals.length, 1);
+  assert.equal(partialQuota.signals[0].record_class, "current");
+  assert.equal(partialQuota.signals[0].deadline, "2099-08-15");
+  assert.equal(partialRequests, 2, "SAM should stop immediately after a partial 429");
 
   const abortController = new AbortController();
   let cancellationRequests = 0;
@@ -254,10 +331,10 @@ try {
   });
   assert.equal(cancellationRequests, 1);
 
-  console.log("PASS SAM query plan: capped at six grouped requests with normalized term deduplication");
+  console.log("PASS SAM query plan: live-first and capped at four grouped requests with normalized term deduplication");
   console.log("PASS SAM regressions: Reparel, Jammcard, and SchoolGig retain industry-specific terms");
   console.log("PASS SAM mapping: active notices, sources sought, awards, URLs, deadlines, and contacts remain distinct");
-  console.log("PASS SAM runtime: truthful zero matches, quota failures, and cancellation remain distinct");
+  console.log("PASS SAM runtime: 429 circuit breaking preserves partial results and cancellation remains distinct");
 } finally {
   globalThis.fetch = originalFetch;
   if (originalKey === undefined) delete process.env.SAM_API_KEY;

@@ -1,4 +1,4 @@
-import { CompanyProfile, OpportunitySignal } from "../types";
+import type { CompanyProfile, OpportunitySignal } from "../types";
 import {
   clampScore,
   evidenceScore,
@@ -11,6 +11,7 @@ import {
 import {
   connectorShouldStop,
   fetchConnectorJson,
+  isConnectorRateLimitError,
   type ConnectorExecutionContext
 } from "./runtime";
 
@@ -53,8 +54,8 @@ type SamOpportunity = {
 const samEndpoint = "https://api.sam.gov/opportunities/v2/search";
 const activeProcurementTypes = ["o", "k", "r", "s", "p"];
 const awardProcurementTypes = ["a"];
-export const SAM_MAX_SEARCH_TERMS = 4;
-export const SAM_MAX_AWARD_TERMS = 2;
+export const SAM_MAX_SEARCH_TERMS = 3;
+export const SAM_MAX_AWARD_TERMS = 1;
 export const SAM_MAX_REQUESTS = SAM_MAX_SEARCH_TERMS + SAM_MAX_AWARD_TERMS;
 const genericSamTerms = new Set([
   "apply",
@@ -322,14 +323,18 @@ function titleFor(item: SamOpportunity, lane: string): string {
 async function searchSam(
   query: SamQueryPlanEntry,
   context: ConnectorExecutionContext
-): Promise<SamOpportunity[]> {
+): Promise<{
+  opportunities: SamOpportunity[];
+  rateLimited: boolean;
+  retryAfterMs?: number;
+}> {
   const apiKey = process.env.SAM_API_KEY;
   if (!apiKey) {
-    return [];
+    return { opportunities: [], rateLimited: false };
   }
 
   if (connectorShouldStop(context)) {
-    return [];
+    return { opportunities: [], rateLimited: false };
   }
 
   const params = new URLSearchParams({
@@ -352,11 +357,21 @@ async function searchSam(
       {},
       query.term
     );
-    return data.opportunitiesData ?? [];
-  } catch {
+    return {
+      opportunities: data.opportunitiesData ?? [],
+      rateLimited: false
+    };
+  } catch (error) {
+    if (isConnectorRateLimitError(error)) {
+      return {
+        opportunities: [],
+        rateLimited: true,
+        retryAfterMs: error.retryAfterMs
+      };
+    }
     // Keep other query groups available and let runtime diagnostics decide
     // whether this was a partial or total connector failure.
-    return [];
+    return { opportunities: [], rateLimited: false };
   }
 }
 
@@ -375,9 +390,15 @@ export async function searchSamGov(
 
   for (const query of queryPlan) {
     if (connectorShouldStop(context)) break;
-    const opportunities = await searchSam(query, context);
+    if (
+      query.semantics === "award_notice" &&
+      signals.some((signal) => signal.record_class === "current")
+    ) {
+      break;
+    }
+    const result = await searchSam(query, context);
 
-    for (const item of opportunities) {
+    for (const item of result.opportunities) {
       const id = item.noticeId || item.solicitationNumber || `${query.term}-${item.title}`;
       if (!id || seen.has(id)) {
         continue;
@@ -487,6 +508,12 @@ export async function searchSamGov(
             b.relevance_score + b.confidence_score - (a.relevance_score + a.confidence_score)
         );
       }
+    }
+
+    // A SAM quota response applies to the connector, not just one term. Stop
+    // spending this scan's budget and preserve any signals already collected.
+    if (result.rateLimited) {
+      break;
     }
   }
 

@@ -73,14 +73,28 @@ export const DEFAULT_CONNECTOR_TIMEOUT_MS = 35_000;
 export const DEFAULT_CONNECTOR_REQUEST_TIMEOUT_MS = 15_000;
 export const DEFAULT_CONNECTOR_CLEANUP_GRACE_MS = 250;
 
-class ConnectorRequestError extends Error {
+export class ConnectorRequestError extends Error {
   code: ConnectorErrorCode;
+  status?: number;
+  retryAfterMs?: number;
 
-  constructor(code: ConnectorErrorCode, message: string) {
+  constructor(
+    code: ConnectorErrorCode,
+    message: string,
+    options: { status?: number; retryAfterMs?: number } = {}
+  ) {
     super(message);
     this.name = "ConnectorRequestError";
     this.code = code;
+    this.status = options.status;
+    this.retryAfterMs = options.retryAfterMs;
   }
+}
+
+export function isConnectorRateLimitError(
+  error: unknown
+): error is ConnectorRequestError & { status: 429 } {
+  return error instanceof ConnectorRequestError && error.status === 429;
 }
 
 export class ConnectorDiagnostics {
@@ -146,6 +160,24 @@ function remainingDeadlineMs(deadlineAtMs: number | undefined, now: () => number
 
 function boundedTimeoutMs(configuredTimeoutMs: number, remainingMs: number): number {
   return Math.max(0, Math.min(configuredTimeoutMs, remainingMs));
+}
+
+function parseRetryAfterMs(value: string | null, now: () => number): number | undefined {
+  if (!value?.trim()) {
+    return undefined;
+  }
+
+  const seconds = Number(value);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.ceil(seconds * 1_000);
+  }
+
+  const retryAtMs = Date.parse(value);
+  if (!Number.isFinite(retryAtMs)) {
+    return undefined;
+  }
+
+  return Math.max(0, retryAtMs - now());
 }
 
 async function waitForExecutionCleanup(
@@ -245,9 +277,18 @@ export async function fetchConnectorJson<T>(
   try {
     const response = await fetch(input, { ...init, signal: controller.signal });
     if (!response.ok) {
+      const retryAfterMs =
+        response.status === 429
+          ? parseRetryAfterMs(response.headers.get("retry-after"), now)
+          : undefined;
+      const retryMessage =
+        retryAfterMs === undefined
+          ? ""
+          : ` Retry after ${Math.max(1, Math.ceil(retryAfterMs / 1_000))} second(s).`;
       throw new ConnectorRequestError(
         "http_error",
-        `${sourceName} request failed with HTTP ${response.status}.`
+        `${sourceName} request failed with HTTP ${response.status}.${retryMessage}`,
+        { status: response.status, retryAfterMs }
       );
     }
     const data = (await response.json()) as T;
@@ -262,6 +303,9 @@ export async function fetchConnectorJson<T>(
       ? { code: error.code, message: error.message }
       : { code: "network_error" as const, message: `${sourceName} request failed.` };
     context.diagnostics.recordFailure(detail.code, detail.message);
+    if (error instanceof ConnectorRequestError) {
+      throw error;
+    }
     throw new ConnectorRequestError(detail.code, detail.message);
   } finally {
     clearTimeout(timeout);
