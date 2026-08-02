@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { CTASection } from "@/components/marketing";
 import { ArticleAnswer } from "@/components/resources/article-answer";
+import { ArticleAuthorBio } from "@/components/resources/article-author-bio";
 import { ArticleBreadcrumbs } from "@/components/resources/article-breadcrumbs";
 import { ArticleCharts } from "@/components/resources/article-charts";
 import { ArticleMetadata } from "@/components/resources/article-metadata";
@@ -178,6 +179,8 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
               Scan Your Company Website
             </a>
           </div>
+
+          <ArticleAuthorBio article={article} />
 
           <div className="mt-12">
             <RelatedReads articles={relatedArticles} />

@@ -17,6 +17,7 @@ export function ArticleStructuredData({ article, siteUrl }: { article: ResourceA
     },
     publisher: {
       "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
       name: "Opportunity Scanner",
       url: siteUrl
     },
@@ -24,7 +25,8 @@ export function ArticleStructuredData({ article, siteUrl }: { article: ResourceA
     ...(article.author
       ? {
           author: {
-            "@type": "Person",
+            "@type": article.author.type || "Person",
+            ...(article.author.id ? { "@id": article.author.id } : {}),
             name: article.author.name,
             ...(article.author.url ? { url: article.author.url } : {})
           }

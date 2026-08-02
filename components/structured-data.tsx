@@ -1,26 +1,39 @@
-import { siteUrl } from "@/lib/marketingContent";
+import { founderStory } from "@/lib/founderStory";
+import { siteUrl } from "@/lib/site";
 
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": `${siteUrl}/#organization`,
   name: "Opportunity Scanner",
   alternateName: "Opportunity Systems Opportunity Scanner",
   url: siteUrl,
   logo: `${siteUrl}/opportunity-scanner-logo.svg`,
   description:
-    "Opportunity Scanner turns a company website into sourced public-sector opportunity intelligence, including funding, procurement, funded buyer, policy, workforce, reimbursement, and money-flow signals."
+    "Opportunity Scanner turns a company website into sourced public-sector opportunity intelligence, including funding, procurement, funded buyer, policy, workforce, reimbursement, and money-flow signals.",
+  founder: { "@id": founderStory.identity.schemaId }
+};
+
+const founderSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": founderStory.identity.schemaId,
+  name: founderStory.identity.name,
+  jobTitle: founderStory.identity.title,
+  url: `${siteUrl}${founderStory.identity.aboutPath}`,
+  worksFor: { "@id": `${siteUrl}/#organization` }
 };
 
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": `${siteUrl}/#website`,
   name: "Opportunity Scanner",
   url: siteUrl,
   description:
     "Find public-sector revenue opportunities from your company website and translate them into targets, contact paths, revenue motions, and next actions.",
   publisher: {
-    "@type": "Organization",
-    name: "Opportunity Scanner"
+    "@id": `${siteUrl}/#organization`
   }
 };
 
@@ -46,7 +59,7 @@ export function StructuredData() {
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify([organizationSchema, websiteSchema, softwareSchema])
+        __html: JSON.stringify([organizationSchema, founderSchema, websiteSchema, softwareSchema])
       }}
     />
   );

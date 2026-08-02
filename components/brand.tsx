@@ -7,6 +7,7 @@ const navGroups = [
     links: [
       ["Overview", "/"],
       ["How It Works", "/how-it-works"],
+      ["Why We Built It", "/about"],
       ["Public-Sector Revenue", "/public-sector-revenue"],
       ["Pricing", "/pricing"],
       ["Customer Dashboard", "/dashboard"]

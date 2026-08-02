@@ -1,4 +1,7 @@
 import { resourceArticleRefreshes } from "./resourceArticleRefreshes";
+import { siteUrl } from "./site";
+
+export { siteUrl } from "./site";
 
 export type ResourceArticle = {
   slug: string;
@@ -9,7 +12,9 @@ export type ResourceArticle = {
   primaryKeyword: string;
   funnelStage: string;
   author?: {
+    id?: string;
     name: string;
+    type?: "Person" | "Organization";
     url?: string;
   };
   publishedAt?: string;
@@ -128,8 +133,6 @@ export type SolutionPage = {
 };
 
 export type RelatedResourceSlugs = readonly [string, string, string];
-
-export const siteUrl = "https://www.opportunityscanner.ai";
 
 export const revenueOutcomes = [
   {
@@ -2261,7 +2264,9 @@ export const resourceArticles: ResourceArticle[] = baseResourceArticles.map((bas
   return {
     ...article,
     author: article.author || {
+      id: `${siteUrl}/#research-team`,
       name: "Opportunity Scanner Research Team",
+      type: "Organization",
       url: `${siteUrl}/about`
     },
     publishedAt: article.publishedAt || "2026-07-11",

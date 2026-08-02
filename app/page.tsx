@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
+import { FounderNote } from "@/components/founder-note";
 import { SectionIntro } from "@/components/marketing";
 import { ScanSubmitButton } from "@/components/scan-submit-button";
 import { industryPages } from "@/lib/marketingContent";
@@ -396,6 +397,8 @@ export default async function HomePage({ searchParams }: { searchParams?: HomeSe
           </div>
         </div>
       </section>
+
+      <FounderNote />
 
       <section className="border-b border-line bg-field">
         <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">

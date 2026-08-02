@@ -1,43 +1,56 @@
 import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "@/components/brand";
+import { FounderNote } from "@/components/founder-note";
+import { founderStory } from "@/lib/founderStory";
 
-const title = "About | Opportunity Scanner";
-const description =
-  "Why Joelle Ayala founded Opportunity Scanner to make public-sector opportunity research more useful and actionable.";
+const { about, identity } = founderStory;
 
 export const metadata: Metadata = {
-  title: "About",
-  description,
-  alternates: { canonical: "/about" },
+  title: { absolute: about.metadata.title },
+  description: about.metadata.description,
+  alternates: { canonical: about.metadata.canonicalPath },
   openGraph: {
-    title,
-    description,
-    url: "/about",
+    title: about.metadata.openGraphTitle,
+    description: about.metadata.openGraphDescription,
+    url: about.metadata.canonicalPath,
     siteName: "Opportunity Scanner",
     type: "website",
-    images: [{ url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png", width: 1200, height: 630, alt: "Opportunity Scanner public-sector revenue intelligence" }]
+    images: [
+      {
+        url: "https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png",
+        width: 1200,
+        height: 630,
+        alt: "Opportunity Scanner public-sector revenue intelligence"
+      }
+    ]
   },
-  twitter: { card: "summary_large_image", title, description, images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"] }
+  twitter: {
+    card: "summary_large_image",
+    title: about.metadata.openGraphTitle,
+    description: about.metadata.openGraphDescription,
+    images: ["https://www.opportunityscanner.ai/opportunity-scanner-social-banner.png"]
+  }
 };
 
-const principles = [
-  [
-    "Evidence before excitement",
-    "A useful opportunity starts with a public source. We show the record behind a signal so customers can verify it and do their own diligence."
-  ],
-  [
-    "Actions, not data dumps",
-    "Research should lead somewhere: a buyer to understand, a program office to contact, a registration path to follow, or a clear reason to monitor."
-  ],
-  [
-    "Honest limits",
-    "Public data can be incomplete, delayed, or changed at its source. Opportunity Scanner is a research aid, not a promise of eligibility, funding, or an award."
-  ]
-];
+function jsonLd(value: unknown) {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
 
 export default function AboutPage() {
+  const aboutPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "@id": "https://www.opportunityscanner.ai/about#page",
+    url: "https://www.opportunityscanner.ai/about",
+    name: about.metadata.title,
+    description: about.metadata.description,
+    mainEntity: { "@id": identity.schemaId },
+    isPartOf: { "@id": "https://www.opportunityscanner.ai/#website" }
+  };
+
   return (
     <main className="min-h-screen bg-field">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(aboutPageSchema) }} />
       <SiteHeader
         rightSlot={
           <a href="/#scan" className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
@@ -47,59 +60,69 @@ export default function AboutPage() {
       />
 
       <section className="border-b border-line bg-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1.15fr_.85fr] lg:py-20">
-          <div className="self-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">About Opportunity Scanner</p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">
-              Public opportunity research should lead to a practical next move.
-            </h1>
-            <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">
-              Opportunity Scanner turns a company website into sourced signals across procurement,
-              funding, policy, workforce, reimbursement, and public money flows, then organizes
-              those signals around who to pursue, why they matter, and what to do next.
-            </p>
+        <div className="mx-auto max-w-7xl px-6 py-14 lg:py-20">
+          <p className="text-xs font-semibold uppercase text-accent">{about.hero.eyebrow}</p>
+          <h1 className="mt-4 max-w-4xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+            {about.hero.heading}
+          </h1>
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">{about.hero.introduction}</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a href="/#scan" className="inline-flex min-h-11 items-center rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+              Run a Free Scan
+            </a>
+            <a href="/examples" className="inline-flex min-h-11 items-center rounded-md border border-line bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:border-accent">
+              See Sample Reports
+            </a>
           </div>
-
-          <aside className="border-l-4 border-accent bg-field px-6 py-7" aria-labelledby="founder-heading">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-ink text-sm font-bold text-white" aria-hidden="true">
-              JA
-            </div>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-accent">Founder</p>
-            <h2 id="founder-heading" className="mt-2 text-2xl font-semibold text-ink">Joelle Ayala</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-700">
-              Joelle founded Opportunity Scanner around a simple problem: public-sector demand and
-              funding are visible in public records, but finding the relevant signal and turning it
-              into a business-development action takes too much disconnected research. She is
-              building the product to make that path clearer for companies exploring public-sector revenue.
-            </p>
-          </aside>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-14">
-        <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">How we build trust</p>
-          <h2 className="mt-3 text-3xl font-semibold text-ink">Useful intelligence stays close to the source.</h2>
-        </div>
-        <div className="mt-8 grid gap-8 md:grid-cols-3">
-          {principles.map(([title, copy], index) => (
-            <article key={title} className="border-t-2 border-line pt-5">
-              <p className="text-xs font-semibold text-accent">0{index + 1}</p>
-              <h3 className="mt-3 text-lg font-semibold text-ink">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-600">{copy}</p>
-            </article>
-          ))}
+      <FounderNote showLink={false} />
+
+      <section className="border-b border-line bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
+          <div className="grid gap-x-14 gap-y-12 lg:grid-cols-2">
+            {about.sections.map((section, index) => (
+              <section key={section.id} aria-labelledby={`${section.id}-heading`} className="border-t-2 border-line pt-6">
+                <p className="text-xs font-semibold text-ember">0{index + 1}</p>
+                <h2 id={`${section.id}-heading`} className="mt-3 text-2xl font-semibold leading-tight text-ink">
+                  {section.heading}
+                </h2>
+                <div className="mt-4 grid gap-4 text-base leading-8 text-slate-700">
+                  {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="border-y border-line bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-6 py-10 sm:flex-row sm:items-center">
-          <div>
-            <h2 className="text-2xl font-semibold text-ink">See what the scanner finds for your company.</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Start with a free scan and review the sources behind each result.</p>
+      <section className="border-b border-line bg-field">
+        <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase text-accent">The operating standard</p>
+            <h2 className="mt-3 text-3xl font-semibold text-ink">Useful intelligence stays close to its evidence.</h2>
           </div>
-          <a href="/#scan" className="shrink-0 rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
-            Run Free Scan
+          <div className="mt-8 grid border-y border-line md:grid-cols-3 md:divide-x md:divide-line">
+            {about.principles.map((principle, index) => (
+              <article key={principle.title} className="border-b border-line py-6 last:border-b-0 md:border-b-0 md:px-6 md:first:pl-0 md:last:pr-0">
+                <p className="text-xs font-semibold text-signal">0{index + 1}</p>
+                <h3 className="mt-3 text-lg font-semibold text-ink">{principle.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{principle.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-ink text-white">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-7 px-6 py-12 md:flex-row md:items-center">
+          <div className="max-w-3xl">
+            <h2 className="text-2xl font-semibold">Find the public-sector paths around your current offer.</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-300">{about.closing}</p>
+          </div>
+          <a href={about.ctaPath} className="inline-flex min-h-11 shrink-0 items-center rounded-md bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:bg-mist">
+            {about.ctaLabel}
           </a>
         </div>
       </section>
