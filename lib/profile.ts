@@ -669,9 +669,9 @@ async function generateWithOpenAi(
     gatewayToken ? {
       endpoint: "https://ai-gateway.vercel.sh/v1/chat/completions",
       credential: gatewayToken,
-      model: process.env.AI_GATEWAY_PROFILE_MODEL || "google/gemini-3.1-flash-lite",
+      model: process.env.AI_GATEWAY_PROFILE_MODEL || "openai/gpt-4.1-mini",
       provider: "vercel-ai-gateway",
-      responseFormat: false
+      responseFormat: true
     } : null,
     process.env.OPENAI_API_KEY ? {
       endpoint: "https://api.openai.com/v1/chat/completions",
