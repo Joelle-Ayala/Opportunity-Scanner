@@ -662,8 +662,22 @@ async function generateWithOpenAi(
   rawText: string,
   options: ProfileGenerationOptions
 ): Promise<CompanyProfile | null> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
+  const gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
+  const providers = [
+    gatewayToken ? {
+      endpoint: "https://ai-gateway.vercel.sh/v1/chat/completions",
+      credential: gatewayToken,
+      model: process.env.AI_GATEWAY_PROFILE_MODEL || "google/gemini-3.1-flash-lite",
+      provider: "vercel-ai-gateway"
+    } : null,
+    process.env.OPENAI_API_KEY ? {
+      endpoint: "https://api.openai.com/v1/chat/completions",
+      credential: process.env.OPENAI_API_KEY,
+      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+      provider: "openai"
+    } : null
+  ].filter((provider): provider is NonNullable<typeof provider> => Boolean(provider));
+  if (providers.length === 0) {
     return null;
   }
 
@@ -691,10 +705,8 @@ async function generateWithOpenAi(
     options.signal?.addEventListener("abort", abortFromParent, { once: true });
   }
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
-
   try {
-    const requestBody = JSON.stringify({
+    const requestFor = (model: string) => JSON.stringify({
         model,
         response_format: { type: "json_object" },
         messages: [
@@ -760,56 +772,61 @@ async function generateWithOpenAi(
           }
         ]
     });
-    let response: Response | null = null;
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json"
-        },
-        body: requestBody,
-        signal: controller.signal
-      });
-
-      const retryable = response.status === 429 || response.status >= 500;
-      if (response.ok || !retryable || attempt === 1) break;
-
-      const retryAfterSeconds = Number.parseFloat(response.headers.get("retry-after") ?? "");
-      const retryDelayMs = Number.isFinite(retryAfterSeconds)
-        ? Math.min(1_500, Math.max(0, retryAfterSeconds * 1_000))
-        : 400;
-      if (retryDelayMs > 0) {
-        await new Promise<void>((resolve, reject) => {
-          const retryTimer = setTimeout(resolve, retryDelayMs);
-          controller.signal.addEventListener("abort", () => {
-            clearTimeout(retryTimer);
-            reject(new Error("Company profile retry aborted."));
-          }, { once: true });
+    for (const provider of providers) {
+      let response: Response | null = null;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        response = await fetch(provider.endpoint, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${provider.credential}`,
+            "Content-Type": "application/json"
+          },
+          body: requestFor(provider.model),
+          signal: controller.signal
         });
+
+        const retryable = response.status === 429 || response.status >= 500;
+        if (response.ok || !retryable || attempt === 1) break;
+
+        const retryAfterSeconds = Number.parseFloat(response.headers.get("retry-after") ?? "");
+        const retryDelayMs = Number.isFinite(retryAfterSeconds)
+          ? Math.min(1_500, Math.max(0, retryAfterSeconds * 1_000))
+          : 400;
+        if (retryDelayMs > 0) {
+          await new Promise<void>((resolve, reject) => {
+            const retryTimer = setTimeout(resolve, retryDelayMs);
+            controller.signal.addEventListener("abort", () => {
+              clearTimeout(retryTimer);
+              reject(new Error("Company profile retry aborted."));
+            }, { once: true });
+          });
+        }
       }
-    }
 
-    if (!response?.ok) {
-      console.warn("OpenAI company profile request failed", {
-        status: response?.status ?? 0,
-        model
-      });
-      return null;
-    }
+      if (!response?.ok) {
+        console.warn("Company profile model request failed", {
+          status: response?.status ?? 0,
+          model: provider.model,
+          provider: provider.provider
+        });
+        continue;
+      }
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) {
-      return null;
-    }
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) continue;
 
-    const parsed: unknown = JSON.parse(content);
-    if (!isCompanyProfilePayload(parsed)) {
-      console.warn("OpenAI company profile response failed schema validation", { model });
-      return null;
+      const parsed: unknown = JSON.parse(content);
+      if (!isCompanyProfilePayload(parsed)) {
+        console.warn("Company profile model response failed schema validation", {
+          model: provider.model,
+          provider: provider.provider
+        });
+        continue;
+      }
+      return parsed;
     }
-    return parsed;
+    return null;
   } catch (error) {
     if (controller.signal.aborted) {
       throw new Error(`Company profile generation timed out after ${timeoutMs}ms.`);

@@ -5,6 +5,8 @@ import type { ScanInput } from "../lib/types.ts";
 
 const originalApiKey = process.env.OPENAI_API_KEY;
 const originalModel = process.env.OPENAI_MODEL;
+const originalGatewayKey = process.env.AI_GATEWAY_API_KEY;
+const originalOidcToken = process.env.VERCEL_OIDC_TOKEN;
 
 function richInput(overrides: Partial<ScanInput>): ScanInput {
   return {
@@ -21,6 +23,8 @@ function richInput(overrides: Partial<ScanInput>): ScanInput {
 
 test.beforeEach(() => {
   delete process.env.OPENAI_API_KEY;
+  delete process.env.AI_GATEWAY_API_KEY;
+  delete process.env.VERCEL_OIDC_TOKEN;
 });
 
 test.after(() => {
@@ -28,6 +32,10 @@ test.after(() => {
   else process.env.OPENAI_API_KEY = originalApiKey;
   if (originalModel === undefined) delete process.env.OPENAI_MODEL;
   else process.env.OPENAI_MODEL = originalModel;
+  if (originalGatewayKey === undefined) delete process.env.AI_GATEWAY_API_KEY;
+  else process.env.AI_GATEWAY_API_KEY = originalGatewayKey;
+  if (originalOidcToken === undefined) delete process.env.VERCEL_OIDC_TOKEN;
+  else process.env.VERCEL_OIDC_TOKEN = originalOidcToken;
 });
 
 test("detailed vertical scan inputs remain held when AI profiling is unavailable", async () => {
@@ -165,8 +173,8 @@ test("non-OK OpenAI responses log only status and model", async () => {
 
   assert.deepEqual(warnings, [
     [
-      "OpenAI company profile request failed",
-      { status: 429, model: "test-profile-model" }
+      "Company profile model request failed",
+      { status: 429, model: "test-profile-model", provider: "openai" }
     ]
   ]);
   assert.equal(requestCount, 2);
@@ -192,6 +200,48 @@ test("malformed OpenAI profile output falls back into review", async () => {
     assert.match(profile.report_guidance.join(" "), /hold results for review/i);
   } finally {
     globalThis.fetch = originalFetch;
+    delete process.env.OPENAI_API_KEY;
+  }
+});
+
+test("Vercel OIDC uses AI Gateway before provider-specific credentials", async () => {
+  const originalFetch = globalThis.fetch;
+  process.env.VERCEL_OIDC_TOKEN = "test-oidc-token";
+  process.env.OPENAI_API_KEY = "test-openai-key";
+  let requestedUrl = "";
+  globalThis.fetch = async (input) => {
+    requestedUrl = String(input);
+    return new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({
+        company_name: "Gateway Example",
+        website: "https://example.com",
+        summary: "Gateway Example provides recruiting software.",
+        products_services: ["recruiting software"],
+        target_customers: ["education employers"],
+        industries: ["education technology"],
+        geographies: ["United States"],
+        keywords: ["recruiting", "education"],
+        public_sector_search_terms: ["teacher recruiting software"],
+        negative_keywords: ["jobs"],
+        opportunity_lanes: ["Government recruiting technology"],
+        lane_search_terms: { "Government recruiting technology": ["teacher recruiting software"] },
+        selected_playbooks: [],
+        report_guidance: [],
+        profile_confidence_score: 80
+      }) } }]
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+  };
+
+  try {
+    const profile = await generateCompanyProfile(
+      { companyUrl: "https://example.com", reportType: "quick", opportunityFocus: "Find public education buyers." },
+      "Gateway Example provides recruiting software for education employers."
+    );
+    assert.equal(requestedUrl, "https://ai-gateway.vercel.sh/v1/chat/completions");
+    assert.equal(profile.company_name, "Gateway Example");
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.VERCEL_OIDC_TOKEN;
     delete process.env.OPENAI_API_KEY;
   }
 });
