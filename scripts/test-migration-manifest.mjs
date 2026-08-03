@@ -247,7 +247,8 @@ const expectedOrder = [
   "db/subscription-activation-recovery-hardening.sql",
   "db/customer-demo-entitlements.sql",
   "db/opportunity-record-classification.sql",
-  "db/subscription-activation-recovery-uuid-claim-fix.sql"
+  "db/subscription-activation-recovery-uuid-claim-fix.sql",
+  "db/subscription-activation-recovery-conflict-fix.sql"
 ];
 
 const requiredDependencies = {
@@ -351,6 +352,9 @@ const requiredDependencies = {
   "db/subscription-activation-recovery-uuid-claim-fix.sql": [
     "db/subscription-activation-recovery-hardening.sql",
     "db/opportunity-record-classification.sql"
+  ],
+  "db/subscription-activation-recovery-conflict-fix.sql": [
+    "db/subscription-activation-recovery-uuid-claim-fix.sql"
   ]
 };
 

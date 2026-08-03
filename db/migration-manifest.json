@@ -295,6 +295,14 @@
       "prerequisites": ["v0033", "v0035"],
       "sha256": "c9e6e035fb2845c3eee79fdfbd42ea3bf513c1cbef75b2991d0f6092c4707589",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0037",
+      "file": "db/subscription-activation-recovery-conflict-fix.sql",
+      "description": "Remove PL/pgSQL output-column ambiguity from subscription recovery reminder conflict handling.",
+      "prerequisites": ["v0036"],
+      "sha256": "ebdcdc1e78bf8e64442d47408c78da92a7ff854fc6b98bed6000eed2bc8a792f",
+      "requiredInProduction": true
     }
   ]
 }

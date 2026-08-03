@@ -292,10 +292,11 @@ assert.deepEqual(outboundBody.to, ["buyer@example.com"]);
 assert.match(outboundBody.subject, /Finish setting up/);
 assert.match(outboundBody.text, /dashboard%2Fonboarding/);
 
-const [migration, hardeningMigration, uuidClaimFixMigration, route, publicHealth, cron, handlers, handoff] = await Promise.all([
+const [migration, hardeningMigration, uuidClaimFixMigration, conflictFixMigration, route, publicHealth, cron, handlers, handoff] = await Promise.all([
   readFile(new URL("../db/subscription-activation-recovery.sql", import.meta.url), "utf8"),
   readFile(new URL("../db/subscription-activation-recovery-hardening.sql", import.meta.url), "utf8"),
   readFile(new URL("../db/subscription-activation-recovery-uuid-claim-fix.sql", import.meta.url), "utf8"),
+  readFile(new URL("../db/subscription-activation-recovery-conflict-fix.sql", import.meta.url), "utf8"),
   readFile(new URL("../app/api/health/subscriptions/route.ts", import.meta.url), "utf8"),
   readFile(new URL("../app/api/health/route.ts", import.meta.url), "utf8"),
   readFile(new URL("../app/api/cron/monitoring/route.ts", import.meta.url), "utf8"),
@@ -341,6 +342,10 @@ assert.match(uuidClaimFixMigration, /pg_get_functiondef/);
 assert.match(uuidClaimFixMigration, /\(array_agg\(candidate\.scan_id\)\)\[1\]/);
 assert.match(uuidClaimFixMigration, /position\('min\(candidate\.scan_id\)' in v_definition\)/);
 assert.match(uuidClaimFixMigration, /grant execute on function public\.claim_due_subscription_activation_recoveries\(integer\)[\s\S]*to service_role/);
+assert.match(conflictFixMigration, /pg_get_functiondef/);
+assert.match(conflictFixMigration, /'on conflict \(recovery_id, reminder_sequence\) do nothing'/);
+assert.match(conflictFixMigration, /'on conflict do nothing'/);
+assert.match(conflictFixMigration, /grant execute on function public\.claim_due_subscription_activation_recoveries\(integer\)[\s\S]*to service_role/);
 assert.match(handlers, /SUBSCRIPTION_ACTIVATION_RETRY_REQUIRED/);
 assert.match(handoff, /registerActivation/);
 
