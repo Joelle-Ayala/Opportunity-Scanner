@@ -40,18 +40,18 @@ export function TrackingConsentBanner() {
   };
 
   return (
-    <aside aria-label="Analytics preferences" className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-3xl rounded-lg border border-line bg-white p-4 shadow-2xl sm:flex sm:items-center sm:justify-between sm:gap-5 sm:p-5">
+    <aside aria-label="Analytics preferences" className="fixed inset-x-3 bottom-3 z-[100] mx-auto max-w-4xl rounded-lg border border-line bg-white p-3 shadow-2xl sm:flex sm:items-center sm:justify-between sm:gap-5 sm:px-4 sm:py-3">
       <div>
         <p className="text-sm font-semibold text-ink">Your privacy choices</p>
-        <p className="mt-1 text-sm leading-6 text-slate-600">
-          We use optional analytics to understand what leads to useful reports and purchases. You can keep only the cookies needed to run the site. <a href="/privacy" className="font-semibold text-accent hover:underline">Privacy notice</a>
+        <p className="mt-1 text-xs leading-5 text-slate-600 sm:text-sm">
+          Optional analytics help us improve reports and purchases. Keep only necessary cookies or allow analytics. <a href="/privacy" className="font-semibold text-accent hover:underline">Privacy notice</a>
         </p>
       </div>
-      <div className="mt-4 flex shrink-0 flex-wrap gap-2 sm:mt-0">
-        <button type="button" onClick={() => choose("necessary")} className="rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:border-accent hover:text-accent">
+      <div className="mt-3 grid shrink-0 grid-cols-2 gap-2 sm:mt-0">
+        <button type="button" onClick={() => choose("necessary")} className="min-h-10 whitespace-nowrap rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent sm:text-sm">
           Necessary only
         </button>
-        <button type="button" onClick={() => choose("analytics")} className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+        <button type="button" onClick={() => choose("analytics")} className="min-h-10 whitespace-nowrap rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871] sm:text-sm">
           Allow analytics
         </button>
       </div>
