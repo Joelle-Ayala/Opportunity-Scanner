@@ -243,7 +243,7 @@ test("Vercel OIDC uses AI Gateway before provider-specific credentials", async (
       "Gateway Example provides recruiting software for education employers."
     );
     assert.equal(requestedUrl, "https://ai-gateway.vercel.sh/v1/chat/completions");
-    assert.deepEqual(requestBody.response_format, { type: "json_object" });
+    assert.equal(requestBody.response_format, undefined);
     assert.equal(profile.company_name, "Gateway Example");
   } finally {
     globalThis.fetch = originalFetch;
