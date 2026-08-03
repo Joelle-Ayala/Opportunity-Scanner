@@ -155,10 +155,13 @@ const crawlHtml = `
   <html>
     <head><title>Acme Public Systems</title></head>
     <body>
+      <nav>Account navigation Shopping cart</nav>
+      <div class="cookie-consent">Cookie preferences</div>
       ${"Company products, services, customers, and public-sector capabilities. ".repeat(4)}
       <a href="/about">About</a>
       <a href="https://linkedin.com/company/acme-public">LinkedIn</a>
       <a href="https://linkedin.com/in/acme-founder">Founder</a>
+      <footer>Privacy preferences and account links</footer>
     </body>
   </html>
 `;
@@ -179,6 +182,8 @@ const scraped = await scrapeCompanyWebsite(PAGE_URL, {
         });
   }
 });
+
+assert.doesNotMatch(scraped.rawText, /cookie preferences|shopping cart|account navigation/i);
 
 assert.equal(scraped.pages.length, 1);
 assert.deepEqual(scraped.pages[0]?.metadata?.company_profile_urls, [

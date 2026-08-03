@@ -456,6 +456,32 @@ export async function loadDashboardReports(
   if (scans.length === 0) return [];
   const pageScanIds = scans.map((scan) => scan.id);
 
+  const readinessByScan = new Map<string, { ready: boolean; signalCount: number }>();
+  const completedScans = scans.filter((scan) => scan.status === "completed");
+  if (completedScans.length > 0) {
+    const [{ getCompletedReportReadiness }, { getScan }] = await Promise.all([
+      import("../reportReadiness"),
+      import("../storage")
+    ]);
+    await Promise.all(completedScans.map(async (scan) => {
+      try {
+        const fullScan = await getScan(scan.id);
+        if (!fullScan) {
+          readinessByScan.set(scan.id, { ready: false, signalCount: 0 });
+          return;
+        }
+        const readiness = await getCompletedReportReadiness(fullScan);
+        readinessByScan.set(scan.id, {
+          ready: readiness.ready,
+          signalCount: readiness.ready ? readiness.signals.length : 0
+        });
+      } catch (error) {
+        console.error("dashboard.report_readiness_unavailable", { scanId: scan.id, error });
+        readinessByScan.set(scan.id, { ready: false, signalCount: 0 });
+      }
+    }));
+  }
+
   const [reports, scanVersions, grantOwnership, scanOpportunities] = await Promise.all([
     dashboardSelect<ReportRow>("reports", {
       select: "id,scan_id,report_pdf_url,created_at",
@@ -501,12 +527,15 @@ export async function loadDashboardReports(
 
   return scans.map((scan) => {
     const report = reportByScan.get(scan.id);
+    const readiness = readinessByScan.get(scan.id);
     return {
       scanId: scan.id,
       reportId: report?.id ?? null,
       companyName: scan.company_name,
       companyUrl: scan.company_url,
-      status: scan.status,
+      status: scan.status === "completed" && readiness?.ready === false
+        ? "quality_review"
+        : scan.status,
       reportType: scan.report_type,
       reportAccess: scan.report_access,
       createdAt: scan.created_at,
@@ -516,7 +545,11 @@ export async function loadDashboardReports(
       hasActiveGrant: activeGrantScans.has(scan.id),
       hasFullAccountAccess: fullAccessScanIds.has(scan.id),
       savedSearchVersionId: versionByScan.get(scan.id) ?? null,
-      signalCount: signalCountByScan.get(scan.id) || 0
+      signalCount: readiness?.ready
+        ? readiness.signalCount
+        : scan.status === "completed"
+          ? 0
+          : signalCountByScan.get(scan.id) || 0
     };
   });
 }

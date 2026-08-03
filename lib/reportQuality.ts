@@ -430,8 +430,8 @@ export function evaluateReportQuality(
     });
   }
   if (
-    typeof profile.profile_confidence_score === "number" &&
-    Number.isFinite(profile.profile_confidence_score) &&
+    typeof profile.profile_confidence_score !== "number" ||
+    !Number.isFinite(profile.profile_confidence_score) ||
     profile.profile_confidence_score < 55
   ) {
     blockingReasons.push({

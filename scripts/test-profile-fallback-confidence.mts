@@ -30,7 +30,7 @@ test.after(() => {
   else process.env.OPENAI_MODEL = originalModel;
 });
 
-test("detailed vertical scan inputs clear the deterministic fallback publication threshold", async () => {
+test("detailed vertical scan inputs remain held when AI profiling is unavailable", async () => {
   const cases = [
     {
       label: "Reparel",
@@ -87,14 +87,14 @@ test("detailed vertical scan inputs clear the deterministic fallback publication
   for (const fixture of cases) {
     const profile = await generateCompanyProfile(fixture.input, fixture.rawText);
     assert.ok(
-      (profile.profile_confidence_score ?? 0) >= 55,
-      `${fixture.label} fallback confidence should clear 55`
+      (profile.profile_confidence_score ?? 100) < 55,
+      `${fixture.label} fallback confidence should remain below 55`
     );
     assert.ok(
       profile.selected_playbooks.some((playbook) => playbook.playbook_id === fixture.playbookId),
       `${fixture.label} should select ${fixture.playbookId}`
     );
-    assert.doesNotMatch(profile.report_guidance.join(" "), /hold results for review/i);
+    assert.match(profile.report_guidance.join(" "), /hold results for review/i);
   }
 });
 
@@ -112,13 +112,36 @@ test("minimal vague input remains below the publication threshold", async () => 
   assert.match(profile.report_guidance.join(" "), /hold results for review/i);
 });
 
+test("detailed public-form intent produces a useful but held fallback", async () => {
+  const profile = await generateCompanyProfile(
+    {
+      companyUrl: "https://reparel.com",
+      reportType: "quick",
+      opportunityFocus:
+        "We sell medical-grade compression garments and recovery products. Find current VA, HHS, hospital, rehab, prosthetics and orthotics, DME purchasing, reimbursement, funded-buyer, distribution, and channel-partner opportunities we can pursue."
+    },
+    "Reparel makes clinically proven recovery sleeves for arthritis, injury, and post-operative healing."
+  );
+
+  assert.ok((profile.profile_confidence_score ?? 100) < 55);
+  assert.ok((profile.inferred_products_services ?? []).length >= 2);
+  assert.ok((profile.inferred_target_customers ?? []).length >= 2);
+  assert.match(profile.summary, /appears to offer/i);
+  assert.doesNotMatch(profile.summary, /^URL:/i);
+  assert.match(profile.report_guidance.join(" "), /hold results for review/i);
+});
+
 test("non-OK OpenAI responses log only status and model", async () => {
   const originalFetch = globalThis.fetch;
   const originalWarn = console.warn;
   const warnings: unknown[][] = [];
   process.env.OPENAI_API_KEY = "test-key";
   process.env.OPENAI_MODEL = "test-profile-model";
-  globalThis.fetch = async () => new Response(null, { status: 429 });
+  let requestCount = 0;
+  globalThis.fetch = async () => {
+    requestCount += 1;
+    return new Response(null, { status: 429, headers: { "Retry-After": "0" } });
+  };
   console.warn = (...args: unknown[]) => {
     warnings.push(args);
   };
@@ -146,4 +169,29 @@ test("non-OK OpenAI responses log only status and model", async () => {
       { status: 429, model: "test-profile-model" }
     ]
   ]);
+  assert.equal(requestCount, 2);
+});
+
+test("malformed OpenAI profile output falls back into review", async () => {
+  const originalFetch = globalThis.fetch;
+  process.env.OPENAI_API_KEY = "test-key";
+  globalThis.fetch = async () => new Response(JSON.stringify({
+    choices: [{ message: { content: JSON.stringify({ company_name: "Unsupported Example" }) } }]
+  }), { status: 200, headers: { "Content-Type": "application/json" } });
+
+  try {
+    const profile = await generateCompanyProfile(
+      {
+        companyUrl: "https://example.com",
+        reportType: "quick",
+        opportunityFocus: "Find public-sector buyers for recruiting software."
+      },
+      "Example builds recruiting software for education employers."
+    );
+    assert.ok((profile.profile_confidence_score ?? 100) < 55);
+    assert.match(profile.report_guidance.join(" "), /hold results for review/i);
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.OPENAI_API_KEY;
+  }
 });

@@ -424,7 +424,6 @@ function deterministicFallbackConfidence(input: ScanInput, profile: CompanyProfi
     included.length > 0 &&
     excluded.length > 0 &&
     (profile.selected_playbooks ?? []).length > 0;
-
   let score = 27;
   if (focusTermCount >= 7) score += 8;
   else if (focusTermCount >= 4) score += 4;
@@ -442,7 +441,25 @@ function deterministicFallbackConfidence(input: ScanInput, profile: CompanyProfi
   if (input.headquartersState?.trim() || input.targetStates?.trim()) score += 2;
   if ((input.prioritySignals ?? []).length > 0) score += 3;
 
-  return Math.min(85, score);
+  // Submitted intent can improve a fallback, but it cannot independently verify
+  // what the company sells. AI outages therefore fail closed into review.
+  return Math.min(54, score);
+}
+
+function fallbackProfileSummary(profile: CompanyProfile, rawText: string): string {
+  const products = (profile.inferred_products_services ?? profile.products_services ?? []).slice(0, 3);
+  const customers = (profile.inferred_target_customers ?? profile.target_customers ?? []).slice(0, 3);
+  const lanes = (profile.inferred_public_sector_lanes ?? profile.opportunity_lanes ?? []).slice(0, 3);
+
+  if (products.length >= 2 && customers.length >= 2 && lanes.length >= 2) {
+    return [
+      `Based on the submitted website and scan context, ${profile.company_name} appears to offer ${products.join(", ")}.`,
+      `The scan tests public-sector fit with ${customers.join(", ")} across ${lanes.join(", ")}.`
+    ].join(" ");
+  }
+
+  return rawText.slice(0, 420) ||
+    "Initial profile generated from the submitted company website. Add more scan context for a tighter profile.";
 }
 
 function inferPublicSectorTerms(keywords: string[], industry?: string, input?: ScanInput): string[] {
@@ -571,6 +588,52 @@ function normalizeProfile(profile: CompanyProfile, input: ScanInput): CompanyPro
   }, input), input);
 }
 
+function stringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
+function isCompanyProfilePayload(value: unknown): value is CompanyProfile {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const profile = value as Record<string, unknown>;
+  const requiredStringFields = ["company_name", "website", "summary"];
+  const requiredArrayFields = [
+    "products_services",
+    "target_customers",
+    "industries",
+    "geographies",
+    "keywords",
+    "public_sector_search_terms",
+    "negative_keywords",
+    "opportunity_lanes",
+    "selected_playbooks",
+    "report_guidance"
+  ];
+
+  return (
+    requiredStringFields.every((field) => typeof profile[field] === "string") &&
+    requiredArrayFields.every((field) => Array.isArray(profile[field])) &&
+    [
+      "products_services",
+      "target_customers",
+      "industries",
+      "geographies",
+      "keywords",
+      "public_sector_search_terms",
+      "negative_keywords",
+      "opportunity_lanes",
+      "report_guidance"
+    ].every((field) => stringArray(profile[field])) &&
+    typeof profile.lane_search_terms === "object" &&
+    profile.lane_search_terms !== null &&
+    !Array.isArray(profile.lane_search_terms) &&
+    (profile.profile_confidence_score === undefined ||
+      (typeof profile.profile_confidence_score === "number" &&
+        Number.isFinite(profile.profile_confidence_score) &&
+        profile.profile_confidence_score >= 0 &&
+        profile.profile_confidence_score <= 100))
+  );
+}
+
 export type ProfileGenerationOptions = {
   signal?: AbortSignal;
   deadlineAtMs?: number;
@@ -631,13 +694,7 @@ async function generateWithOpenAi(
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
+    const requestBody = JSON.stringify({
         model,
         response_format: { type: "json_object" },
         messages: [
@@ -702,13 +759,40 @@ async function generateWithOpenAi(
             })
           }
         ]
-      }),
-      signal: controller.signal
     });
+    let response: Response | null = null;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: requestBody,
+        signal: controller.signal
+      });
 
-    if (!response.ok) {
+      const retryable = response.status === 429 || response.status >= 500;
+      if (response.ok || !retryable || attempt === 1) break;
+
+      const retryAfterSeconds = Number.parseFloat(response.headers.get("retry-after") ?? "");
+      const retryDelayMs = Number.isFinite(retryAfterSeconds)
+        ? Math.min(1_500, Math.max(0, retryAfterSeconds * 1_000))
+        : 400;
+      if (retryDelayMs > 0) {
+        await new Promise<void>((resolve, reject) => {
+          const retryTimer = setTimeout(resolve, retryDelayMs);
+          controller.signal.addEventListener("abort", () => {
+            clearTimeout(retryTimer);
+            reject(new Error("Company profile retry aborted."));
+          }, { once: true });
+        });
+      }
+    }
+
+    if (!response?.ok) {
       console.warn("OpenAI company profile request failed", {
-        status: response.status,
+        status: response?.status ?? 0,
         model
       });
       return null;
@@ -720,7 +804,12 @@ async function generateWithOpenAi(
       return null;
     }
 
-    return JSON.parse(content) as CompanyProfile;
+    const parsed: unknown = JSON.parse(content);
+    if (!isCompanyProfilePayload(parsed)) {
+      console.warn("OpenAI company profile response failed schema validation", { model });
+      return null;
+    }
+    return parsed;
   } catch (error) {
     if (controller.signal.aborted) {
       throw new Error(`Company profile generation timed out after ${timeoutMs}ms.`);
@@ -795,6 +884,7 @@ export async function generateCompanyProfile(
 
   return {
     ...fallbackProfile,
+    summary: fallbackProfileSummary(fallbackProfile, rawText),
     profile_confidence_score: fallbackConfidence,
     profile_assumptions_summary: [
       needsReview

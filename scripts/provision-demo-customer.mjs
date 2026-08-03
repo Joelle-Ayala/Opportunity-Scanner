@@ -138,6 +138,9 @@ export function parseOptions(argv, env = process.env) {
   if (scanIds.length === 0 && scanEmails.length === 0) {
     throw new OperatorError("At least one --scan-id or --scan-email selector is required.");
   }
+  if (cli.apply === true && scanEmails.length > 0) {
+    throw new OperatorError("Applied demo provisioning requires explicit --scan-id selectors; --scan-email is dry-run only.");
+  }
 
   const customerEmail = normalizeEmail(cli.email || env.DEMO_CUSTOMER_EMAIL, "Customer email");
   if (!ALLOWED_DEMO_RECIPIENTS.has(customerEmail)) {
@@ -383,6 +386,29 @@ function assertAllowedDemoCompanies(customerEmail, scans) {
   }
 }
 
+async function assertPublicReportReadiness(fetchImpl, appOrigin, scans) {
+  for (const scan of scans) {
+    const reportUrl = new URL(`/reports/${scan.id}`, appOrigin);
+    let response;
+    try {
+      response = await fetchImpl(reportUrl, {
+        method: "GET",
+        redirect: "follow",
+        cache: "no-store"
+      });
+    } catch {
+      throw new OperatorError("The selected report readiness check could not reach the application.");
+    }
+    if (!response.ok) {
+      throw new OperatorError(`The selected report readiness check returned status ${response.status}.`);
+    }
+    const page = await response.text();
+    if (!/Report ready/i.test(page) || /awaiting quality review|has not passed the required full-report quality checks/i.test(page)) {
+      throw new OperatorError("A selected scan does not pass the production report-readiness gate.");
+    }
+  }
+}
+
 async function resolveScans(client, scanIds, scanEmails) {
   const selected = new Map();
   for (const scanId of scanIds) {
@@ -554,6 +580,7 @@ export async function runProvisioning({
   const client = createSupabaseClient(options, fetchImpl);
   const scans = await resolveScans(client, options.scanIds, options.scanEmails);
   assertAllowedDemoCompanies(options.customerEmail, scans);
+  await assertPublicReportReadiness(fetchImpl, options.appOrigin, scans);
   let authUser = await findAuthUser(client, options.customerEmail);
   let account = await loadAccountState(client, authUser?.id || null, options.customerEmail);
   if (account && !authUser) {

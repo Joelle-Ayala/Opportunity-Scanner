@@ -47,6 +47,13 @@ function createFakeSupabase() {
     const body = init.body ? JSON.parse(init.body) : null;
     if (method !== "GET") state.writes.push({ method, path });
 
+    if (url.origin === "https://scanner.example.test" && path.startsWith("/reports/") && method === "GET") {
+      return new Response(state.reportReady === false ? "Awaiting quality review" : "Report ready", {
+        status: 200,
+        headers: { "Content-Type": "text/html" }
+      });
+    }
+
     if (path === "/auth/v1/admin/users" && method === "GET") {
       return json({ users: state.users });
     }
@@ -187,6 +194,24 @@ test("defaults to dry-run and requires at least one explicit scan selector", () 
   );
   assert.throws(() => parseOptions(["--email", EMAIL, "--scan-id", SCAN_ID, "--unknown"], env), /unsupported/);
   assert.throws(() => parseOptions(["--apply=false", "--email", EMAIL, "--scan-id", SCAN_ID], env), /unsupported/);
+  assert.throws(
+    () => parseOptions(["--apply", "--email", EMAIL, "--scan-email", EMAIL], env),
+    /explicit --scan-id selectors/
+  );
+});
+
+test("rejects a report that fails the production readiness page before any writes", async () => {
+  const fake = createFakeSupabase();
+  fake.state.reportReady = false;
+  await assert.rejects(
+    runProvisioning({
+      argv: ["--apply", "--email", EMAIL, "--scan-id", SCAN_ID],
+      env,
+      fetchImpl: fake.fetchImpl
+    }),
+    /does not pass the production report-readiness gate/
+  );
+  assert.equal(fake.state.writes.length, 0);
 });
 
 test("dry-run reads state without creating users, accounts, ownership, or access", async () => {

@@ -47,19 +47,21 @@ function profile(companyName: string, services: string[], playbookId: string): C
     planned_source_categories: [],
     likely_revenue_motions: [],
     suggested_contact_roles: [],
-    report_guidance: []
+    report_guidance: [],
+    profile_confidence_score: 100
   };
 }
 
 function action(target: string, motion = "sell_to_agency"): NormalizedOpportunityAction {
+  const deadline = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
   return {
     estimated_opportunity_type: "active_opportunity",
     buyer_partner_type: "agency",
     revenue_motion: motion,
     target_organization: target,
     source_status: "Open",
-    source_deadline: "2026-12-31",
-    source_published_date: "2026-07-01",
+    source_deadline: deadline,
+    source_published_date: new Date().toISOString().slice(0, 10),
     time_sensitivity: "active",
     pursuit_difficulty: "medium",
     actionability_score: 84,
@@ -87,6 +89,7 @@ function opportunity(input: {
   sourceUrl: string;
   motion?: string;
 }): OpportunitySignal {
+  const deadline = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
   return {
     opportunity_title: input.title,
     source_type: "active_contract",
@@ -94,8 +97,8 @@ function opportunity(input: {
     source_url: input.sourceUrl,
     agency_or_funder: input.target,
     record_class: "current",
-    current_validated_at: "2026-07-27T12:00:00.000Z",
-    deadline: "2026-12-31",
+    current_validated_at: new Date().toISOString(),
+    deadline,
     geography: "United States",
     external_evidence_summary: input.evidence,
     why_it_matters: "The source shows a defined public-sector purchasing route.",
@@ -315,6 +318,20 @@ test("low-confidence company profiles are held even when rows otherwise look com
   ];
 
   const result = evaluateReportQuality(uncertainProfile, opportunities, "full");
+  assert.equal(result.passed, false);
+  assert.ok(result.blockingReasons.some((reason) => reason.code === "PROFILE_CONFIDENCE_LOW"));
+});
+
+test("missing company profile confidence fails closed", () => {
+  const profileWithoutConfidence = { ...schoolGig };
+  delete profileWithoutConfidence.profile_confidence_score;
+  const opportunities = [
+    opportunity({ title: "Teacher recruiting one", evidence: "Teacher hiring for a school district recruiting program.", target: "District One", sourceUrl: "https://example.gov/one" }),
+    opportunity({ title: "Teacher recruiting two", evidence: "Teacher hiring for a school district recruiting program.", target: "District Two", sourceUrl: "https://example.gov/two" }),
+    opportunity({ title: "Teacher recruiting three", evidence: "Teacher hiring for a school district recruiting program.", target: "District Three", sourceUrl: "https://example.gov/three" })
+  ];
+
+  const result = evaluateReportQuality(profileWithoutConfidence, opportunities, "full");
   assert.equal(result.passed, false);
   assert.ok(result.blockingReasons.some((reason) => reason.code === "PROFILE_CONFIDENCE_LOW"));
 });

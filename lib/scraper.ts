@@ -83,6 +83,11 @@ function stripTags(html: string): string {
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ")
+    .replace(/<nav\b[\s\S]*?<\/nav>/gi, " ")
+    .replace(/<footer\b[\s\S]*?<\/footer>/gi, " ")
+    .replace(/<aside\b[\s\S]*?<\/aside>/gi, " ")
+    .replace(/<dialog\b[\s\S]*?<\/dialog>/gi, " ")
+    .replace(/<(?:div|section)\b[^>]*(?:id|class)\s*=\s*["'][^"']*(?:cookie|consent|privacy-preference)[^"']*["'][^>]*>[\s\S]*?<\/(?:div|section)>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim());
