@@ -146,8 +146,10 @@ test("non-OK OpenAI responses log only status and model", async () => {
   process.env.OPENAI_API_KEY = "test-key";
   process.env.OPENAI_MODEL = "test-profile-model";
   let requestCount = 0;
-  globalThis.fetch = async () => {
+  let requestBody: Record<string, unknown> = {};
+  globalThis.fetch = async (_input, init) => {
     requestCount += 1;
+    requestBody = JSON.parse(String(init?.body));
     return new Response(null, { status: 429, headers: { "Retry-After": "0" } });
   };
   console.warn = (...args: unknown[]) => {
@@ -178,6 +180,7 @@ test("non-OK OpenAI responses log only status and model", async () => {
     ]
   ]);
   assert.equal(requestCount, 2);
+  assert.deepEqual(requestBody.response_format, { type: "json_object" });
 });
 
 test("malformed OpenAI profile output falls back into review", async () => {
@@ -209,10 +212,12 @@ test("Vercel OIDC uses AI Gateway before provider-specific credentials", async (
   process.env.VERCEL_OIDC_TOKEN = "test-oidc-token";
   process.env.OPENAI_API_KEY = "test-openai-key";
   let requestedUrl = "";
-  globalThis.fetch = async (input) => {
+  let requestBody: Record<string, unknown> = {};
+  globalThis.fetch = async (input, init) => {
     requestedUrl = String(input);
+    requestBody = JSON.parse(String(init?.body));
     return new Response(JSON.stringify({
-      choices: [{ message: { content: JSON.stringify({
+      choices: [{ message: { content: `\`\`\`json\n${JSON.stringify({
         company_name: "Gateway Example",
         website: "https://example.com",
         summary: "Gateway Example provides recruiting software.",
@@ -228,7 +233,7 @@ test("Vercel OIDC uses AI Gateway before provider-specific credentials", async (
         selected_playbooks: [],
         report_guidance: [],
         profile_confidence_score: 80
-      }) } }]
+      })}\n\`\`\`` } }]
     }), { status: 200, headers: { "Content-Type": "application/json" } });
   };
 
@@ -238,6 +243,7 @@ test("Vercel OIDC uses AI Gateway before provider-specific credentials", async (
       "Gateway Example provides recruiting software for education employers."
     );
     assert.equal(requestedUrl, "https://ai-gateway.vercel.sh/v1/chat/completions");
+    assert.equal(requestBody.response_format, undefined);
     assert.equal(profile.company_name, "Gateway Example");
   } finally {
     globalThis.fetch = originalFetch;

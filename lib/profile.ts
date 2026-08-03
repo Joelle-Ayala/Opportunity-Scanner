@@ -670,13 +670,15 @@ async function generateWithOpenAi(
       endpoint: "https://ai-gateway.vercel.sh/v1/chat/completions",
       credential: gatewayToken,
       model: process.env.AI_GATEWAY_PROFILE_MODEL || "google/gemini-3.1-flash-lite",
-      provider: "vercel-ai-gateway"
+      provider: "vercel-ai-gateway",
+      responseFormat: false
     } : null,
     process.env.OPENAI_API_KEY ? {
       endpoint: "https://api.openai.com/v1/chat/completions",
       credential: process.env.OPENAI_API_KEY,
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      provider: "openai"
+      provider: "openai",
+      responseFormat: true
     } : null
   ].filter((provider): provider is NonNullable<typeof provider> => Boolean(provider));
   if (providers.length === 0) {
@@ -708,9 +710,11 @@ async function generateWithOpenAi(
   }
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const requestFor = (model: string) => JSON.stringify({
-        model,
-        response_format: { type: "json_object" },
+    const requestFor = (provider: (typeof providers)[number]) => JSON.stringify({
+        model: provider.model,
+        ...(provider.responseFormat
+          ? { response_format: { type: "json_object" } }
+          : {}),
         messages: [
           {
             role: "system",
@@ -783,7 +787,7 @@ async function generateWithOpenAi(
             Authorization: `Bearer ${provider.credential}`,
             "Content-Type": "application/json"
           },
-          body: requestFor(provider.model),
+          body: requestFor(provider),
           signal: controller.signal
         });
 
@@ -818,7 +822,18 @@ async function generateWithOpenAi(
       const content = data.choices?.[0]?.message?.content;
       if (!content) continue;
 
-      const parsed: unknown = JSON.parse(content);
+      let parsed: unknown;
+      try {
+        const trimmedContent = content.trim();
+        const fencedMatch = trimmedContent.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+        parsed = JSON.parse(fencedMatch?.[1] ?? trimmedContent);
+      } catch {
+        console.warn("Company profile model response was not valid JSON", {
+          model: provider.model,
+          provider: provider.provider
+        });
+        continue;
+      }
       if (!isCompanyProfilePayload(parsed)) {
         console.warn("Company profile model response failed schema validation", {
           model: provider.model,
