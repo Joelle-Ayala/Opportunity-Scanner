@@ -224,14 +224,9 @@ test("Vercel OIDC uses AI Gateway before provider-specific credentials", async (
         products_services: ["recruiting software"],
         target_customers: ["education employers"],
         industries: ["education technology"],
-        geographies: ["United States"],
         keywords: ["recruiting", "education"],
         public_sector_search_terms: ["teacher recruiting software"],
-        negative_keywords: ["jobs"],
         opportunity_lanes: ["Government recruiting technology"],
-        lane_search_terms: { "Government recruiting technology": ["teacher recruiting software"] },
-        selected_playbooks: [],
-        report_guidance: [],
         profile_confidence_score: 80
       })}\n\`\`\`` } }]
     }), { status: 200, headers: { "Content-Type": "application/json" } });

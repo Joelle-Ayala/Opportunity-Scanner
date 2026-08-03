@@ -592,6 +592,35 @@ function stringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === "string");
 }
 
+function completeCompanyProfilePayload(value: unknown, input: ScanInput): unknown {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const profile = value as Record<string, unknown>;
+  const defaultArray = (field: string) => profile[field] === undefined ? [] : profile[field];
+
+  return {
+    ...profile,
+    website: profile.website === undefined ? input.companyUrl : profile.website,
+    geographies: defaultArray("geographies"),
+    translated_public_sector_terms:
+      profile.translated_public_sector_terms === undefined
+        ? defaultArray("public_sector_search_terms")
+        : profile.translated_public_sector_terms,
+    negative_keywords: defaultArray("negative_keywords"),
+    possible_naics: defaultArray("possible_naics"),
+    possible_psc: defaultArray("possible_psc"),
+    possible_soc: defaultArray("possible_soc"),
+    policy_sensitive_categories: defaultArray("policy_sensitive_categories"),
+    lane_search_terms: profile.lane_search_terms === undefined ? {} : profile.lane_search_terms,
+    opportunity_categories: defaultArray("opportunity_categories"),
+    selected_playbooks: defaultArray("selected_playbooks"),
+    activated_source_categories: defaultArray("activated_source_categories"),
+    planned_source_categories: defaultArray("planned_source_categories"),
+    likely_revenue_motions: defaultArray("likely_revenue_motions"),
+    suggested_contact_roles: defaultArray("suggested_contact_roles"),
+    report_guidance: defaultArray("report_guidance")
+  };
+}
+
 function isCompanyProfilePayload(value: unknown): value is CompanyProfile {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const profile = value as Record<string, unknown>;
@@ -834,14 +863,15 @@ async function generateWithOpenAi(
         });
         continue;
       }
-      if (!isCompanyProfilePayload(parsed)) {
+      const completedProfile = completeCompanyProfilePayload(parsed, input);
+      if (!isCompanyProfilePayload(completedProfile)) {
         console.warn("Company profile model response failed schema validation", {
           model: provider.model,
           provider: provider.provider
         });
         continue;
       }
-      return parsed;
+      return completedProfile;
     }
     return null;
   } catch (error) {
