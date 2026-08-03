@@ -81,7 +81,7 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
         <nav className="hidden flex-1 items-center justify-center gap-x-2 text-sm font-semibold text-steel lg:flex">
           {navGroups.map((group) => (
             <details key={group.label} className="group relative">
-              <summary className="list-none rounded-md px-3 py-2 hover:bg-mist hover:text-accent [&::-webkit-details-marker]:hidden">
+              <summary className="list-none rounded-md px-3 py-2 hover:bg-mist hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent [&::-webkit-details-marker]:hidden">
                 {group.label}
               </summary>
               <div className="absolute left-0 top-10 z-30 w-72 rounded-lg border border-line bg-white p-2 shadow-lift">
@@ -107,7 +107,7 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
             Scan
           </a>
           <details className="group relative">
-            <summary className="list-none rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold leading-none text-ink shadow-sm hover:border-accent [&::-webkit-details-marker]:hidden">
+            <summary className="list-none rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold leading-none text-ink shadow-sm hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent [&::-webkit-details-marker]:hidden">
               Menu
             </summary>
             <nav

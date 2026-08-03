@@ -40,18 +40,22 @@ export function TrackingConsentBanner() {
   };
 
   return (
-    <aside aria-label="Analytics preferences" className="fixed inset-x-3 bottom-3 z-[100] mx-auto max-w-4xl rounded-lg border border-line bg-white p-3 shadow-2xl sm:flex sm:items-center sm:justify-between sm:gap-5 sm:px-4 sm:py-3">
+    <aside aria-label="Analytics preferences" className="fixed inset-x-2 bottom-2 z-[100] mx-auto max-w-4xl rounded-lg border border-line bg-white p-2.5 shadow-2xl sm:inset-x-3 sm:bottom-3 sm:flex sm:items-center sm:justify-between sm:gap-5 sm:px-4 sm:py-3">
       <div>
-        <p className="text-sm font-semibold text-ink">Your privacy choices</p>
-        <p className="mt-1 text-xs leading-5 text-slate-600 sm:text-sm">
+        <p className="text-xs font-semibold text-ink sm:text-sm">Your privacy choices</p>
+        <p className="mt-0.5 text-xs leading-4 text-slate-600 sm:mt-1 sm:text-sm sm:leading-5">
+          <span className="sm:hidden">Optional analytics improve reports. </span>
+          <span className="hidden sm:inline">
           Optional analytics help us improve reports and purchases. Keep only necessary cookies or allow analytics. <a href="/privacy" className="font-semibold text-accent hover:underline">Privacy notice</a>
+          </span>
+          <a href="/privacy" className="font-semibold text-accent hover:underline sm:hidden">Privacy notice</a>
         </p>
       </div>
-      <div className="mt-3 grid shrink-0 grid-cols-2 gap-2 sm:mt-0">
-        <button type="button" onClick={() => choose("necessary")} className="min-h-10 whitespace-nowrap rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent sm:text-sm">
+      <div className="mt-2 grid shrink-0 grid-cols-2 gap-2 sm:mt-0">
+        <button type="button" onClick={() => choose("necessary")} className="min-h-9 whitespace-nowrap rounded-md border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink hover:border-accent hover:text-accent sm:min-h-10 sm:py-2 sm:text-sm">
           Necessary only
         </button>
-        <button type="button" onClick={() => choose("analytics")} className="min-h-10 whitespace-nowrap rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871] sm:text-sm">
+        <button type="button" onClick={() => choose("analytics")} className="min-h-9 whitespace-nowrap rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871] sm:min-h-10 sm:py-2 sm:text-sm">
           Allow analytics
         </button>
       </div>

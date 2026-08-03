@@ -3,7 +3,6 @@ import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { FounderNote } from "@/components/founder-note";
 import { SectionIntro } from "@/components/marketing";
 import { ScanSubmitButton } from "@/components/scan-submit-button";
-import { industryPages } from "@/lib/marketingContent";
 import { getScan } from "@/lib/storage";
 import type { ScanRecord } from "@/lib/types";
 
@@ -47,6 +46,45 @@ const focusOptions = [
   { value: "not_sure", label: "Not sure" }
 ];
 
+const icpPaths = [
+  {
+    slug: "healthcare-dme-medical-supply",
+    eyebrow: "Healthcare & DME",
+    title: "Find institutional buyers and channel routes",
+    profile: "Recovery and clinical supply products",
+    target: "VA, rehabilitation buyers, and DME distributors",
+    motion: "Sell to Agency or Channel",
+    next: "Map the product category to the right purchasing path"
+  },
+  {
+    slug: "education-workforce-training",
+    eyebrow: "Education & Workforce",
+    title: "Turn hiring demand into buyer and partner targets",
+    profile: "Teacher recruiting and staffing technology",
+    target: "District HR teams and funded workforce operators",
+    motion: "Sell or Partner",
+    next: "Verify the program owner and district hiring route"
+  },
+  {
+    slug: "marketing-advertising-content-web-services",
+    eyebrow: "Marketing & Digital Services",
+    title: "Surface public communications demand",
+    profile: "Campaign, content, and website services",
+    target: "Public information, enrollment, and digital teams",
+    motion: "Sell to Agency",
+    next: "Match capabilities to the solicitation or program office"
+  },
+  {
+    slug: "arts-creative-economy-live-events",
+    eyebrow: "Arts & Live Events",
+    title: "Find funded programming and event buyers",
+    profile: "Artist, event, and cultural programming services",
+    target: "Cities, parks, tourism offices, and funded recipients",
+    motion: "Sell or Partner",
+    next: "Confirm the funded program and programming owner"
+  }
+] as const;
+
 type HomeSearchParams = {
   error?: string;
   retry?: string;
@@ -80,14 +118,15 @@ function ScanForm({
 
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-ink">Run a free opportunity scan</h2>
-          <p className="mt-1 text-sm leading-6 text-muted">Start with your website, work email, and a sentence about the opportunity you want.</p>
+          <p className="text-xs font-semibold uppercase text-accent">Free preview</p>
+          <h2 className="mt-1 text-xl font-semibold text-ink">Scan your company</h2>
+          <p className="mt-1 text-sm leading-6 text-muted">Tell us what you sell. We will look for the public-sector path.</p>
         </div>
-        <Badge tone="amber">Beta</Badge>
+        <Badge tone="green"><span className="whitespace-nowrap">No card</span></Badge>
       </div>
 
       {errorMessage ? (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div role="alert" aria-live="polite" className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {errorMessage}
         </div>
       ) : null}
@@ -99,7 +138,7 @@ function ScanForm({
         </div>
       ) : null}
 
-      <div className="mt-5 grid gap-4">
+      <div className="mt-5 grid gap-3.5">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="grid gap-2">
             <span className="text-sm font-medium text-ink">Company website URL</span>
@@ -109,7 +148,7 @@ function ScanForm({
               type="url"
               defaultValue={retryScan?.company_url || ""}
               placeholder="https://example.com"
-              className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+              className="min-h-11 rounded-md border border-line bg-white px-3 py-2.5 outline-none focus:border-accent"
             />
           </label>
           <label className="grid gap-2">
@@ -119,15 +158,10 @@ function ScanForm({
               name="email"
               type="email"
               placeholder="you@company.com"
-              className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+              className="min-h-11 rounded-md border border-line bg-white px-3 py-2.5 outline-none focus:border-accent"
             />
           </label>
         </div>
-
-        <p className="text-xs leading-5 text-muted">
-          We use your email to provide and support the requested scan. See our{" "}
-          <a href="/privacy" className="font-semibold text-accent hover:underline">privacy notice</a>.
-        </p>
 
         <label className="grid gap-2">
           <span className="text-sm font-medium text-ink">What do you sell, and who should we find as buyers or partners?</span>
@@ -136,14 +170,14 @@ function ScanForm({
             minLength={15}
             maxLength={2000}
             name="opportunityFocus"
-            rows={3}
+            rows={2}
             defaultValue={retryScan?.opportunity_focus || ""}
             placeholder="Example: We provide teacher recruiting software to school districts and want district HR, staffing, and workforce opportunities."
-            className="rounded-md border border-line bg-white px-3 py-3 outline-none focus:border-accent"
+            className="rounded-md border border-line bg-white px-3 py-2.5 outline-none focus:border-accent"
           />
         </label>
 
-        <label className="flex min-h-11 items-start gap-3 rounded-md border border-line bg-field p-3 text-sm leading-6 text-slate-700">
+        <label className="flex min-h-11 items-start gap-3 rounded-md border border-line bg-field px-3 py-2.5 text-xs leading-5 text-slate-600">
           <input name="marketingConsent" type="checkbox" className="mt-1 h-4 w-4 accent-[#0E7C86]" />
           <span>Send me practical opportunity guidance and occasional product updates. I can unsubscribe at any time.</span>
         </label>
@@ -196,8 +230,14 @@ function ScanForm({
         </details>
 
         <ScanSubmitButton />
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-medium text-muted" aria-label="Scan details">
+          <span>Usually under a minute</span>
+          <span>Public sources linked</span>
+          <span>2-3 preview signals</span>
+        </div>
         <p className="text-xs leading-5 text-muted">
-          Scans usually take under a minute while we read the website and check public-sector sources.
+          We use your email to provide and support this scan. See our{" "}
+          <a href="/privacy" className="font-semibold text-accent hover:underline">privacy notice</a>.
         </p>
       </div>
     </form>
@@ -206,75 +246,154 @@ function ScanForm({
 
 function ProductProof() {
   return (
-    <section className="home-product-proof border-y border-line bg-field">
-      <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
-        <SectionIntro title="From a website to a sourced opportunity your team can route" eyebrow="See the product">
-          <p>
-            This fictional CivicStage example uses real public-source patterns to show the full path:
-            evidence, revenue motion, target, contact route, and next action.
-          </p>
-        </SectionIntro>
-
-        <div className="mt-8 overflow-hidden rounded-lg border border-line bg-white shadow-panel">
-          <div className="relative aspect-[4/3] overflow-hidden border-b border-line sm:aspect-[16/8]">
-            <img
-              src="/product-proof/report-overview.jpg"
-              alt="Fictional CivicStage Talent Network report with sourced opportunity summary"
-              className="h-full w-full object-cover object-left-top"
-              loading="lazy"
-            />
+    <section className="home-product-proof border-b border-line bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-14 lg:py-20">
+        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+          <SectionIntro title="See the evidence, commercial route, and next move together" eyebrow="Inside the product">
+            <p>
+              Opportunity Scanner turns a public record into a decision-ready row. The fictional
+              CivicStage example below demonstrates the workflow without using customer data.
+            </p>
+          </SectionIntro>
+          <div className="grid gap-3 border-y border-line py-4 sm:grid-cols-3 sm:divide-x sm:divide-line sm:border-y-0 sm:py-0">
+            {[
+              ["Discover", "Match the company to relevant public records"],
+              ["Qualify", "Separate current opportunities from historical evidence"],
+              ["Pursue", "Route the right target, contact path, and action"]
+            ].map(([label, copy]) => (
+              <div key={label} className="sm:px-5 sm:first:pl-0 sm:last:pr-0">
+                <p className="text-xs font-semibold uppercase text-accent">{label}</p>
+                <p className="mt-1 text-sm font-semibold leading-6 text-ink">{copy}</p>
+              </div>
+            ))}
           </div>
-          <div className="grid lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="border-b border-line p-5 lg:border-b-0 lg:border-r lg:p-6">
-              <div className="flex flex-wrap gap-2">
+        </div>
+
+        <div className="home-product-ui mt-9 overflow-hidden rounded-lg border border-line bg-field shadow-panel">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line bg-white px-5 py-4">
+            <div className="flex items-center gap-3">
+              <img src="/sample-companies/civicstage-talent-network.svg" alt="" className="h-10 w-10 rounded-md" />
+              <div>
+                <p className="font-semibold text-ink">CivicStage opportunity workspace</p>
+                <p className="text-xs text-muted">Fictional company · public-source example</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Badge tone="green">Report ready</Badge>
+              <Badge tone="blue">Funded-buyer evidence</Badge>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-[1.35fr_0.65fr]">
+            <div className="border-b border-line bg-white p-5 sm:p-6 lg:border-b-0 lg:border-r">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge tone="green">High Actionability</Badge>
                 <Badge tone="blue">Sell to Funded Buyer</Badge>
+                <span className="text-xs font-semibold text-muted">Historical award evidence</span>
               </div>
-              <p className="mt-4 text-xs font-semibold uppercase text-muted">Priority opportunity</p>
-              <h3 className="mt-2 text-xl font-semibold leading-7 text-ink">
-                Tourism and placemaking funding creates a public programming buyer
+              <h3 className="mt-4 text-xl font-semibold leading-7 text-ink">
+                City-funded cultural programming points to a qualified buyer path
               </h3>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                Public spending evidence points to a funded department with a credible need for event,
-                artist, and cultural-programming partners.
+                Public award records show that the organization has funded cultural programming.
+                The record is evidence of budget and buying behavior, not an open deadline.
               </p>
-            </div>
-            <dl className="grid sm:grid-cols-3">
-              {[
-                ["Target", "State parks, recreation, and tourism program office"],
-                ["Contact path", "Special events, cultural affairs, or procurement owner"],
-                ["Next best action", "Validate the active program, save the target, and send source-backed outreach"]
-              ].map(([label, value], index) => (
-                <div key={label} className={`p-5 sm:p-6 ${index < 2 ? "border-b border-line sm:border-b-0 sm:border-r" : ""}`}>
-                  <dt className="text-xs font-semibold uppercase text-muted">{label}</dt>
-                  <dd className="mt-2 text-sm font-semibold leading-6 text-ink">{value}</dd>
+
+              <dl className="mt-5 grid gap-3 sm:grid-cols-3">
+                {[
+                  ["Target", "City cultural affairs and events office"],
+                  ["Contact path", "Programming, partnerships, or procurement owner"],
+                  ["Next best action", "Verify the current program owner before outreach"]
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-md border border-line bg-field p-4">
+                    <dt className="text-xs font-semibold uppercase text-muted">{label}</dt>
+                    <dd className="mt-2 text-sm font-semibold leading-6 text-ink">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase text-muted">Official source</p>
+                  <a
+                    href="https://www.usaspending.gov/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1 inline-flex text-sm font-semibold text-accent hover:text-[#0A6871] hover:underline"
+                  >
+                    USAspending.gov award record
+                  </a>
                 </div>
-              ))}
-            </dl>
+                <a href="/examples/creative-economy-live-events-opportunity-scan" className="text-sm font-semibold text-accent hover:text-[#0A6871]">
+                  Open the full walkthrough
+                </a>
+              </div>
+            </div>
+
+            <div className="bg-field p-5 sm:p-6">
+              <p className="text-xs font-semibold uppercase text-accent">Move it forward</p>
+              <ol className="mt-4 divide-y divide-line border-y border-line">
+                {[
+                  ["01", "Open source", "Confirm the record and organization"],
+                  ["02", "Start pursuit", "Assign an owner and revenue motion"],
+                  ["03", "Prepare outreach", "Use the contact path and source context"],
+                  ["04", "Monitor", "Watch the qualified profile for changes"]
+                ].map(([number, label, copy]) => (
+                  <li key={number} className="grid grid-cols-[32px_1fr] gap-3 py-3.5">
+                    <span className="text-xs font-semibold text-amber-800">{number}</span>
+                    <span>
+                      <span className="block text-sm font-semibold text-ink">{label}</span>
+                      <span className="mt-0.5 block text-xs leading-5 text-muted">{copy}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-5">
-          <p className="max-w-3xl text-sm leading-6 text-slate-600">
-            The public sample never uses a customer logo or private customer data. CivicStage is a
-            fictional company created solely to demonstrate the product workflow.
-          </p>
-          <a href="/examples/creative-economy-live-events-opportunity-scan" className="text-sm font-semibold text-accent hover:text-[#0A6871]">
-            View the full sample report
-          </a>
+function IcpProof() {
+  return (
+    <section className="border-b border-line bg-field">
+      <div className="mx-auto max-w-7xl px-6 py-14 lg:py-20">
+        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+          <SectionIntro title="Different offers need different public-sector routes" eyebrow="Built around your market">
+            <p>
+              The scanner changes its buyers, language, source patterns, and recommended revenue motion
+              based on what the company actually sells.
+            </p>
+          </SectionIntro>
+          <a href="/industries" className="w-fit text-sm font-semibold text-accent hover:text-[#0A6871]">Explore all industries</a>
         </div>
 
-        <div className="mt-8 grid border-y border-line md:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-line">
-          {[
-            ["01", "Build the profile", "Translate CivicStage's website and customer context into buyers, programs, source patterns, and search language."],
-            ["02", "Route the opportunity", "Distinguish an application from agency sales, funded-recipient partnership, vendor registration, or monitoring."],
-            ["03", "Work the pursuit", "Keep source evidence, contact strategy, outreach angle, notes, and next action together."],
-            ["04", "Watch what changes", "Save the qualified search, review alerts and comparisons, then export or send workflow-ready context."]
-          ].map(([number, title, copy]) => (
-            <article key={number} className="border-b border-line py-5 last:border-b-0 md:px-5 lg:border-b-0 lg:first:pl-0 lg:last:pr-0">
-              <p className="text-xs font-semibold text-ember">{number}</p>
-              <h3 className="mt-2 text-base font-semibold text-ink">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
+        <div className="mt-8 grid gap-4 lg:grid-cols-2">
+          {icpPaths.map((path) => (
+            <article key={path.slug} className="home-icp-card overflow-hidden rounded-lg border border-line bg-white">
+              <div className="border-b border-line p-5 sm:p-6">
+                <p className="text-xs font-semibold uppercase text-accent">{path.eyebrow}</p>
+                <h3 className="mt-2 text-xl font-semibold leading-7 text-ink">{path.title}</h3>
+              </div>
+              <div className="home-icp-route grid gap-0 sm:grid-cols-3">
+                {[
+                  ["Company profile", path.profile],
+                  ["Buyer or partner", path.target],
+                  ["Recommended route", path.motion]
+                ].map(([label, value], index) => (
+                  <div key={label} className="relative border-b border-line bg-field p-4 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+                    <p className="text-[11px] font-semibold uppercase text-muted">{label}</p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-ink">{value}</p>
+                    {index < 2 ? <span className="home-icp-arrow" aria-hidden="true">→</span> : null}
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-6">
+                <p className="max-w-xl text-sm leading-6 text-slate-600"><span className="font-semibold text-ink">Next:</span> {path.next}</p>
+                <a href={`/industries/${path.slug}`} className="text-sm font-semibold text-accent hover:text-[#0A6871]">View industry path</a>
+              </div>
             </article>
           ))}
         </div>
@@ -302,129 +421,61 @@ export default async function HomePage({ searchParams }: { searchParams?: HomeSe
       />
 
       <section className="home-hero">
-        <img
-          src="/product-proof/report-pipeline.png"
-          alt="Opportunity Scanner report showing sourced opportunities, revenue motions, target organizations, contact strategies, and next actions"
-          className="home-hero__product"
-        />
-        <div className="home-hero__veil" aria-hidden="true" />
-        <div className="home-hero__content mx-auto max-w-7xl px-6">
+        <div className="home-hero__content mx-auto grid max-w-7xl gap-9 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-14">
           <div className="home-hero__copy">
-            <p className="home-hero__eyebrow">Public-sector opportunity intelligence</p>
+            <p className="home-hero__eyebrow">For B2B companies exploring public-sector revenue</p>
             <h1 className="home-hero__title mt-5 font-semibold leading-tight text-ink">
-              Find public-sector opportunities your team can actually pursue.
+              <span className="hidden sm:inline">Find public-sector revenue paths for what your company already sells.</span>
+              <span className="sm:hidden">Find public-sector revenue paths for your company.</span>
             </h1>
             <p className="home-hero__lede mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              Turn your company website into a sourced pipeline of buyers, grants, funded partners,
-              and procurement paths, with evidence and a clear next action.
+              Scan your website to uncover sourced buyers, funded organizations, grants, and
+              procurement paths, with a clear next action for each.
             </p>
-            <div className="home-hero__actions mt-7 flex flex-wrap gap-3">
-              <a href="#scan" className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-                Run a Free Scan
-              </a>
-              <a href="/examples" className="inline-flex items-center justify-center rounded-md border border-line bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-                See Sample Reports
-              </a>
-            </div>
-            <div className="home-hero__proof mt-9 max-w-3xl border-y border-line sm:grid sm:grid-cols-3 sm:divide-x sm:divide-line">
+            <div className="home-hero__proof mt-7 grid gap-3 sm:grid-cols-3">
               {[
-                ["Official evidence", "Source records linked to each signal"],
-                ["Commercial path", "The likely buyer, partner, or program"],
-                ["Next action", "A concrete step your team can own"]
+                ["Official evidence", "Every signal links back to a public source"],
+                ["Commercial route", "See the likely buyer, partner, or application path"],
+                ["Action-ready", "Know what to verify and who should own the next move"]
               ].map(([label, copy]) => (
-                <div key={label} className="border-b border-line py-3 last:border-b-0 sm:border-b-0 sm:px-5 sm:first:pl-0">
-                  <p className="text-xs font-semibold uppercase text-ember">{label}</p>
+                <div key={label} className="border-l-2 border-accent pl-3">
+                  <p className="text-xs font-semibold uppercase text-accent">{label}</p>
                   <p className="mt-1 text-sm font-medium leading-5 text-ink">{copy}</p>
                 </div>
               ))}
             </div>
+            <a href="/examples/creative-economy-live-events-opportunity-scan" className="home-hero__sample mt-6 inline-flex text-sm font-semibold text-accent hover:text-[#0A6871]">
+              Explore the fictional CivicStage walkthrough
+            </a>
           </div>
-        </div>
-      </section>
-
-      <section className="home-scan-section border-b border-line bg-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-16 lg:py-16">
-          <div className="order-2 lg:order-1 lg:sticky lg:top-24">
-            <p className="text-xs font-semibold uppercase text-accent">Your first report</p>
-            <h2 className="mt-2 max-w-xl text-3xl font-semibold leading-tight text-ink">
-              See whether public money is already creating demand for what you sell.
-            </h2>
-            <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
-              The free preview returns 2-3 sourced opportunities and shows how the product translates
-              public records into buyer paths, partner targets, and concrete next steps.
-            </p>
-            <dl className="home-scan-steps mt-7 divide-y divide-line border-y border-line">
-              {[
-                ["1", "Your company website becomes the search profile"],
-                ["2", "Public sources are screened for fit and timing"],
-                ["3", "The strongest signals become action-ready rows"]
-              ].map(([number, copy]) => (
-                <div key={number} className="grid grid-cols-[32px_1fr] gap-3 py-4">
-                  <dt className="text-sm font-semibold text-ember">0{number}</dt>
-                  <dd className="text-sm font-semibold leading-6 text-ink">{copy}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-          <div className="order-1 lg:order-2">
+          <div className="home-hero__form">
             <ScanForm searchParams={searchParams} retryScan={reusableRetryScan} />
           </div>
         </div>
       </section>
 
+      <section className="home-proof-band border-b border-line bg-ink text-white" aria-label="Recent scan coverage">
+        <div className="mx-auto grid max-w-7xl gap-4 px-6 py-5 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-white/15">
+          {[
+            ["178", "opportunities surfaced across recent scans"],
+            ["3", "federal source systems checked"],
+            ["5-11", "distinct agencies found per scan"],
+            ["2 classes", "live opportunities and funded-buyer evidence"]
+          ].map(([value, label]) => (
+            <div key={label} className="lg:px-5 lg:first:pl-0 lg:last:pr-0">
+              <p className="text-lg font-semibold text-white">{value}</p>
+              <p className="mt-0.5 text-xs leading-5 text-slate-300">{label}</p>
+            </div>
+          ))}
+        </div>
+        <p className="sr-only">Recent scan sample updated July 2026.</p>
+      </section>
+
       <ProductProof />
 
-      <section className="border-b border-line bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
-          <SectionIntro title="A working opportunity pipeline, not another research memo" eyebrow="What teams get">
-            <p>
-              Opportunity Scanner gives founders, sales teams, and operators the context needed to
-              decide what is worth pursuing and who should own the next step.
-            </p>
-          </SectionIntro>
-          <div className="mt-8 grid border-y border-line lg:grid-cols-3 lg:divide-x lg:divide-line">
-            {[
-              ["01", "Discover a new channel", "See agency buyers, funded organizations, grants, partner paths, and policy demand that match the offer already on your website."],
-              ["02", "Prioritize the right motion", "Separate direct applications from agency sales, funded-buyer outreach, recipient partnerships, channel routes, and monitor-only signals."],
-              ["03", "Move the opportunity", "Use source links, contact strategy, CRM-ready notes, outreach angles, exports, and workflow actions to keep the row moving."]
-            ].map(([number, heading, copy]) => (
-              <article key={number} className="border-b border-line py-6 last:border-b-0 lg:border-b-0 lg:px-7 lg:first:pl-0 lg:last:pr-0">
-                <p className="text-xs font-semibold text-ember">{number}</p>
-                <h3 className="mt-3 text-xl font-semibold text-ink">{heading}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <IcpProof />
 
       <FounderNote />
-
-      <section className="border-b border-line bg-field">
-        <div className="mx-auto max-w-7xl px-6 py-14 lg:py-16">
-          <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-            <SectionIntro title="Built for companies beyond traditional government contractors" eyebrow="Industry paths">
-              <p>
-                Each industry path uses tailored opportunity language, source patterns, revenue motions,
-                articles, sample reports, and practical guides.
-              </p>
-            </SectionIntro>
-            <a href="/industries" className="w-fit text-sm font-semibold text-accent hover:text-[#0A6871]">View all industries</a>
-          </div>
-          <div className="mt-8 grid border-t border-line md:grid-cols-2 xl:grid-cols-3">
-            {industryPages.map((industry) => (
-              <a
-                key={industry.slug}
-                href={`/industries/${industry.slug}`}
-                className="group border-b border-line py-5 md:odd:pr-6 md:even:border-l md:even:pl-6 xl:border-l xl:px-6 xl:[&:nth-child(3n+1)]:border-l-0 xl:[&:nth-child(3n+1)]:pl-0"
-              >
-                <p className="text-sm font-semibold text-ink group-hover:text-accent">{industry.name}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{industry.outcome}</p>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <section className="border-b border-line bg-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:py-16">
