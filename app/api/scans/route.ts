@@ -194,7 +194,8 @@ export async function POST(request: Request) {
   try {
     const pipelineResult = await executeScanPipeline(scan.id, input, {
       deadlineAtMs: executionDeadlineAtMs,
-      terminalDeadlineAtMs
+      terminalDeadlineAtMs,
+      gatewayToken: request.headers.get("x-vercel-oidc-token") || undefined
     });
 
     if (session?.user.email) {

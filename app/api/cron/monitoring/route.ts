@@ -221,7 +221,8 @@ function profileConcurrency(): number {
 
 async function processMonitoredProfile(
   profile: MonitoredProfileRecord,
-  pipelineDeadlineAtMs: number
+  pipelineDeadlineAtMs: number,
+  gatewayToken?: string
 ): Promise<MonitoringResult> {
   let scanId: string | null = null;
   let run: MonitoringRunRecord | null = null;
@@ -240,7 +241,8 @@ async function processMonitoredProfile(
     run = await startMonitoringRun(profile.id, scan.id, profile.lease_token);
     const pipelineResult = await executeScanPipeline(scan.id, input, {
       deadlineAtMs: pipelineDeadlineAtMs,
-      terminalDeadlineAtMs: pipelineDeadlineAtMs + PROFILE_TERMINAL_WRITE_BUDGET_MS
+      terminalDeadlineAtMs: pipelineDeadlineAtMs + PROFILE_TERMINAL_WRITE_BUDGET_MS,
+      gatewayToken
     });
 
     if (pipelineResult.status === "quality_review") {
@@ -284,7 +286,8 @@ async function processMonitoredProfile(
 
 async function processClaimedProfiles(
   profiles: MonitoredProfileRecord[],
-  startedAt: number
+  startedAt: number,
+  gatewayToken?: string
 ): Promise<MonitoringResult[]> {
   const results = new Array<MonitoringResult>(profiles.length);
   const pipelineDeadlineAtMs = startedAt + PROFILE_PIPELINE_BUDGET_MS;
@@ -307,7 +310,7 @@ async function processClaimedProfiles(
         continue;
       }
 
-      results[index] = await processMonitoredProfile(profile, pipelineDeadlineAtMs);
+      results[index] = await processMonitoredProfile(profile, pipelineDeadlineAtMs, gatewayToken);
     }
   };
 
@@ -399,7 +402,11 @@ export async function GET(request: Request): Promise<Response> {
     }, 503, { id: invocationId, startedAt });
   }
 
-  const results = await processClaimedProfiles(profiles, startedAt);
+  const results = await processClaimedProfiles(
+    profiles,
+    startedAt,
+    request.headers.get("x-vercel-oidc-token") || undefined
+  );
 
   try {
     deadlineAlertsEnqueued = await enqueueDueDeadlineAlerts(100);

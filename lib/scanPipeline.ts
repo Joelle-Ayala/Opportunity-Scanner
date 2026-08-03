@@ -143,7 +143,7 @@ type ScanPipelineDependencies = {
   generateCompanyProfile: (
     input: ScanInput,
     rawText: string,
-    options: ScanStageBudget
+    options: ScanStageBudget & { gatewayToken?: string }
   ) => Promise<CompanyProfile>;
   listProfileFeedbackForCompanyUrl: (
     companyUrl: string,
@@ -193,6 +193,7 @@ export type ScanPipelineOptions = {
   deadlineAtMs?: number;
   terminalDeadlineAtMs?: number;
   postDiscoveryReserveMs?: number;
+  gatewayToken?: string;
   dependencies?: Partial<ScanPipelineDependencies>;
 };
 
@@ -453,7 +454,10 @@ export async function executeScanPipeline(
       deadlineAtMs,
       PROFILING_STAGE_TIMEOUT_MS,
       dependencies.now,
-      (budget) => dependencies.generateCompanyProfile(input, profileSourceText, budget)
+      (budget) => dependencies.generateCompanyProfile(input, profileSourceText, {
+        ...budget,
+        gatewayToken: options.gatewayToken
+      })
     );
     const enrichedProfile = attachExternalCompanyEvidenceToProfile(
       attachWebsiteEvidenceToProfile(

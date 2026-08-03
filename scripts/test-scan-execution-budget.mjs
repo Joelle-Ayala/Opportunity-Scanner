@@ -180,11 +180,13 @@ test("the default discovery path forwards the parent budget to every connector",
 
 test("company evidence reaches profiling and prior feedback stays customer-scoped", async () => {
   let profileText = "";
+  let profileGatewayToken = "";
   let feedbackLookup = [];
   await executeScanPipeline(
     "company-evidence",
     { ...input, email: "owner@example.com" },
     {
+      gatewayToken: "request-scoped-oidc-token",
       dependencies: dependencies({
         scrapeCompanyWebsite: async () => ({
           pages: [{
@@ -206,8 +208,9 @@ test("company evidence reaches profiling and prior feedback stays customer-scope
           providerRuns: [],
           context: "GLEIF legal entity corroboration"
         }),
-        generateCompanyProfile: async (_scanInput, rawText) => {
+        generateCompanyProfile: async (_scanInput, rawText, options) => {
           profileText = rawText;
+          profileGatewayToken = options.gatewayToken;
           return profile;
         },
         listProfileFeedbackForCompanyUrl: async (...args) => {
@@ -221,6 +224,7 @@ test("company evidence reaches profiling and prior feedback stays customer-scope
   assert.match(profileText, /VERIFIED FIRST-PARTY COMPANY METADATA/);
   assert.match(profileText, /Example Learning, Inc\./);
   assert.match(profileText, /GLEIF legal entity corroboration/);
+  assert.equal(profileGatewayToken, "request-scoped-oidc-token");
   assert.deepEqual(feedbackLookup, [input.companyUrl, "owner@example.com"]);
 });
 

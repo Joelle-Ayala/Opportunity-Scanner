@@ -638,6 +638,7 @@ export type ProfileGenerationOptions = {
   signal?: AbortSignal;
   deadlineAtMs?: number;
   timeoutMs?: number;
+  gatewayToken?: string;
 };
 
 const DEFAULT_PROFILE_REQUEST_TIMEOUT_MS = 15_000;
@@ -662,7 +663,8 @@ async function generateWithOpenAi(
   rawText: string,
   options: ProfileGenerationOptions
 ): Promise<CompanyProfile | null> {
-  const gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
+  const gatewayToken =
+    options.gatewayToken || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
   const providers = [
     gatewayToken ? {
       endpoint: "https://ai-gateway.vercel.sh/v1/chat/completions",

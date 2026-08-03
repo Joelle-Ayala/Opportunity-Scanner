@@ -141,7 +141,7 @@ test("cron monitoring is secret-protected and writes durable run outcomes", asyn
   assert.match(route, /process\.env\.MONITORING_PROFILE_BATCH_SIZE/);
   assert.match(route, /process\.env\.MONITORING_PROFILE_CONCURRENCY/);
   assert.match(route, /claimDueMonitoredProfiles\(profileBatchSize\(\)\)/);
-  assert.match(route, /processClaimedProfiles\(profiles, startedAt\)/);
+  assert.match(route, /processClaimedProfiles\([\s\S]*profiles,[\s\S]*startedAt,[\s\S]*x-vercel-oidc-token/);
   assert.match(route, /releaseMonitoringProfileClaim/);
   assert.match(route, /claimPendingMonitoringAlerts\(5\)/);
   assert.match(route, /executeScanPipeline\(scan\.id, input, \{/);
