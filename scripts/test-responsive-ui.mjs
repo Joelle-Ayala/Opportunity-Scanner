@@ -61,6 +61,8 @@ assert.match(dashboardShell, /flex gap-5 overflow-x-auto sm:gap-6/);
 assert.match(dashboardShell, /min-h-11 shrink-0/);
 assert.match(workflow, /role="dialog"/);
 assert.match(workflow, /aria-modal="true"/);
+assert.match(workflow, /payload\.workflowPayloadReady !== true/);
+assert.match(workflow, /Workflow needs source check/);
 
 console.log(`Responsive UI verification passed: ${industrySlugs.length}/${industrySlugs.length} industry routes are present in navigation.`);
 console.log("Mobile report actions, visual readability, narrow layouts, dashboard tabs, and dialog semantics are guarded.");

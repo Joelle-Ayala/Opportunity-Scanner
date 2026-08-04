@@ -260,7 +260,8 @@ test("all bypass surfaces invoke readiness before exposing or acting on report d
 
   const outreachRoute = sources[paths[2]];
   assert.ok(outreachRoute.indexOf("await resolveRequestReportAccess") < outreachRoute.indexOf("await getCompletedReportReadiness"));
-  assert.ok(outreachRoute.indexOf("await getCompletedReportReadiness") < outreachRoute.indexOf("await ensureContactEnrichmentForSignals"));
+  assert.ok(outreachRoute.indexOf("await getCompletedReportReadiness") < outreachRoute.indexOf("await buildOutreachPackage"));
+  assert.doesNotMatch(outreachRoute, /ensureContactEnrichmentForSignals|reserveContactEnrichmentCredit/);
 
   const workflowRoute = sources[paths[3]];
   assert.ok(workflowRoute.indexOf("await hasRequestReportAccess") < workflowRoute.indexOf("await getCompletedReportReadiness"));

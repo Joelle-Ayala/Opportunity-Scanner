@@ -256,6 +256,29 @@ export function FullSampleReport({ report }: { report: IndustrySampleReport }) {
                     <p className="mt-2 text-sm font-semibold leading-6 text-ink">{row.outreachAngle}</p>
                   </div>
                 </div>
+
+                {isCivicStage ? (
+                  <div className="mt-5 rounded-md border border-cyan-200 bg-mist p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-accent">Full-report actions</p>
+                      <span className="text-xs text-muted">Available from each qualified opportunity</span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <a href={row.sourceUrl} target="_blank" rel="noreferrer" className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent">
+                        Review source
+                      </a>
+                      <a href="/#scan" title="Run a scan to start a pursuit from your report" className="rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871]">
+                        Start pursuit
+                      </a>
+                      <a href="/#scan" title="Run a scan to use contact paths from your report" className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent">
+                        Find contacts
+                      </a>
+                      <a href="/#scan" title="Run a scan to send qualified opportunities to your workflow" className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent">
+                        Send to workflow
+                      </a>
+                    </div>
+                  </div>
+                ) : null}
               </article>
             ))}
           </div>
@@ -263,7 +286,7 @@ export function FullSampleReport({ report }: { report: IndustrySampleReport }) {
 
         {isCivicStage ? (
           <>
-            <section className="border-t border-line bg-field p-6">
+            <section id="pursuit-workspace" className="scroll-mt-24 border-t border-line bg-field p-6">
               <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-accent">Customer workflow</p>

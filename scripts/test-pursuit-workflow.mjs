@@ -13,6 +13,8 @@ import {
 
 const ROOT = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, ROOT), "utf8");
+const CURRENT_VALIDATED_AT = new Date().toISOString();
+const FUTURE_DEADLINE = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
 function normalizedAction(overrides = {}) {
   return {
@@ -21,7 +23,7 @@ function normalizedAction(overrides = {}) {
     revenue_motion: "Direct Apply",
     target_organization: "Example Public Agency",
     source_status: "Open",
-    source_deadline: "2026-09-30T17:00:00-04:00",
+    source_deadline: FUTURE_DEADLINE,
     source_published_date: "2026-07-01",
     time_sensitivity: "active",
     pursuit_difficulty: "medium",
@@ -54,8 +56,8 @@ function opportunity(overrides = {}, actionOverrides = {}) {
     source_url: "https://Grants.gov/opportunity/123?b=2&a=1#summary",
     agency_or_funder: "Example Public Agency",
     record_class: "current",
-    current_validated_at: "2026-07-27T12:00:00.000Z",
-    deadline: "2026-09-30",
+    current_validated_at: CURRENT_VALIDATED_AT,
+    deadline: FUTURE_DEADLINE,
     geography: "Federal",
     external_evidence_summary: "Official opportunity instructions and deadline.",
     why_it_matters: "The company may have a direct route to public funding.",
@@ -110,18 +112,18 @@ const direct = opportunity();
 assert.equal(pursuitApplicationMethod(direct), "direct_application");
 assert.equal(pursuitStageFor("direct_application"), "qualifying");
 assert.equal(pursuitMethodLabel("direct_application"), "Direct application");
-assert.equal(sourceActionLabel("direct_application"), "Start application");
+assert.equal(sourceActionLabel("direct_application"), "Open official application");
 
 const procurement = opportunity(
   { source_type: "active_contract", revenue_pathway: "procurement_bid", source_name: "SAM.gov" },
   { revenue_motion: "Direct Apply", contact_strategy: "inspect_procurement_record" }
 );
 assert.equal(pursuitApplicationMethod(procurement), "procurement_response");
-assert.equal(sourceActionLabel("procurement_response"), "View bid instructions");
-assert.equal(sourceActionLabel("vendor_registration"), "Register as a vendor");
-assert.equal(sourceActionLabel("buyer_outreach"), "Contact the buyer");
-assert.equal(sourceActionLabel("partner_outreach"), "Contact the partner");
-assert.equal(sourceActionLabel("monitor"), "Monitor official source");
+assert.equal(sourceActionLabel("procurement_response"), "Open bid instructions");
+assert.equal(sourceActionLabel("vendor_registration"), "Open vendor registration");
+assert.equal(sourceActionLabel("buyer_outreach"), "Open buyer source");
+assert.equal(sourceActionLabel("partner_outreach"), "Open partner source");
+assert.equal(sourceActionLabel("monitor"), "Open official source");
 
 const indirectGrant = opportunity(
   { source_type: "active_grant", revenue_pathway: "sell_to_grantee" },
@@ -178,7 +180,7 @@ assert.equal(defaults.company_context_key, "acme.example");
 assert.equal(defaults.canonical_opportunity_key, "url:https://grants.gov/opportunity/123?a=1&b=2");
 assert.equal(defaults.application_method, "direct_application");
 assert.equal(defaults.stage, "qualifying");
-assert.equal(defaults.deadline, "2026-09-30");
+assert.equal(defaults.deadline, FUTURE_DEADLINE);
 assert.equal(defaults.company_name, "Acme Services");
 assert.equal(defaults.owner_name, "");
 assert.equal(defaults.notes, "");

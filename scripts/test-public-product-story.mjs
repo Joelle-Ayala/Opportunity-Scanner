@@ -14,14 +14,18 @@ const [homepage, pricing, howItWorks, examples, exampleDetail, sampleReport] = a
 ]);
 
 for (const productClaim of [
-  "Build the profile",
-  "Route the opportunity",
-  "Work the pursuit",
-  "Watch what changes"
+  "Discover",
+  "Qualify",
+  "Pursue",
+  "Turn a finding into a tracked pursuit"
 ]) {
   assert.match(homepage, new RegExp(productClaim));
 }
 assert.match(homepage, /current checkout availability/i);
+for (const action of ["Review source", "Start pursuit", "Find contacts", "Send to workflow"]) {
+  assert.match(homepage, new RegExp(action));
+}
+assert.match(homepage, /Application and pursuit workspace/);
 
 assert.match(pricing, /evaluateLaunchHealth\(process\.env\)/);
 assert.match(pricing, /health\.ready\.reportCheckout/);
@@ -54,6 +58,8 @@ for (const workflowProof of [
   assert.match(sampleReport, new RegExp(workflowProof));
 }
 assert.match(sampleReport, /Fictional company, public-source examples/);
+assert.match(sampleReport, /Full-report actions/);
+assert.match(sampleReport, /Start pursuit/);
 assert.doesNotMatch(sampleReport, /Estimated pipeline/);
 
 console.log("Public product story verification passed.");

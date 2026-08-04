@@ -1,12 +1,19 @@
 # Opportunity Scanner Demo Video Runbook
 
-Last updated: August 3, 2026
+Last updated: August 4, 2026
 
 ## Demo Goal
 
 Show one clear transformation: Opportunity Scanner turns a company website into sourced public-sector opportunities, then gives the user a target, Revenue Motion, contact path, and next action.
 
 Primary CTA: **Run a free scan at opportunityscanner.ai.**
+
+## Product Truth For Narration
+
+- Opportunity Scanner opens the authoritative application, procurement, vendor, buyer, or partner route; it does not submit an application on the customer's behalf.
+- `Start pursuit` creates the owned workspace inside Opportunity Scanner for stage, owner, fit, source verification, route verification, internal due date, documents, next step, and notes.
+- `Send to Workflow` is available only when the opportunity has enough verified source, target, and action context.
+- Contact paths and source-native contacts are safe to demonstrate. Do not demonstrate person-level enrichment from a demo entitlement because demo credits are intentionally not fabricated.
 
 Use **CivicStage Talent Network**, the fictional company already used in the public sample report, for public recordings. Keep SchoolGig and Reparel as internal regression accounts unless written permission allows their names, logos, and report data to appear publicly.
 

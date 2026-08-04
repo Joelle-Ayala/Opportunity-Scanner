@@ -1,11 +1,5 @@
 import { NextResponse } from "next/server";
 import { resolveRequestReportAccess } from "@/lib/payments/requestAccess";
-import { ensureContactEnrichmentForSignals } from "@/lib/contactEnrichment";
-import {
-  EnrichmentCreditError,
-  requireReservedEnrichmentCredit,
-  reserveContactEnrichmentCredit
-} from "@/lib/enrichmentCredits";
 import {
   buildOutreachPackage,
   outreachPackageCsv,
@@ -24,14 +18,6 @@ function downloadResponse(body: string, filename: string, contentType: string): 
       "Content-Disposition": `attachment; filename="${filename}"`
     }
   });
-}
-
-function autoEnrichLimit(): number {
-  const configured = Number(process.env.OPPORTUNITY_SCANNER_AUTO_ENRICH_LIMIT ?? 5);
-  if (!Number.isFinite(configured)) {
-    return 5;
-  }
-  return Math.max(0, Math.min(10, Math.floor(configured)));
 }
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
@@ -63,26 +49,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
         opportunityActionFor(b, profile).actionability_score -
         opportunityActionFor(a, profile).actionability_score
     );
-  try {
-    await ensureContactEnrichmentForSignals({
-      scanId: scan.id,
-      signals,
-      limit: autoEnrichLimit(),
-      reserveProviderCredit: async (signal) => {
-        if (!reportAccess.authUserId) {
-          throw new EnrichmentCreditError({ status: "not_entitled", limit: 0, used: 0, remaining: 0 });
-        }
-        requireReservedEnrichmentCredit(await reserveContactEnrichmentCredit({
-          authUserId: reportAccess.authUserId,
-          scanId: scan.id,
-          opportunityId: signal.id
-        }));
-      }
-    });
-  } catch (error) {
-    // Credit exhaustion must not block export of the action data already in the paid report.
-    if (!(error instanceof EnrichmentCreditError)) throw error;
-  }
   const rows = await buildOutreachPackage({ scan, profile, signals });
   const format = url.searchParams.get("format") ?? "csv";
   const basename = `opportunity-outreach-package-${params.id}`;

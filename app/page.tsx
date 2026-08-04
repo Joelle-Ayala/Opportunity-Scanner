@@ -249,10 +249,11 @@ function ProductProof() {
     <section className="home-product-proof border-b border-line bg-white">
       <div className="mx-auto max-w-7xl px-6 py-14 lg:py-20">
         <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
-          <SectionIntro title="See the evidence, commercial route, and next move together" eyebrow="Inside the product">
+          <SectionIntro title="Turn a finding into a tracked pursuit" eyebrow="Inside the product">
             <p>
-              Opportunity Scanner turns a public record into a decision-ready row. The fictional
-              CivicStage example below demonstrates the workflow without using customer data.
+              Opportunity Scanner does more than explain a public record. Open the official route,
+              start a pursuit, assign the work, find the right contact path, and move the context into
+              your workflow. CivicStage is fictional and uses public-source examples.
             </p>
           </SectionIntro>
           <div className="grid gap-3 border-y border-line py-4 sm:grid-cols-3 sm:divide-x sm:divide-line sm:border-y-0 sm:py-0">
@@ -312,6 +313,38 @@ function ProductProof() {
                 ))}
               </dl>
 
+              <div className="mt-5 rounded-md border border-cyan-200 bg-mist p-3.5">
+                <p className="text-xs font-semibold uppercase text-accent">Opportunity actions</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <a
+                    href="https://www.usaspending.gov/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent"
+                  >
+                    Review source
+                  </a>
+                  <a
+                    href="/examples/creative-economy-live-events-opportunity-scan#pursuit-workspace"
+                    className="rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871]"
+                  >
+                    Start pursuit
+                  </a>
+                  <a
+                    href="/examples/creative-economy-live-events-opportunity-scan#pursuit-workspace"
+                    className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent"
+                  >
+                    Find contacts
+                  </a>
+                  <a
+                    href="/examples/creative-economy-live-events-opportunity-scan#pursuit-workspace"
+                    className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent"
+                  >
+                    Send to workflow
+                  </a>
+                </div>
+              </div>
+
               <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
                 <div>
                   <p className="text-xs font-semibold uppercase text-muted">Official source</p>
@@ -331,23 +364,35 @@ function ProductProof() {
             </div>
 
             <div className="bg-field p-5 sm:p-6">
-              <p className="text-xs font-semibold uppercase text-accent">Move it forward</p>
-              <ol className="mt-4 divide-y divide-line border-y border-line">
+              <p className="text-xs font-semibold uppercase text-accent">Active pursuit</p>
+              <h4 className="mt-2 text-lg font-semibold leading-6 text-ink">Application and pursuit workspace</h4>
+              <p className="mt-2 text-xs leading-5 text-muted">Keep ownership, qualification, and the official route attached to the opportunity.</p>
+
+              <dl className="mt-5 divide-y divide-line border-y border-line">
                 {[
-                  ["01", "Open source", "Confirm the record and organization"],
-                  ["02", "Start pursuit", "Assign an owner and revenue motion"],
-                  ["03", "Prepare outreach", "Use the contact path and source context"],
-                  ["04", "Monitor", "Watch the qualified profile for changes"]
-                ].map(([number, label, copy]) => (
-                  <li key={number} className="grid grid-cols-[32px_1fr] gap-3 py-3.5">
-                    <span className="text-xs font-semibold text-amber-800">{number}</span>
-                    <span>
-                      <span className="block text-sm font-semibold text-ink">{label}</span>
-                      <span className="mt-0.5 block text-xs leading-5 text-muted">{copy}</span>
-                    </span>
-                  </li>
+                  ["Stage", "Qualifying"],
+                  ["Owner", "Business development lead"],
+                  ["Fit decision", "Pursue"],
+                  ["Next step", "Confirm the programming owner and outreach route"]
+                ].map(([label, value]) => (
+                  <div key={label} className="grid gap-1 py-3 sm:grid-cols-[90px_1fr] sm:gap-3">
+                    <dt className="text-xs font-semibold uppercase text-muted">{label}</dt>
+                    <dd className="text-sm font-semibold leading-5 text-ink">{value}</dd>
+                  </div>
                 ))}
-              </ol>
+              </dl>
+
+              <div className="mt-4 grid gap-2 text-xs font-medium text-slate-700">
+                <p className="flex items-center gap-2"><span className="grid h-5 w-5 place-items-center rounded border border-emerald-300 bg-emerald-50 text-emerald-700">✓</span> Source checked</p>
+                <p className="flex items-center gap-2"><span className="grid h-5 w-5 place-items-center rounded border border-emerald-300 bg-emerald-50 text-emerald-700">✓</span> Action route checked</p>
+              </div>
+
+              <a
+                href="/examples/creative-economy-live-events-opportunity-scan#pursuit-workspace"
+                className="mt-5 flex min-h-10 w-full items-center justify-center rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
+              >
+                See the pursuit workflow
+              </a>
             </div>
           </div>
         </div>

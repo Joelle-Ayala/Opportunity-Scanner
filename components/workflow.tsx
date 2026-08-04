@@ -105,6 +105,20 @@ export function SendToWorkflowModal({
     );
   }
 
+  if (payload.workflowPayloadReady !== true) {
+    return (
+      <button
+        ref={triggerRef}
+        type="button"
+        disabled
+        className="min-h-11 rounded-md border border-line bg-field px-3 py-2 text-xs font-semibold text-slate-500"
+        title={payload.workflowPayloadReason || "Verify the source and target before sending this opportunity to a workflow."}
+      >
+        Workflow needs source check
+      </button>
+    );
+  }
+
   return (
     <>
       <button
