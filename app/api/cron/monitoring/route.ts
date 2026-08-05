@@ -61,8 +61,17 @@ type MonitoringResult = {
   releaseFailed?: boolean;
 };
 
+type MonitoringSubsystemStatus = {
+  status: "ok" | "degraded" | "skipped";
+  reason?: string;
+};
+
 type MonitoringCronSummary = {
   ok: boolean;
+  transportOk: true;
+  transportStatus: 200;
+  diagnosticStatus: number;
+  state: "healthy" | "degraded";
   outcome: MonitoringSchedulerOutcome;
   claimed: number;
   completed: number;
@@ -70,6 +79,17 @@ type MonitoringCronSummary = {
   deferred: number;
   health: MonitoringQueueHealth | null;
   subscriptionActivation: SubscriptionActivationRecoverySummary;
+  subsystems: {
+    subscriptionActivation: MonitoringSubsystemStatus;
+    profileClaiming: MonitoringSubsystemStatus;
+    profileProcessing: MonitoringSubsystemStatus;
+    monitoringAlertClaiming: MonitoringSubsystemStatus;
+    monitoringAlertDelivery: MonitoringSubsystemStatus;
+    deadlineEnqueue: MonitoringSubsystemStatus;
+    deadlineAlertClaiming: MonitoringSubsystemStatus;
+    deadlineAlertDelivery: MonitoringSubsystemStatus;
+    queueHealth: MonitoringSubsystemStatus;
+  };
   delivery: {
     configured: boolean;
     claimed: number;
@@ -356,50 +376,18 @@ export async function GET(request: Request): Promise<Response> {
   let queueHealth: MonitoringQueueHealth | null = null;
   let queueHealthFailed = false;
 
-  let profiles;
+  let profiles: MonitoredProfileRecord[] = [];
+  let profileClaimFailed = false;
   try {
     const requestedProfileId = new URL(request.url).searchParams.get("profileId");
     profiles = requestedProfileId && /^[0-9a-f-]{36}$/i.test(requestedProfileId)
       ? await claimMonitoredProfileById(requestedProfileId)
       : await claimDueMonitoredProfiles(profileBatchSize());
   } catch (cause) {
+    profileClaimFailed = true;
     console.error("Unable to claim due monitoring profiles", {
       error: cause instanceof Error ? cause.message : "Unknown monitoring storage error"
     });
-    return respondWithSummary({
-      ok: false,
-      outcome: "storage_error",
-      claimed: 0,
-      completed: 0,
-      failed: 0,
-      deferred: 0,
-      health: null,
-      subscriptionActivation,
-      delivery: {
-        configured: Boolean(emailConfig),
-        claimed: 0,
-        delivered: 0,
-        failed: 0,
-        retried: 0,
-        deadLettered: 0,
-        claimFailed: false,
-        releaseFailed: 0,
-        deadlines: {
-          configured: Boolean(deadlineEmailConfig),
-          enqueued: 0,
-          enqueueFailed: false,
-          claimed: 0,
-          delivered: 0,
-          failed: 0,
-          retried: 0,
-          deadLettered: 0,
-          claimFailed: false,
-          releaseFailed: 0
-        }
-      },
-      results: [],
-      durationMs: Date.now() - startedAt
-    }, 503, { id: invocationId, startedAt });
   }
 
   const results = await processClaimedProfiles(
@@ -507,6 +495,7 @@ export async function GET(request: Request): Promise<Response> {
   }
   const configurationFailed = !emailConfig || !deadlineEmailConfig;
   const storageFailed = deadlineAlertsEnqueueFailed
+    || profileClaimFailed
     || subscriptionActivation.recovery.claimFailed
     || subscriptionActivation.recovery.attemptFailed > 0
     || subscriptionActivation.recovery.releaseFailed > 0
@@ -525,10 +514,62 @@ export async function GET(request: Request): Promise<Response> {
     || deadlineAlertsFailed > 0
     || deadlineAlertsDeadLettered > 0;
   const ok = !configurationFailed && !storageFailed && !deliveryFailed && failed === 0;
-  const status = ok ? 200 : configurationFailed || storageFailed ? 503 : deliveryFailed ? 502 : 500;
+  // Authorized scheduler invocations are transport-successful even when one subsystem degrades.
+  // The historical failure code is retained as diagnostic context for operational tooling.
+  const diagnosticFailureStatus = configurationFailed || storageFailed ? 503 : deliveryFailed ? 502 : 500;
+  const diagnosticStatus = ok ? 200 : diagnosticFailureStatus;
+
+  const subscriptionActivationFailed = subscriptionActivation.recovery.claimFailed
+    || subscriptionActivation.recovery.attemptFailed > 0
+    || subscriptionActivation.recovery.releaseFailed > 0
+    || subscriptionActivation.reminders.claimFailed
+    || subscriptionActivation.reminders.releaseFailed > 0
+    || subscriptionActivation.reminders.retried > 0
+    || subscriptionActivation.reminders.deadLettered > 0;
+  const subsystems: MonitoringCronSummary["subsystems"] = {
+    subscriptionActivation: subscriptionActivationFailed
+      ? { status: "degraded", reason: "activation_processing_failed" }
+      : { status: "ok" },
+    profileClaiming: profileClaimFailed
+      ? { status: "degraded", reason: "profile_claim_failed" }
+      : { status: "ok" },
+    profileProcessing: failed > 0 || profileReleaseFailed > 0
+      ? { status: "degraded", reason: profileReleaseFailed > 0 ? "profile_release_failed" : "profile_run_failed" }
+      : { status: "ok" },
+    monitoringAlertClaiming: !emailConfig
+      ? { status: "skipped", reason: "email_not_configured" }
+      : alertsClaimFailed
+        ? { status: "degraded", reason: "alert_claim_failed" }
+        : { status: "ok" },
+    monitoringAlertDelivery: !emailConfig
+      ? { status: "skipped", reason: "email_not_configured" }
+      : alertsFailed > 0 || alertsReleaseFailed > 0 || alertsDeadLettered > 0
+        ? { status: "degraded", reason: "alert_delivery_failed" }
+        : { status: "ok" },
+    deadlineEnqueue: deadlineAlertsEnqueueFailed
+      ? { status: "degraded", reason: "deadline_enqueue_failed" }
+      : { status: "ok" },
+    deadlineAlertClaiming: !deadlineEmailConfig
+      ? { status: "skipped", reason: "email_not_configured" }
+      : deadlineAlertsClaimFailed
+        ? { status: "degraded", reason: "deadline_claim_failed" }
+        : { status: "ok" },
+    deadlineAlertDelivery: !deadlineEmailConfig
+      ? { status: "skipped", reason: "email_not_configured" }
+      : deadlineAlertsFailed > 0 || deadlineAlertsReleaseFailed > 0 || deadlineAlertsDeadLettered > 0
+        ? { status: "degraded", reason: "deadline_delivery_failed" }
+        : { status: "ok" },
+    queueHealth: queueHealthFailed
+      ? { status: "degraded", reason: "queue_health_failed" }
+      : { status: "ok" }
+  };
 
   return respondWithSummary({
     ok,
+    transportOk: true,
+    transportStatus: 200,
+    diagnosticStatus,
+    state: ok ? "healthy" : "degraded",
     outcome: ok
       ? "completed"
       : configurationFailed
@@ -544,6 +585,7 @@ export async function GET(request: Request): Promise<Response> {
     deferred,
     health: queueHealth,
     subscriptionActivation,
+    subsystems,
     delivery: {
       configured: Boolean(emailConfig),
       claimed: alertsClaimed,
@@ -568,5 +610,5 @@ export async function GET(request: Request): Promise<Response> {
     },
     results,
     durationMs: Date.now() - startedAt
-  }, status, { id: invocationId, startedAt });
+  }, 200, { id: invocationId, startedAt });
 }

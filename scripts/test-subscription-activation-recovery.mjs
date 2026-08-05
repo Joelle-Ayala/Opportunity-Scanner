@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 import {
+  inspectSubscriptionActivationStripeEvent,
   processSubscriptionActivationRecoveries,
   sendSubscriptionActivationReminder,
   subscriptionActivationFromStripeEvent
 } from "../lib/payments/subscriptionActivationRecovery.ts";
+import { handleStripeWebhook } from "../lib/payments/handlers.ts";
 
 const sourceScanId = "91a3e66c-2c07-46cf-ab0c-3768375e050a";
 const recoveryId = "72b4270c-6ca3-4427-a75f-ec5ca0a01cb2";
@@ -107,6 +110,195 @@ for (const event of [
 ]) {
   assert.equal(subscriptionActivationFromStripeEvent(event, prices), null);
 }
+
+assert.deepEqual(
+  inspectSubscriptionActivationStripeEvent({
+    type: "customer.subscription.created",
+    livemode: true,
+    data: {
+      object: {
+        id: "sub_subscription123",
+        customer: "cus_customer123",
+        status: "active",
+        items: { data: [{ price: { id: prices.monitorMonthly } }] }
+      }
+    }
+  }, prices),
+  { status: "skipped", reason: "awaiting_checkout_metadata" },
+  "subscription events without source metadata wait for the checkout event"
+);
+
+function checkoutEvent() {
+  return {
+    id: "evt_checkout",
+    type: "checkout.session.completed",
+    livemode: true,
+    data: {
+      object: {
+        mode: "subscription",
+        payment_status: "paid",
+        customer: "cus_customer123",
+        subscription: "sub_subscription123",
+        customer_details: { email: "buyer@example.com" },
+        metadata: {
+          product: "monitor",
+          price_id: prices.monitorMonthly,
+          scan_id: sourceScanId
+        }
+      }
+    }
+  };
+}
+
+function subscriptionEvent(metadata = { product: "growth", scan_id: sourceScanId }) {
+  return {
+    id: "evt_subscription",
+    type: "customer.subscription.created",
+    livemode: true,
+    data: {
+      object: {
+        id: "sub_subscription123",
+        customer: "cus_customer123",
+        status: "active",
+        metadata,
+        items: { data: [{ price: { id: prices.growthAnnual } }] }
+      }
+    }
+  };
+}
+
+function webhookRequest(event) {
+  return new Request("https://scanner.example.test/api/stripe/webhook", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "stripe-signature": "test-signature"
+    },
+    body: JSON.stringify(event)
+  });
+}
+
+const webhookConfig = {
+  secretKey: "sk_live_fixture",
+  webhookSecret: "whsec_fixture",
+  appUrl: "https://scanner.example.test",
+  subscriptionCheckoutEnabled: true,
+  prices
+};
+const registeredCaptures = [];
+const activationLogs = [];
+const originalConsoleInfo = console.info;
+const originalConsoleError = console.error;
+console.info = (...input) => activationLogs.push(["info", ...input]);
+console.error = (...input) => activationLogs.push(["error", ...input]);
+
+function webhookDependencies(overrides = {}) {
+  return {
+    getConfig: () => webhookConfig,
+    verifyStripeSignature: () => true,
+    persistEvent: async () => true,
+    inspectActivation: inspectSubscriptionActivationStripeEvent,
+    registerActivation: async (capture) => {
+      registeredCaptures.push(capture);
+      return true;
+    },
+    deliverReport: async () => ({ status: "skipped" }),
+    trackPurchase: async () => {},
+    ...overrides
+  };
+}
+
+try {
+  const checkoutResponse = await handleStripeWebhook(
+    webhookRequest(checkoutEvent()),
+    webhookDependencies()
+  );
+  assert.equal(checkoutResponse.status, 200);
+  assert.deepEqual(registeredCaptures.at(-1), checkoutCapture);
+
+  const duplicateResponse = await handleStripeWebhook(
+    webhookRequest(checkoutEvent()),
+    webhookDependencies({ persistEvent: async () => false })
+  );
+  assert.equal(duplicateResponse.status, 200);
+  assert.equal((await duplicateResponse.json()).duplicate, true);
+  assert.equal(
+    registeredCaptures.filter((capture) => capture.customerEmail === "buyer@example.com").length,
+    2,
+    "duplicate checkout delivery still invokes the idempotent activation registration"
+  );
+
+  const asyncPaymentResponse = await handleStripeWebhook(
+    webhookRequest({
+      ...checkoutEvent(),
+      id: "evt_async_checkout",
+      type: "checkout.session.async_payment_succeeded"
+    }),
+    webhookDependencies()
+  );
+  assert.equal(asyncPaymentResponse.status, 200);
+  assert.deepEqual(registeredCaptures.at(-1), checkoutCapture);
+
+  const subscriptionResponse = await handleStripeWebhook(
+    webhookRequest(subscriptionEvent()),
+    webhookDependencies()
+  );
+  assert.equal(subscriptionResponse.status, 200);
+  assert.deepEqual(registeredCaptures.at(-1), subscriptionCapture);
+
+  const registrationsBeforeSkip = registeredCaptures.length;
+  const skippedResponse = await handleStripeWebhook(
+    webhookRequest(subscriptionEvent(null)),
+    webhookDependencies()
+  );
+  assert.equal(skippedResponse.status, 200);
+  assert.equal(registeredCaptures.length, registrationsBeforeSkip);
+
+  const rejectedResponse = await handleStripeWebhook(
+    webhookRequest(checkoutEvent()),
+    webhookDependencies({ registerActivation: async () => false })
+  );
+  assert.equal(rejectedResponse.status, 503);
+  assert.equal(
+    (await rejectedResponse.json()).error.code,
+    "SUBSCRIPTION_ACTIVATION_RETRY_REQUIRED"
+  );
+
+  const exceptionResponse = await handleStripeWebhook(
+    webhookRequest(checkoutEvent()),
+    webhookDependencies({
+      registerActivation: async () => {
+        throw new Error("database unavailable for buyer@example.com");
+      }
+    })
+  );
+  assert.equal(exceptionResponse.status, 503);
+  assert.equal(
+    (await exceptionResponse.json()).error.code,
+    "SUBSCRIPTION_ACTIVATION_RETRY_REQUIRED"
+  );
+} finally {
+  console.info = originalConsoleInfo;
+  console.error = originalConsoleError;
+}
+
+const serializedActivationLogs = JSON.stringify(activationLogs);
+for (const expected of [
+  '"outcome":"captured"',
+  '"outcome":"registered"',
+  '"outcome":"skipped"',
+  '"reason":"awaiting_checkout_metadata"',
+  '"reason":"registration_rejected"',
+  '"reason":"registration_exception"',
+  '"duplicateWebhook":true'
+]) {
+  assert.match(serializedActivationLogs, new RegExp(expected));
+}
+assert.doesNotMatch(
+  serializedActivationLogs,
+  /buyer@example|cus_|sub_|[0-9a-f]{8}-[0-9a-f-]{27,}/i,
+  "subscription activation logs must not contain customer or scan identifiers"
+);
 
 const sent = [];
 const completed = [];
@@ -292,11 +484,25 @@ assert.deepEqual(outboundBody.to, ["buyer@example.com"]);
 assert.match(outboundBody.subject, /Finish setting up/);
 assert.match(outboundBody.text, /dashboard%2Fonboarding/);
 
-const [migration, hardeningMigration, uuidClaimFixMigration, conflictFixMigration, route, publicHealth, cron, handlers, handoff] = await Promise.all([
+const [
+  migration,
+  hardeningMigration,
+  uuidClaimFixMigration,
+  conflictFixMigration,
+  ambiguityHardeningMigration,
+  migrationManifestSource,
+  route,
+  publicHealth,
+  cron,
+  handlers,
+  handoff
+] = await Promise.all([
   readFile(new URL("../db/subscription-activation-recovery.sql", import.meta.url), "utf8"),
   readFile(new URL("../db/subscription-activation-recovery-hardening.sql", import.meta.url), "utf8"),
   readFile(new URL("../db/subscription-activation-recovery-uuid-claim-fix.sql", import.meta.url), "utf8"),
   readFile(new URL("../db/subscription-activation-recovery-conflict-fix.sql", import.meta.url), "utf8"),
+  readFile(new URL("../db/subscription-activation-recovery-ambiguity-hardening.sql", import.meta.url), "utf8"),
+  readFile(new URL("../db/migration-manifest.json", import.meta.url), "utf8"),
   readFile(new URL("../app/api/health/subscriptions/route.ts", import.meta.url), "utf8"),
   readFile(new URL("../app/api/health/route.ts", import.meta.url), "utf8"),
   readFile(new URL("../app/api/cron/monitoring/route.ts", import.meta.url), "utf8"),
@@ -319,7 +525,7 @@ assert.match(route, /status: 401/);
 assert.match(route, /PRIVATE_HEADERS/);
 assert.doesNotMatch(publicHealth, /subscriptionActivationRecoveryHealth|active_without_profile_count/);
 assert.match(cron, /processSubscriptionActivationRecoveries/);
-assert.match(handlers, /subscriptionActivationFromStripeEvent/);
+assert.match(handlers, /inspectSubscriptionActivationStripeEvent/);
 assert.match(hardeningMigration, /subscription\.livemode = true/);
 assert.match(hardeningMigration, /schema_migration_corrections/);
 assert.match(hardeningMigration, /schema_migration_effective_checksums/);
@@ -346,6 +552,56 @@ assert.match(conflictFixMigration, /pg_get_functiondef/);
 assert.match(conflictFixMigration, /'on conflict \(recovery_id, reminder_sequence\) do nothing'/);
 assert.match(conflictFixMigration, /'on conflict do nothing'/);
 assert.match(conflictFixMigration, /grant execute on function public\.claim_due_subscription_activation_recoveries\(integer\)[\s\S]*to service_role/);
+for (const functionName of [
+  "claim_due_subscription_activation_recoveries",
+  "attempt_subscription_activation_recovery",
+  "release_subscription_activation_recovery",
+  "claim_pending_subscription_activation_reminders",
+  "get_subscription_activation_recovery_health"
+]) {
+  assert.match(
+    ambiguityHardeningMigration,
+    new RegExp(`create or replace function public\\.${functionName}\\(`, "i")
+  );
+}
+assert.doesNotMatch(ambiguityHardeningMigration, /pg_get_functiondef|execute replace/i);
+assert.doesNotMatch(
+  ambiguityHardeningMigration,
+  /on conflict\s*\(\s*recovery_id\s*,\s*reminder_sequence\s*\)/i
+);
+assert.doesNotMatch(
+  ambiguityHardeningMigration,
+  /\bwhere\s+(?:recovery_id|reminder_id|lease_token|attempt_count|status|id)\b/i
+);
+assert.doesNotMatch(
+  ambiguityHardeningMigration,
+  /\breturning\s+(?:recovery_id|reminder_id|lease_token|attempt_count|status|id)\b/i
+);
+assert.match(ambiguityHardeningMigration, /join lateral \(/);
+assert.match(ambiguityHardeningMigration, /coalesce\(scan\.completed_at, scan\.created_at\) desc/);
+assert.match(ambiguityHardeningMigration, /ownership\.created_at desc/);
+assert.doesNotMatch(ambiguityHardeningMigration, /having count\(\*\) = 1/);
+assert.match(ambiguityHardeningMigration, /due_recoveries\.due_recovery_id/);
+assert.match(ambiguityHardeningMigration, /claimed_recoveries\.claimed_recovery_id/);
+assert.match(ambiguityHardeningMigration, /due_reminders\.due_reminder_id/);
+assert.match(ambiguityHardeningMigration, /claimed_reminders\.claimed_reminder_id/);
+assert.match(
+  ambiguityHardeningMigration,
+  /revoke all on function public\.claim_due_subscription_activation_recoveries\(integer\)[\s\S]*from public, anon, authenticated, service_role/i
+);
+assert.match(
+  ambiguityHardeningMigration,
+  /grant execute on function public\.get_subscription_activation_recovery_health\(\)[\s\S]*to service_role/i
+);
+const ambiguityHardeningManifestEntry = JSON.parse(migrationManifestSource).migrations.at(-1);
+assert.deepEqual(ambiguityHardeningManifestEntry, {
+  version: "v0038",
+  file: "db/subscription-activation-recovery-ambiguity-hardening.sql",
+  description: "Replace subscription activation recovery RPCs with fully qualified, collision-safe definitions.",
+  prerequisites: ["v0037"],
+  sha256: createHash("sha256").update(ambiguityHardeningMigration).digest("hex"),
+  requiredInProduction: true
+});
 assert.match(handlers, /SUBSCRIPTION_ACTIVATION_RETRY_REQUIRED/);
 assert.match(handoff, /registerActivation/);
 

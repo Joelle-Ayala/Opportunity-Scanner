@@ -13,11 +13,18 @@ export const metadata: Metadata = {
 
 const messages: Record<string, { tone: string; text: string }> = {
   "invalid-email": { tone: "border-red-200 bg-red-50 text-red-700", text: "Enter a valid email address." },
-  "rate-limited": { tone: "border-amber-200 bg-amber-50 text-amber-800", text: "Please wait a minute before requesting another link." },
   "request-failed": { tone: "border-red-200 bg-red-50 text-red-700", text: "We could not send your sign-in link. Please try again." },
   "invalid-link": { tone: "border-red-200 bg-red-50 text-red-700", text: "That sign-in link is not valid for this browser. Request a new one below." },
   "expired-link": { tone: "border-red-200 bg-red-50 text-red-700", text: "That sign-in link expired or was already used. Request a new one below." }
 };
+
+function rateLimitMessage(rawRetryAfter?: string): string {
+  const parsed = rawRetryAfter && /^\d+$/.test(rawRetryAfter) ? Number(rawRetryAfter) : NaN;
+  const retryAfter = Number.isSafeInteger(parsed) && parsed > 0 ? Math.min(parsed, 3600) : null;
+  return retryAfter
+    ? `A sign-in link may already be in your inbox. Wait ${retryAfter} seconds before requesting another.`
+    : "A sign-in link may already be in your inbox. Wait a minute before requesting another.";
+}
 
 function purchaseSupportHref(scanId: string): string {
   const supportEmail = configuredSupportEmail();
@@ -35,9 +42,13 @@ function purchaseSupportHref(scanId: string): string {
 export default async function SignInPage({
   searchParams
 }: {
-  searchParams?: { error?: string; status?: string; next?: string };
+  searchParams?: { error?: string; status?: string; next?: string; retry_after?: string };
 }) {
-  const error = searchParams?.error ? messages[searchParams.error] : null;
+  const error = searchParams?.error === "rate-limited"
+    ? { tone: "border-amber-200 bg-amber-50 text-amber-800", text: rateLimitMessage(searchParams.retry_after) }
+    : searchParams?.error
+      ? messages[searchParams.error]
+      : null;
   const emailSent = searchParams?.status === "email-sent";
   const signedOut = searchParams?.status === "signed-out";
   const nextPath = searchParams?.next || "/dashboard";
@@ -74,7 +85,7 @@ export default async function SignInPage({
 
           {emailSent ? (
             <div className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-800" role="status">
-              Check your inbox. The link expires shortly and works in this browser.
+              Check your inbox. The link expires shortly and works in this browser. Requesting another link too soon can delay access.
             </div>
           ) : null}
           {signedOut ? (

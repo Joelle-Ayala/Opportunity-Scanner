@@ -146,12 +146,14 @@ test("configuration requires a secure application origin and no unsubscribe secr
 test("scan lifecycle delivery stays separate from consent-gated nurture", async () => {
   const route = await readFile(new URL("../app/api/scans/route.ts", import.meta.url), "utf8");
   const completedDelivery = route.indexOf("state: pipelineResult.status");
-  const nurtureConsent = route.indexOf('if (pipelineResult.status === "completed" && input.email && marketingConsent)');
+  const nurtureEnrollment = route.indexOf("attemptCompletedScanNurture({");
   const failurePersistence = route.indexOf("if (failurePersisted)");
   const failedDelivery = route.indexOf('state: "failed"');
 
-  assert.ok(completedDelivery > 0 && completedDelivery < nurtureConsent);
-  assert.match(route, /pipelineResult\.status === "completed" && input\.email && marketingConsent/);
+  assert.ok(completedDelivery > 0);
+  assert.ok(nurtureEnrollment > 0);
+  assert.match(route, /pipelineResult\.status === "completed"/);
+  assert.match(route, /reason: "marketing_consent_not_granted"/);
   assert.ok(failurePersistence > 0 && failurePersistence < failedDelivery);
   assert.match(route, /async function attemptScanLifecycleEmail/);
   assert.match(route, /try \{[\s\S]*?await deliverScanLifecycleEmailSafely[\s\S]*?\} catch \{/);

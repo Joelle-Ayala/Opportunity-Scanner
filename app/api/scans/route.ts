@@ -19,18 +19,80 @@ import {
 import { getCustomerAuthConfig, resolveCustomerSession } from "@/lib/customer-auth";
 import { enqueueScanNurture } from "@/lib/nurture";
 import { deliverScanLifecycleEmailSafely } from "@/lib/transactionalEmail/scanLifecycle";
-import { CustomerType, ReportType, ScanInput } from "@/lib/types";
+import type { CustomerType, ReportType, ScanInput } from "@/lib/types";
 import { normalizeCompanyUrl } from "@/lib/url";
 import {
   FIRST_TOUCH_COOKIE_NAME,
-  landingPathFromUrl,
-  resolveFirstTouchAttribution
+  resolveScanFirstTouchAttribution
 } from "@/lib/acquisitionAttribution";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 const CUSTOMER_OWNERSHIP_TIMEOUT_MS = 1_000;
 const SCAN_LIFECYCLE_EMAIL_TIMEOUT_MS = 3_000;
+const SCAN_NURTURE_ENQUEUE_TIMEOUT_MS = 1_500;
+
+type ScanNurtureLogger = Pick<Console, "info" | "error">;
+
+async function attemptCompletedScanNurture(
+  input: {
+    scanId: string;
+    email?: string | null;
+    companyName?: string | null;
+    marketingConsent: boolean;
+  },
+  dependencies: {
+    enqueue?: typeof enqueueScanNurture;
+    withBudget?: typeof withSupabaseRequestBudget;
+    logger?: ScanNurtureLogger;
+    now?: () => number;
+  } = {}
+): Promise<"enqueued" | "skipped" | "failed"> {
+  const logger = dependencies.logger ?? console;
+  if (!input.marketingConsent) {
+    logger.info("Scan nurture enrollment skipped", {
+      event: "scan.nurture.skipped",
+      scanId: input.scanId,
+      reason: "marketing_consent_not_granted"
+    });
+    return "skipped";
+  }
+  if (!input.email) {
+    logger.info("Scan nurture enrollment skipped", {
+      event: "scan.nurture.skipped",
+      scanId: input.scanId,
+      reason: "recipient_email_missing"
+    });
+    return "skipped";
+  }
+
+  const enqueue = dependencies.enqueue ?? enqueueScanNurture;
+  const withBudget = dependencies.withBudget ?? withSupabaseRequestBudget;
+  const now = dependencies.now ?? Date.now;
+  try {
+    await withBudget({ timeoutMs: SCAN_NURTURE_ENQUEUE_TIMEOUT_MS }, () =>
+      enqueue({
+        scanId: input.scanId,
+        email: input.email!,
+        companyName: input.companyName,
+        consentedAt: new Date(now()).toISOString(),
+        consentSource: "homepage_scan"
+      })
+    );
+    logger.info("Completed scan enrolled in nurture sequence", {
+      event: "scan.nurture.enqueued",
+      scanId: input.scanId
+    });
+    return "enqueued";
+  } catch (error) {
+    logger.error("Scan nurture enrollment failed", {
+      event: "scan.nurture.enrollment_failed",
+      scanId: input.scanId,
+      error: error instanceof Error ? error.message : "Unknown nurture enrollment error"
+    });
+    return "failed";
+  }
+}
 
 async function attemptScanLifecycleEmail(input: {
   scanId: string;
@@ -150,13 +212,13 @@ export async function POST(request: Request) {
     redirect("/?error=invalid-url");
   }
 
-  const firstTouchAttribution = resolveFirstTouchAttribution({
+  const firstTouchAttribution = resolveScanFirstTouchAttribution({
     cookieValue: cookieStore.get(FIRST_TOUCH_COOKIE_NAME)?.value,
+    firstTouchId: randomUUID(),
+    firstTouchedAt: new Date(requestStartedAtMs).toISOString(),
+    landingUrl: request.headers.get("referer"),
     nowMs: requestStartedAtMs,
-    fallback: {
-      firstTouchId: randomUUID(),
-      firstTouchedAt: new Date(requestStartedAtMs).toISOString(),
-      landingPath: landingPathFromUrl(request.headers.get("referer")),
+    formUtms: {
       utmSource: formData.get("utm_source"),
       utmMedium: formData.get("utm_medium"),
       utmCampaign: formData.get("utm_campaign"),
@@ -198,35 +260,25 @@ export async function POST(request: Request) {
       gatewayToken: request.headers.get("x-vercel-oidc-token") || undefined
     });
 
-    if (session?.user.email) {
-      await attemptCustomerScanOwnership(session.user.id, scan.id, terminalDeadlineAtMs);
+    if (pipelineResult.status === "completed") {
+      await attemptCompletedScanNurture({
+        scanId: scan.id,
+        email: input.email,
+        companyName: input.companyName,
+        marketingConsent
+      });
     }
 
-    await attemptScanLifecycleEmail({
-      scanId: scan.id,
-      recipientEmail: input.email,
-      state: pipelineResult.status
-    });
-
-    if (pipelineResult.status === "completed" && input.email && marketingConsent) {
-      const nurtureTimeoutMs = Math.max(0, terminalDeadlineAtMs - Date.now());
-      if (nurtureTimeoutMs > 0) {
-        await withSupabaseRequestBudget({ timeoutMs: nurtureTimeoutMs }, () =>
-          enqueueScanNurture({
-            scanId: scan.id,
-            email: input.email!,
-            companyName: input.companyName,
-            consentedAt: new Date().toISOString(),
-            consentSource: "homepage_scan"
-          })
-        ).catch((error) => {
-          console.error("Unable to enroll completed scan in nurture sequence", {
-            scanId: scan.id,
-            error: error instanceof Error ? error.message : "Unknown nurture enrollment error"
-          });
-        });
-      }
-    }
+    await Promise.all([
+      session?.user.email
+        ? attemptCustomerScanOwnership(session.user.id, scan.id, terminalDeadlineAtMs)
+        : Promise.resolve(),
+      attemptScanLifecycleEmail({
+        scanId: scan.id,
+        recipientEmail: input.email,
+        state: pipelineResult.status
+      })
+    ]);
   } catch (error) {
     console.error("Scan pipeline failed", {
       scanId: scan.id,

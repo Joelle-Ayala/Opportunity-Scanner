@@ -194,7 +194,11 @@ test("migration provides transactional dedupe, delayed additive touch one, leasi
   assert.match(firstTouchDelay, /job\.last_attempt_at is null/);
   assert.match(firstTouchDelay, /job\.lease_expires_at is null/);
   assert.match(firstTouchDelay, /grant execute on function enqueue_scan_nurture/);
-  assert.match(route, /input\.email && marketingConsent/);
+  assert.match(route, /pipelineResult\.status === "completed"/);
+  assert.match(route, /attemptCompletedScanNurture\(\{/);
+  assert.match(route, /reason: "marketing_consent_not_granted"/);
+  assert.match(route, /event: "scan\.nurture\.enrollment_failed"/);
+  assert.doesNotMatch(route, /terminalDeadlineAtMs - Date\.now\(\)/);
   assert.match(storage, /p_consented_at: consentedAt\.toISOString\(\)/);
   assert.match(storage, /p_consent_source: input\.consentSource/);
   assert.match(homepage, /name="marketingConsent"/);

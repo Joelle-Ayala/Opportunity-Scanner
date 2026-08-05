@@ -44,11 +44,21 @@ export async function POST(request: Request) {
     await requestMagicLink(config, email, callbackUrl.toString(), challenge);
   } catch (error) {
     const rateLimited = error instanceof CustomerAuthError && error.status === 429;
-    console.error("Customer magic-link request failed", rateLimited ? "rate_limited" : "upstream_error");
-    return signInRedirect(
-      config,
-      `error=${rateLimited ? "rate-limited" : "request-failed"}&next=${encodeURIComponent(nextPath)}`
-    );
+    const retryAfterSeconds = rateLimited && error.retryAfterSeconds
+      ? Math.min(Math.max(Math.ceil(error.retryAfterSeconds), 1), 3600)
+      : undefined;
+    console.error("Customer magic-link request failed", {
+      outcome: rateLimited ? "rate_limited" : "upstream_error",
+      status: error instanceof CustomerAuthError ? error.status : undefined,
+      code: error instanceof CustomerAuthError ? error.code : undefined,
+      retryAfterSeconds
+    });
+    const errorParams = new URLSearchParams({
+      error: rateLimited ? "rate-limited" : "request-failed",
+      next: nextPath
+    });
+    if (retryAfterSeconds) errorParams.set("retry_after", String(retryAfterSeconds));
+    return signInRedirect(config, errorParams.toString());
   }
 
   const response = signInRedirect(config, `status=email-sent&next=${encodeURIComponent(nextPath)}`);

@@ -16,6 +16,26 @@ export type SubscriptionActivationCapture = {
   sourceScanId: string;
 };
 
+export type SubscriptionActivationSkipReason =
+  | "livemode_required"
+  | "event_type_missing"
+  | "event_object_missing"
+  | "event_not_applicable"
+  | "checkout_not_subscription"
+  | "checkout_payment_not_paid"
+  | "catalog_price_missing_or_invalid"
+  | "catalog_product_mismatch"
+  | "awaiting_checkout_metadata"
+  | "source_scan_missing_or_invalid"
+  | "customer_missing_or_invalid"
+  | "subscription_missing_or_invalid"
+  | "customer_email_missing_or_invalid"
+  | "subscription_not_active";
+
+export type SubscriptionActivationInspection =
+  | { status: "captured"; capture: SubscriptionActivationCapture }
+  | { status: "skipped"; reason: SubscriptionActivationSkipReason };
+
 export type ClaimedSubscriptionActivationRecovery = {
   recovery_id: string;
   lease_token: string;
@@ -131,14 +151,17 @@ function catalogPlan(
   return null;
 }
 
-export function subscriptionActivationFromStripeEvent(
+export function inspectSubscriptionActivationStripeEvent(
   event: StripeRecord,
   prices: StripeServerConfig["prices"]
-): SubscriptionActivationCapture | null {
-  if (prices.requireLivemode && event.livemode !== true) return null;
+): SubscriptionActivationInspection {
+  if (prices.requireLivemode && event.livemode !== true) {
+    return { status: "skipped", reason: "livemode_required" };
+  }
   const eventType = stringValue(event.type);
   const object = record(record(event.data)?.object);
-  if (!eventType || !object) return null;
+  if (!eventType) return { status: "skipped", reason: "event_type_missing" };
+  if (!object) return { status: "skipped", reason: "event_object_missing" };
 
   if (["checkout.session.completed", "checkout.session.async_payment_succeeded"].includes(eventType)) {
     const metadata = record(object.metadata);
@@ -148,19 +171,28 @@ export function subscriptionActivationFromStripeEvent(
     const customerId = stripeId(object.customer, "cus");
     const subscriptionId = stripeId(object.subscription, "sub");
     const customerEmail = normalizedEmail(record(object.customer_details)?.email);
-    if (
-      object.mode !== "subscription"
-      || object.payment_status !== "paid"
-      || !plan
-      || metadata?.product !== plan
-      || !sourceId
-      || !customerId
-      || !subscriptionId
-      || !customerEmail
-    ) {
-      return null;
+    if (object.mode !== "subscription") {
+      return { status: "skipped", reason: "checkout_not_subscription" };
     }
-    return { customerId, customerEmail, subscriptionId, sourceScanId: sourceId };
+    if (object.payment_status !== "paid") {
+      return { status: "skipped", reason: "checkout_payment_not_paid" };
+    }
+    if (!plan) return { status: "skipped", reason: "catalog_price_missing_or_invalid" };
+    if (metadata?.product !== plan) {
+      return { status: "skipped", reason: "catalog_product_mismatch" };
+    }
+    if (!sourceId) return { status: "skipped", reason: "source_scan_missing_or_invalid" };
+    if (!customerId) return { status: "skipped", reason: "customer_missing_or_invalid" };
+    if (!subscriptionId) {
+      return { status: "skipped", reason: "subscription_missing_or_invalid" };
+    }
+    if (!customerEmail) {
+      return { status: "skipped", reason: "customer_email_missing_or_invalid" };
+    }
+    return {
+      status: "captured",
+      capture: { customerId, customerEmail, subscriptionId, sourceScanId: sourceId }
+    };
   }
 
   if (["customer.subscription.created", "customer.subscription.updated"].includes(eventType)) {
@@ -172,20 +204,36 @@ export function subscriptionActivationFromStripeEvent(
     const sourceId = sourceScanId(metadata?.scan_id);
     const customerId = stripeId(object.customer, "cus");
     const subscriptionId = stripeId(object.id, "sub");
-    if (
-      !["active", "trialing"].includes(status ?? "")
-      || !plan
-      || metadata?.product !== plan
-      || !sourceId
-      || !customerId
-      || !subscriptionId
-    ) {
-      return null;
+    if (!["active", "trialing"].includes(status ?? "")) {
+      return { status: "skipped", reason: "subscription_not_active" };
     }
-    return { customerId, customerEmail: null, subscriptionId, sourceScanId: sourceId };
+    if (!plan) return { status: "skipped", reason: "catalog_price_missing_or_invalid" };
+    if (metadata?.product === undefined && metadata?.scan_id === undefined) {
+      return { status: "skipped", reason: "awaiting_checkout_metadata" };
+    }
+    if (metadata?.product !== plan) {
+      return { status: "skipped", reason: "catalog_product_mismatch" };
+    }
+    if (!sourceId) return { status: "skipped", reason: "source_scan_missing_or_invalid" };
+    if (!customerId) return { status: "skipped", reason: "customer_missing_or_invalid" };
+    if (!subscriptionId) {
+      return { status: "skipped", reason: "subscription_missing_or_invalid" };
+    }
+    return {
+      status: "captured",
+      capture: { customerId, customerEmail: null, subscriptionId, sourceScanId: sourceId }
+    };
   }
 
-  return null;
+  return { status: "skipped", reason: "event_not_applicable" };
+}
+
+export function subscriptionActivationFromStripeEvent(
+  event: StripeRecord,
+  prices: StripeServerConfig["prices"]
+): SubscriptionActivationCapture | null {
+  const inspection = inspectSubscriptionActivationStripeEvent(event, prices);
+  return inspection.status === "captured" ? inspection.capture : null;
 }
 
 export function registerSubscriptionActivationRecovery(

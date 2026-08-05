@@ -8,6 +8,7 @@ import {
   firstTouchCookieAssignment,
   parseFirstTouchCookie,
   resolveFirstTouchAttribution,
+  resolveScanFirstTouchAttribution,
   scanAttributionStorageFields,
   serializeFirstTouchAttribution
 } from "../lib/acquisitionAttribution.ts";
@@ -132,6 +133,45 @@ const fallbackAttribution = resolveFirstTouchAttribution({
 assert.ok(fallbackAttribution);
 assert.equal(fallbackAttribution.utmSource, "newsletter");
 
+const noCookieScanAttribution = resolveScanFirstTouchAttribution({
+  firstTouchId: "f61d9954-bb1d-44dd-aacd-ebf616477dc5",
+  firstTouchedAt: "2026-07-14T16:00:00.000Z",
+  landingUrl: "https://www.opportunityscanner.ai/?utm_source=codextest&utm_campaign=phase0",
+  formUtms: {},
+  nowMs
+});
+assert.ok(noCookieScanAttribution);
+assert.equal(noCookieScanAttribution.utmSource, "codextest");
+assert.equal(noCookieScanAttribution.utmCampaign, "phase0");
+assert.equal(
+  scanAttributionStorageFields(noCookieScanAttribution).utm_source,
+  "codextest",
+  "a scan POST without an analytics cookie must persist the landing-page UTM"
+);
+
+const cookiePrecedenceScanAttribution = resolveScanFirstTouchAttribution({
+  cookieValue: serialized,
+  firstTouchId: "f61d9954-bb1d-44dd-aacd-ebf616477dc5",
+  firstTouchedAt: "2026-07-14T16:00:00.000Z",
+  landingUrl: "https://www.opportunityscanner.ai/?utm_source=codextest",
+  formUtms: { utmSource: "form_override" },
+  nowMs
+});
+assert.deepEqual(
+  cookiePrecedenceScanAttribution,
+  firstTouch,
+  "a valid first-touch cookie must outrank form and referrer fallbacks"
+);
+
+const invalidFormFallbackAttribution = resolveScanFirstTouchAttribution({
+  firstTouchId: "f61d9954-bb1d-44dd-aacd-ebf616477dc5",
+  firstTouchedAt: "2026-07-14T16:00:00.000Z",
+  landingUrl: "https://www.opportunityscanner.ai/?utm_source=codextest",
+  formUtms: { utmSource: "a".repeat(161) },
+  nowMs
+});
+assert.equal(invalidFormFallbackAttribution?.utmSource, "codextest");
+
 assert.deepEqual(scanAttributionStorageFields(firstTouch), {
   first_touch_id: firstTouch.firstTouchId,
   first_touch_at: firstTouch.firstTouchedAt,
@@ -158,6 +198,7 @@ const [layout, component, route, storage, types, migration, manifestSource, priv
 assert.match(layout, /<FirstTouchAttributionCapture \/>/);
 assert.match(component, /if \(parseFirstTouchCookie\(existing, now\.getTime\(\)\)\) return/);
 assert.match(route, /cookieValue: cookieStore\.get\(FIRST_TOUCH_COOKIE_NAME\)\?\.value/);
+assert.match(route, /landingUrl: request\.headers\.get\("referer"\)/);
 assert.match(route, /firstTouchAttribution: firstTouchAttribution \?\? undefined/);
 assert.doesNotMatch(route, /companyUrl:[\s\S]{0,500}firstTouchId: companyUrl/);
 assert.match(storage, /scanAttributionStorageFields\(input\.firstTouchAttribution/);

@@ -6,8 +6,9 @@ import { verifySubscriptionCatalogCached } from "./subscriptionCatalogPreflight.
 import { verifyStripeSignature } from "./signature.ts";
 import { createBillingPortalSession, createCheckoutSession } from "./stripeApi.ts";
 import {
+  inspectSubscriptionActivationStripeEvent,
   registerSubscriptionActivationRecovery,
-  subscriptionActivationFromStripeEvent
+  type SubscriptionActivationInspection
 } from "./subscriptionActivationRecovery.ts";
 import { deliverPaidReportFulfillment } from "../transactionalEmail/paidReport.ts";
 import { dashboardSelectOne } from "../dashboard/rest.ts";
@@ -16,6 +17,42 @@ import { trackVerifiedStripePurchase } from "./analytics.ts";
 const NO_STORE_HEADERS = { "Cache-Control": "no-store" };
 const MAX_REQUEST_BYTES = 8_192;
 const MAX_WEBHOOK_BYTES = 1_000_000;
+
+type StripeWebhookDependencies = {
+  getConfig: typeof getStripeServerConfig;
+  verifyStripeSignature: typeof verifyStripeSignature;
+  persistEvent: typeof persistStripeWebhookEvent;
+  inspectActivation: (
+    event: Record<string, unknown>,
+    prices: ReturnType<typeof getStripeServerConfig>["prices"]
+  ) => SubscriptionActivationInspection;
+  registerActivation: typeof registerSubscriptionActivationRecovery;
+  deliverReport: typeof deliverPaidReportFulfillment;
+  trackPurchase: typeof trackVerifiedStripePurchase;
+};
+
+const stripeWebhookDependencies: StripeWebhookDependencies = {
+  getConfig: getStripeServerConfig,
+  verifyStripeSignature,
+  persistEvent: persistStripeWebhookEvent,
+  inspectActivation: inspectSubscriptionActivationStripeEvent,
+  registerActivation: registerSubscriptionActivationRecovery,
+  deliverReport: deliverPaidReportFulfillment,
+  trackPurchase: trackVerifiedStripePurchase
+};
+
+function logSubscriptionActivation(
+  level: "info" | "error",
+  details: {
+    eventType: string;
+    stage: "extraction" | "registration";
+    outcome: "captured" | "skipped" | "registered" | "failed";
+    reason?: string;
+    duplicateWebhook?: boolean;
+  }
+): void {
+  console[level]("Stripe subscription activation", details);
+}
 
 function json(body: unknown, status = 200): Response {
   return Response.json(body, { status, headers: NO_STORE_HEADERS });
@@ -219,7 +256,10 @@ export async function handleBillingPortal(
   }
 }
 
-export async function handleStripeWebhook(request: Request): Promise<Response> {
+export async function handleStripeWebhook(
+  request: Request,
+  dependencies: StripeWebhookDependencies = stripeWebhookDependencies
+): Promise<Response> {
   const declaredLength = Number(request.headers.get("content-length") ?? "0");
   if (declaredLength > MAX_WEBHOOK_BYTES) return error(413, "PAYLOAD_TOO_LARGE", "The webhook payload is too large.");
   const payload = await request.text();
@@ -229,11 +269,11 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
 
   let config: ReturnType<typeof getStripeServerConfig>;
   try {
-    config = getStripeServerConfig();
+    config = dependencies.getConfig();
   } catch {
     return error(503, "WEBHOOK_UNAVAILABLE", "Webhook processing is unavailable.");
   }
-  if (!verifyStripeSignature(payload, request.headers.get("stripe-signature"), config.webhookSecret)) {
+  if (!dependencies.verifyStripeSignature(payload, request.headers.get("stripe-signature"), config.webhookSecret)) {
     return error(400, "INVALID_SIGNATURE", "The webhook signature is invalid.");
   }
 
@@ -248,23 +288,63 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
   }
 
   try {
-    const processed = await persistStripeWebhookEvent(event as Record<string, unknown>, config.prices);
-    const activation = subscriptionActivationFromStripeEvent(
+    const eventRecord = event as Record<string, unknown>;
+    const eventType = typeof eventRecord.type === "string" ? eventRecord.type : "invalid";
+    const processed = await dependencies.persistEvent(eventRecord, config.prices);
+    const activation = dependencies.inspectActivation(
       event as Record<string, unknown>,
       config.prices
     );
-    if (activation) {
-      const registered = await registerSubscriptionActivationRecovery(activation);
-      if (!registered) {
-        console.error("Subscription activation recovery registration requires webhook retry");
+    if (activation.status === "captured") {
+      logSubscriptionActivation("info", {
+        eventType,
+        stage: "extraction",
+        outcome: "captured"
+      });
+      let registered: boolean;
+      try {
+        registered = await dependencies.registerActivation(activation.capture);
+      } catch {
+        logSubscriptionActivation("error", {
+          eventType,
+          stage: "registration",
+          outcome: "failed",
+          reason: "registration_exception"
+        });
         return error(
           503,
           "SUBSCRIPTION_ACTIVATION_RETRY_REQUIRED",
           "Subscription activation could not be registered yet."
         );
       }
+      if (!registered) {
+        logSubscriptionActivation("error", {
+          eventType,
+          stage: "registration",
+          outcome: "failed",
+          reason: "registration_rejected"
+        });
+        return error(
+          503,
+          "SUBSCRIPTION_ACTIVATION_RETRY_REQUIRED",
+          "Subscription activation could not be registered yet."
+        );
+      }
+      logSubscriptionActivation("info", {
+        eventType,
+        stage: "registration",
+        outcome: "registered",
+        duplicateWebhook: !processed
+      });
+    } else {
+      logSubscriptionActivation("info", {
+        eventType,
+        stage: "extraction",
+        outcome: "skipped",
+        reason: activation.reason
+      });
     }
-    const delivery = await deliverPaidReportFulfillment(event as Record<string, unknown>, config);
+    const delivery = await dependencies.deliverReport(eventRecord, config);
     if (delivery.status === "failed") {
       console.error("Paid Report fulfillment requires webhook retry", {
         failureCode: delivery.failureCode
@@ -277,7 +357,7 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
     }
     if (processed) {
       try {
-        await trackVerifiedStripePurchase(event as Record<string, unknown>);
+        await dependencies.trackPurchase(eventRecord);
       } catch (cause) {
         console.error("Verified purchase analytics failed", {
           error: cause instanceof Error ? cause.message : "Unknown analytics error"
@@ -288,9 +368,8 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
   } catch (cause) {
     const record = event as Record<string, unknown>;
     console.error("Stripe webhook persistence failed", {
-      eventId: typeof record.id === "string" ? record.id : "invalid",
       eventType: typeof record.type === "string" ? record.type : "invalid",
-      error: cause instanceof Error ? cause.message : "Unknown webhook persistence error"
+      reason: cause instanceof Error ? cause.name : "unknown_error"
     });
     return error(503, "WEBHOOK_PERSISTENCE_FAILED", "Webhook processing could not be completed.");
   }

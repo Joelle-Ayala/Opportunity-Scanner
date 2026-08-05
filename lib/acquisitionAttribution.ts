@@ -255,6 +255,52 @@ export function resolveFirstTouchAttribution(input: {
   );
 }
 
+export function resolveScanFirstTouchAttribution(input: {
+  cookieValue?: string;
+  firstTouchId: string;
+  firstTouchedAt: string;
+  landingUrl: string | null;
+  formUtms?: {
+    utmSource?: unknown;
+    utmMedium?: unknown;
+    utmCampaign?: unknown;
+    utmContent?: unknown;
+    utmTerm?: unknown;
+  };
+  nowMs: number;
+}): FirstTouchAttribution | null {
+  const cookieAttribution = parseFirstTouchCookie(input.cookieValue, input.nowMs);
+  if (cookieAttribution) return cookieAttribution;
+
+  let landing: URL | null = null;
+  if (input.landingUrl) {
+    try {
+      const parsed = new URL(input.landingUrl);
+      landing = ["http:", "https:"].includes(parsed.protocol) ? parsed : null;
+    } catch {
+      landing = null;
+    }
+  }
+
+  const campaignValue = (formValue: unknown, queryKey: string): string | undefined =>
+    normalizedText(formValue, UTM_MAX_BYTES) ??
+    normalizedText(landing?.searchParams.get(queryKey), UTM_MAX_BYTES);
+
+  return validateFirstTouchAttribution(
+    {
+      firstTouchId: input.firstTouchId,
+      firstTouchedAt: input.firstTouchedAt,
+      landingPath: landing?.pathname || "/",
+      utmSource: campaignValue(input.formUtms?.utmSource, "utm_source"),
+      utmMedium: campaignValue(input.formUtms?.utmMedium, "utm_medium"),
+      utmCampaign: campaignValue(input.formUtms?.utmCampaign, "utm_campaign"),
+      utmContent: campaignValue(input.formUtms?.utmContent, "utm_content"),
+      utmTerm: campaignValue(input.formUtms?.utmTerm, "utm_term")
+    },
+    input.nowMs
+  );
+}
+
 export function firstTouchCookieAssignment(value: string, secure: boolean): string {
   const secureAttribute = secure ? "; Secure" : "";
   return `${FIRST_TOUCH_COOKIE_NAME}=${value}; Path=/; Max-Age=${FIRST_TOUCH_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${secureAttribute}`;

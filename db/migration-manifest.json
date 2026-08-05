@@ -303,6 +303,14 @@
       "prerequisites": ["v0036"],
       "sha256": "ebdcdc1e78bf8e64442d47408c78da92a7ff854fc6b98bed6000eed2bc8a792f",
       "requiredInProduction": true
+    },
+    {
+      "version": "v0038",
+      "file": "db/subscription-activation-recovery-ambiguity-hardening.sql",
+      "description": "Replace subscription activation recovery RPCs with fully qualified, collision-safe definitions.",
+      "prerequisites": ["v0037"],
+      "sha256": "79b3171b77b57dcb2e69514f02398ef19bcd9ea9e399ef37068a04c7ba5fbaa5",
+      "requiredInProduction": true
     }
   ]
 }

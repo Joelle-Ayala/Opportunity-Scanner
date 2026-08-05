@@ -12,14 +12,37 @@ type SupabaseTokenResponse = {
 type SupabaseErrorBody = { code?: string; error_code?: string; msg?: string; message?: string };
 
 export class CustomerAuthError extends Error {
+  public readonly status: number;
+  public readonly code: string;
+  public readonly retryAfterSeconds?: number;
+
   constructor(
     message: string,
-    public readonly status: number,
-    public readonly code = "customer_auth_error"
+    status: number,
+    code = "customer_auth_error",
+    retryAfterSeconds?: number
   ) {
     super(message);
     this.name = "CustomerAuthError";
+    this.status = status;
+    this.code = code;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
+}
+
+export function parseRetryAfterSeconds(value: string | null, nowMs = Date.now()): number | undefined {
+  const normalized = value?.trim();
+  if (!normalized) return undefined;
+
+  if (/^\d+$/.test(normalized)) {
+    const seconds = Number(normalized);
+    return Number.isSafeInteger(seconds) && seconds > 0 ? seconds : undefined;
+  }
+
+  const retryAt = Date.parse(normalized);
+  if (!Number.isFinite(retryAt)) return undefined;
+  const seconds = Math.ceil((retryAt - nowMs) / 1000);
+  return seconds > 0 ? seconds : undefined;
 }
 
 function headers(config: CustomerAuthConfig, accessToken?: string): Record<string, string> {
@@ -30,7 +53,7 @@ function headers(config: CustomerAuthConfig, accessToken?: string): Record<strin
   };
 }
 
-async function authError(response: Response): Promise<CustomerAuthError> {
+export async function customerAuthErrorFromResponse(response: Response): Promise<CustomerAuthError> {
   let body: SupabaseErrorBody = {};
   try {
     body = (await response.json()) as SupabaseErrorBody;
@@ -40,7 +63,8 @@ async function authError(response: Response): Promise<CustomerAuthError> {
   return new CustomerAuthError(
     body.message || body.msg || "Supabase authentication request failed.",
     response.status,
-    body.error_code || body.code || "supabase_auth_error"
+    body.error_code || body.code || "supabase_auth_error",
+    parseRetryAfterSeconds(response.headers.get("retry-after"))
   );
 }
 
@@ -84,7 +108,7 @@ export async function requestMagicLink(
     }),
     cache: "no-store"
   });
-  if (!response.ok) throw await authError(response);
+  if (!response.ok) throw await customerAuthErrorFromResponse(response);
 }
 
 export async function exchangeAuthCode(
@@ -98,7 +122,7 @@ export async function exchangeAuthCode(
     body: JSON.stringify({ auth_code: authCode, code_verifier: codeVerifier }),
     cache: "no-store"
   });
-  if (!response.ok) throw await authError(response);
+  if (!response.ok) throw await customerAuthErrorFromResponse(response);
   return tokensFrom((await response.json()) as SupabaseTokenResponse);
 }
 
@@ -112,7 +136,7 @@ export async function refreshSession(
     body: JSON.stringify({ refresh_token: refreshToken }),
     cache: "no-store"
   });
-  if (!response.ok) throw await authError(response);
+  if (!response.ok) throw await customerAuthErrorFromResponse(response);
   return tokensFrom((await response.json()) as SupabaseTokenResponse);
 }
 
@@ -124,7 +148,7 @@ export async function fetchCustomerUser(
     headers: headers(config, accessToken),
     cache: "no-store"
   });
-  if (!response.ok) throw await authError(response);
+  if (!response.ok) throw await customerAuthErrorFromResponse(response);
   return (await response.json()) as SupabaseCustomerUser;
 }
 
@@ -134,5 +158,5 @@ export async function revokeSession(config: CustomerAuthConfig, accessToken: str
     headers: headers(config, accessToken),
     cache: "no-store"
   });
-  if (!response.ok && response.status !== 401) throw await authError(response);
+  if (!response.ok && response.status !== 401) throw await customerAuthErrorFromResponse(response);
 }
