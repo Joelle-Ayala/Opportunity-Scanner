@@ -25,7 +25,7 @@ For 2026, the practical method is:
 5. Qualify location, licenses, bonding, labor, domestic-content, safety, schedule, and capacity.
 6. Assign the right revenue motion and a dated next action.
 
-Opportunity Scanner joins official records into an Opportunity Signal: funding, current controller, project, fit, contact path, and next action. It should not label every award as an open bid.
+Use Opportunity Scanner to join official records into an Opportunity Signal: funding, current controller, project, fit, contact path, and next action. Do not treat every award as an open bid.
 
 ## State of the market: funding is moving downstream
 

@@ -18,7 +18,7 @@ The public-sector market for community services is a delivery network, not a sin
 
 The central research mistake is to treat every record as an open grant. A posted NOFO can support a Direct Apply motion. A state formula award is usually money-flow evidence that points to a state agency, local board, or downstream competition. A historical recipient record can reveal an experienced intermediary, potential partner, incumbent, or future buyer, but it does not prove current availability. A policy notice or forecast can justify preparation and monitoring, not an application.
 
-The opportunity is clearest when evidence is converted into five decisions: what is happening, who controls the next decision, what role fits the organization, how that decision-maker can appropriately be reached, and what action will reduce uncertainty. Opportunity Scanner should accelerate that work while preserving the official source and its limitations.
+The opportunity is clearest when evidence is converted into five decisions: what is happening, who controls the next decision, what role fits the organization, how that decision-maker can appropriately be reached, and what action will reduce uncertainty. Use Opportunity Scanner to accelerate that work while preserving the official source and its limitations.
 
 ## State of the market in July 2026
 
@@ -219,7 +219,7 @@ Make bid, partner, monitor, or reject decisions. Put qualified rows into the Opp
 - State and local portals use different fiscal years, terminology, and update practices. Preserve the jurisdiction and retrieval date.
 - Match, indirect costs, audit requirements, reimbursement timing, and allowable costs require award-specific finance and compliance review.
 - Public contact information should be used for its stated purpose. Respect question windows, procurement rules, privacy, and communication restrictions.
-- Opportunity Scanner supports research and workflow decisions; it does not promise an award or replace professional review.
+- Use Opportunity Scanner to support research and workflow decisions; it does not promise an award or replace professional review.
 
 ## Evidence and source ledger
 

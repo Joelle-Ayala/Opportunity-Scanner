@@ -13,6 +13,8 @@ from reportlab.platypus import (
     BaseDocTemplate,
     Frame,
     HRFlowable,
+    Image,
+    KeepTogether,
     PageBreak,
     PageTemplate,
     Paragraph,
@@ -36,6 +38,7 @@ FIELD = colors.HexColor("#F6F7F9")
 LINE = colors.HexColor("#D9DEE7")
 MIST = colors.HexColor("#E9F4F3")
 CREAM = colors.HexColor("#FBFAF7")
+PRODUCT_PROOF_DIR = ROOT / "public" / "product-proof"
 
 def report(slug, title, subtitle, stats, lanes, path):
     return {
@@ -292,6 +295,18 @@ def styles():
             "stat_label", parent=base["Normal"], fontName="Helvetica", fontSize=7.5,
             leading=10, textColor=STEEL, alignment=TA_CENTER,
         ),
+        "product_label": ParagraphStyle(
+            "product_label", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=7.5,
+            leading=10, textColor=ACCENT, spaceAfter=5,
+        ),
+        "caption": ParagraphStyle(
+            "caption", parent=base["Normal"], fontName="Helvetica", fontSize=7.2,
+            leading=10, textColor=MUTED, spaceBefore=4, spaceAfter=7,
+        ),
+        "workflow_note": ParagraphStyle(
+            "workflow_note", parent=base["Normal"], fontName="Helvetica", fontSize=8,
+            leading=12, textColor=STEEL,
+        ),
     }
 
 
@@ -388,6 +403,130 @@ def cover(document: dict, style_map: dict) -> list:
     ]
 
 
+def screenshot(name: str, width: float) -> Image:
+    path = PRODUCT_PROOF_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(f"Product proof screenshot not found: {path}")
+    image = Image(str(path))
+    aspect_ratio = image.imageHeight / image.imageWidth
+    image.drawWidth = width
+    image.drawHeight = width * aspect_ratio
+    image.hAlign = "LEFT"
+    return image
+
+
+def workflow_card(title: str, body: str, style_map: dict) -> Table:
+    card = Table(
+        [[
+            Paragraph(title.upper(), style_map["product_label"]),
+            Paragraph(body, style_map["workflow_note"]),
+        ]],
+        colWidths=[1.2 * inch, 5.72 * inch],
+        hAlign="LEFT",
+    )
+    card.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), FIELD),
+        ("BOX", (0, 0), (-1, -1), 0.6, LINE),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+    ]))
+    return card
+
+
+def product_workflow(style_map: dict) -> list:
+    pipeline_proof = KeepTogether([
+        screenshot("report-pipeline.png", 7.2 * inch),
+        Paragraph(
+            "Report view: funded-buyer evidence is separated from live opportunities and carries its source record, target, contact path, and next best action.",
+            style_map["caption"],
+        ),
+    ])
+    action_proof = KeepTogether([
+        screenshot("report-actions.png", 7.2 * inch),
+        Paragraph(
+            "Pursuit view: verify the official source, make a fit decision, assign ownership, and keep the next step attached to the evidence.",
+            style_map["caption"],
+        ),
+    ])
+
+    overview = screenshot("report-overview.png", 4.55 * inch)
+    overview_detail = Paragraph(
+        "<b>What stays with the pursuit</b><br/><br/>"
+        "Owner, fit decision, verified due date when one exists, requirements, notes, and the next follow-up.<br/><br/>"
+        "Qualified context can then be exported or sent through a secure workflow webhook.",
+        style_map["workflow_note"],
+    )
+    overview_table = Table(
+        [[overview, overview_detail]],
+        colWidths=[4.7 * inch, 2.22 * inch],
+        hAlign="LEFT",
+    )
+    overview_table.setStyle(TableStyle([
+        ("BACKGROUND", (1, 0), (1, 0), MIST),
+        ("BOX", (0, 0), (-1, -1), 0.6, LINE),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (0, 0), 0),
+        ("RIGHTPADDING", (0, 0), (0, 0), 10),
+        ("TOPPADDING", (0, 0), (0, 0), 0),
+        ("BOTTOMPADDING", (0, 0), (0, 0), 0),
+        ("LEFTPADDING", (1, 0), (1, 0), 12),
+        ("RIGHTPADDING", (1, 0), (1, 0), 12),
+        ("TOPPADDING", (1, 0), (1, 0), 12),
+        ("BOTTOMPADDING", (1, 0), (1, 0), 12),
+    ]))
+
+    return [
+        PageBreak(),
+        Paragraph("PRODUCT WORKFLOW", style_map["product_label"]),
+        Paragraph("Turn source evidence into an owned pursuit", style_map["h2"]),
+        Paragraph(
+            "Opportunity Scanner first verifies what kind of record it found. Live opportunities retain a current official close date; historical awards become funded-buyer evidence and are never presented as open applications or bids.",
+            style_map["body"],
+        ),
+        ProcessDiagram(
+            "From discovery to a workflow-ready next step",
+            [
+                "Source evidence",
+                "Verify record class",
+                "Open official route",
+                "Start pursuit",
+                "Own fit, date, notes",
+                "Export or webhook",
+            ],
+            SIGNAL,
+        ),
+        Spacer(1, 10),
+        pipeline_proof,
+        workflow_card(
+            "Why classification matters",
+            "A verified record class determines the action. A live notice may support a direct application or bid; funded-buyer evidence supports buyer, recipient, partner, and market research.",
+            style_map,
+        ),
+        PageBreak(),
+        Paragraph("CUSTOMER WORKSPACE", style_map["product_label"]),
+        Paragraph("Keep the next action connected to the evidence", style_map["h2"]),
+        Paragraph(
+            "Open the authoritative route before acting, then turn a qualified finding into work your team can own and advance.",
+            style_map["body"],
+        ),
+        action_proof,
+        Spacer(1, 5),
+        overview_table,
+        Paragraph(
+            "Product walkthrough: a fictional company moves from website analysis to sourced findings and a structured pursuit workspace.",
+            style_map["caption"],
+        ),
+        workflow_card(
+            "Your team stays in control",
+            "Opportunity Scanner organizes evidence and the pursuit workflow. It does not submit applications or bids on your behalf; your team reviews the official instructions and decides what to send.",
+            style_map,
+        ),
+    ]
+
+
 def parse_markdown(path: Path, style_map: dict) -> list:
     lines = path.read_text(encoding="utf-8").splitlines()
     story = []
@@ -467,6 +606,7 @@ def build(document: dict) -> None:
         PageBreak(),
     ])
     story.extend(parse_markdown(document["source"], style_map))
+    story.extend(product_workflow(style_map))
     story.extend([
         Spacer(1, 14),
         HRFlowable(width="100%", thickness=1.5, color=ACCENT, spaceBefore=4, spaceAfter=12),

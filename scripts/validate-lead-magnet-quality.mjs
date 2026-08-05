@@ -20,6 +20,13 @@ const MIN_PDF_BYTES = 20_000;
 const MIN_NON_WHITE_RATIO = 0.002;
 const LETTER_WIDTH_POINTS = 612;
 const LETTER_HEIGHT_POINTS = 792;
+const INTERNAL_PRODUCT_SPEC_PATTERN = /Opportunity Scanner (?:should|must|can|will)|the (?:product|platform) should/i;
+const UNSUPPORTED_PRODUCT_CLAIM_PATTERN = /native crm|syncs? (?:directly )?(?:with|to) (?:your )?crm|always-on monitoring|live monitoring|(?:Opportunity Scanner|we|the product|the platform) (?:automatically )?submits?\b/i;
+const PRODUCT_PROOF_ASSETS = [
+  "report-overview.png",
+  "report-pipeline.png",
+  "report-actions.png"
+];
 
 function commandOutput(command, args, env = process.env) {
   try {
@@ -177,6 +184,25 @@ check("all catalog paths are safe public PDF links", async () => {
   }
 });
 
+check("lead magnet sources and generator use customer-facing product truth", async () => {
+  const sourceFiles = (await readdir(SOURCE_DIR)).filter((file) => file.endsWith(".md"));
+  for (const file of sourceFiles) {
+    const source = await readFile(join(SOURCE_DIR, file), "utf8");
+    assert.doesNotMatch(source, INTERNAL_PRODUCT_SPEC_PATTERN, `${file}: internal product-spec voice leaked into customer copy`);
+    assert.doesNotMatch(source, UNSUPPORTED_PRODUCT_CLAIM_PATTERN, `${file}: unsupported product claim leaked into customer copy`);
+  }
+
+  const generator = await readFile(join(ROOT, "scripts", "generate-lead-magnet-pdfs.py"), "utf8");
+  for (const asset of PRODUCT_PROOF_ASSETS) {
+    assert.match(generator, new RegExp(asset.replace(".", "\\.")), `PDF generator does not reference ${asset}`);
+  }
+  assert.match(generator, /official source/i, "PDF generator must explain the official-source step");
+  assert.match(generator, /start (?:a |the )?pursuit/i, "PDF generator must explain how to start a pursuit");
+  assert.match(generator, /does not submit applications or bids/i, "PDF generator must state the submission boundary");
+  assert.match(generator, /secure (?:workflow )?webhook/i, "PDF generator must describe the secure webhook accurately");
+  assert.doesNotMatch(generator, UNSUPPORTED_PRODUCT_CLAIM_PATTERN, "PDF generator contains an unsupported product claim");
+});
+
 check("every PDF is structurally healthy and passes available page/raster validation", async () => {
   const pdfinfo = await findExecutable("pdfinfo");
   const pdftoppm = await findExecutable("pdftoppm");
@@ -192,6 +218,8 @@ check("every PDF is structurally healthy and passes available page/raster valida
       const pdfBytes = await readFile(pdfPath);
       assert.equal(pdfBytes.subarray(0, 5).toString("ascii"), "%PDF-", `${slug}: missing PDF header`);
       assert.match(pdfBytes.subarray(-1024).toString("latin1"), /%%EOF\s*$/, `${slug}: missing PDF end marker`);
+      const imageObjects = pdfBytes.toString("latin1").match(/\/Subtype\s*\/Image/g) ?? [];
+      assert.ok(imageObjects.length >= PRODUCT_PROOF_ASSETS.length, `${slug}: product-proof screenshots are missing`);
 
       if (!pdfinfo) continue;
       const info = parsePdfInfo(commandOutput(pdfinfo, [pdfPath]), basename(pdfPath));

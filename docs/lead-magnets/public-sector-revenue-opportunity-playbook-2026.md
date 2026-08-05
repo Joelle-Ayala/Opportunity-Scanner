@@ -221,7 +221,7 @@ Measure evidence completeness, rejection reasons, and validation outcomes before
 - A grant program is not necessarily open, and a company may not be eligible.
 - Federal totals do not represent state and local spending or a company's addressable market.
 - Contact information in a source may be intended for program or procurement questions, not sales outreach.
-- Opportunity Scanner supports research and workflow decisions; it does not provide legal, accounting, grant-writing, procurement, or eligibility advice.
+- Use Opportunity Scanner to support research and workflow decisions; it does not provide legal, accounting, grant-writing, procurement, or eligibility advice.
 
 ## Next-action checklist
 

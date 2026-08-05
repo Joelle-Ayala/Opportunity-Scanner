@@ -18,7 +18,7 @@ The education and workforce market is not a single buyer category. Federal agenc
 
 Strong July 2026 signals include WIOA allotments, modified 2026-27 state plans, estimated FY2026 Perkins V allocations, adult-education state funding, and apprenticeship records. They evidence active systems and priorities, not necessarily open competitions or vendor market size.
 
-The commercial advantage comes from tracing money and responsibility. A state allotment points to local planning; a plan names priorities and structures; a local record may reveal a purchasing route; and an award may reveal a funded buyer or partner. A school or district dataset defines the market but does not prove purchasing intent. Opportunity Scanner should preserve those differences and the next validation task.
+The commercial advantage comes from tracing money and responsibility. A state allotment points to local planning; a plan names priorities and structures; a local record may reveal a purchasing route; and an award may reveal a funded buyer or partner. A school or district dataset defines the market but does not prove purchasing intent. Preserve those differences and assign the next validation task.
 
 ## What the real scan data shows
 
@@ -96,7 +96,7 @@ Recommended action: Use data to narrow accounts, then require a current plan, bu
 
 ## A qualification framework that prevents false positives
 
-Score each dimension High, Medium, or Low. Do not add the labels into a precise numeric score unless the product has validated weights against real outcomes.
+Score each dimension High, Medium, or Low. Do not convert the labels into a precise numeric score without weights validated against real outcomes.
 
 | Dimension | High-confidence evidence | Downgrade or reject when |
 |---|---|---|

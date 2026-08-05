@@ -20,7 +20,7 @@ As of July 2026, several large federal investments are in implementation rather 
 
 The opportunity is downstream. Awards reveal public owners; school portfolios reveal buildings and partners; GSA projects can reveal primes and specifications; and performance contracts route vendors through ESCOs. Capital plans remain planning signals until budget, scope, authority, and procurement path are verified.
 
-Opportunity Scanner should preserve those distinctions. Every result needs a source date, evidence type, named target, revenue motion, contact path, status, and one next validation. The product's value is not saying that money exists. It is showing who can spend it, what evidence supports the route, and what to do next.
+Preserve those distinctions in every scan. Require a source date, evidence type, named target, revenue motion, contact path, status, and one next validation for every result. The value is not simply knowing that money exists; it is identifying who can spend it, what evidence supports the route, and what to do next.
 
 ## State of the market: five trends that change the sales motion
 

@@ -22,7 +22,7 @@ The strongest 2026 approach is therefore evidence-led and lane-specific:
 4. Qualify security, data, integration, past-performance, and vehicle constraints before investing in capture.
 5. Give every qualified signal an owner, a contact path, and a dated next action.
 
-Opportunity Scanner supports this method by turning scattered official records into sourced Opportunity Signals, then organizing the buyer, revenue motion, contact path, actionability, and next best action. It should accelerate verification and workflow, not replace reading the controlling notice or speaking with the named contracting office.
+Use Opportunity Scanner to turn scattered official records into sourced Opportunity Signals, then organize the buyer, revenue motion, contact path, actionability, and next best action. Use the result to accelerate verification and workflow, not to replace reading the controlling notice or speaking with the named contracting office.
 
 ## State of the market: five signals that matter
 
@@ -74,7 +74,7 @@ Do not build a capture plan on a planned date alone. Before spending on authoriz
 | R&D, challenge, or pilot | SBIR/STTR topic, challenge, broad agency announcement, innovation program | Direct Apply or partner | Is the company eligible, and who owns resulting data and IP? |
 | Policy-led future demand | AI strategy, use-case inventory, inspector general finding, budget justification | Monitor Policy | What observable event would convert this into a buying action? |
 
-The lanes should not be collapsed. A grant recipient is not the same as a federal contracting office. A prime contractor is not the agency. A policy mandate is not a funded solicitation. Opportunity Scanner should preserve the source record and assign the correct revenue motion.
+Keep the lanes separate. A grant recipient is not the same as a federal contracting office. A prime contractor is not the agency. A policy mandate is not a funded solicitation. Preserve the source record and assign the correct revenue motion.
 
 ## A practical opportunity workflow
 
@@ -88,7 +88,7 @@ Do not claim certifications that are pending. Separate "designed to support" a r
 
 Use SAM.gov for active and pre-solicitation notices; Acquisition Gateway and agency forecasts for future buys; USAspending for awards and incumbents; GSA vehicle pages and eLibrary/buy.gsa.gov for contract access; agency AI strategies, inventories, budget justifications, and inspector-general reports for problem discovery; SBIR.gov and Grants.gov for eligible innovation or assistance opportunities; and state/local procurement systems for downstream buys.
 
-Opportunity Scanner should capture source URL, publication or update date, response deadline, agency, office, notice/award identifier, status, amount type, recipient or incumbent, and the date last verified.
+For every signal, capture the source URL, publication or update date, response deadline, agency, office, notice/award identifier, status, amount type, recipient or incumbent, and the date last verified.
 
 ### Step 3: Separate evidence levels
 
@@ -164,7 +164,7 @@ For live pursuits, assemble representations, registrations, pricing assumptions,
 
 ### Days 28-30: Hold a pursuit review
 
-Advance, partner, monitor, or stop each signal. A qualified record must have current status, source, buyer, route, value hypothesis, risk, owner, and next date. Feed outcomes back into Opportunity Scanner: which keywords found real demand, which sources converted to conversations, and which hard gates repeatedly disqualified the company.
+Advance, partner, monitor, or stop each signal. A qualified record must have current status, source, buyer, route, value hypothesis, risk, owner, and next date. Use the outcomes to refine future scans: which keywords found real demand, which sources converted to conversations, and which hard gates repeatedly disqualified the company.
 
 ## Caveats and responsible use
 

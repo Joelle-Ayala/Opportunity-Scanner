@@ -20,7 +20,7 @@ The 2026 market has strong policy and investment signals. DoD emphasizes supply 
 
 Operational gates matter. FAR applies a 65 percent domestic-component threshold to many manufactured end products delivered in 2024-2028, subject to exceptions and clauses. DoD says the CMMC acquisition rule took effect November 10, 2025 and is phasing in over three years. DLA's July 2026 notice requires DIBBS users to accept updated terms for full access. Demand evidence must be paired with product, data, cyber, origin, quality, capacity, and route readiness.
 
-Opportunity Scanner should answer: What is bought or funded? Who owns the route? Is it procurement, subcontracting, assistance, or research? What gates and next action apply?
+For every signal, answer: What is bought or funded? Who owns the route? Is it procurement, subcontracting, assistance, or research? What gates and next action apply?
 
 ## State of the market: six trends that shape accessibility
 

@@ -18,7 +18,7 @@ Public-sector creative-economy opportunity includes direct grants, state and reg
 
 The Bureau of Economic Analysis reported that arts and cultural production accounted for $1.17 trillion, or 4.2 percent of GDP, in 2023; the release appeared April 2, 2025. In February 2026, BEA said it would no longer regularly produce the statistics. The figure is not a 2026 estimate or a measure of public spending, event demand, grant availability, or addressable market.
 
-Current evidence is more specific: NEA grant cycles and awards, NPS preservation funding, federal recipient records, and state or local budgets, plans, calendars, and procurement portals. The research task is to separate market context, open funding, procurement, recipient money flow, and planning evidence. Opportunity Scanner should not turn a festival calendar into a confirmed need or a funded organization into a buyer without a purchasing path.
+Current evidence is more specific: NEA grant cycles and awards, NPS preservation funding, federal recipient records, and state or local budgets, plans, calendars, and procurement portals. Separate market context, open funding, procurement, recipient money flow, and planning evidence. Do not treat a festival calendar as a confirmed need or a funded organization as a buyer without a purchasing path.
 
 ## What the real scan data shows
 
