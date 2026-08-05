@@ -16,7 +16,7 @@ export const LEAD_MAGNET_CATALOG = {
     ],
     industrySlug: null,
     evidenceSummary:
-      "The playbook uses current SBA, SAM.gov, USAspending, Grants.gov, and Acquisition.gov guidance and keeps forecasts, awards, recipients, and active notices distinct.",
+      "The playbook uses SBA, SAM.gov, USAspending, Grants.gov, and Acquisition.gov guidance verified in July 2026 and keeps forecasts, awards, recipients, and active notices distinct.",
     buttonLabel: "Get the free playbook",
     updatedAt: "July 2026"
   },
@@ -37,7 +37,7 @@ export const LEAD_MAGNET_CATALOG = {
     ],
     industrySlug: "healthcare-dme-medical-supply",
     evidenceSummary:
-      "The report uses current CMS, VA, HRSA, SAM.gov, and federal award sources, with explicit warnings where data is preliminary, historical, or time-sensitive.",
+      "The report uses CMS, VA, HRSA, SAM.gov, and federal award sources verified in July 2026, with explicit warnings where data is preliminary, historical, or time-sensitive.",
     buttonLabel: "Get the healthcare report",
     updatedAt: "July 2026"
   },
@@ -50,7 +50,7 @@ export const LEAD_MAGNET_CATALOG = {
     promise: "Trace education and workforce funding to the organizations that buy, implement, partner, and deliver.",
     includes: ["Six-lane market map", "District and workforce buyer routes", "Qualification framework", "30-day market-entry plan"],
     industrySlug: "education-workforce-training",
-    evidenceSummary: "The report distinguishes district procurement, workforce funding, grant recipients, state programs, and delivery partners using current official education, labor, grants, and award sources.",
+    evidenceSummary: "The report distinguishes district procurement, workforce funding, grant recipients, state programs, and delivery partners using official education, labor, grants, and award sources verified in July 2026.",
     buttonLabel: "Get the education report",
     updatedAt: "July 2026"
   },
@@ -63,7 +63,7 @@ export const LEAD_MAGNET_CATALOG = {
     promise: "Find the local agencies, funded organizers, venues, recipients, and partners behind public creative-economy demand.",
     includes: ["Six opportunity lanes", "Local source and buyer map", "Event-timing framework", "30-day outreach plan"],
     industrySlug: "arts-creative-economy-live-events",
-    evidenceSummary: "The report uses current official arts, tourism, parks, grant, award, and local-government evidence while separating funding from actual purchasing authority.",
+    evidenceSummary: "The report uses official arts, tourism, parks, grant, award, and local-government evidence verified in July 2026 while separating funding from actual purchasing authority.",
     buttonLabel: "Get the creative economy report",
     updatedAt: "July 2026"
   },
@@ -76,7 +76,7 @@ export const LEAD_MAGNET_CATALOG = {
     promise: "Qualify software demand against acquisition, security, implementation, and partner constraints before committing sales time.",
     includes: ["Modernization demand map", "Direct and partner routes", "Constraint checklist", "30-day pursuit plan"],
     industrySlug: "software-b2b-services-ai",
-    evidenceSummary: "The report uses current acquisition, award, modernization, security, and AI-policy sources and treats compliance signals as route constraints rather than automatic disqualifiers or endorsements.",
+    evidenceSummary: "The report uses acquisition, award, modernization, security, and AI-policy sources verified in July 2026 and treats compliance signals as route constraints rather than automatic disqualifiers or endorsements.",
     buttonLabel: "Get the software and AI report",
     updatedAt: "July 2026"
   },
@@ -89,7 +89,7 @@ export const LEAD_MAGNET_CATALOG = {
     promise: "Trace infrastructure money from program and recipient to project owner, prime, procurement route, and practical next action.",
     includes: ["Funding-to-project map", "Prime and subcontract routes", "Pre-bid signal framework", "30-day geography plan"],
     industrySlug: "construction-infrastructure-engineering",
-    evidenceSummary: "The report uses current federal infrastructure, award, grant, procurement, and local planning sources while clearly separating appropriations, obligations, projects, and open solicitations.",
+    evidenceSummary: "The report uses federal infrastructure, award, grant, procurement, and local planning sources verified in July 2026 while clearly separating appropriations, obligations, projects, and open solicitations.",
     buttonLabel: "Get the infrastructure report",
     updatedAt: "July 2026"
   },
@@ -102,7 +102,7 @@ export const LEAD_MAGNET_CATALOG = {
     promise: "Turn public energy and facilities programs into a map of owners, implementers, partners, procurement paths, and timed pursuits.",
     includes: ["Six opportunity lanes", "Owner and implementer map", "Project qualification scorecard", "30-day account plan"],
     industrySlug: "clean-energy-facilities-sustainability",
-    evidenceSummary: "The report uses current energy, facilities, resilience, award, and procurement evidence and distinguishes program funding from the downstream organizations that select vendors.",
+    evidenceSummary: "The report uses energy, facilities, resilience, award, and procurement evidence verified in July 2026 and distinguishes program funding from the downstream organizations that select vendors.",
     buttonLabel: "Get the clean energy report",
     updatedAt: "July 2026"
   },
@@ -115,7 +115,7 @@ export const LEAD_MAGNET_CATALOG = {
     promise: "Match manufacturing capabilities to direct buyers, primes, supplier gaps, industrial programs, and realistic sales tiers.",
     includes: ["Industrial demand map", "Direct and subcontract routes", "Capability qualification model", "30-day pursuit plan"],
     industrySlug: "manufacturing-supply-chain-logistics",
-    evidenceSummary: "The report uses current procurement, award, industrial-base, supplier, and policy sources without assuming that a spending record or policy priority is an open order.",
+    evidenceSummary: "The report uses procurement, award, industrial-base, supplier, and policy sources verified in July 2026 without assuming that a spending record or policy priority is an open order.",
     buttonLabel: "Get the manufacturing report",
     updatedAt: "July 2026"
   },
@@ -128,7 +128,7 @@ export const LEAD_MAGNET_CATALOG = {
     promise: "Separate mission fit from eligibility, capacity, funding route, implementation role, and a credible next action.",
     includes: ["Six funding and revenue lanes", "Eligibility and capacity checks", "Intermediary and subaward map", "30-day funding plan"],
     industrySlug: "nonprofits-community-services-human-services",
-    evidenceSummary: "The report uses current Grants.gov, SAM.gov, award, agency, and local implementation sources and keeps grants, contracts, cooperative agreements, and subawards distinct.",
+    evidenceSummary: "The report uses Grants.gov, SAM.gov, award, agency, and local implementation sources verified in July 2026 and keeps grants, contracts, cooperative agreements, and subawards distinct.",
     buttonLabel: "Get the nonprofit report",
     updatedAt: "July 2026"
   },
@@ -141,7 +141,7 @@ export const LEAD_MAGNET_CATALOG = {
     promise: "Turn public communications and digital-demand signals into qualified buyers, routes, contact paths, and practical next actions.",
     includes: ["Eight opportunity lanes", "2026 digital-accessibility timeline", "Buyer and contact-path matrix", "30-day pursuit plan"],
     industrySlug: "marketing-advertising-content-web-services",
-    evidenceSummary: "The report uses current DOJ, OMB, GSA, SAM.gov, USAspending, Grants.gov, SBA, and acquisition sources while separating requirements, forecasts, awards, recipients, and open procurements.",
+    evidenceSummary: "The report uses DOJ, OMB, GSA, SAM.gov, USAspending, Grants.gov, SBA, and acquisition sources verified in July 2026 while separating requirements, forecasts, awards, recipients, and open procurements.",
     buttonLabel: "Get the marketing and digital report",
     updatedAt: "July 2026"
   }

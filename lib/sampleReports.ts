@@ -1,4 +1,4 @@
-export type SampleReportRow = {
+type SampleReportRowBase = {
   priority: number;
   title: string;
   target: string;
@@ -13,6 +13,20 @@ export type SampleReportRow = {
   nextAction: string;
   outreachAngle: string;
 };
+
+export type SampleReportRow = SampleReportRowBase &
+  (
+    | {
+        recordClass: "current";
+        closeDate: string;
+        awardYear?: never;
+      }
+    | {
+        recordClass: "evidence";
+        closeDate?: never;
+        awardYear?: number;
+      }
+  );
 
 export type IndustrySampleReport = {
   industrySlug: string;
@@ -47,6 +61,7 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
+        recordClass: "evidence",
         title: "VA purchasing path for rehab and clinical supply categories",
         target: "VA contracting and supply offices",
         signalType: "Procurement / recurring buyer signal",
@@ -64,6 +79,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 2,
+        recordClass: "evidence",
         title: "CMS care model activity points to funded provider demand",
         target: "Provider networks and care delivery organizations",
         signalType: "Policy / reimbursement demand signal",
@@ -81,9 +97,10 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 3,
-        title: "Active procurement watch for medical supply and DME language",
+        recordClass: "evidence",
+        title: "Procurement watch for medical supply and DME language",
         target: "Federal, state, and local procurement offices",
-        signalType: "Active opportunity / monitor",
+        signalType: "Procurement source / monitor",
         sourceName: "SAM.gov Contract Opportunities",
         sourceUrl: "https://sam.gov/content/opportunities",
         evidence:
@@ -116,6 +133,7 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
+        recordClass: "evidence",
         title: "Education Innovation and Research creates partner and district paths",
         target: "Districts, education nonprofits, and grant-funded program operators",
         signalType: "Grant / funded buyer signal",
@@ -134,6 +152,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 2,
+        recordClass: "evidence",
         title: "Workforce grant programs create employer and provider targets",
         target: "Workforce boards, training providers, and employer coalitions",
         signalType: "Workforce funding signal",
@@ -151,6 +170,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 3,
+        recordClass: "evidence",
         title: "District procurement watch for staffing and enrichment needs",
         target: "School districts and local education agencies",
         signalType: "Procurement / local buyer signal",
@@ -187,6 +207,7 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
+        recordClass: "evidence",
         title: "NEA grants indicate funded arts organizations and local programming demand",
         target: "Arts nonprofits, cultural organizations, and city arts partners",
         signalType: "Grant / funded recipient signal",
@@ -204,6 +225,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 2,
+        recordClass: "evidence",
         title: "City and parks programming creates direct buyer routes",
         target: "City cultural affairs, parks, recreation, and tourism offices",
         signalType: "Procurement / agency buyer signal",
@@ -221,6 +243,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 3,
+        recordClass: "evidence",
         title: "Arts education funding creates school and nonprofit partner paths",
         target: "Schools, arts education providers, and enrichment recipients",
         signalType: "Education / workforce signal",
@@ -256,6 +279,7 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
+        recordClass: "evidence",
         title: "GSA schedule path for software and professional services buying",
         target: "Federal agency buyers and schedule-aligned partners",
         signalType: "Procurement channel signal",
@@ -273,9 +297,10 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 2,
-        title: "Active software, data, and automation procurement watch",
+        recordClass: "evidence",
+        title: "Software, data, and automation procurement watch",
         target: "Agency program, IT, and operations offices",
-        signalType: "Active opportunity / monitor",
+        signalType: "Procurement source / monitor",
         sourceName: "SAM.gov Contract Opportunities",
         sourceUrl: "https://sam.gov/content/opportunities",
         evidence:
@@ -290,6 +315,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 3,
+        recordClass: "evidence",
         title: "AI governance signals create consulting and implementation demand",
         target: "Agencies, primes, and regulated public-sector operators",
         signalType: "Policy / compliance signal",
@@ -325,6 +351,7 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
+        recordClass: "evidence",
         title: "BUILD grants reveal surface transportation project sponsors",
         target: "Cities, counties, transit agencies, ports, and project sponsors",
         signalType: "Grant / project sponsor signal",
@@ -342,9 +369,10 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 2,
-        title: "Active public works and facilities procurement watch",
+        recordClass: "evidence",
+        title: "Public works and facilities procurement watch",
         target: "Local agency procurement and public works offices",
-        signalType: "Active opportunity / procurement",
+        signalType: "Procurement source / monitor",
         sourceName: "SAM.gov Contract Opportunities",
         sourceUrl: "https://sam.gov/content/opportunities",
         evidence:
@@ -359,6 +387,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 3,
+        recordClass: "evidence",
         title: "Awarded infrastructure projects create prime and supplier targets",
         target: "Prime contractors and award recipients",
         signalType: "Money already moved",
@@ -394,6 +423,7 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
+        recordClass: "evidence",
         title: "Clean School Bus funding creates district facility and fleet targets",
         target: "School districts, fleet operators, and implementation partners",
         signalType: "Program funding / funded buyer signal",
@@ -411,6 +441,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 2,
+        recordClass: "evidence",
         title: "Energy block grants create municipal upgrade targets",
         target: "Cities, counties, tribes, and local governments",
         signalType: "Grant / agency buyer signal",
@@ -428,6 +459,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 3,
+        recordClass: "evidence",
         title: "Rural energy programs create small-business and agricultural targets",
         target: "Rural businesses, agricultural producers, and local installers",
         signalType: "Funding / partner signal",
@@ -464,6 +496,7 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
+        recordClass: "evidence",
         title: "Manufacturing assistance ecosystem points to funded company targets",
         target: "Manufacturers, MEP centers, and regional partners",
         signalType: "Economic development / partner signal",
@@ -481,9 +514,10 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 2,
+        recordClass: "evidence",
         title: "Federal procurement watch for goods, logistics, and industrial services",
         target: "Agency procurement offices and prime contractors",
-        signalType: "Active opportunity / procurement",
+        signalType: "Procurement source / monitor",
         sourceName: "SAM.gov Contract Opportunities",
         sourceUrl: "https://sam.gov/content/opportunities",
         evidence:
@@ -498,6 +532,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 3,
+        recordClass: "evidence",
         title: "Regional development grants create funded buyer and workforce paths",
         target: "Economic development organizations, workforce partners, and funded manufacturers",
         signalType: "Grant / funded buyer signal",
@@ -533,6 +568,7 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
+        recordClass: "evidence",
         title: "Community services funding creates agency and provider targets",
         target: "Community action agencies and funded service providers",
         signalType: "Grant / funded recipient signal",
@@ -550,6 +586,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 2,
+        recordClass: "evidence",
         title: "Housing and homelessness funding creates service-delivery partner paths",
         target: "Continuums of Care, housing nonprofits, and local providers",
         signalType: "Grant / funded buyer signal",
@@ -567,9 +604,10 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 3,
-        title: "Grant search reveals direct-apply and partner opportunities",
+        recordClass: "evidence",
+        title: "Grant search can reveal direct-apply and partner routes",
         target: "Eligible applicants, grantees, and program offices",
-        signalType: "Active funding / direct apply",
+        signalType: "Grant source / eligibility research",
         sourceName: "Grants.gov",
         sourceUrl: "https://www.grants.gov/search-grants",
         evidence:
@@ -594,7 +632,7 @@ export const sampleReports: IndustrySampleReport[] = [
     clientDescription:
       "Fictional integrated agency offering public outreach strategy, advertising and media buying, multilingual content, design, video production, website delivery, analytics, and accessibility coordination. The example does not assume that every marketing firm offers or qualifies for every service.",
     summary:
-      "The scan separates two time-sensitive procurement examples from an expired market-research notice, historical award evidence, a funded-recipient lane, and broader digital-experience market intelligence. The practical routes include direct agency pursuit, recipient research, prime/subcontractor outreach, and monitor-only work; none of the records is treated as proof that CivicReach will win or that every communications firm fits.",
+      "The scan separates closed procurement examples, an expired market-research notice, historical award evidence, a funded-recipient lane, and broader digital-experience market intelligence. The practical routes include acquisition research, recipient research, prime/subcontractor outreach, and monitor-only work; none of these sample records is presented as a currently open opportunity.",
     estimatedPipeline: "$150K-$1.3M in illustrative pursuit lanes; not a forecast, market total, or promise of available budget",
     totalSignals: 24,
     paidUnlock:
@@ -609,43 +647,46 @@ export const sampleReports: IndustrySampleReport[] = [
     rows: [
       {
         priority: 1,
-        title: "Active procurement: small-business event-center advertising requirement",
+        recordClass: "evidence",
+        title: "Closed procurement evidence: small-business event-center advertising requirement",
         target: "Minnesota Air National Guard contracting office",
-        signalType: "Active procurement as of July 13, 2026",
+        signalType: "Closed procurement record from July 2026",
         sourceName: "SAM.gov - Event Center Advertising, Notice W50S7F26Q0029",
         sourceUrl: "https://sam.gov/opp/6f942eead030467093edbadfef115e38/view",
         evidence:
-          "The July 8, 2026 combined synopsis/solicitation was marked active at retrieval, set aside for small business, classified under indoor and outdoor display advertising, and listed a July 17, 2026 response deadline. The attachments and latest amendments control the requirement.",
+          "The July 8, 2026 combined synopsis/solicitation was set aside for small business, classified under indoor and outdoor display advertising, and had a July 17, 2026 response date that has passed. It is retained only as evidence of agency demand.",
         revenueMotion: "Sell to Agency",
         revenuePotential: "$20K-$150K illustrative pursuit band; verify scope and pricing from the notice",
         actionability: "High Actionability",
         contactPath:
           "Use the source-native contracting contacts and SAM.gov question/submission instructions; do not replace the official route with personal-email enrichment.",
         nextAction:
-          "Recheck status and amendments, download the RFQ and statement of objectives, confirm small-business and geography fit, and make a bid/no-bid decision before the listed deadline.",
+          "Review the closed notice and related acquisition history, then create a monitor for a new verified posting with comparable scope.",
         outreachAngle:
           "No cold pitch. Respond only through the authorized procurement path with proof of comparable placement execution and the exact delivery approach requested."
       },
       {
         priority: 2,
-        title: "Active procurement: marketing promotional items",
+        recordClass: "evidence",
+        title: "Closed procurement evidence: marketing promotional items",
         target: "Texas Army National Guard buyer",
-        signalType: "Active procurement as of July 13, 2026",
+        signalType: "Closed procurement record from July 2026",
         sourceName: "SAM.gov - TXARNG Marketing Promotional Items, Notice W912L126QA011",
         sourceUrl: "https://sam.gov/opp/73e0211d8a7a4cc182f7e46b0c127b30/view",
         evidence:
-          "The notice was marked active at retrieval, set aside for small business, and showed an updated July 24, 2026 offer deadline. Its promotional-product scope, classification, attachments, response history, and latest status must be reviewed before pursuit.",
+          "The notice was set aside for small business and had an updated July 24, 2026 response date that has passed. Its scope and classification remain useful as historical evidence, not as an open bid.",
         revenueMotion: "Sell to Agency",
         revenuePotential: "$50K-$350K illustrative campaign band; verify the actual schedule and pricing requirements",
         actionability: "High Actionability",
         contactPath: "Follow the contracting office's official response instructions and use only the notice contacts for procurement questions.",
         nextAction:
-          "Confirm the current response status, inspect the solicitation and attachments, and reject the row if CivicReach cannot self-perform or credibly manage the required promotional-product scope.",
+          "Inspect the closed solicitation to understand the requirement, reject the category if CivicReach cannot credibly perform it, and monitor for a new verified posting.",
         outreachAngle:
           "Lead with directly relevant promotional-product delivery and fulfillment evidence; a general creative portfolio is not enough for this procurement."
       },
       {
         priority: 3,
+        recordClass: "evidence",
         title: "Market intelligence: Army enterprise marketing demand after sources-sought close",
         target: "Army Enterprise Marketing Office and qualified incumbent or future prime contractors",
         signalType: "Expired sources sought / market intelligence only",
@@ -665,6 +706,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 4,
+        recordClass: "evidence",
         title: "Historical awards: agency and prime map for advertising and communications work",
         target: "Past buying agencies, award recipients, and relevant prime contractors",
         signalType: "Historical contract awards / money already moved",
@@ -684,6 +726,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 5,
+        recordClass: "evidence",
         title: "Funded recipients: roadway-safety grantees with stakeholder-engagement work",
         target: "Verified SS4A recipient cities, counties, metropolitan planning organizations, and Tribes",
         signalType: "Funded buyer / recipient research",
@@ -703,6 +746,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 6,
+        recordClass: "evidence",
         title: "Market intelligence: recognized federal categories for advertising, PR, video, and web services",
         target: "Agency acquisition teams and existing GSA Schedule contractors",
         signalType: "Contract vehicle and service-category intelligence",
@@ -722,6 +766,7 @@ export const sampleReports: IndustrySampleReport[] = [
       },
       {
         priority: 7,
+        recordClass: "evidence",
         title: "Market intelligence: digital-first and accessibility requirements shape web demand",
         target: "Agency digital experience teams, Section 508 programs, acquisition offices, and digital-service primes",
         signalType: "Policy and operating-environment intelligence",

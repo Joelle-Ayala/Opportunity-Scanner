@@ -141,6 +141,7 @@ export function SiteHeader({ rightSlot }: { rightSlot?: ReactNode }) {
 export function SiteFooter() {
   const productLinks = [
     ["Public-Sector Revenue", "/public-sector-revenue"],
+    ["How It Works", "/how-it-works"],
     ["Solutions", "/solutions"],
     ["Sample Reports", "/examples"],
     ["Source Coverage", "/source-coverage"],
@@ -161,7 +162,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 text-sm text-muted lg:grid-cols-[1.15fr_1fr_.7fr]">
         <div>
           <span className="font-semibold text-white">Opportunity Scanner by Opportunity Systems</span>
-          <p className="mt-2 max-w-md text-slate-300">Public-sector money-flow and buying-channel intelligence for companies exploring a new revenue path.</p>
+          <p className="mt-2 max-w-md text-slate-300">Find sourced public-sector signals, open the official route, and turn qualified findings into tracked pursuits.</p>
           <a className="mt-4 inline-block font-semibold text-slate-200 hover:text-white" href="mailto:support@opportunityscanner.ai">
             support@opportunityscanner.ai
           </a>

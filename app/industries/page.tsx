@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingHero, ProductActionPath, ReportPreview, SectionIntro } from "@/components/marketing";
 import { industryPages } from "@/lib/marketingContent";
 
 const title = "Industries | Opportunity Scanner";
@@ -79,11 +79,12 @@ export default function IndustriesPage() {
       <div id="report-preview">
         <ReportPreview />
       </div>
+      <ProductActionPath />
 
       <CTASection title="Not sure which path fits?">
         <p>
           Scan your company website. The report translates your actual positioning into public-sector
-          search terms, opportunity signals, revenue motions, and contact paths.
+          search terms, opportunity signals, official action routes, and tracked pursuits.
         </p>
       </CTASection>
 

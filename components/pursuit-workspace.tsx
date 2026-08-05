@@ -86,7 +86,7 @@ export function PursuitWorkspace({
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-cyan-100 bg-mist px-4 py-4 sm:px-5">
         <div>
           <p className="text-xs font-semibold uppercase text-accent">Active pursuit</p>
-          <h2 id="pursuit-title" className="mt-1 text-lg font-semibold text-ink">Application and pursuit workspace</h2>
+          <h2 id="pursuit-title" className="mt-1 text-lg font-semibold text-ink">Tracked pursuit workspace</h2>
           <p className="mt-2 text-sm text-slate-700">
             {pursuitMethodLabel(pursuit.application_method)} for {pursuit.target_organization || "the target organization"}
           </p>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingHero, ProductActionPath, ReportPreview, SectionIntro } from "@/components/marketing";
 import { LeadMagnetPromo } from "@/components/lead-magnet-promo";
 import { RelatedContentSection } from "@/components/resources/related-content-section";
 import {
@@ -143,6 +143,7 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
       <div id="report-preview">
         <ReportPreview />
       </div>
+      <ProductActionPath />
 
       <RelatedContentSection relatedResourceSlugs={industry.relatedResourceSlugs} />
 
@@ -150,8 +151,8 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
 
       <CTASection title="Turn public-sector signals into a target list.">
         <p>
-          Scan your company website to find source-backed opportunities, revenue motions, contact
-          paths, and next actions for this market.
+          Scan your company website to find source-backed opportunities, follow the official route,
+          and turn the strongest rows into tracked pursuits for this market.
         </p>
       </CTASection>
 

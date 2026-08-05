@@ -606,7 +606,7 @@ export default async function OpportunityPage({
               rel="noreferrer"
               className="mt-4 inline-flex rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]"
             >
-              Find contacts
+              Review contact path
             </a>
           </div>
         </section>

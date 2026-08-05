@@ -76,13 +76,21 @@ export function LeadMagnetForm({
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-5" aria-live="polite">
         <p className="text-xs font-semibold uppercase tracking-wide text-signal">Guide unlocked</p>
         <p className="mt-2 text-sm leading-6 text-slate-700">{message}</p>
-        <a
-          href={accessPath}
-          download
-          className="mt-5 inline-flex min-h-11 items-center rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus:ring-2 focus:ring-accent/30"
-        >
-          Download PDF
-        </a>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <a
+            href={accessPath}
+            download
+            className="inline-flex min-h-11 items-center rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871] focus:outline-none focus:ring-2 focus:ring-accent/30"
+          >
+            Download PDF
+          </a>
+          <a
+            href="/#scan"
+            className="inline-flex min-h-11 items-center rounded-md border border-accent bg-white px-4 py-3 text-sm font-semibold text-accent hover:bg-mist focus:outline-none focus:ring-2 focus:ring-accent/30"
+          >
+            Apply this to your company
+          </a>
+        </div>
         <p className="mt-3 text-xs leading-5 text-slate-600">
           The research is dated July 2026. Recheck time-sensitive official sources before acting.
         </p>

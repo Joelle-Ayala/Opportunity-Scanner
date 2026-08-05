@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
+import { CTASection, ProductActionPath } from "@/components/marketing";
 import { leadMagnets } from "@/lib/leadMagnets";
 
 const title = "Public-Sector Revenue Guides | Opportunity Scanner";
@@ -72,6 +73,15 @@ export default function GuidesPage() {
           ))}
         </div>
       </section>
+
+      <ProductActionPath />
+
+      <CTASection title="Turn the research into an owned pursuit.">
+        <p>
+          Scan your company to find sourced rows, open the official route, and track the opportunities
+          that survive qualification.
+        </p>
+      </CTASection>
 
       <SiteFooter />
     </main>

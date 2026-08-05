@@ -173,8 +173,12 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
           ) : null}
 
           <div className="mt-10 rounded-lg border border-line bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">Next step</h2>
+            <h2 className="text-xl font-semibold text-ink">Put this into the product</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">{article.cta}</p>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              Opportunity Scanner classifies the evidence, opens the official route, and lets you
+              start a pursuit with an owner, fit decision, next step, internal due date, and notes.
+            </p>
             <a href="/#scan" className="mt-5 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
               Scan Your Company Website
             </a>
@@ -191,7 +195,7 @@ export default function ResourceArticlePage({ params }: { params: { slug: string
       <CTASection title="Turn the idea into an opportunity table.">
         <p>
           Opportunity Scanner reads your website, finds sourced public-sector signals, and
-          translates them into target organizations, contact paths, and next best actions.
+          translates them into target organizations, official routes, and tracked next actions.
         </p>
       </CTASection>
 

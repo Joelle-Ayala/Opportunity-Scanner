@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingHero, ProductActionPath, ReportPreview, SectionIntro } from "@/components/marketing";
 import { LeadMagnetPromo } from "@/components/lead-magnet-promo";
 import { RelatedContentSection } from "@/components/resources/related-content-section";
 import { getSolutionPage, solutionPages, siteUrl } from "@/lib/marketingContent";
@@ -100,6 +100,7 @@ export default function SolutionDetailPage({ params }: PageProps) {
       </section>
 
       <ReportPreview />
+      <ProductActionPath />
 
       <RelatedContentSection relatedResourceSlugs={solution.relatedResourceSlugs} />
 
@@ -107,8 +108,8 @@ export default function SolutionDetailPage({ params }: PageProps) {
 
       <CTASection title={solution.cta}>
         <p>
-          Run a scan to see which public-sector signals, targets, contact paths, and workflow-ready
-          next actions match your company.
+          Run a scan to see which public-sector signals match your company, open the official route,
+          and turn qualified rows into owned pursuits and workflow-ready next actions.
         </p>
       </CTASection>
 

@@ -1175,8 +1175,8 @@ function OpportunityActionTable({
       </div>
       {!isPaid ? (
         <p className="border-t border-line bg-field px-5 py-4 text-sm text-muted">
-          Unlock the full report to send buyer and partner opportunities to Zapier, Make, n8n,
-          HubSpot workflows, Airtable, or your CRM.
+          Unlock the full report to send qualified buyer and partner opportunities through a
+          secure webhook that can feed Zapier, Make, n8n, Airtable, or your CRM.
         </p>
       ) : null}
     </section>

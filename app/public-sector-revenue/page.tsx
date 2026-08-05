@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingCard, MarketingHero, ReportPreview, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingCard, MarketingHero, ProductActionPath, ReportPreview, SectionIntro } from "@/components/marketing";
 
 const title = "Public-Sector Revenue | Opportunity Scanner";
 const description =
@@ -134,10 +134,12 @@ export default function PublicSectorRevenuePage() {
         </div>
       </section>
 
+      <ProductActionPath />
+
       <CTASection title="See where your company fits.">
         <p>
-          Scan your website to find sourced public-sector opportunity signals and turn them into
-          target organizations, contact paths, and next best actions.
+          Scan your website to find sourced public-sector opportunity signals, open the official
+          route, and turn qualified rows into owned next actions.
         </p>
       </CTASection>
 

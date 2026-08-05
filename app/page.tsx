@@ -334,7 +334,7 @@ function ProductProof() {
                     href="/examples/creative-economy-live-events-opportunity-scan#pursuit-workspace"
                     className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:border-accent hover:text-accent"
                   >
-                    Find contacts
+                    Review contact path
                   </a>
                   <a
                     href="/examples/creative-economy-live-events-opportunity-scan#pursuit-workspace"
@@ -365,7 +365,7 @@ function ProductProof() {
 
             <div className="bg-field p-5 sm:p-6">
               <p className="text-xs font-semibold uppercase text-accent">Active pursuit</p>
-              <h4 className="mt-2 text-lg font-semibold leading-6 text-ink">Application and pursuit workspace</h4>
+              <h4 className="mt-2 text-lg font-semibold leading-6 text-ink">Tracked pursuit workspace</h4>
               <p className="mt-2 text-xs leading-5 text-muted">Keep ownership, qualification, and the official route attached to the opportunity.</p>
 
               <dl className="mt-5 divide-y divide-line border-y border-line">
@@ -528,9 +528,9 @@ export default async function HomePage({ searchParams }: { searchParams?: HomeSe
             <p className="text-xs font-semibold uppercase text-accent">Access</p>
             <h2 className="mt-2 text-3xl font-semibold leading-tight text-ink">Start free. Unlock the action layer when the signals are worth pursuing.</h2>
             <p className="mt-4 text-sm leading-6 text-slate-600">
-              Buy one complete report or choose monitoring when you need an ongoing source of new
-              opportunities. Pricing, billing terms, and current checkout availability are shown
-              before any payment can begin.
+              Buy one complete report today or compare monitoring plans for an ongoing source of
+              new opportunities. Pricing, billing terms, and current checkout availability are
+              shown before any payment can begin.
             </p>
             <a href="/pricing" className="mt-6 inline-flex rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#0A6871]">
               View Pricing
@@ -539,7 +539,7 @@ export default async function HomePage({ searchParams }: { searchParams?: HomeSe
           <div className="divide-y divide-line border-y border-line">
             {[
               ["Free preview", "2-3 sourced opportunity signals, total signals found, target lanes, source summaries, and recommended next steps."],
-              ["Full report", "All prioritized rows, source links, revenue motions, source-native contact paths, CRM-ready notes, outreach drafts, workflow export, and report downloads."],
+              ["Full report", "All prioritized rows and source links, plus tracked pursuits with an owner, fit decision, internal due date, requirements, notes, outreach drafts, and workflow export."],
               ["Growth enrichment", "Person-level contact enrichment is Growth-only and uses capped monthly credits. It is offered only when a target is eligible."]
             ].map(([heading, copy]) => (
               <div key={heading} className="grid gap-2 py-5 sm:grid-cols-[150px_1fr] sm:gap-6">

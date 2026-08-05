@@ -22,10 +22,10 @@ for (const productClaim of [
   assert.match(homepage, new RegExp(productClaim));
 }
 assert.match(homepage, /current checkout availability/i);
-for (const action of ["Review source", "Start pursuit", "Find contacts", "Send to workflow"]) {
+for (const action of ["Review source", "Start pursuit", "Review contact path", "Send to workflow"]) {
   assert.match(homepage, new RegExp(action));
 }
-assert.match(homepage, /Application and pursuit workspace/);
+assert.match(homepage, /Tracked pursuit workspace/);
 
 assert.match(pricing, /evaluateLaunchHealth\(process\.env\)/);
 assert.match(pricing, /health\.ready\.reportCheckout/);
@@ -35,7 +35,7 @@ assert.match(pricing, /Paid checkout is paused/);
 assert.match(pricing, /Plan details are visible for evaluation/);
 
 for (const route of [
-  "Start application",
+  "Open official application",
   "Register as vendor",
   "Contact buyer or partner",
   "Monitor the signal"
@@ -52,14 +52,16 @@ assert.match(exampleDetail, /opportunity-scanner-social-banner\.png/);
 for (const workflowProof of [
   "Company enrichment",
   "Customer workflow",
-  "Saved search and alerts",
-  "Account workspace"
+  "Pursuit workspace preview",
+  "Start a pursuit"
 ]) {
   assert.match(sampleReport, new RegExp(workflowProof));
 }
 assert.match(sampleReport, /Fictional company, public-source examples/);
-assert.match(sampleReport, /Full-report actions/);
-assert.match(sampleReport, /Start pursuit/);
+assert.match(sampleReport, /Product actions/);
+assert.match(sampleReport, /Start pursuit preview/);
+assert.match(sampleReport, /Live opportunities/);
+assert.match(sampleReport, /Funded-buyer evidence/);
 assert.doesNotMatch(sampleReport, /Estimated pipeline/);
 
 console.log("Public product story verification passed.");

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingHero, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingHero, ProductActionPath, SectionIntro } from "@/components/marketing";
 import { leadMagnets } from "@/lib/leadMagnets";
 import { resourceArticles } from "@/lib/marketingContent";
 
@@ -142,10 +142,12 @@ export default function ResourcesPage() {
         </div>
       </section>
 
+      <ProductActionPath />
+
       <CTASection title="Want to see where your company fits?">
         <p>
-          Run a scan to turn your website into sourced public-sector opportunity signals and next
-          best actions.
+          Run a scan to turn your website into sourced public-sector opportunity signals, official
+          action routes, and tracked pursuits.
         </p>
       </CTASection>
 

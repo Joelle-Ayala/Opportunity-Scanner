@@ -34,7 +34,7 @@ const steps = [
     title: "Find sourced opportunity signals",
     badge: "Step 2",
     copy:
-      "The scan looks for relevant signals across public spending, procurement, grants, policy, workforce programs, reimbursement pathways, funded buyers, and award recipients."
+      "The scan looks across public records, then separates verified live postings from historical funded-buyer evidence so timing and next actions stay honest."
   },
   {
     title: "Translate signals into actions",
@@ -46,7 +46,7 @@ const steps = [
     title: "Pursue or monitor",
     badge: "Step 4",
     copy:
-      "Save the row to a pursuit, follow the official application or vendor path, export CRM-ready context, or monitor the search for new and updated signals."
+      "Open the official route, start a pursuit, assign an owner, qualify fit, track requirements and notes, or use an available monitoring plan for future changes."
   }
 ];
 
@@ -123,7 +123,7 @@ export default function HowItWorksPage() {
           </SectionIntro>
           <div className="mt-6 grid border-y border-line md:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-line">
             {[
-              ["Start application", "Open the official instructions when the company is an eligible direct applicant."],
+              ["Open official application", "Follow the official instructions when the company is an eligible direct applicant."],
               ["Register as vendor", "Follow the procurement or vendor-registration path when the buyer purchases from suppliers."],
               ["Contact buyer or partner", "Use the program office, funded recipient, prime, or source-native contact route."],
               ["Monitor the signal", "Save a focused search when timing is early, recurring, or not yet open for action."]
@@ -148,7 +148,7 @@ export default function HowItWorksPage() {
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {[
             ["Source-native first", "When a source record includes a useful program or procurement contact, the report preserves that path before third-party enrichment."],
-            ["Paid enrichment where appropriate", "Paid reports can run capped enrichment for relevant companies, vendors, recipients, or partner targets."],
+              ["Growth enrichment where appropriate", "Growth accounts can use capped person-level enrichment when the company or partner target is eligible."],
             ["No fake certainty", "If a direct contact is not available, the report recommends the most practical contact path or research task."]
           ].map(([title, copy]) => (
             <article key={title} className="rounded-lg border border-line bg-white p-5 shadow-sm">

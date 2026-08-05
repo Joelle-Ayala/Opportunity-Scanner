@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { SectionIntro } from "@/components/marketing";
+import { ProductActionPath, SectionIntro } from "@/components/marketing";
 
 const title = "Source Coverage | Opportunity Scanner";
 const description =
@@ -146,6 +146,8 @@ export default function SourceCoveragePage() {
           </div>
         </div>
       </section>
+
+      <ProductActionPath />
 
       <SiteFooter />
     </main>

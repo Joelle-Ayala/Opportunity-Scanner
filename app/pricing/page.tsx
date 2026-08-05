@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { BillingManagement } from "@/components/billing-management";
 import { CheckoutButton } from "@/components/checkout-button";
-import { CTASection, SectionIntro } from "@/components/marketing";
+import { CTASection, ProductActionPath, SectionIntro } from "@/components/marketing";
 import { PricingAnalytics } from "@/components/page-analytics";
 import { PricingCheckoutNotice } from "@/components/pricing-checkout-notice";
 import { evaluateLaunchHealth } from "@/lib/launchHealth";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 const title = "Pricing | Opportunity Scanner";
 const description =
-  "Choose a one-time opportunity report or ongoing public-sector opportunity monitoring for your company profiles.";
+  "Compare one-time opportunity reports with planned public-sector monitoring options; current checkout availability is shown on the page.";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -42,7 +42,7 @@ const plans = [
       "1 full company opportunity report",
       "All qualified signals and source links",
       "Revenue motion and next best action",
-      "Contact paths, CRM notes, and outreach angles",
+      "Tracked pursuits with owner, fit, due date, and notes",
       "CSV, Markdown, and workflow-ready exports"
     ]
   },
@@ -58,6 +58,7 @@ const plans = [
       "1 saved company profile",
       "Weekly opportunity monitoring and alerts",
       "Full action layer for every included scan",
+      "Tracked pursuits and official source routes",
       "CSV and Markdown exports",
       "Workflow-ready opportunity data"
     ]
@@ -74,8 +75,9 @@ const plans = [
       "Up to 3 saved company profiles",
       "Daily opportunity monitoring and alerts",
       "Full action layer for every included scan",
+      "Tracked pursuits and official source routes",
       "30 contact-enrichment credits per month",
-      "CRM/webhook workflows and outreach drafts"
+      "Secure webhook handoff and outreach drafts"
     ]
   }
 ] as const;
@@ -334,7 +336,8 @@ export default function PricingPage({
           <SectionIntro eyebrow="Compare the value" title="The action layer is included in every paid option">
             <p>
               Paid results turn sourced signals into a pursuit list: what matters, who or what to
-              approach, why now, and the next step that moves the opportunity forward.
+              approach, what the source proves, what to verify, and the next step that moves the
+              opportunity forward.
             </p>
           </SectionIntro>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -351,6 +354,8 @@ export default function PricingPage({
           </div>
         </div>
       </section>
+
+      <ProductActionPath />
 
       <section className="border-b border-line bg-field">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-12">
@@ -417,8 +422,8 @@ export default function PricingPage({
 
       <CTASection title="Find the public-sector paths worth pursuing.">
         <p>
-          Run a free scan to see real signals for your company, then choose the level of action and
-          monitoring your team needs.
+          Run a free scan to see real signals for your company, then open the official route and
+          track the opportunities worth pursuing.
         </p>
       </CTASection>
 

@@ -148,8 +148,8 @@ export const revenueOutcomes = [
     detail: "Identify grantees, award recipients, primes, nonprofits, or channel partners already funded for adjacent work."
   },
   {
-    label: "Apply or register",
-    detail: "Separate direct-apply grants, vendor registration paths, and active procurement opportunities from research-only signals."
+    label: "Open the official route",
+    detail: "Open the authoritative application, response, or vendor-registration instructions; Opportunity Scanner does not submit on your behalf."
   },
   {
     label: "Monitor emerging demand",
@@ -157,7 +157,7 @@ export const revenueOutcomes = [
   },
   {
     label: "Move rows into workflow",
-    detail: "Turn each signal into CRM-ready notes, outreach angles, contact paths, and workflow/export actions."
+    detail: "Start a pursuit, assign an owner, qualify fit, set the next step, then export CSV/Markdown or use a secure webhook handoff."
   }
 ];
 
@@ -172,7 +172,7 @@ export const solutionPages: SolutionPage[] = [
     pain:
       "Most outbound lists do not tell you whether the account has money, mandate, timing, or a public reason to care.",
     outcome:
-      "Build a source-backed target list of funded buyers, recipients, and partners that can move into outbound or CRM workflows.",
+      "Separate historical funded-buyer evidence from verified live opportunities, open the official source, and turn qualified targets into owned pursuits with fit decisions and next steps.",
     proofPoints: [
       "Shows the source record behind each funded buyer signal.",
       "Separates historical money-flow evidence from active opportunities.",
@@ -181,7 +181,7 @@ export const solutionPages: SolutionPage[] = [
     reportRows: [
       { label: "Signal", value: "Public money already moved to an adjacent buyer or recipient." },
       { label: "Revenue motion", value: "Sell to Funded Buyer or Partner with Recipient." },
-      { label: "Next action", value: "Create a source-backed outreach task and validate contact path." }
+      { label: "Next action", value: "Open the official source, start a pursuit, assign an owner, and validate the contact path." }
     ],
     cta: "Find funded buyers from your website",
     relatedResourceSlugs: [
@@ -195,21 +195,21 @@ export const solutionPages: SolutionPage[] = [
     name: "Public-Sector Sales Workflow",
     headline: "Turn public-sector research into a sales workflow, not a static report.",
     description:
-      "The full report packages opportunity rows with targets, evidence, revenue motions, contact paths, outreach context, and workflow-ready exports.",
+      "The full report separates verified live opportunities from historical funded-buyer evidence, then packages qualified rows with official routes, targets, contact paths, and pursuit controls.",
     audience: "Teams that want to test public-sector revenue without building a full government capture function first.",
     pain:
       "Public data is scattered across portals and often dies as a long research memo instead of becoming sales action.",
     outcome:
-      "Move prioritized rows into CRM, Airtable, Notion, Slack, Zapier, Make, n8n, or outbound operations.",
+      "Open the official route, start a pursuit, assign an owner, qualify fit, and set the next step; then download CSV/Markdown or send a qualified row through a secure webhook to Zapier, Make, n8n, or your existing system.",
     proofPoints: [
       "Every row includes a next best action, not just a source summary.",
       "Contact strategy handles offices, portals, recipients, vendors, and manual research paths.",
-      "Exports are structured for workflow handoff and outbound package creation."
+      "CSV and Markdown exports support manual handoff, while qualified rows can use the secure webhook."
     ],
     reportRows: [
       { label: "Signal", value: "Agency, funding, buyer, policy, or workforce evidence." },
-      { label: "Revenue motion", value: "Direct Apply, Sell to Agency, Partner, Monitor, or Research Only." },
-      { label: "Next action", value: "Push a CRM-ready task or workflow payload." }
+      { label: "Revenue motion", value: "Direct Apply (official instructions), Sell to Agency, Partner, Monitor, or Research Only." },
+      { label: "Next action", value: "Open the official route, start and assign the pursuit, then export or send a ready webhook payload." }
     ],
     cta: "Build a public-sector pipeline",
     relatedResourceSlugs: [
@@ -223,21 +223,21 @@ export const solutionPages: SolutionPage[] = [
     name: "Contact Paths & Enrichment",
     headline: "Know who to pursue, even when a personal email is not the right answer.",
     description:
-      "Opportunity Scanner prioritizes source-native contacts, procurement offices, program owners, vendor paths, recipient research, and capped enrichment where appropriate.",
+      "Opportunity Scanner prioritizes source-native contacts, procurement offices, program owners, vendor paths, and recipient research; Growth accounts can use capped person-level enrichment for eligible targets.",
     audience: "Founders and sales teams that need actionable outreach paths without pretending every opportunity has a perfect email.",
     pain:
       "Generic enrichment tools often find emails without explaining whether that person is actually the right route for the opportunity.",
     outcome:
-      "Give your team a practical contact strategy: source-native contact, office route, partner target, vendor registration, enrichment, or manual research task.",
+      "Open the official source, choose the appropriate contact path, and start an owned pursuit with qualification and a next step; eligible Growth accounts can add capped person-level enrichment.",
     proofPoints: [
       "Source-native contacts are preferred before third-party enrichment.",
-      "Company/domain targets can use capped enrichment for paid reports.",
+      "Eligible company and domain targets can use capped person-level enrichment on Growth accounts only.",
       "No-contact cases still produce a recommended next step instead of a dead end."
     ],
     reportRows: [
       { label: "Signal", value: "Target organization has a plausible buyer, partner, or program-owner path." },
-      { label: "Revenue motion", value: "Sell, partner, apply, register, monitor, or research." },
-      { label: "Next action", value: "Use the right contact path before sending outreach." }
+      { label: "Revenue motion", value: "Sell, partner, open an official application route, register, monitor, or research." },
+      { label: "Next action", value: "Open the source, start a pursuit, assign an owner, and verify the contact path before outreach." }
     ],
     cta: "See contact paths for your opportunities",
     relatedResourceSlugs: [
@@ -254,9 +254,9 @@ export const industryPages: IndustryPage[] = [
     name: "Healthcare / DME / Medical Supply",
     headline: "Find public-sector revenue paths for healthcare, rehab, DME, and medical supply companies.",
     description:
-      "Public-sector healthcare demand can show up through VA purchasing, Medicaid-adjacent programs, community health funding, rehab services, grants, distributors, funded providers, and award recipients.",
+      "Verified live healthcare opportunities can appear through VA purchasing, active grants, and public-care procurement; historical awards provide separate evidence about funded providers, distributors, and agency buying patterns.",
     outcome:
-      "Identify procurement, VA, Medicaid-adjacent, rehab, community health, and funded buyer opportunities for products or services already used in public care systems.",
+      "Separate verified live healthcare opportunities from historical funded-buyer evidence, open the official route, and start an owned pursuit with fit qualification and a clear next step.",
     signals: [
       "VA and agency procurement patterns",
       "Community health and rehab program funding",
@@ -274,15 +274,15 @@ export const industryPages: IndustryPage[] = [
     exampleRows: [
       {
         target: "VA or public care program office",
-        signal: "Prior awards or active procurement language around rehab, prosthetics, orthotics, supplies, or patient support",
+        signal: "Verified active procurement for rehab, prosthetics, orthotics, supplies, or patient support",
         revenueMotion: "Sell to Agency",
-        nextAction: "Validate product category fit and route to procurement or program office."
+        nextAction: "Open the official procurement route, validate product fit, and start an owned pursuit with the response requirements."
       },
       {
         target: "Funded clinic, provider, or distributor",
         signal: "Public money moved to a buyer or recipient serving a relevant care population",
         revenueMotion: "Sell to Funded Buyer",
-        nextAction: "Build a source-backed outreach note and identify purchasing or partnerships owner."
+        nextAction: "Treat the award as historical evidence, then start a qualified buyer-research pursuit and identify the purchasing or partnerships owner."
       }
     ],
     searchIntent: "healthcare government contracts, DME government contracts, medical supply public-sector opportunities",
@@ -299,7 +299,7 @@ export const industryPages: IndustryPage[] = [
     description:
       "Education and workforce opportunities often move through districts, state agencies, workforce boards, nonprofits, training providers, grant-funded programs, and employer partnerships.",
     outcome:
-      "Find district, workforce board, state agency, grant-funded, and training program opportunities where education or talent solutions can become funded revenue channels.",
+      "Separate verified live education opportunities from historical recipient evidence, open the official application or procurement route, and start an owned pursuit with qualification and a next step.",
     signals: [
       "School district and education procurement",
       "Workforce board and state agency funding",
@@ -319,13 +319,13 @@ export const industryPages: IndustryPage[] = [
         target: "District or workforce program",
         signal: "Funding or procurement language around staffing, credentialing, training, enrichment, or workforce pathways",
         revenueMotion: "Sell to Funded Buyer",
-        nextAction: "Identify program owner, HR/workforce lead, or procurement route."
+        nextAction: "Open the official source, confirm current status, and start a pursuit assigned to the program, HR, or procurement owner."
       },
       {
         target: "Grant-funded provider or nonprofit",
         signal: "Award recipient serving students, workers, or educator pipelines",
         revenueMotion: "Partner with Recipient",
-        nextAction: "Create a partnership/outreach task tied to the funded program objective."
+        nextAction: "Treat the award as historical funded-recipient evidence, then start and qualify a partnership pursuit tied to the program objective."
       }
     ],
     searchIntent: "education workforce grants, school staffing government contracts, training public funding opportunities",
@@ -342,7 +342,7 @@ export const industryPages: IndustryPage[] = [
     description:
       "Creative economy demand can appear through city events, tourism, parks, arts councils, schools, placemaking, public performances, creative workforce programs, and cultural grants.",
     outcome:
-      "Find city, county, tourism, parks, arts council, school, and placemaking opportunities that fund performances, programming, creative workforce, and cultural activation.",
+      "Separate verified live creative-sector opportunities from historical funding evidence, open the official route, and start an owned pursuit for performances, programming, workforce, or cultural activation work.",
     signals: [
       "City and county event procurement",
       "Arts council and cultural grant programs",
@@ -362,13 +362,13 @@ export const industryPages: IndustryPage[] = [
         target: "City events, parks, or tourism office",
         signal: "Public spending or grant language around performances, cultural activation, festivals, or placemaking",
         revenueMotion: "Sell to Agency",
-        nextAction: "Route to events, cultural affairs, parks, tourism, or procurement contact path."
+        nextAction: "Open the official route, confirm current status, and start a pursuit assigned to the events, cultural affairs, tourism, or procurement path."
       },
       {
         target: "Funded arts organization or event vendor",
         signal: "Award recipient or vendor with public event-entertainment spend",
         revenueMotion: "Partner with Recipient",
-        nextAction: "Build partner/channel outreach with source-backed social proof."
+        nextAction: "Treat the award as historical evidence, qualify the partner fit, and assign a source-backed next step."
       }
     ],
     searchIntent: "arts grants for businesses, creative economy public funding, city event procurement",
@@ -385,7 +385,7 @@ export const industryPages: IndustryPage[] = [
     description:
       "Public-sector demand for software and services can emerge through operations modernization, data, cybersecurity, workflow automation, program delivery, compliance, citizen services, and funded implementation partners.",
     outcome:
-      "Find public-sector demand for platforms, consulting, automation, data, operations, cybersecurity, workflow, and service delivery improvements across agencies and funded organizations.",
+      "Separate verified live software and services demand from historical award evidence, open the official route, and start an owned pursuit with fit qualification and a concrete next step.",
     signals: [
       "Agency modernization and operations priorities",
       "Software, data, and cybersecurity procurement",
@@ -403,15 +403,15 @@ export const industryPages: IndustryPage[] = [
     exampleRows: [
       {
         target: "Agency program or operations office",
-        signal: "Procurement, policy, or award language around modernization, workflow, data, or service delivery",
+        signal: "Verified active procurement around modernization, workflow, data, or service delivery",
         revenueMotion: "Sell to Agency",
-        nextAction: "Research vendor registration and route to program/procurement contact path."
+        nextAction: "Open the official procurement or registration route, then start and assign a qualified pursuit."
       },
       {
         target: "Prime contractor or funded implementation partner",
         signal: "Award recipient delivering services adjacent to your platform or consulting offer",
         revenueMotion: "Sell to Award Recipient",
-        nextAction: "Identify partner/channel owner and prepare source-backed outreach."
+        nextAction: "Treat the award as historical evidence, identify the partner owner, and start a qualified outreach pursuit."
       }
     ],
     searchIntent: "software government contracts, AI public sector opportunities, B2B services government sales",
@@ -428,7 +428,7 @@ export const industryPages: IndustryPage[] = [
     description:
       "Infrastructure money can create opportunities across local agencies, transportation, facilities, utilities, resilience, broadband, housing, schools, and funded prime contractors.",
     outcome:
-      "Identify agency projects, funded primes, municipal buyers, grant-backed infrastructure programs, and subcontracting paths where construction and engineering teams can pursue work.",
+      "Separate verified live projects from historical award and funded-prime evidence, open the official route, and start an owned pursuit with project fit, requirements, and a next step.",
     signals: [
       "Transportation, facilities, and public works procurement",
       "Infrastructure grant and formula funding programs",
@@ -446,15 +446,15 @@ export const industryPages: IndustryPage[] = [
     exampleRows: [
       {
         target: "City public works or capital projects office",
-        signal: "Funding, procurement, or award language around facilities, transportation, utilities, or resilience work",
+        signal: "Verified active funding or procurement around facilities, transportation, utilities, or resilience work",
         revenueMotion: "Sell to Agency",
-        nextAction: "Validate project fit and route to procurement, public works, or capital programs contact path."
+        nextAction: "Open the official route, validate project fit, and start a pursuit assigned to procurement, public works, or capital programs."
       },
       {
         target: "Prime contractor or funded project recipient",
         signal: "Award recipient managing adjacent infrastructure or facility work",
         revenueMotion: "Sell to Award Recipient",
-        nextAction: "Identify subcontracting, supplier, or partner route with source-backed context."
+        nextAction: "Treat the award as historical evidence, qualify the subcontracting or supplier path, and assign the next step."
       }
     ],
     searchIntent: "infrastructure government contracts, construction public sector opportunities, engineering government contracts",
@@ -469,15 +469,15 @@ export const industryPages: IndustryPage[] = [
     name: "Clean Energy / Facilities / Sustainability",
     headline: "Find public-sector demand for energy, facilities, climate, and sustainability solutions.",
     description:
-      "Public agencies, schools, utilities, housing authorities, and funded organizations are using grants, rebates, procurement, and policy mandates to modernize facilities and reduce energy costs.",
+      "Verified live grants and procurements can create actionable routes for facilities and energy work, while historical awards, rebates, and policy records provide separate buyer and market evidence.",
     outcome:
-      "Find funded energy-efficiency, electrification, climate, facilities, resilience, and sustainability opportunities with clear buyer or partner paths.",
+      "Separate verified live energy and facilities opportunities from historical funded-buyer evidence, open the official route, and start an owned pursuit with qualification and a clear next step.",
     signals: [
       "Energy-efficiency and building modernization grants",
       "School, municipal, and facility procurement",
       "Climate, resilience, and sustainability program funding",
       "Utility, housing, and public building upgrade signals",
-      "Policy and rebate programs that create near-term demand"
+      "Policy and rebate programs that indicate demand worth verifying or monitoring"
     ],
     revenueMotions: [
       "Sell to Agency",
@@ -491,13 +491,13 @@ export const industryPages: IndustryPage[] = [
         target: "Municipal facilities or sustainability office",
         signal: "Funding or procurement language around facility upgrades, energy savings, electrification, or resilience",
         revenueMotion: "Sell to Agency",
-        nextAction: "Route to facilities, sustainability, procurement, or program office contact path."
+        nextAction: "Open the official route, confirm current status, and start a pursuit assigned to facilities, sustainability, procurement, or the program office."
       },
       {
         target: "Funded school, housing authority, or nonprofit recipient",
         signal: "Grant or award funding building upgrades, climate work, or energy-cost reduction",
         revenueMotion: "Sell to Funded Buyer",
-        nextAction: "Prepare source-backed outreach tied to the funded upgrade objective."
+        nextAction: "Treat the funding record as evidence, qualify the buyer path, and assign a source-backed outreach next step."
       }
     ],
     searchIntent: "clean energy grants for businesses, energy efficiency government contracts, sustainability public sector funding",
@@ -514,7 +514,7 @@ export const industryPages: IndustryPage[] = [
     description:
       "Manufacturing and supply-chain demand can show up through procurement, economic development funding, workforce grants, reshoring programs, disaster response, logistics needs, and funded buyers.",
     outcome:
-      "Find agency buyers, funded manufacturers, workforce programs, export or economic development signals, supplier paths, and prime/recipient opportunities.",
+      "Separate verified live procurement from historical buyer and award evidence, open the official route, and start an owned pursuit for qualified agency, supplier, prime, or recipient paths.",
     signals: [
       "Agency procurement for goods, equipment, logistics, and services",
       "Economic development and manufacturing grant programs",
@@ -532,15 +532,15 @@ export const industryPages: IndustryPage[] = [
     exampleRows: [
       {
         target: "Agency buyer or public procurement office",
-        signal: "Procurement or award evidence for products, equipment, materials, logistics, or industrial services",
+        signal: "Verified active procurement for products, equipment, materials, logistics, or industrial services",
         revenueMotion: "Sell to Agency",
-        nextAction: "Validate commodity/category fit and inspect vendor registration or procurement contact path."
+        nextAction: "Open the official procurement or registration route, validate category fit, and start an assigned pursuit."
       },
       {
         target: "Funded manufacturer, prime, or workforce recipient",
         signal: "Public money supporting production capacity, training, resilience, or supply-chain programs",
         revenueMotion: "Sell to Funded Buyer",
-        nextAction: "Identify operations, procurement, supplier, or partnerships owner for source-backed outreach."
+        nextAction: "Treat the funding as historical evidence, qualify the target, and assign a source-backed outreach next step."
       }
     ],
     searchIntent: "manufacturing government contracts, supply chain public sector opportunities, logistics government contracts",
@@ -557,7 +557,7 @@ export const industryPages: IndustryPage[] = [
     description:
       "Community services demand moves through grants, public agencies, nonprofits, workforce boards, healthcare partners, housing programs, schools, and local service providers.",
     outcome:
-      "Identify funders, grantees, agency programs, nonprofit partners, service providers, and funded organizations that may need services, tools, staffing, training, or implementation support.",
+      "Separate verified live grant and procurement routes from historical recipient evidence, open the official route, and start an owned pursuit with eligibility or partner-fit qualification and a next step.",
     signals: [
       "Human services, housing, workforce, and community grants",
       "Funded nonprofit and provider recipients",
@@ -577,13 +577,13 @@ export const industryPages: IndustryPage[] = [
         target: "Grant-funded nonprofit or community provider",
         signal: "Award or grant evidence for services adjacent to the company's offer",
         revenueMotion: "Partner with Recipient",
-        nextAction: "Build a partnership note tied to the funded program goal and identify program leadership."
+        nextAction: "Treat the award as historical evidence, qualify the partnership path, and assign a next step tied to the funded goal."
       },
       {
         target: "Agency human services or workforce program office",
         signal: "Funding, policy, or procurement language around service delivery, training, outreach, or case support",
         revenueMotion: "Sell to Agency",
-        nextAction: "Route to program office, procurement path, or source-native contact before enrichment."
+        nextAction: "Open the official route, confirm current status, and start a pursuit assigned to the program office or procurement path."
       }
     ],
     searchIntent: "nonprofit government grants, human services public funding, community services government contracts",
@@ -600,7 +600,7 @@ export const industryPages: IndustryPage[] = [
     description:
       "Public agencies and funded organizations buy communications strategy, public outreach, advertising and media placement, creative and video production, content, website modernization, digital experience, and accessibility support. The right route depends on the firm's capabilities, contract status, buyer, and delivery model.",
     outcome:
-      "Separate active procurements from historical awards, funded-buyer and recipient research, and market intelligence, then route qualified work to an agency, funded organization, prime contractor, or monitoring workflow.",
+      "Separate verified live procurements from historical award and recipient evidence, open the official route, and start an owned pursuit with fit qualification and a next step for the agency, funded organization, or prime.",
     signals: [
       "Public information, education, and community outreach procurements",
       "Advertising, media buying, recruitment, and campaign requirements",
@@ -620,13 +620,13 @@ export const industryPages: IndustryPage[] = [
         target: "Agency communications, recruiting, program, or procurement office",
         signal: "Current notice for outreach, advertising, media placement, content, video, or digital campaign delivery",
         revenueMotion: "Sell to Agency",
-        nextAction: "Confirm notice status, scope, set-aside, submission instructions, and source-native contact before deciding to pursue."
+        nextAction: "Open the official response route, confirm status and instructions, then start and assign a qualified pursuit."
       },
       {
         target: "Funded public entity, nonprofit recipient, or incumbent prime",
         signal: "Award or grant evidence tied to stakeholder engagement, public information, digital services, or program implementation",
         revenueMotion: "Sell to Funded Buyer",
-        nextAction: "Verify the funded purpose and procurement or subcontracting route before sending source-backed outreach."
+        nextAction: "Treat the record as historical evidence, verify the buyer or subcontracting path, and assign the outreach next step."
       }
     ],
     searchIntent:
@@ -2247,15 +2247,15 @@ export const resourceArticles: ResourceArticle[] = baseResourceArticles.map((bas
   const productProofImages = [
     {
       image: "/product-proof/report-overview.png",
-      alt: "Opportunity Scanner report overview showing sourced public-sector findings"
+      alt: "Opportunity Scanner CivicStage walkthrough showing a sourced report and active pursuit preview"
     },
     {
       image: "/product-proof/report-pipeline.png",
-      alt: "Opportunity Scanner opportunity pipeline with prioritized source-backed records"
+      alt: "Opportunity Scanner funded-buyer evidence section with target, contact path, and next action"
     },
     {
       image: "/product-proof/report-actions.png",
-      alt: "Opportunity Scanner report actions, contact paths, and recommended next steps"
+      alt: "Opportunity Scanner tracked pursuit workflow with source verification, qualification, owner, and next step"
     }
   ];
   const articleIndex = baseResourceArticles.findIndex((candidate) => candidate.slug === article.slug);

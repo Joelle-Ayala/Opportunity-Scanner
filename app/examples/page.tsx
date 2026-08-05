@@ -70,8 +70,8 @@ export default function ExamplesPage() {
               </div>
               <p className="mt-5 max-w-2xl text-sm leading-6 text-slate-600">
                 Follow a company profile from website analysis to sourced opportunity rows, an
-                opportunity-specific pursuit route, saved monitoring, alerts, comparisons, and
-                export or webhook handoff.
+                official action route, tracked pursuit, and export or webhook handoff. The walkthrough
+                also previews monitoring; recurring plans open after scheduler verification.
               </p>
               <div className="mt-5 grid gap-2 sm:grid-cols-2">
                 {["Company profile", "Sourced full report", "Pursuit workspace", "Monitoring and workflow"].map((item) => (
@@ -87,12 +87,34 @@ export default function ExamplesPage() {
                 Open CivicStage walkthrough
               </a>
             </div>
-            <div className="overflow-hidden rounded-lg border border-line bg-field shadow-panel">
-              <img
-                src="/product-proof/report-overview.jpg"
-                alt="CivicStage sample report showing sourced opportunity intelligence"
-                className="aspect-[4/3] w-full object-cover object-left-top sm:aspect-[16/10]"
-              />
+            <div className="overflow-hidden rounded-lg border border-line bg-white shadow-panel" aria-label="CivicStage tracked pursuit preview">
+              <div className="border-b border-line bg-ink px-5 py-4 text-white">
+                <p className="text-xs font-semibold uppercase text-teal-300">Active pursuit</p>
+                <h3 className="mt-1 text-lg font-semibold">Cultural programming partner path</h3>
+              </div>
+              <div className="p-5">
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="blue">Funded-buyer evidence</Badge>
+                  <Badge tone="green">Qualifying</Badge>
+                </div>
+                <dl className="mt-5 divide-y divide-line border-y border-line">
+                  {[
+                    ["Official route", "Award record and recipient program office"],
+                    ["Owner", "Business development lead"],
+                    ["Fit decision", "Pursue"],
+                    ["Next step", "Verify current programming need and partner contact"]
+                  ].map(([label, value]) => (
+                    <div key={label} className="grid gap-1 py-3 sm:grid-cols-[105px_1fr] sm:gap-3">
+                      <dt className="text-xs font-semibold uppercase text-muted">{label}</dt>
+                      <dd className="text-sm font-semibold leading-5 text-ink">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <span className="rounded-md border border-line bg-white px-3 py-2 text-xs font-semibold text-ink">Open official source</span>
+                  <span className="rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white">Start pursuit</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>

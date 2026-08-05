@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
-import { CTASection, MarketingHero, ReportPreview, RevenueOutcomeGrid, SectionIntro } from "@/components/marketing";
+import { CTASection, MarketingHero, ProductActionPath, ReportPreview, RevenueOutcomeGrid, SectionIntro } from "@/components/marketing";
 import { solutionPages } from "@/lib/marketingContent";
 
 const title = "Solutions | Opportunity Scanner";
@@ -76,11 +76,12 @@ export default function SolutionsPage() {
 
       <RevenueOutcomeGrid />
       <ReportPreview />
+      <ProductActionPath />
 
       <CTASection title="Start with your website. Leave with a public-sector action table.">
         <p>
           The first scan shows whether public-sector demand connects to what you already sell. The
-          full report turns that demand into prioritized rows your team can pursue.
+          full report turns that demand into prioritized rows, official routes, and tracked pursuits.
         </p>
       </CTASection>
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge, SiteFooter, SiteHeader } from "@/components/brand";
 import { LeadMagnetForm } from "@/components/lead-magnet-form";
+import { CTASection } from "@/components/marketing";
 import { getLeadMagnet, leadMagnets } from "@/lib/leadMagnets";
 import { siteUrl } from "@/lib/marketingContent";
 
@@ -44,7 +45,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="flex flex-wrap gap-2">
             <Badge tone={isIndustryReport ? "green" : "blue"}>{guide.category}</Badge>
-            <Badge tone="locked">Research current July 2026</Badge>
+            <Badge tone="locked">Research verified July 2026</Badge>
           </div>
           <h1 className="mt-5 max-w-5xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">{guide.title}</h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">{guide.description}</p>
@@ -90,6 +91,13 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           </div>
         </aside>
       </div>
+
+      <CTASection title="Apply the guide to your company.">
+        <p>
+          Opportunity Scanner finds the source-backed rows, opens the official route, and keeps
+          qualification, ownership, notes, and next steps together in a tracked pursuit.
+        </p>
+      </CTASection>
 
       <SiteFooter />
     </main>
