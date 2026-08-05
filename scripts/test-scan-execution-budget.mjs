@@ -12,6 +12,8 @@ import {
   SCAN_POST_DISCOVERY_RESERVE_MS,
   SCAN_EXECUTION_DEADLINE_MS,
   SCAN_FUNCTION_MAX_DURATION_MS,
+  PROFILING_FALLBACK_SETTLEMENT_RESERVE_MS,
+  PROFILING_STAGE_TIMEOUT_MS,
   SCAN_SIGNAL_WRITE_TIMEOUT_MS,
   SCAN_TERMINAL_WRITE_TIMEOUT_MS,
   scanFailureTerminalStatePersisted,
@@ -96,6 +98,8 @@ test("the scan execution deadline stays below the Vercel function limit", () => 
   );
   assert.ok(SCAN_POST_DISCOVERY_RESERVE_MS < SCAN_EXECUTION_DEADLINE_MS);
   assert.ok(DEFAULT_CONNECTOR_CLEANUP_GRACE_MS < SCAN_POST_DISCOVERY_RESERVE_MS);
+  assert.ok(PROFILING_FALLBACK_SETTLEMENT_RESERVE_MS > 0);
+  assert.ok(PROFILING_FALLBACK_SETTLEMENT_RESERVE_MS < PROFILING_STAGE_TIMEOUT_MS);
   assert.ok(
     SCAN_CONNECTOR_STATUS_WRITE_TIMEOUT_MS +
       SCAN_SIGNAL_WRITE_TIMEOUT_MS +
@@ -104,6 +108,27 @@ test("the scan execution deadline stays below the Vercel function limit", () => 
       SCAN_POST_DISCOVERY_RESERVE_MS,
     "post-discovery write caps must leave bounded orchestration overhead"
   );
+});
+
+test("profiling reserves settlement time after the model request budget", async () => {
+  let observedProfileBudget;
+
+  await executeScanPipeline("profile-settlement-reserve", input, {
+    deadlineAtMs: Date.now() + 30_000,
+    terminalDeadlineAtMs: Date.now() + 31_000,
+    dependencies: dependencies({
+      generateCompanyProfile: async (_scanInput, _rawText, budget) => {
+        observedProfileBudget = budget;
+        return profile;
+      }
+    })
+  });
+
+  assert.equal(
+    observedProfileBudget.timeoutMs,
+    PROFILING_STAGE_TIMEOUT_MS - PROFILING_FALLBACK_SETTLEMENT_RESERVE_MS
+  );
+  assert.ok(observedProfileBudget.signal instanceof AbortSignal);
 });
 
 test("an already-expired deadline persists a failed terminal scan", async () => {
@@ -558,10 +583,13 @@ test("authenticated scan ownership is bounded, idempotent, and non-fatal", async
   assert.doesNotMatch(routeSource, /runCustomerLinkWithinDeadline|attachScanToCustomer|ensureCustomerAccount/);
   assert.match(routeSource, /withSupabaseRequestBudget\(\{ signal: controller\.signal, timeoutMs \}/);
   assert.match(routeSource, /\{ onConflict: "scan_id", ignoreDuplicates: true \}/);
-  assert.match(routeSource, /await attemptCustomerScanOwnership\(session\.user\.id, scan\.id, terminalDeadlineAtMs\)/);
+  assert.match(
+    routeSource,
+    /session\?\.user\.email[\s\S]{0,160}\? attemptCustomerScanOwnership\(session\.user\.id, scan\.id, terminalDeadlineAtMs\)/
+  );
   assert.ok(
     routeSource.indexOf("await executeScanPipeline") <
-      routeSource.indexOf("await attemptCustomerScanOwnership"),
+      routeSource.lastIndexOf("attemptCustomerScanOwnership"),
     "ownership must run only after core scan success"
   );
   assert.match(repositorySource, /dashboardSelect<\{ id: string \}>\("scans", \{ select: "id", email: `eq\.\$\{email\}` \}\)/);

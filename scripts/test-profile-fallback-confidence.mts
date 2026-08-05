@@ -120,6 +120,50 @@ test("minimal vague input remains below the publication threshold", async () => 
   assert.match(profile.report_guidance.join(" "), /hold results for review/i);
 });
 
+test("a timed-out model request returns the truthful fallback before the stage budget", async () => {
+  const originalFetch = globalThis.fetch;
+  process.env.OPENAI_API_KEY = "test-openai-key";
+  let observedAbort = false;
+  globalThis.fetch = async (_input, init) =>
+    new Promise<Response>((_resolve, reject) => {
+      const signal = init?.signal;
+      assert.ok(signal instanceof AbortSignal);
+      signal.addEventListener(
+        "abort",
+        () => {
+          observedAbort = true;
+          reject(new DOMException("Aborted", "AbortError"));
+        },
+        { once: true }
+      );
+    });
+
+  const startedAt = Date.now();
+  try {
+    const profile = await generateCompanyProfile(
+      {
+        companyUrl: "https://example.com",
+        reportType: "quick",
+        opportunityFocus: "Find public-sector opportunities."
+      },
+      "Example provides services.",
+      {
+        timeoutMs: 30,
+        deadlineAtMs: startedAt + 250
+      }
+    );
+
+    assert.equal(observedAbort, true);
+    assert.ok(Date.now() - startedAt < 250, "fallback must settle inside the stage budget");
+    assert.ok((profile.profile_confidence_score ?? 100) < 55);
+    assert.match(profile.profile_assumptions_summary ?? "", /AI profile step was unavailable/i);
+    assert.match(profile.report_guidance.join(" "), /hold results for review/i);
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.OPENAI_API_KEY;
+  }
+});
+
 test("detailed public-form intent produces a useful but held fallback", async () => {
   const profile = await generateCompanyProfile(
     {

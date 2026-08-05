@@ -38,7 +38,8 @@ export const SCAN_COMPLETION_WRITE_TIMEOUT_MS = 1_000;
 const persistedFailureErrors = new WeakSet<object>();
 
 const SCRAPING_STAGE_TIMEOUT_MS = 12_000;
-const PROFILING_STAGE_TIMEOUT_MS = 15_000;
+export const PROFILING_STAGE_TIMEOUT_MS = 15_000;
+export const PROFILING_FALLBACK_SETTLEMENT_RESERVE_MS = 2_000;
 const STORAGE_STAGE_TIMEOUT_MS = 5_000;
 
 export function scanFocusPrefersCurrentOpportunities(input: ScanInput): boolean {
@@ -456,6 +457,10 @@ export async function executeScanPipeline(
       dependencies.now,
       (budget) => dependencies.generateCompanyProfile(input, profileSourceText, {
         ...budget,
+        timeoutMs: Math.max(
+          0,
+          budget.timeoutMs - PROFILING_FALLBACK_SETTLEMENT_RESERVE_MS
+        ),
         gatewayToken: options.gatewayToken
       })
     );

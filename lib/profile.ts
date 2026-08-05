@@ -722,22 +722,34 @@ async function generateWithOpenAi(
     throw new Error("Company profile generation deadline expired before the OpenAI request started.");
   }
 
+  const configuredTimeoutMs = options.timeoutMs ?? DEFAULT_PROFILE_REQUEST_TIMEOUT_MS;
+  if (configuredTimeoutMs <= 0) {
+    return null;
+  }
+
   const timeoutMs = Math.max(
     1,
     Math.min(
       DEFAULT_PROFILE_REQUEST_TIMEOUT_MS,
-      options.timeoutMs ?? DEFAULT_PROFILE_REQUEST_TIMEOUT_MS,
+      configuredTimeoutMs,
       deadlineRemaining
     )
   );
   const controller = new AbortController();
-  const abortFromParent = () => controller.abort();
+  let cancellationReason: "parent" | "request_timeout" | undefined;
+  const abortFromParent = () => {
+    cancellationReason ??= "parent";
+    controller.abort();
+  };
   if (options.signal?.aborted) {
     controller.abort();
   } else {
     options.signal?.addEventListener("abort", abortFromParent, { once: true });
   }
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const timeout = setTimeout(() => {
+    cancellationReason ??= "request_timeout";
+    controller.abort();
+  }, timeoutMs);
   try {
     const requestFor = (provider: (typeof providers)[number]) => JSON.stringify({
         model: provider.model,
@@ -875,8 +887,16 @@ async function generateWithOpenAi(
     }
     return null;
   } catch (error) {
-    if (controller.signal.aborted) {
-      throw new Error(`Company profile generation timed out after ${timeoutMs}ms.`);
+    if (cancellationReason === "request_timeout") {
+      console.warn("Company profile model request timed out; using deterministic fallback", {
+        timeoutMs
+      });
+      return null;
+    }
+    if (cancellationReason === "parent" || options.signal?.aborted) {
+      throw new Error("Company profile generation was aborted by the scan stage.", {
+        cause: error
+      });
     }
     throw error;
   } finally {
