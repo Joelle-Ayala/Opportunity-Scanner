@@ -26,3 +26,7 @@ export function browserCookieValue(name: string): string | undefined {
 export function currentTrackingConsent(): TrackingConsent | null {
   return parseTrackingConsent(browserCookieValue(TRACKING_CONSENT_COOKIE_NAME));
 }
+
+export function trackingIsAllowed(consent: TrackingConsent | null): boolean {
+  return consent !== "necessary";
+}

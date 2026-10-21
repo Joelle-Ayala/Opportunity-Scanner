@@ -25,7 +25,7 @@ function cookieValue(name: string): string | undefined {
 export function FirstTouchAttributionCapture() {
   useEffect(() => {
     const capture = () => {
-      if (currentTrackingConsent() !== "analytics") return;
+      if (currentTrackingConsent() === "necessary") return;
       const now = new Date();
       const existing = cookieValue(FIRST_TOUCH_COOKIE_NAME);
       if (parseFirstTouchCookie(existing, now.getTime())) return;

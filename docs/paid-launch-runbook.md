@@ -107,7 +107,7 @@ No-go if required customer email is landing in spam, the sender is unverified, o
 - Confirm events contain only the allowlisted plan, billing period, source, state, and aggregate status fields.
 - Confirm email addresses, scan IDs, Stripe IDs, auth tokens, and URL query strings are absent.
 - If PostHog is used, keep autocapture, pageview capture, session replay, and persistent anonymous profiling disabled.
-- Optional Google Analytics 4: set `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-0MLMTPZ84W` in Vercel before the build that should collect page views. The tag stays unloaded until a visitor allows analytics. Consent Mode starts denied. In GA4 DebugView, confirm a `page_view` after consent and confirm `page_location` has no query string. Necessary-only visits must not request `googletagmanager.com` or `google-analytics.com`. Google Analytics does not replace the Vercel or PostHog launch check.
+- Optional Google Analytics 4: set `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-0MLMTPZ84W` in Vercel before the build that should collect page views. The tag loads on the first page view. Consent Mode defaults `analytics_storage` to granted. In GA4 DebugView, confirm a `page_view` with no prior click and confirm `page_location` has no query string. A visit after Turn off analytics must not send a later page view. Google Analytics does not replace the Vercel or PostHog launch check.
 
 Use Stripe and Supabase as the financial/access source of truth. Analytics is evidence of funnel behavior, not entitlement.
 

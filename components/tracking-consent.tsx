@@ -3,71 +3,94 @@
 import { useEffect, useState } from "react";
 import {
   TRACKING_CONSENT_BROWSER_EVENT,
-  TRACKING_CONSENT_COOKIE_NAME,
   currentTrackingConsent,
   trackingConsentCookieAssignment,
   type TrackingConsent
 } from "@/lib/trackingConsent";
 import { FIRST_TOUCH_COOKIE_NAME } from "@/lib/acquisitionAttribution";
 
+type OptionalTrackingWindow = Window & {
+  _hsq?: Array<[string, ...unknown[]]>;
+  gtag?: (...args: unknown[]) => void;
+};
+
 function applyConsent(value: TrackingConsent) {
+  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
   document.cookie = trackingConsentCookieAssignment(value, process.env.NODE_ENV === "production");
   if (value === "necessary") {
-    document.cookie = `${FIRST_TOUCH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+    document.cookie = `${FIRST_TOUCH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
+    const trackingWindow = window as OptionalTrackingWindow;
+    trackingWindow._hsq?.push(["revokeCookieConsent"]);
+    trackingWindow.gtag?.("consent", "update", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "denied",
+      functionality_storage: "denied",
+      personalization_storage: "denied",
+      security_storage: "denied"
+    });
   }
   window.dispatchEvent(new CustomEvent(TRACKING_CONSENT_BROWSER_EVENT, { detail: value }));
+  window.location.reload();
 }
 
 export function TrackingConsentBanner() {
   const [consent, setConsent] = useState<TrackingConsent | null | undefined>(undefined);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    const current = currentTrackingConsent();
-    const globalPrivacyControl = (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl;
-    if (!current && globalPrivacyControl === true) {
-      applyConsent("necessary");
-      setConsent("necessary");
-      return;
-    }
-    setConsent(current);
+    setConsent(currentTrackingConsent());
+    const handleConsent = (event: Event) => {
+      const value = event instanceof CustomEvent ? event.detail : null;
+      if (value === "analytics" || value === "necessary") setConsent(value);
+    };
+    window.addEventListener(TRACKING_CONSENT_BROWSER_EVENT, handleConsent);
+    return () => window.removeEventListener(TRACKING_CONSENT_BROWSER_EVENT, handleConsent);
   }, []);
 
-  if (consent !== null) return null;
+  if (dismissed || consent === undefined) return null;
 
-  const choose = (value: TrackingConsent) => {
-    applyConsent(value);
-    setConsent(value);
-  };
+  const optedOut = consent === "necessary";
 
   return (
-    <aside aria-label="Analytics preferences" className="fixed inset-x-2 bottom-2 z-[100] mx-auto max-w-4xl rounded-lg border border-line bg-white p-2.5 shadow-2xl sm:inset-x-3 sm:bottom-3 sm:flex sm:items-center sm:justify-between sm:gap-5 sm:px-4 sm:py-3">
-      <div>
-        <p className="text-xs font-semibold text-ink sm:text-sm">Your privacy choices</p>
-        <p className="mt-0.5 text-xs leading-4 text-slate-600 sm:mt-1 sm:text-sm sm:leading-5">
-          <span className="sm:hidden">Optional analytics improve reports. </span>
-          <span className="hidden sm:inline">
-          Optional analytics help us improve reports and purchases. Keep only necessary cookies or allow analytics. <a href="/privacy" className="font-semibold text-accent hover:underline">Privacy notice</a>
-          </span>
-          <a href="/privacy" className="font-semibold text-accent hover:underline sm:hidden">Privacy notice</a>
-        </p>
-      </div>
-      <div className="mt-2 grid shrink-0 grid-cols-2 gap-2 sm:mt-0">
-        <button type="button" onClick={() => choose("necessary")} className="min-h-9 whitespace-nowrap rounded-md border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink hover:border-accent hover:text-accent sm:min-h-10 sm:py-2 sm:text-sm">
-          Necessary only
+    <aside aria-label="Analytics notice" className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-3">
+      <p className="pointer-events-auto flex max-w-3xl flex-wrap items-center gap-x-2 gap-y-1 rounded-full border border-line bg-white/95 px-3 py-1.5 text-xs leading-5 text-slate-600 shadow-lg">
+        <span>{optedOut ? "Analytics are off." : "Analytics are on to improve Opportunity Scanner."}</span>
+        <button
+          type="button"
+          onClick={() => applyConsent(optedOut ? "analytics" : "necessary")}
+          className="font-semibold text-accent hover:underline"
+        >
+          {optedOut ? "Turn on analytics" : "Turn off analytics"}
         </button>
-        <button type="button" onClick={() => choose("analytics")} className="min-h-9 whitespace-nowrap rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#0A6871] sm:min-h-10 sm:py-2 sm:text-sm">
-          Allow analytics
+        <a href="/privacy" className="font-semibold text-accent hover:underline">Privacy</a>
+        <button type="button" onClick={() => setDismissed(true)} className="font-semibold text-slate-500 hover:text-ink" aria-label="Dismiss analytics notice">
+          Close
         </button>
-      </div>
+      </p>
     </aside>
   );
 }
 
 export function TrackingPreferencesButton({ className }: { className?: string }) {
-  const reset = () => {
-    document.cookie = `${TRACKING_CONSENT_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
-    document.cookie = `${FIRST_TOUCH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
-    window.location.reload();
-  };
-  return <button type="button" onClick={reset} className={className}>Cookie choices</button>;
+  const [consent, setConsent] = useState<TrackingConsent | null>(null);
+
+  useEffect(() => {
+    setConsent(currentTrackingConsent());
+    const handleConsent = (event: Event) => {
+      const value = event instanceof CustomEvent ? event.detail : null;
+      if (value === "analytics" || value === "necessary") setConsent(value);
+    };
+    window.addEventListener(TRACKING_CONSENT_BROWSER_EVENT, handleConsent);
+    return () => window.removeEventListener(TRACKING_CONSENT_BROWSER_EVENT, handleConsent);
+  }, []);
+
+  const optedOut = consent === "necessary";
+
+  return (
+    <button type="button" onClick={() => applyConsent(optedOut ? "analytics" : "necessary")} className={className}>
+      {optedOut ? "Turn on analytics" : "Turn off analytics"}
+    </button>
+  );
 }

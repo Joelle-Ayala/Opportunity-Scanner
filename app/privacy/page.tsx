@@ -45,21 +45,22 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-ink">Optional product analytics</h2>
             <p className="mt-3">
-              Vercel Analytics provides aggregate, cookieless traffic information. With your
-              permission, we may also use Google Analytics 4 for page views, and PostHog and
-              HubSpot to understand product actions and customer journeys, such as starting a
-              scan, opening checkout, using a report action, or sending an opportunity to a
-              workflow. Google Analytics loads only after you allow analytics. Its storage
-              signals start denied, and page addresses are sent without query strings. PostHog
-              session replay and autocapture are disabled. Our custom analytics events do not
-              include report contents, form answers, email addresses, company websites, or
-              free-text responses.
+              Vercel Analytics provides aggregate, cookieless traffic information. Google
+              Analytics 4, PostHog, and HubSpot also load by default so we can understand page
+              views, product actions, and customer journeys, such as starting a scan, opening
+              checkout, using a report action, or sending an opportunity to a workflow. Google
+              Analytics uses Consent Mode with analytics storage granted on the first visit.
+              Advertising storage stays denied, and page addresses are sent without query
+              strings. PostHog session replay and autocapture are disabled. Our custom analytics
+              events do not include report contents, form answers, email addresses, company
+              websites, or free-text responses. You can turn analytics off at any time; that
+              choice stops later Google Analytics, PostHog, and HubSpot tracking on this site.
             </p>
           </section>
           <section>
             <h2 className="text-xl font-semibold text-ink">First-touch campaign attribution</h2>
             <p className="mt-3">
-              If you allow analytics, Opportunity Scanner uses a same-site first-party cookie for up
+              Opportunity Scanner uses a same-site first-party cookie for up
               to 90 days to remember how a visitor first reached the site. It contains a random
               anonymous identifier, the landing-page path, referring hostname, timestamp, and
               standard UTM campaign fields.
@@ -71,7 +72,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-ink">Known customers and company activity</h2>
             <p className="mt-3">
-              After someone provides a real email address or signs in, and has allowed analytics, we
+              After someone provides a real email address or signs in, and has not turned analytics off, we
               may associate subsequent website or product activity with that contact and their work
               email domain in HubSpot or with an internal account identifier in PostHog. This helps
               us support customers and understand account-level product use. We do not claim that an
@@ -95,7 +96,7 @@ export default function PrivacyPage() {
           </section>
           <section>
             <h2 className="text-xl font-semibold text-ink">Retention and choices</h2>
-            <p className="mt-3">Analytics permission is optional and can be changed at any time using Cookie choices in the site footer. We honor Global Privacy Control as a necessary-only preference. Beta records are retained while needed for product operation, research follow-up, security, and business records. You may request access, correction, deletion, or withdrawal from optional marketing by contacting us. Some records may be retained when required for security, legal, or operational reasons.</p>
+            <p className="mt-3">Analytics run by default and can be turned off at any time from the site notice or the Turn off analytics link in the footer. Choosing that option stops later analytics tracking and clears the first-touch campaign cookie. Beta records are retained while needed for product operation, research follow-up, security, and business records. You may request access, correction, deletion, or withdrawal from optional marketing by contacting us. Some records may be retained when required for security, legal, or operational reasons.</p>
           </section>
           <section>
             <h2 className="text-xl font-semibold text-ink">Contact</h2>
