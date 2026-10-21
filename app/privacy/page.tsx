@@ -27,7 +27,7 @@ export default function PrivacyPage() {
     <main className="min-h-screen bg-field">
       <SiteHeader />
       <article className="mx-auto max-w-3xl px-6 py-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">Last reviewed July 21, 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">Last reviewed October 21, 2026</p>
         <h1 className="mt-4 text-4xl font-semibold text-ink">Privacy notice</h1>
         <p className="mt-5 text-base leading-8 text-slate-700">
           Opportunity Scanner collects only the information needed to run requested scans, provide requested guides, operate the beta, and understand which product and content experiences are useful.
@@ -46,11 +46,14 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-ink">Optional product analytics</h2>
             <p className="mt-3">
               Vercel Analytics provides aggregate, cookieless traffic information. With your
-              permission, we may also use PostHog and HubSpot to understand product actions and
-              customer journeys, such as starting a scan, opening checkout, using a report action,
-              or sending an opportunity to a workflow. PostHog session replay and autocapture are
-              disabled. Our custom analytics events do not include report contents, form answers,
-              email addresses, company websites, or free-text responses.
+              permission, we may also use Google Analytics 4 for page views, and PostHog and
+              HubSpot to understand product actions and customer journeys, such as starting a
+              scan, opening checkout, using a report action, or sending an opportunity to a
+              workflow. Google Analytics loads only after you allow analytics. Its storage
+              signals start denied, and page addresses are sent without query strings. PostHog
+              session replay and autocapture are disabled. Our custom analytics events do not
+              include report contents, form answers, email addresses, company websites, or
+              free-text responses.
             </p>
           </section>
           <section>

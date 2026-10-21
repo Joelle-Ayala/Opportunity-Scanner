@@ -17,6 +17,13 @@ import {
   type ProductAnalyticsEnvelope
 } from "@/lib/productAnalytics";
 import {
+  GOOGLE_ANALYTICS_SCRIPT_ID,
+  googleAnalyticsMeasurementId,
+  googleAnalyticsPageView,
+  planGoogleAnalytics,
+  type GoogleAnalyticsCommand
+} from "@/lib/googleAnalytics";
+import {
   TRACKING_CONSENT_BROWSER_EVENT,
   currentTrackingConsent,
   type TrackingConsent
@@ -30,12 +37,59 @@ type PostHogClient = {
 };
 
 type HubSpotQueue = Array<[string, ...unknown[]]>;
+type GoogleAnalyticsQueue = (...args: unknown[]) => void;
 const DEFAULT_HUBSPOT_PORTAL_ID = "20159837";
+
+interface GoogleAnalyticsRuntimeState {
+  defaultSet: boolean;
+  configured: boolean;
+  lastPagePath: string | null;
+}
 
 declare global {
   interface Window {
     _hsq?: HubSpotQueue;
+    dataLayer?: unknown[];
+    gtag?: GoogleAnalyticsQueue;
+    __opportunityScannerGoogleAnalytics?: GoogleAnalyticsRuntimeState;
   }
+}
+
+function installGoogleAnalyticsQueue(): GoogleAnalyticsQueue {
+  window.dataLayer = window.dataLayer || [];
+  const existing = window.gtag;
+  if (existing) return existing;
+  const queue: GoogleAnalyticsQueue = function gtag() {
+    window.dataLayer?.push(arguments);
+  };
+  window.gtag = queue;
+  return queue;
+}
+
+function googleAnalyticsRuntimeState(): GoogleAnalyticsRuntimeState {
+  const state = window.__opportunityScannerGoogleAnalytics ?? {
+    defaultSet: false,
+    configured: false,
+    lastPagePath: null
+  };
+  window.__opportunityScannerGoogleAnalytics = state;
+  return state;
+}
+
+function runGoogleAnalyticsCommand(gtag: GoogleAnalyticsQueue, command: GoogleAnalyticsCommand) {
+  if (command[0] === "js") {
+    gtag("js", new Date());
+    return;
+  }
+  if (command[0] === "config" && typeof command[1] === "string") {
+    const page = googleAnalyticsPageView(window.location.origin, window.location.pathname);
+    const options = typeof command[2] === "object" && command[2] !== null
+      ? command[2] as Record<string, unknown>
+      : {};
+    gtag("config", command[1], { ...options, page_location: page.page_location });
+    return;
+  }
+  gtag(...(command as [string, ...unknown[]]));
 }
 
 function sanitizePostHogProperties(properties: Record<string, unknown>): Record<string, unknown> {
@@ -205,6 +259,52 @@ export function ProductAnalytics() {
     const queue = window._hsq = window._hsq || [];
     queue.push(["setPath", pathname]);
     queue.push(["trackPageView"]);
+  }, [consent, pathname]);
+
+  useEffect(() => {
+    const measurementId = googleAnalyticsMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
+    if (!measurementId) return;
+
+    const state = googleAnalyticsRuntimeState();
+    const plan = planGoogleAnalytics({
+      measurementId,
+      consent,
+      defaultSet: state.defaultSet,
+      configured: state.configured
+    });
+
+    if (plan.commands.length > 0 || plan.loadScript) {
+      const gtag = installGoogleAnalyticsQueue();
+      for (const command of plan.commands) runGoogleAnalyticsCommand(gtag, command);
+      if (plan.commands.some((command) => command[0] === "consent" && command[1] === "default")) {
+        state.defaultSet = true;
+      }
+      if (plan.loadScript && !document.getElementById(GOOGLE_ANALYTICS_SCRIPT_ID)) {
+        const script = document.createElement("script");
+        script.id = GOOGLE_ANALYTICS_SCRIPT_ID;
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+        document.head.appendChild(script);
+      }
+      if (plan.loadScript) state.configured = true;
+    }
+
+    if (!plan.trackPageViews) state.lastPagePath = null;
+  }, [consent]);
+
+  useEffect(() => {
+    if (consent !== "analytics") return;
+    const measurementId = googleAnalyticsMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
+    const state = window.__opportunityScannerGoogleAnalytics;
+    if (!measurementId || !state?.configured || !window.gtag) return;
+
+    const page = googleAnalyticsPageView(window.location.origin, pathname || "/", document.referrer);
+    if (state.lastPagePath === page.page_path) return;
+    state.lastPagePath = page.page_path;
+    window.gtag("event", "page_view", {
+      ...page,
+      page_title: document.title
+    });
   }, [consent, pathname]);
 
   return (

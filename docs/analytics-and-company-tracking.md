@@ -9,7 +9,8 @@ Owner: Chief of Staff Agent with Connector, Back-End, and QA agents
 2. **First-touch attribution** stores a random identifier, landing path, referrer hostname, and UTM fields only after analytics permission. It never stores form answers, emails, full query strings, or scanned-company URLs.
 3. **PostHog** receives allowlisted product events only after analytics permission. Authenticated users use the stable customer account ID. Company grouping uses the customer work-email domain, never the company currently being scanned.
 4. **HubSpot** loads only after analytics permission. It tracks SPA page views and identifies a visitor only after a real email is provided or the customer signs in.
-5. **Supabase and Stripe** remain authoritative for scans, report state, purchases, refunds, subscriptions, and entitlements. Browser events explain behavior but cannot grant access or create revenue truth.
+5. **Google Analytics 4** is optional. It loads only when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set and the visitor allows analytics. Consent Mode v2 defaults every storage signal to denied. After consent, only analytics storage is granted. Page views fire on the first consented view and on later client route changes, without query strings. The production measurement ID is `G-0MLMTPZ84W`, supplied by the environment rather than hardcoded. Unset the variable to keep the tag off.
+6. **Supabase and Stripe** remain authoritative for scans, report state, purchases, refunds, subscriptions, and entitlements. Browser events explain behavior but cannot grant access or create revenue truth.
 
 ## Funnel events
 
@@ -33,6 +34,7 @@ Owner: Chief of Staff Agent with Connector, Back-End, and QA agents
 
 - HubSpot portal tracking uses the Minting House portal `20159837`. The script is `https://js.hs-scripts.com/20159837.js`. `NEXT_PUBLIC_HUBSPOT_PORTAL_ID` overrides that default when set. Tracking still loads only after analytics consent.
 - PostHog remains optional and requires `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`.
+- Google Analytics 4 remains optional. Set `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-0MLMTPZ84W` in the build environment. It does not replace the Vercel or PostHog launch requirement.
 - HubSpot server-side CRM synchronization is not enabled. It requires a private app or OAuth credential, a reviewed contact/company/deal field map, deduplication, and failure logging.
 
 ## Verification
