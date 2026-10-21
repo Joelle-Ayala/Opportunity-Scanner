@@ -182,5 +182,8 @@ assert.match(launchCheck, /requires all Monitor and Growth Stripe Price IDs/);
 assert.match(launchCheck, /MONITORING_SCHEDULER_READY/);
 assert.match(launchCheck, /documented capacity proof/);
 assert.match(launchCheck, /SUPPORT_MAILBOX_READY/);
+assert.match(launchCheck, /NEXT_PUBLIC_GA_MEASUREMENT_ID/);
+assert.match(launchCheck, /googleAnalyticsMeasurementId/);
+assert.doesNotMatch(launchCheck, /G-0MLMTPZ84W/);
 
 console.log("Paid launch gating and health contract passed without exposing configuration values.");
