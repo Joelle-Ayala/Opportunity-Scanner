@@ -31,7 +31,7 @@ Owner: Chief of Staff Agent with Connector, Back-End, and QA agents
 
 ## Production configuration
 
-- HubSpot portal tracking uses the connected Opportunity Scanner HubSpot account. The portal ID is public and may be overridden with `NEXT_PUBLIC_HUBSPOT_PORTAL_ID`.
+- HubSpot portal tracking uses the Minting House portal `20159837`. The script is `https://js.hs-scripts.com/20159837.js`. `NEXT_PUBLIC_HUBSPOT_PORTAL_ID` overrides that default when set. Tracking still loads only after analytics consent.
 - PostHog remains optional and requires `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`.
 - HubSpot server-side CRM synchronization is not enabled. It requires a private app or OAuth credential, a reviewed contact/company/deal field map, deduplication, and failure logging.
 

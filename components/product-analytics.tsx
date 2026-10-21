@@ -30,7 +30,7 @@ type PostHogClient = {
 };
 
 type HubSpotQueue = Array<[string, ...unknown[]]>;
-const DEFAULT_HUBSPOT_PORTAL_ID = "44475527";
+const DEFAULT_HUBSPOT_PORTAL_ID = "20159837";
 
 declare global {
   interface Window {
