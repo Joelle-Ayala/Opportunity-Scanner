@@ -73,18 +73,22 @@ export function planGoogleAnalytics(input: {
   }
 
   const commands: GoogleAnalyticsCommand[] = [];
-  if (!input.defaultSet) {
-    commands.push(["consent", "default", deniedGoogleConsent()]);
+  const optedOut = input.consent === "necessary";
+
+  if (!input.defaultSet && !optedOut) {
+    commands.push(["consent", "default", analyticsGrantedGoogleConsent()]);
     commands.push(["set", "ads_data_redaction", true]);
     commands.push(["set", "url_passthrough", false]);
   }
 
-  if (input.consent !== "analytics") {
+  if (optedOut) {
     if (input.configured) commands.push(["consent", "update", deniedGoogleConsent()]);
     return { loadScript: false, trackPageViews: false, commands };
   }
 
-  commands.push(["consent", "update", analyticsGrantedGoogleConsent()]);
+  if (input.defaultSet) {
+    commands.push(["consent", "update", analyticsGrantedGoogleConsent()]);
+  }
   if (!input.configured) {
     commands.push(["js"]);
     commands.push(["config", input.measurementId, googleAnalyticsConfig()]);

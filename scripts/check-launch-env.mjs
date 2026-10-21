@@ -123,7 +123,7 @@ if (gaMeasurementIdValue?.trim() && !gaMeasurementId) {
   );
 } else if (gaMeasurementId) {
   console.log(
-    "Notice: Google Analytics 4 is configured. It collects page views only after analytics consent and does not replace Vercel Web Analytics or PostHog."
+    "Notice: Google Analytics 4 is configured. It collects page views on first load unless the visitor turns analytics off, and it does not replace Vercel Web Analytics or PostHog."
   );
 }
 

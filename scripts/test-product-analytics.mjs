@@ -125,7 +125,9 @@ for (const privacySetting of [
   assert.ok(componentSource.includes(privacySetting), `Missing PostHog privacy setting: ${privacySetting}`);
 }
 assert.ok(componentSource.includes("<Analytics"), "Vercel Web Analytics component must be rendered");
-assert.match(componentSource, /consent !== "analytics"/);
+assert.match(componentSource, /function trackingEnabled/);
+assert.match(componentSource, /trackingEnabled\(consent\)/);
+assert.doesNotMatch(componentSource, /consent !== "analytics"/);
 assert.match(componentSource, /NEXT_PUBLIC_HUBSPOT_PORTAL_ID/);
 assert.match(componentSource, /postHog\.group\("company"/);
 
@@ -151,7 +153,7 @@ const granted = analyticsGrantedGoogleConsent();
 assert.equal(granted.analytics_storage, "granted");
 for (const signal of GOOGLE_CONSENT_SIGNALS) {
   if (signal === "analytics_storage") continue;
-  assert.equal(granted[signal], "denied", `${signal} stays denied after analytics consent`);
+  assert.equal(granted[signal], "denied", `${signal} stays denied when analytics storage is granted`);
 }
 assert.equal(googleAnalyticsConfig().send_page_view, false);
 
@@ -182,10 +184,24 @@ const beforeConsent = planGoogleAnalytics({
   defaultSet: false,
   configured: false
 });
-assert.equal(beforeConsent.loadScript, false);
-assert.equal(beforeConsent.trackPageViews, false);
-assert.deepEqual(beforeConsent.commands[0], ["consent", "default", deniedGoogleConsent()]);
-assert.equal(beforeConsent.commands.some((command) => command[0] === "config"), false);
+assert.equal(beforeConsent.loadScript, true);
+assert.equal(beforeConsent.trackPageViews, true);
+assert.deepEqual(beforeConsent.commands[0], ["consent", "default", analyticsGrantedGoogleConsent()]);
+assert.equal(beforeConsent.commands[0][2].analytics_storage, "granted");
+assert.equal(beforeConsent.commands[0][2].ad_storage, "denied");
+assert.deepEqual(beforeConsent.commands.at(-2), ["js"]);
+assert.deepEqual(beforeConsent.commands.at(-1), ["config", measurementId, googleAnalyticsConfig()]);
+assert.ok(beforeConsent.commands.findIndex((command) => command[1] === "default") < beforeConsent.commands.findIndex((command) => command[0] === "config"));
+
+const optedOutBeforeLoad = planGoogleAnalytics({
+  measurementId,
+  consent: "necessary",
+  defaultSet: false,
+  configured: false
+});
+assert.equal(optedOutBeforeLoad.loadScript, false);
+assert.equal(optedOutBeforeLoad.trackPageViews, false);
+assert.deepEqual(optedOutBeforeLoad.commands, []);
 
 const necessaryOnly = planGoogleAnalytics({
   measurementId,
@@ -205,10 +221,7 @@ const allowAnalytics = planGoogleAnalytics({
 });
 assert.equal(allowAnalytics.loadScript, true);
 assert.equal(allowAnalytics.trackPageViews, true);
-assert.deepEqual(allowAnalytics.commands[0], ["consent", "default", deniedGoogleConsent()]);
-const updateCommand = allowAnalytics.commands.find((command) => command[0] === "consent" && command[1] === "update");
-assert.deepEqual(updateCommand, ["consent", "update", analyticsGrantedGoogleConsent()]);
-assert.ok(allowAnalytics.commands.findIndex((command) => command[1] === "default") < allowAnalytics.commands.findIndex((command) => command[1] === "update"));
+assert.deepEqual(allowAnalytics.commands[0], ["consent", "default", analyticsGrantedGoogleConsent()]);
 assert.deepEqual(allowAnalytics.commands.at(-2), ["js"]);
 assert.deepEqual(allowAnalytics.commands.at(-1), ["config", measurementId, googleAnalyticsConfig()]);
 

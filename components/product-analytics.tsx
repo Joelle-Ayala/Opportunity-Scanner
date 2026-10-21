@@ -26,6 +26,7 @@ import {
 import {
   TRACKING_CONSENT_BROWSER_EVENT,
   currentTrackingConsent,
+  trackingIsAllowed,
   type TrackingConsent
 } from "@/lib/trackingConsent";
 
@@ -38,7 +39,7 @@ type PostHogClient = {
 
 type HubSpotQueue = Array<[string, ...unknown[]]>;
 type GoogleAnalyticsQueue = (...args: unknown[]) => void;
-const DEFAULT_HUBSPOT_PORTAL_ID = "44475527";
+const DEFAULT_HUBSPOT_PORTAL_ID = "20159837";
 
 interface GoogleAnalyticsRuntimeState {
   defaultSet: boolean;
@@ -92,6 +93,10 @@ function runGoogleAnalyticsCommand(gtag: GoogleAnalyticsQueue, command: GoogleAn
   gtag(...(command as [string, ...unknown[]]));
 }
 
+function trackingEnabled(consent: TrackingConsent | null): boolean {
+  return trackingIsAllowed(consent ?? currentTrackingConsent());
+}
+
 function sanitizePostHogProperties(properties: Record<string, unknown>): Record<string, unknown> {
   const sanitized = { ...properties };
   for (const key of ["$current_url", "$referrer", "$initial_current_url", "$initial_referrer"]) {
@@ -126,7 +131,7 @@ export function ProductAnalytics() {
       identityRef.current = identity;
 
       const postHog = postHogRef.current;
-      if (postHog && consent === "analytics") {
+      if (postHog && trackingEnabled(consent)) {
         if (identity.userId) postHog.identify(identity.userId);
         if (identity.companyDomain) {
           postHog.group("company", identity.companyDomain, {
@@ -136,7 +141,7 @@ export function ProductAnalytics() {
         }
       }
 
-      if (consent === "analytics" && identity.email) {
+      if (trackingEnabled(consent) && identity.email) {
         const queue = window._hsq = window._hsq || [];
         queue.push(["identify", { email: identity.email }]);
         if (hubSpotLoadedRef.current) queue.push(["trackPageView"]);
@@ -172,7 +177,7 @@ export function ProductAnalytics() {
       if (!event) return;
 
       trackVercelEvent(event.name, event.properties);
-      if (consent !== "analytics") return;
+      if (!trackingEnabled(consent)) return;
       if (postHogRef.current) {
         postHogRef.current.capture(event.name, event.properties);
       } else if (postHogEnabled && pendingPostHogEvents.current.length < 100) {
@@ -185,8 +190,10 @@ export function ProductAnalytics() {
   }, [consent]);
 
   useEffect(() => {
-    if (consent !== "analytics") {
+    if (!trackingEnabled(consent)) {
       pendingPostHogEvents.current.length = 0;
+      postHogRef.current?.reset();
+      window._hsq?.push(["revokeCookieConsent"]);
       return;
     }
 
@@ -249,7 +256,7 @@ export function ProductAnalytics() {
   }, [consent]);
 
   useEffect(() => {
-    if (consent !== "analytics" || !hubSpotLoadedRef.current) return;
+    if (!trackingEnabled(consent) || !hubSpotLoadedRef.current) return;
     if (previousHubSpotPath.current === null) {
       previousHubSpotPath.current = pathname;
       return;
@@ -268,7 +275,7 @@ export function ProductAnalytics() {
     const state = googleAnalyticsRuntimeState();
     const plan = planGoogleAnalytics({
       measurementId,
-      consent,
+      consent: consent ?? currentTrackingConsent(),
       defaultSet: state.defaultSet,
       configured: state.configured
     });
@@ -293,7 +300,7 @@ export function ProductAnalytics() {
   }, [consent]);
 
   useEffect(() => {
-    if (consent !== "analytics") return;
+    if (!trackingEnabled(consent)) return;
     const measurementId = googleAnalyticsMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
     const state = window.__opportunityScannerGoogleAnalytics;
     if (!measurementId || !state?.configured || !window.gtag) return;

@@ -61,12 +61,15 @@ const [layout, consent, analytics, attribution, dashboard, checkout, privacy, ha
 ]);
 
 assert.match(layout, /<TrackingConsentBanner \/>/);
-assert.match(consent, /globalPrivacyControl/);
-assert.match(consent, /Necessary only/);
-assert.match(consent, /Allow analytics/);
-assert.match(attribution, /currentTrackingConsent\(\) !== "analytics"/);
+assert.match(consent, /Turn off analytics/);
+assert.doesNotMatch(consent, /Allow analytics/);
+assert.doesNotMatch(consent, /globalPrivacyControl/);
+assert.match(attribution, /currentTrackingConsent\(\) === "necessary"/);
 assert.match(analytics, /js\.hs-scripts\.com/);
-assert.match(analytics, /DEFAULT_HUBSPOT_PORTAL_ID = "44475527"/);
+assert.match(analytics, /DEFAULT_HUBSPOT_PORTAL_ID = "20159837"/);
+assert.match(analytics, /trackingEnabled\(consent\)/);
+assert.doesNotMatch(analytics, /consent !== "analytics"/);
+assert.doesNotMatch(analytics, /44475527/);
 assert.match(analytics, /\["identify", \{ email: identity\.email \}\]/);
 assert.match(analytics, /\["revokeCookieConsent"\]/);
 assert.match(dashboard, /companyDomainFromEmail\(session\.user\.email\)/);
@@ -74,6 +77,6 @@ assert.doesNotMatch(dashboard, /companyDomain=\{[^}]*report/i);
 assert.doesNotMatch(checkout, /window\.localStorage/);
 assert.match(checkout, /window\.sessionStorage/);
 assert.match(privacy, /Known customers and company activity/);
-assert.match(handlers, /if \(processed\)[\s\S]*trackVerifiedStripePurchase/);
+assert.match(handlers, /if \(processed\)[\s\S]*dependencies\.trackPurchase\(eventRecord\)/);
 
 console.log("Company analytics, consent, identity separation, and verified purchase checks passed.");
