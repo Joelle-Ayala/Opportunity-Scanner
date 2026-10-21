@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "fs";
+import { googleAnalyticsMeasurementId } from "../lib/googleAnalytics.ts";
 import { isBrandedSupportEmail } from "../lib/support.ts";
 
 function loadLocalEnv() {
@@ -112,6 +113,18 @@ if (vercelAnalyticsFlagValue !== "true" && configuredPostHogNames.length !== pos
   console.log("Notice: Vercel Web Analytics is the verified production analytics provider.");
 } else {
   console.log("Notice: PostHog is the verified production analytics provider.");
+}
+
+const gaMeasurementIdValue = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const gaMeasurementId = googleAnalyticsMeasurementId(gaMeasurementIdValue);
+if (gaMeasurementIdValue?.trim() && !gaMeasurementId) {
+  safetyErrors.push(
+    "NEXT_PUBLIC_GA_MEASUREMENT_ID must be a GA4 measurement ID (G- followed by uppercase letters and numbers), or left unset."
+  );
+} else if (gaMeasurementId) {
+  console.log(
+    "Notice: Google Analytics 4 is configured. It collects page views only after analytics consent and does not replace Vercel Web Analytics or PostHog."
+  );
 }
 
 if (reportCheckoutFlagValue && reportCheckoutFlagValue !== "true" && reportCheckoutFlagValue !== "false") {
